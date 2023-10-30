@@ -2,8 +2,10 @@
 ## Changes ##
 
 ### 15.1.7
- - INT: Work on code coverage
+ - ENH: Bump commons-text
+ - INT: Remove useless minLength/maxLength/generalPatter on TypeInfo
  - INT: Automatically publish to maven when release is created
+ - INT: Work on code coverage
 
 ### 15.1.6
  - ENH: Bump google phonenumber

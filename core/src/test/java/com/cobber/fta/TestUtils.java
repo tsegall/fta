@@ -604,6 +604,10 @@ public class TestUtils {
 		assertEquals(knownTypes.PATTERN_SIGNED_LONG, knownTypes.negation(knownTypes.PATTERN_LONG).regexp);
 		assertEquals(knownTypes.PATTERN_DOUBLE, "\\d*,?\\d+");
 		assertEquals(KnownTypes.PATTERN_ALPHA, "\\p{IsAlphabetic}");
+
+		final TypeInfo typeInfoNL = knownTypes.getByID(KnownTypes.ID.ID_DOUBLE_NL);
+		assertEquals(knownTypes.PATTERN_DOUBLE_NL, typeInfoNL.regexp);
+		assertTrue(typeInfoNL.isNonLocalized());
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -642,8 +646,6 @@ public class TestUtils {
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isForce());
 		assertEquals(knownTypes.getByID(KnownTypes.ID.ID_LONG).getBaseType(), FTAType.LONG);
 		assertNull(knownTypes.getByID(KnownTypes.ID.ID_LONG).getSemanticType());
-		assertEquals(knownTypes.getByID(KnownTypes.ID.ID_LONG).getMinLength(), -1);
-		assertEquals(knownTypes.getByID(KnownTypes.ID.ID_LONG).getMaxLength(), -1);
 
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_BLANK).isNull());
 		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_BLANK).isBlank());
@@ -669,6 +671,10 @@ public class TestUtils {
 		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG_GROUPING).isSigned());
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG_GROUPING).hasExponent());
 
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING).hasGrouping());
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING).isSigned());
+		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING).hasExponent());
+
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_ALPHA_VARIABLE).isNumeric());
 		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_ALPHA_VARIABLE).isAlphabetic());
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_ALPHA_VARIABLE).isAlphanumeric());
@@ -676,6 +682,12 @@ public class TestUtils {
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_ALPHANUMERIC_VARIABLE).isNumeric());
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_ALPHANUMERIC_VARIABLE).isAlphabetic());
 		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_ALPHANUMERIC_VARIABLE).isAlphanumeric());
+
+		TypeInfo clone = new TypeInfo(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG_GROUPING));
+		assertTrue(clone.equals(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG_GROUPING)));
+
+		TypeInfo semantic1000 = new TypeInfo("[0-9][0-9][0-9][0-9]", FTAType.LONG, "PLUS4", knownTypes.getByID(KnownTypes.ID.ID_LONG));
+		assertFalse(semantic1000.equals(knownTypes.getByID(KnownTypes.ID.ID_LONG)));
 	}
 
 	@Test(groups = { TestGroups.ALL })

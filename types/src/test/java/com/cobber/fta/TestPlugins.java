@@ -4716,4 +4716,197 @@ public class TestPlugins {
 		assertEquals(result.getConfidence(), confidence);
 		assertEquals(result.getKeyConfidence(), confidence);
 	}
+
+	private static String[] CARDINAL = { "E", "N", "S", "W" };
+	private static String[] INTERCARDINAL = { "NE", "NW", "SE", "SW" };
+	private static String[] CARDINAL_FULL = { "East", "North", "South", "West" };
+	private static String[] INTERCARDINAL_FULL = { "NORTHEAST", "NORTHWEST", "SOUTHEAST", "SOUTHWEST" };
+	private static String[] BOUND_SHORT= { "EB", "NB", "SB", "WB" };
+	private static String[] BOUND_LONG = { "EASTBOUND", "NORTHBOUND", "SOUTHBOUND", "WESTBOUND" };
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void directionCardinal() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("directionCardinal");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		final int ITERATIONS = 200;
+
+		for (int i = 0; i < ITERATIONS; i++)
+			analysis.train(String.valueOf(CARDINAL[random.nextInt(CARDINAL.length)]));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getMatchCount(), ITERATIONS);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "DIRECTION");
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void directionInterCardinal() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("directionInterCardinal");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		final int ITERATIONS = 200;
+
+		for (int i = 0; i < ITERATIONS; i++)
+			analysis.train(String.valueOf(INTERCARDINAL[random.nextInt(INTERCARDINAL.length)]));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getMatchCount(), ITERATIONS);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "DIRECTION");
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void directionCardinalBoth() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("directionCardinalBoth");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		final int ITERATIONS = 200;
+
+		for (int i = 0; i < ITERATIONS; i++) {
+			analysis.train(String.valueOf(CARDINAL[random.nextInt(CARDINAL.length)]));
+			analysis.train(String.valueOf(INTERCARDINAL[random.nextInt(INTERCARDINAL.length)]));
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getMatchCount(), 2 * ITERATIONS);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "DIRECTION");
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void directionFull() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("directionFull");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		final int ITERATIONS = 200;
+
+		for (int i = 0; i < ITERATIONS; i++)
+			analysis.train(String.valueOf(CARDINAL_FULL[random.nextInt(CARDINAL_FULL.length)]));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getMatchCount(), ITERATIONS);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "DIRECTION");
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void directionInterFull() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("directionInterFull");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		final int ITERATIONS = 200;
+
+		for (int i = 0; i < ITERATIONS; i++)
+			analysis.train(String.valueOf(INTERCARDINAL_FULL[random.nextInt(INTERCARDINAL_FULL.length)]));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getMatchCount(), ITERATIONS);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "DIRECTION");
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void directionboundShort() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("directionboundShort");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		final int ITERATIONS = 200;
+
+		for (int i = 0; i < ITERATIONS; i++)
+			analysis.train(String.valueOf(BOUND_SHORT[random.nextInt(BOUND_SHORT.length)]));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getMatchCount(), ITERATIONS);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "DIRECTION");
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void directionBoundLong() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("directionBoundLong");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		final int ITERATIONS = 200;
+
+		for (int i = 0; i < ITERATIONS; i++)
+			analysis.train(String.valueOf(BOUND_LONG[random.nextInt(BOUND_LONG.length)]));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getMatchCount(), ITERATIONS);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "DIRECTION");
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void NAICS() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("NAICS");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		final String[] inputs = {
+				"44522", "81393", "33999", "45321", "33711",
+				"48699", "45931", "33232", "52399", "33131",
+				"62221", "92313", "53121", "11299", "31192",
+				"61143", "11233", "44229", "23731", "54119",
+				"42313", "42373", "31171", "81112", "48599",
+				"31511", "44134", "32111", "32592", "61121",
+				"31412", "32561", "32739", "45999", "21113",
+				"56152", "33991", "56143", "42381", "51921",
+		};
+		for (int i = 0; i < inputs.length; i++)
+			analysis.train(inputs[i]);
+		analysis.train("9");
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length + 1);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getSemanticType(), "INDUSTRY_CODE.NAICS");
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts());
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+
+
 }

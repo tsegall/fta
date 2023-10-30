@@ -99,7 +99,7 @@ public class TestStringConverter {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownTypes knownTypes = new KnownTypes();
 		knownTypes.initialize(locale);
-		final TypeInfo typeInfo = new TypeInfo(null, null, FTAType.LOCALDATETIME, "MM/dd/yyyy h:mm:ss a", false, 4, 4, null, "MM/dd/yyyy h:mm:ss a");
+		final TypeInfo typeInfo = new TypeInfo(null, null, FTAType.LOCALDATETIME, "MM/dd/yyyy h:mm:ss a", false, "MM/dd/yyyy h:mm:ss a");
 		final String[] testCases = { "01/01/1990 8:30:00 AM", "01/31/1990 8:30:00 AM", "01/01/1970 12:00:00 AM", "01/01/1950 12:00:00 AM" };
 
 		baseTest("localDateTime", testCases, locale, typeInfo);
@@ -110,7 +110,7 @@ public class TestStringConverter {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownTypes knownTypes = new KnownTypes();
 		knownTypes.initialize(locale);
-		final TypeInfo typeInfo = new TypeInfo(null, null, FTAType.LOCALDATE, "yyyy", false, 4, 4, null, "yyyy");
+		final TypeInfo typeInfo = new TypeInfo(null, null, FTAType.LOCALDATE, "yyyy", false, "yyyy");
 		final String[] testCases = {
 				"1990", "1984", "1993", "2022", "2011", "2012", "2013", "2014", "2015", "2016",
 				"1980", "1974", "1973", "2011", "1914", "1945", "1913", "2046", "2015", "2016",
@@ -124,7 +124,7 @@ public class TestStringConverter {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownTypes knownTypes = new KnownTypes();
 		knownTypes.initialize(locale);
-		final TypeInfo typeInfo = new TypeInfo(null, null, FTAType.LOCALTIME, "H:mm:ss", false, 4, 4, null, "H:mm:ss");
+		final TypeInfo typeInfo = new TypeInfo(null, null, FTAType.LOCALTIME, "H:mm:ss", false, "H:mm:ss");
 		final String[] testCases = {
 				"21:53:12", "12:53:12", "3:53:12", "18:53:12", "9:53:12", "0:53:12", "15:53:12", "6:53:12", "21:53:12", "12:53:12", "3:53:12", "18:53:12", "9:53:12", "0:53:12", "15:53:12",
 				"6:53:12", "21:53:12", "12:53:12", "3:53:12", "18:53:12", "9:53:12", "0:53:12", "15:53:12", "6:53:12", "21:53:12", "12:53:12", "3:53:12", "18:53:12", "9:53:12"
@@ -138,7 +138,7 @@ public class TestStringConverter {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownTypes knownTypes = new KnownTypes();
 		knownTypes.initialize(locale);
-		final TypeInfo typeInfo = new TypeInfo(null, null, FTAType.OFFSETDATETIME, "dd/MM/yyyy HH:mm:ssxx", false, 4, 4, null, "dd/MM/yyyy HH:mm:ssxx");
+		final TypeInfo typeInfo = new TypeInfo(null, null, FTAType.OFFSETDATETIME, "dd/MM/yyyy HH:mm:ssxx", false, "dd/MM/yyyy HH:mm:ssxx");
 		final String[] testCases = {
 				"01/12/2018 12:34:44+0000", "12/01/2017 11:23:21-0100", "06/05/1998 18:19:21+0100",
 				"31/12/2015 08:05:55-0500", "15/06/2019 23:15:31-0500", "21/02/2000 00:00:00+0000"
@@ -152,7 +152,7 @@ public class TestStringConverter {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final KnownTypes knownTypes = new KnownTypes();
 		knownTypes.initialize(locale);
-		final TypeInfo typeInfo = new TypeInfo(null, null, FTAType.ZONEDDATETIME, "MM/dd/yyyy HH:mm:ss z", false, 4, 4, null, "MM/dd/yyyy HH:mm:ss z");
+		final TypeInfo typeInfo = new TypeInfo(null, null, FTAType.ZONEDDATETIME, "MM/dd/yyyy HH:mm:ss z", false, "MM/dd/yyyy HH:mm:ss z");
 		final String[] testCases = {
 				"01/30/2012 10:59:48 UTC",
 				"01/26/2012 10:42:23 GMT",

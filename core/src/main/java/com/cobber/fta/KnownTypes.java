@@ -199,9 +199,9 @@ public class KnownTypes {
 		PATTERN_SIGNED_DOUBLE_WITH_EXPONENT_GROUPING = withGrouping(PATTERN_SIGNED_DOUBLE_WITH_EXPONENT, groupingSeparator);
 
 		knownTypes.put(PATTERN_BOOLEAN_TRUE_FALSE,
-				new TypeInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, FTAType.BOOLEAN, "TRUE_FALSE", false, 4, 5, null, ""));
+				new TypeInfo(ID.ID_BOOLEAN_TRUE_FALSE, PATTERN_BOOLEAN_TRUE_FALSE, FTAType.BOOLEAN, "TRUE_FALSE", false, ""));
 		knownTypes.put(PATTERN_BOOLEAN_YES_NO,
-				new TypeInfo(ID.ID_BOOLEAN_YES_NO, PATTERN_BOOLEAN_YES_NO, FTAType.BOOLEAN, "YES_NO", false, 2, 3, null, ""));
+				new TypeInfo(ID.ID_BOOLEAN_YES_NO, PATTERN_BOOLEAN_YES_NO, FTAType.BOOLEAN, "YES_NO", false, ""));
 		// Check to see if we have a localized version of Yes/No, if so add it
 		final String localizedYes = keywords.get("YES");
 		final String localizedNo = keywords.get("NO");
@@ -209,11 +209,11 @@ public class KnownTypes {
 			if (!"yes".equals(localizedYes) || !"no".equals(localizedNo)) {
 				PATTERN_BOOLEAN_YES_NO_LOCALIZED = "(?i)(" + localizedNo + "|" + localizedYes + ")";
 				knownTypes.put(PATTERN_BOOLEAN_YES_NO_LOCALIZED,
-						new TypeInfo(ID.ID_BOOLEAN_YES_NO_LOCALIZED, PATTERN_BOOLEAN_YES_NO_LOCALIZED, FTAType.BOOLEAN, "YES_NO", false, 2, 3, null, ""));
+						new TypeInfo(ID.ID_BOOLEAN_YES_NO_LOCALIZED, PATTERN_BOOLEAN_YES_NO_LOCALIZED, FTAType.BOOLEAN, "YES_NO", false, ""));
 			}
 		}
 
-		final TypeInfo PI_BOOLEAN_Y_N = new TypeInfo(ID.ID_BOOLEAN_Y_N, PATTERN_BOOLEAN_Y_N, FTAType.BOOLEAN, "Y_N", false, 2, 3, null, "");
+		final TypeInfo PI_BOOLEAN_Y_N = new TypeInfo(ID.ID_BOOLEAN_Y_N, PATTERN_BOOLEAN_Y_N, FTAType.BOOLEAN, "Y_N", false, "");
 		final TypeInfo PI_BOOLEAN_ONE_ZERO = new TypeInfo(ID.ID_BOOLEAN_ONE_ZERO, PATTERN_BOOLEAN_ONE_ZERO, FTAType.BOOLEAN, "ONE_ZERO", TypeInfo.ONE_ZERO_FLAG);
 		final TypeInfo PI_ANY_VARIABLE = new TypeInfo(ID.ID_ANY_VARIABLE, PATTERN_ANY_VARIABLE, FTAType.STRING, null, 0);
 		final TypeInfo PI_ALPHA_VARIABLE = new TypeInfo(ID.ID_ALPHA_VARIABLE, PATTERN_ALPHA_VARIABLE, FTAType.STRING, null, 0);

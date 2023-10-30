@@ -63,13 +63,10 @@ public class TypeInfo {
 	public final static int Y_N_FLAG = TypeModifier.Y_N.getFlag();
 	public final static int ONE_ZERO_FLAG = TypeModifier.ONE_ZERO.getFlag();
 
-	private int minLength;
-	private int maxLength;
 	private FTAType baseType;
 
 	public KnownTypes.ID id;
 	public String regexp;
-	public String generalPattern;
 	public String format;
 	public String typeModifier;
 	public int typeModifierFlags;
@@ -89,18 +86,11 @@ public class TypeInfo {
 	 *            Either the Type Modifier or the Semantic Type (if is Semantic Type is true) (optional).
 	 * @param isSemanticType
 	 *			  A boolean indicating if this is a Semantic Type.
-	 * @param minLength
-	 *            The minimum length of this pattern (-1 implies undefined)
-	 * @param maxLength
-	 *            The maximum length of this pattern (-1 implies undefined)
-	 * @param generalPattern
-	 *            The general case of this pattern (optional).
 	 * @param format
 	 *            The Java format specified for a date pattern (optional).
 	 */
 	public TypeInfo(final ID id, final String regexp, final FTAType baseType, final String newType,
-			final boolean isSemanticType, final int minLength, final int maxLength, final String generalPattern,
-			final String format) {
+			final boolean isSemanticType, final String format) {
 		this.id = id;
 		this.regexp = regexp;
 		this.baseType = baseType;
@@ -109,9 +99,6 @@ public class TypeInfo {
 		else
 			this.typeModifier = newType;
 		this.isSemanticType = isSemanticType;
-		this.minLength = minLength;
-		this.maxLength = maxLength;
-		this.generalPattern = generalPattern;
 		this.format = format;
 	}
 
@@ -129,9 +116,6 @@ public class TypeInfo {
 		this.baseType = baseType;
 		this.typeModifier = typeModifier;
 		this.isSemanticType = false;
-		this.minLength = -1;
-		this.maxLength = -1;
-		this.generalPattern = null;
 		this.format = null;
 		this.typeModifierFlags = typeModifierFlags;
 	}
@@ -157,9 +141,6 @@ public class TypeInfo {
 		}
 		this.semanticType = semanticType;
 		this.isSemanticType = true;
-		this.minLength = -1;
-		this.maxLength = -1;
-		this.generalPattern = null;
 		this.format = null;
 	}
 
@@ -170,9 +151,6 @@ public class TypeInfo {
 		this.typeModifier = that.typeModifier;
 		this.semanticType = that.semanticType;
 		this.isSemanticType = that.isSemanticType;
-		this.minLength = that.minLength;
-		this.maxLength = that.maxLength;
-		this.generalPattern = that.generalPattern;
 		this.format = that.format;
 		this.typeModifierFlags = that.typeModifierFlags;
 	}
@@ -236,24 +214,6 @@ public class TypeInfo {
 		this.semanticType = semanticType;
 		if (semanticType != null)
 			this.isSemanticType = true;
-	}
-
-	/**
-	 * The minimum length of this pattern (-1 indicates undefined).
-	 *
-	 * @return An integer with the minimum length of this pattern.
-	 */
-	public int getMinLength() {
-		return minLength;
-	}
-
-	/**
-	 * The maximum length of this pattern (-1 indicates undefined).
-	 *
-	 * @return An integer with the maximum length of this pattern.
-	 */
-	public int getMaxLength() {
-		return maxLength;
 	}
 
 	/**
@@ -358,7 +318,7 @@ public class TypeInfo {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(baseType, format, generalPattern, id, isSemanticType, maxLength, minLength, regexp,
+		return Objects.hash(baseType, format, id, isSemanticType, regexp,
 				semanticType, typeModifier, typeModifierFlags);
 	}
 
@@ -372,8 +332,7 @@ public class TypeInfo {
 			return false;
 		final TypeInfo other = (TypeInfo) obj;
 		return baseType == other.baseType && Objects.equals(format, other.format)
-				&& Objects.equals(generalPattern, other.generalPattern) && id == other.id
-				&& isSemanticType == other.isSemanticType && maxLength == other.maxLength && minLength == other.minLength
+				&& id == other.id && isSemanticType == other.isSemanticType
 				&& Objects.equals(regexp, other.regexp) && Objects.equals(semanticType, other.semanticType)
 				&& Objects.equals(typeModifier, other.typeModifier) && typeModifierFlags == other.typeModifierFlags;
 	}
