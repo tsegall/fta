@@ -292,7 +292,7 @@ public class TextAnalyzer {
 	 * @param name The name of the data stream (e.g. the column of the CSV file)
 	 */
 	public TextAnalyzer(final String name) {
-		this(new AnalyzerContext(name, DateResolutionMode.None, null, null));
+		this(new AnalyzerContext(name, DateResolutionMode.None, null,  new String[] { name }));
 	}
 
 	/**
@@ -2442,6 +2442,7 @@ public class TextAnalyzer {
 
 		if ((double) facts.matchCount / realSamples > analysisConfig.getThreshold()/100.0) {
 			facts.setMatchTypeInfo(knownTypes.getByID(KnownTypes.ID.ID_LONG));
+			ctxdebug("Type determination", "backing out long, matchTypeInfo - {}", facts.getMatchTypeInfo());
 		}
 		else if ((double)(facts.matchCount + otherDoubles) / realSamples > analysisConfig.getThreshold()/100.0) {
 			facts.setMatchTypeInfo(knownTypes.getByID(KnownTypes.ID.ID_DOUBLE));

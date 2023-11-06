@@ -1,10 +1,15 @@
 
 ## Changes ##
 
+### 15.1.8
+ - ENH: Small improvement to DAY.DIGITS/MONTH.DIGITS detection
+ - BUG: RegExp for STATE_PROVINCE.MUNICIPALITY_CODE_NL was incorrect
+ - INT: Work on code coverage
+
 ### 15.1.7
  - ENH: Bump commons-text
  - ENH: Checkin gradle wrapper files
- - INT: Remove useless minLength/maxLength/generalPatter on TypeInfo
+ - INT: Remove useless minLength/maxLength/generalPattern on TypeInfo
  - INT: Automatically publish to maven when release is created
  - INT: Work on code coverage
 

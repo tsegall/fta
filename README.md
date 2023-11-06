@@ -292,51 +292,62 @@ Note: The Context (the current Stream Name and other field names) can be used to
 
 ```json
 [
-        {
-                "semanticType": "PII.SSN",
-                "description": "Naive SSN detection",
-                "pluginType": "regex",
-                "validLocales": [
-                        {
-                                "localeTag": "en-US",
-                                "headerRegExps": [ { "regExp": ".*(?i)(SSN|Social).*", "confidence": 70 } ],
-                                "matchEntries": [ { "regExpReturned" : "\\d{3}-\\d{2}-\\d{4}" } ]
-                        }
-                ],
-                "threshold": 98,
-                "baseType": "STRING"
-        },
-        {
-                "semanticType": "AIRPORT_CODE.IATA",
-                "description": "IATA Airport Code",
-                "pluginType": "java",
-                "clazz": "com.cobber.fta.plugins.IATA",
-                "validLocales": [
-                        {
-                                "localeTag": "*",
-                                "headerRegExps": [ { "regExp": ".*(?i)(iata|air).*", "confidence": 100 } ]
-                        }
-                ],
-                "baseType": "STRING"
-        },
-        {
-                "semanticType" : "PLANET_JA",
-                "description": "Planets in Japanese (Kanji) via an inline list",
-                "pluginType": "list",
-                "validLocales": [
-                        {
-                                "localeTag": "ja",
-                                "headerRegExps": [ { "regExp": ".*星", "confidence": 70 } ],
-                                "matchEntries": [ { "regExpReturned" : "(?i)(冥王星|土星|地球|天王星|木星|水星|海王星|火星|金星)" } ]
-                        }
-                ],
-				"content": {
-					"type": "inline",
-					"members": [ "冥王星", "土星", "地球", "天王星", "木星", "水星", "海王星", "火星", "金星" ]
-				}
-                "backout": ".*",
-                "baseType": "STRING"
-        }
+	{
+		"semanticType": "HASH.SHA1_HEX",
+		"description": "SHA1 Hash - hexadecimal",
+		"pluginType": "regex",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(SHA1|hash).*", "confidence": 99 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{XDigit}{40}",
+					"isRegExpComplete": true
+				} ]
+			}
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/SHA-1" }
+		],
+		"threshold": 99,
+		"baseType": "STRING"
+	},
+	{
+		"semanticType": "AIRLINE.IATA_CODE",
+		"description": "IATA Airline Code",
+		"pluginType": "list",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(iata|air).*", "confidence": 99, "mandatory": true } ]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/IATA_airline.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Airline_codes#IATA_airline_designator" },
+			{ "source": "schema", "reference": "https://schema.org/iataCode" }
+		],
+		"threshold": 97
+	},
+	{
+		"semanticType": "EMAIL",
+		"description": "Email Address",
+		"pluginType": "java",
+		"signature": "+A0AMjgeFlGRlPKsX/iXYmoWpfY=",
+		"clazz": "com.cobber.fta.plugins.EmailLT",
+		"validLocales": [
+			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(email|e-mail|e_mail).*", "confidence": 90 } ] },
+			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(correo|email|e-mail|e_mail).*", "confidence": 90 } ] }
+		],
+		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P968" },
+			{ "source": "wikipedia", "reference": "https://https://en.wikipedia.org/wiki/Email_address" },
+			{ "source": "schema", "reference": "https://schema.org/email" }
+		]
+	}
 ]
 ```
 

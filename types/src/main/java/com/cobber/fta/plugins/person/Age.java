@@ -129,7 +129,7 @@ public class Age extends LogicalTypeInfinite {
 		if (((Number)(facts.getMax())).longValue() > MAX_AGE || ((Number)(facts.getMin())).longValue() < 0 || facts.mean < 5.0 || getHeaderConfidence(context.getStreamName()) == 0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
-		// Find a any field that is highly correlated with the presence of age
+		// Age covers many concepts, we are hunting for a person's age so insist on another highly correlated field
 		boolean signalFound = false;
 		for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
 			if (logicalGender != null && logicalGender.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {

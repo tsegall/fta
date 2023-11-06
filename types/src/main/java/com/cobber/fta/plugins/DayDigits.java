@@ -116,6 +116,8 @@ public class DayDigits extends LogicalTypeInfinite {
 			final String previousStreamName = context.getCompositeStreamNames()[current - 1];
 			if (monthEntry.getHeaderConfidence(previousStreamName) >= 99)
 				return PluginAnalysis.OK;
+			if (context.isPreviousSemanticType("MONTH.DIGITS"))
+				return PluginAnalysis.OK;
 			if (keywords.match(previousStreamName, "YEAR") >= 90)
 				return PluginAnalysis.OK;
 			if (getHeaderConfidence(previousStreamName) >= 99)
@@ -126,6 +128,8 @@ public class DayDigits extends LogicalTypeInfinite {
 		if (current < context.getCompositeStreamNames().length - 1) {
 			final String nextStreamName = context.getCompositeStreamNames()[current + 1];
 			if (monthEntry.getHeaderConfidence(nextStreamName) >= 99)
+				return PluginAnalysis.OK;
+			if (context.isNextSemanticType("MONTH.DIGITS"))
 				return PluginAnalysis.OK;
 			if (keywords.match(nextStreamName, "YEAR") >= 90)
 				return PluginAnalysis.OK;

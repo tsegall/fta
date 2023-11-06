@@ -26,6 +26,7 @@ import com.cobber.fta.LogicalTypeFiniteSimple;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -71,14 +72,12 @@ public class MiddleName extends FirstName {
 			return length == 1 || trimmedUpper.charAt(1) == '.';
 		}
 
-		if (length < minLength || length > maxLength)
+		if (length > maxLength)
 			return false;
 
 		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
-		for (int i = 0; i < length; i++) {
-			if (!Character.isAlphabetic(trimmedUpper.charAt(i)))
+		if (!Utils.isAlphas(input))
 				return false;
-		}
 
 		if (detectMode) {
 			// Assume 40% of the remaining are good - hopefully this will not bias the determination excessively.

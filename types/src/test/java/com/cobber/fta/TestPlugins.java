@@ -3654,6 +3654,182 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testMiddleName() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("MiddleName");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+
+		final String[] inputs = {
+				"T?m", "Mary", "Louise", "Jane", "Diana", "Ann", "T.",
+				"Rose", "Liz", "Dianne", "Sophie", "Amanda", "?",
+				"BogusNameThatIsLikelyTooLong",
+				"Roger", "James", "John", "Fred",
+				"Mike", "Aditya", "Matt", "Erik", "Matthew"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "NAME.MIDDLE");
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("NAME.MIDDLE").signature);
+		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getInvalidCount());
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getInvalidCount(), 3);
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testRecordAnalyzer() throws IOException, FTAException {
+		final CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaderExtractionEnabled(true);
+		String[] row;
+		RecordAnalyzer recordAnalyzer;
+
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/PersonData.txt"), StandardCharsets.UTF_8))) {
+
+			final CsvParser parser = new CsvParser(settings);
+			parser.beginParsing(in);
+
+			final AnalyzerContext context = new AnalyzerContext(null, null, "PersonData", parser.getRecordMetadata().headers());
+			final TextAnalyzer template = new TextAnalyzer(context);
+			template.setLocale(Locale.US);
+			template.setDebug(2);
+
+			recordAnalyzer = new RecordAnalyzer(template);
+
+			while ((row = parser.parseNext()) != null)
+				recordAnalyzer.train(row);
+		}
+
+		RecordAnalysisResult result = recordAnalyzer.getResult();
+		TextAnalysisResult[] results = result.getStreamResults();
+
+		assertEquals(results[0].getSemanticType(), "NAME.FIRST");
+		assertEquals(results[0].getStructureSignature(), PluginDefinition.findByName("NAME.FIRST").signature);
+
+		assertEquals(results[1].getSemanticType(), "NAME.LAST");
+		assertEquals(results[1].getStructureSignature(), PluginDefinition.findByName("NAME.LAST").signature);
+
+		assertEquals(results[2].getSemanticType(), "PERSON.AGE_RANGE");
+		assertEquals(results[2].getStructureSignature(), PluginDefinition.findByName("PERSON.AGE_RANGE").signature);
+
+		assertEquals(results[3].getSemanticType(), "PERSON.AGE");
+		assertEquals(results[3].getStructureSignature(), PluginDefinition.findByName("PERSON.AGE").signature);
+
+		assertEquals(results[4].getSemanticType(), "DAY.DIGITS");
+		assertEquals(results[4].getStructureSignature(), PluginDefinition.findByName("DAY.DIGITS").signature);
+
+		assertEquals(results[5].getSemanticType(), "MONTH.DIGITS");
+		assertEquals(results[5].getStructureSignature(), PluginDefinition.findByName("MONTH.DIGITS").signature);
+
+		assertEquals(results[6].getSemanticType(), "PERIOD.QUARTER");
+		assertEquals(results[6].getStructureSignature(), PluginDefinition.findByName("PERIOD.QUARTER").signature);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testMunicipalityCodeNL() throws IOException, FTAException {
+		final String[] samples = {
+				"0014", "0034", "0037", "0047", "0059", "0060", "0074", "0080", "0085", "0086",
+				"0088", "0090", "0106", "0114", "0118", "0193", "0233", "0307", "0363", "0600",
+				"0622", "0623", "0624", "0625", "0626", "0627", "0628", "0629", "0630", "0631",
+				"0632", "0633", "0634", "0635", "0636", "0637", "0638", "0639", "0640", "0641",
+				"0642", "0643", "0644", "0645", "0646", "0647", "0648", "0649", "0650", "0651",
+				"0652", "0653", "0654", "0655", "0656", "0657", "0658", "0659", "0660", "0661",
+				"0662", "0663", "0664", "0665", "0666", "0667", "0668", "0669", "0670", "0671",
+				"0672", "0673", "0674", "0675", "0676", "0677", "0678", "0679", "0680", "0681"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("GEMEENTE_CODE");
+		analysis.setLocale(Locale.forLanguageTag("nl-NL"));
+		analysis.setDebug(2);
+
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getSemanticType(), "STATE_PROVINCE.MUNICIPALITY_CODE_NL");
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts());
+
+		final String re = result.getRegExp();
+		for (final String sample : samples)
+			assertTrue(sample.matches(re));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testNAICS() throws IOException, FTAException {
+		final String[] samples = {
+				"621210", "623312", "237310", "238220", "442210", "722513", "238210", "812990", "238220", "339999",
+				"238220", "326199", "561730", "326199", "623312", "423820", "621610", "238210", "441110", "541511",
+				"441110", "321999", "237310", "423830", "623312", "811111", "531110", "813211", "484110", "561210",
+				"812112", "813110", "238160", "484110", "423330", "444190", "445110", "238350",
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("naicscode");
+		analysis.setLocale(Locale.US);
+
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getSemanticType(), "INDUSTRY_CODE.NAICS");
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts());
+
+		for (final String sample : samples)
+			assertTrue(sample.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testFilename() throws IOException, FTAException {
+		final String[] samples = {
+				"2012-11-06-094.jpg", "2012-11-06-095.jpg", "2012-11-06-096.jpg", "2012-11-06-097.jpg", "2012-11-06-098.jpg",
+				"2012-11-06-099.jpg", "2012-11-06-100.jpg", "2012-11-06-101.jpg", "2012-11-06-102.jpg", "2012-11-06-103.jpg",
+				"2012-11-06-104.jpg", "2012-11-06-105.jpg", "2012-11-06-106.jpg", "2012-11-06-107.jpg", "2012-11-06-108.jpg",
+				"2012-11-06-109.jpg", "2012-11-06-110.jpg", "2012-11-06-111.jpg", "2012-11-06-112.jpg", "2012-11-06-113.jpg",
+				"2012-11-06-114.jpg", "2012-11-06-115.jpg", "2012-11-06-116.jpg", "2012-11-06-117.jpg", "2012-11-06-118.jpg",
+				"2012-11-06-119.jpg", "2012-11-06-120.jpg", "2012-11-06-121.jpg", "2012-11-06-122.jpg"
+		};
+
+		final TextAnalyzer analysis = new TextAnalyzer("name");
+		analysis.setLocale(Locale.US);
+
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getSemanticType(), "FILENAME");
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getConfidence(), 0.95);
+
+		assertNull(result.checkCounts());
+
+		for (final String sample : samples)
+			assertTrue(sample.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegExpLogicalType_CUSIP() throws IOException, FTAException {
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\d]{9}";
 		final String[] samples = {

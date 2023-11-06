@@ -32,7 +32,7 @@ import com.google.common.hash.Funnels;
 /**
  * Base class for a BloomFilter implementation.
  */
-public class LogicalTypeBloomFilter extends LogicalTypeInfinite {
+public abstract class LogicalTypeBloomFilter extends LogicalTypeInfinite {
 	private BloomFilter<CharSequence> reference;
 	private static List<String> examples;
 
@@ -100,12 +100,6 @@ public class LogicalTypeBloomFilter extends LogicalTypeInfinite {
 
 	private String backout() {
 		return defn.backout;
-	}
-
-	// Need to override this in the derived classes!
-	@Override
-	public String getRegExp() {
-		return null;
 	}
 
 	@Override

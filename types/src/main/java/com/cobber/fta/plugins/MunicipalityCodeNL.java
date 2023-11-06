@@ -34,7 +34,7 @@ import com.cobber.fta.token.TokenStreams;
 public class MunicipalityCodeNL extends LogicalTypeInfinite {
 	public static final String REGEXP_GM = "GM\\d{4}";
 	public static final String REGEXP_G = "G\\d{4}";
-	public static final String REGEXP_DIGITS = "\\d{2.4}";
+	public static final String REGEXP_DIGITS = "\\d{2,4}";
 	private int minLength = Integer.MAX_VALUE;
 	private int maxLength = Integer.MIN_VALUE;
 
