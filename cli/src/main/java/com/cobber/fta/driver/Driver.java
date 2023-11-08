@@ -157,7 +157,7 @@ public class Driver {
 		if (cmdLineOptions.samples) {
 			final long ouputRecords = cmdLineOptions.recordsToProcess == -1 ? 20 : cmdLineOptions.recordsToProcess;
 			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.locale);
-			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
+			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 
 			for (final LogicalType logical : registered) {
 				try (PrintStream results = new PrintStream(logical.getSemanticType() + ".csv")) {
@@ -175,7 +175,7 @@ public class Driver {
 
 		if (helpRequested && cmdLineOptions.verbose != 0) {
 			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.locale);
-			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
+			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 			final Set<String> names = new TreeSet<>();
 
 			// Sort the registered plugins by the Semantic Type name

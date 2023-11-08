@@ -187,7 +187,7 @@ public class TestStandalonePlugins {
 			analyzer.setLocale(locale);
 			// Load the default set of plugins for Semantic Type detection (normally done by a call to train())
 			analyzer.registerDefaultPlugins(analyzer.getConfig());
-			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
+			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 
 			for (int iters = 0; iters < 10; iters++) {
 				for (final LogicalType logical : registered) {

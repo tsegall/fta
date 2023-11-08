@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 15.1.9
+ - BUG: Fix for Polish VAT number generation
+ - BUG: Fix for RegExp for UK VAT numbers
+ - INT: Work on code coverage
+
 ### 15.1.8
  - ENH: Small improvement to DAY.DIGITS/MONTH.DIGITS detection
  - BUG: RegExp for STATE_PROVINCE.MUNICIPALITY_CODE_NL was incorrect

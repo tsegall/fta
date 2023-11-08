@@ -44,10 +44,6 @@ public class Plugins {
 		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, false);
 	}
 
-	public void registerPlugins(final String JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
-		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, false);
-	}
-
 	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
 		registerPluginListCore(plugins, dataStreamName, analysisConfig, false);
 	}
@@ -147,7 +143,7 @@ public class Plugins {
 	 * Return the set of registered Semantic Types.
 	 * @return A Collection of the currently registered Semantic Types.
 	 */
-	public Collection<LogicalType> getRegisteredLogicalTypes() {
+	public Collection<LogicalType> getRegisteredSemanticTypes() {
 		return new HashSet<>(registered.values());
 	}
 

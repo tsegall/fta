@@ -2826,6 +2826,36 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testSemanticTypeAccess() throws IOException, FTAException, FTAException, InterruptedException {
+		boolean telephoneFound = false;
+		boolean emailFound = false;
+
+		for (final SemanticType semanticType : SemanticType.getAllSemanticTypes()) {
+			if ("TELEPHONE".equals(semanticType.getId()))
+				telephoneFound = true;
+			if ("EMAIL".equals(semanticType.getId()))
+				emailFound = true;
+		}
+
+		assertTrue(telephoneFound);
+		assertTrue(emailFound);
+
+		telephoneFound = false;
+		emailFound = false;
+
+		for (final SemanticType semanticType : SemanticType.getActiveSemanticTypes(Locale.US)) {
+			if ("TELEPHONE".equals(semanticType.getId()))
+				telephoneFound = true;
+			if ("EMAIL".equals(semanticType.getId()))
+				emailFound = true;
+		}
+
+		assertTrue(telephoneFound);
+		assertTrue(emailFound);
+	}
+
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testTypes() throws IOException, FTAException, FTAException, InterruptedException {
 		for (int i = 0; i < 100; i++) {
 			final int index = random.nextInt(someSemanticTypes.length);

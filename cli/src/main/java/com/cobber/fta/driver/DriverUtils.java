@@ -32,7 +32,7 @@ import com.google.common.hash.Funnels;
 
 public class DriverUtils {
 	public static LogicalType getLogicalType(final TextAnalyzer analyzer, final String pluginName) {
-		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
+		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 
 		for (final LogicalType logical : registered)
 			if (logical.getSemanticType().equals(pluginName))

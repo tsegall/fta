@@ -31,7 +31,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This class provides a wrapper for the semantic-types.json file.
+ * This class provides a wrapper for the plugins.json file.
  */
 public class SemanticType {
 	private static List<SemanticType> allSemanticTypes = new ArrayList<>();
@@ -99,7 +99,7 @@ public class SemanticType {
 
 		// Populate the active (based on Locale) set of Semantic Types
 		final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(locale);
-		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
+		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 		final Set<String> semanticTypesNames = new TreeSet<>();
 
 		// Sort the registered plugins by by the Semantic Type name

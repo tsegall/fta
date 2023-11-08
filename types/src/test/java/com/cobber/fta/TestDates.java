@@ -540,6 +540,35 @@ public class TestDates {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void yyyyMM() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Fiscal Year");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		final String[] inputs = {
+				"201401", "200402", "200503", " 200604", " 200805", " 200906", " 201007", " 201208", " 201309", " 201110", " 200711",
+				"201401", "200402", "200503", " 200604", " 200805", " 200906", " 201007", " 201208", " 201309", " 201110", " 200711",
+				"201401", "200402", "200503", " 200604", " 200805", " 200906", " 201007", " 201208", " 201309", " 201110", " 200711"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getTypeModifier(), "yyyyMM");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "[ 	]*\\d{6}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertNull(result.checkCounts());
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicMYYYY() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CCEXPIRES", DateResolutionMode.Auto);
 		analysis.setDebug(1);

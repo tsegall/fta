@@ -1224,7 +1224,7 @@ public class TextAnalyzer {
 		if (analysisConfig.isEnabled(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES))
 			registerDefaultPlugins(analysisConfig);
 
-		for (final LogicalType logical : plugins.getRegisteredLogicalTypes()) {
+		for (final LogicalType logical : plugins.getRegisteredSemanticTypes()) {
 
 			if ((logical instanceof LogicalTypeFinite) && ((LogicalTypeFinite)logical).getSize() + 10 > getMaxCardinality())
 				throw new FTAPluginException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getSemanticType());
@@ -3166,7 +3166,7 @@ public class TextAnalyzer {
 		// If we have not detected a Semantic Type but the header looks really good, then try excluding the
 		// most popular non-valid entry in the hope that it is something like 'NA', 'XX', etc.
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType() && !getContext().isNested() && pluginThreshold != 100 && facts.cardinality.size() >= 4) {
-			for (final LogicalType logical : plugins.getRegisteredLogicalTypes()) {
+			for (final LogicalType logical : plugins.getRegisteredSemanticTypes()) {
 				final Map<String, Long> details = facts.synthesizeBulk();
 				long worst = (facts.sampleCount - (facts.nullCount + facts.blankCount)) / 20;
 				Map.Entry<String, Long> worstEntry = null;

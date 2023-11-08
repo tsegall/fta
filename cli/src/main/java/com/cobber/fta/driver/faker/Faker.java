@@ -42,7 +42,7 @@ public class Faker {
 		final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
 		final Random random = new Random(31415926);
 		final long outputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
-		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredLogicalTypes();
+		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 		final String[] pluginDefinitions = options.faker.split(",");
 		final LogicalType[] logicals = new LogicalType[pluginDefinitions.length];
 		final FakerParameters[] parameters = new FakerParameters[pluginDefinitions.length];
