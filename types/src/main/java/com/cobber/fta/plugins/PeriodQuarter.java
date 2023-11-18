@@ -79,7 +79,24 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return "Q" + (1 + getRandom().nextInt(4));
+		final int quarter = 1 + getRandom().nextInt(4);
+		final String[] ordinals = { "ST", "ND", "RD", "TH" };
+		switch (form) {
+		case Digit:
+			return String.valueOf(quarter);
+
+		case Long:
+			return "QUARTER" + quarter;
+
+		case Medium:
+			return "QTR" + quarter;
+
+		case Nth:
+			return String.valueOf(quarter) + ordinals[quarter - 1];
+
+		default:
+			return "Q" + quarter;
+		}
 	}
 
 	@Override

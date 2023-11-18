@@ -215,7 +215,7 @@ public class TestPlugins {
 				"M", "V", "M", "M", "O", "V", "M", "O", "M", "M", "M", "V", "M", "V", "V",
 				"M", "M", "V", "M", "V", "M", "M", "M", "M", "O", "M", "V", "M", "V", "M"
 		};
-		final TextAnalysisResult result = simpleCore(inputs, "GESLACH", Locale.forLanguageTag("nl-NL"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "GESLACH", Locale.forLanguageTag("nl-NL"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
 
 		assertEquals(result.getRegExp(), "(?i)(M|O|V)");
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -228,7 +228,7 @@ public class TestPlugins {
 				"Male", "Female", "Male", "Male", "Male", "Female", "Female", "Male", "Male", "Male",
 				"Female", "Male", "Female", "FEMALE", "Male", "Female", "male", "Male", "Male", "male",
 		};
-		final TextAnalysisResult result = simpleCore(inputs, "Gender", Locale.forLanguageTag("de-AT"), null, FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "Gender", Locale.forLanguageTag("de-AT"), null, FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
@@ -241,7 +241,7 @@ public class TestPlugins {
 				"54.099612908786", "54.0928342952505", "54.1492128935414", "54.0996275412016", "54.1767338631483",
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "latitude", Locale.forLanguageTag("de-DE"), "COORDINATE.LATITUDE_DECIMAL", FTAType.DOUBLE, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "latitude", Locale.forLanguageTag("de-DE"), "COORDINATE.LATITUDE_DECIMAL", FTAType.DOUBLE, 1.0);
 		assertEquals(result.getRegExp(), "(-?([0-9]|[0-8][0-9])\\.\\d+)|-?90\\.0+");
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
@@ -249,30 +249,38 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void latitudeDMS() throws IOException, FTAException {
 		final String[] inputs = {
-				"402628N", "402427N", "402402N", "402743N", "402543N", "402948N", "402311N", "402621N", "403308N", "403306N",
-				"402536N", "402319N", "402808N", "402846N", "402940N", "402659N", "402326N", "401814N", "374458N", "385855N",
-				"393617N", "395150N", "405638N", "384141N", "400938N", "392534N", "385957N", "395325N", "392609N", "372359N",
-				"401324N", "374640N", "394807N", "390734N", "401008N", "374419N", "410949N", "405543N", "401205N", "392837N",
-				"390016N", "412252N", "420158N", "414315N", "414941N", "393903N", "404816N", "410717N", "381018N", "374655N",
+				"40 26 28N", "40 24 27N", "40 24 02N", "40 27 43N", "40 25 43N", "40 29 48N", "40 23 11N", "40 26 21N", "40 33 08N", "40 33 06N",
+				"40 25 36N", "40 23 19N", "40 28 08N", "40 28 46N", "40 29 40N", "40 26 59N", "40 23 26N", "40 18 14N", "37 44 58N", "38 58 55N",
+				"39 36 17N", "39 51 50N", "40 56 38N", "38 41 41N", "40 09 38N", "39 25 34N", "38 59 57N", "39 53 25N", "39 26 09N", "37 23 59N",
+				"40 13 24N", "37 46 40N", "39 48 07N", "39 07 34N", "40 10 08N", "37 44 19N", "41 09 49N", "40 55 43N", "40 12 05N", "39 28 37N",
+				"39 00 16N", "41 22 52N", "42 01 58N", "41 43 15N", "41 49 41N", "39 39 03N", "40 48 16N", "41 07 17N", "38 10 18N", "37 46 55N"
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "PRIMARY_LAT_DMS", Locale.US, "COORDINATE.LATITUDE_DMS", FTAType.STRING, 1.0);
-		assertEquals(result.getRegExp(), "(\\d{5,6}|\\d{1,3} \\d{1,2} \\d{1,2} ?)[NnSs]");
+		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "PRIMARY_LAT_DMS", Locale.US, "COORDINATE.LATITUDE_DMS", FTAType.STRING, 1.0);
+		assertEquals(result.getRegExp(), "(\\d{5,6}|\\d{1,3} \\d{1,2} \\d{1,2}) ?[NnSs]");
+		assertEquals(result.getMatchCount(), inputs.length);
+
+		final String newInputs[] = new String[inputs.length];
+		for (int i = 0; i < inputs.length; i++)
+			newInputs[i] = inputs[i].replace(" ", "");
+
+		result = TestUtils.simpleCore(Sample.allValid(inputs), "PRIMARY_LAT_DMS", Locale.US, "COORDINATE.LATITUDE_DMS", FTAType.STRING, 1.0);
+		assertEquals(result.getRegExp(), "(\\d{5,6}|\\d{1,3} \\d{1,2} \\d{1,2}) ?[NnSs]");
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void longitudeDMS() throws IOException, FTAException {
 		final String[] inputs = {
-				"0894332W", "0893834W", "0893832W", "0894457W", "0894454W", "0894429W", "0894259W", "0894414W", "0894038W", "0894356W",
-				"0894408W", "0894635W", "0893809W", "0894024W", "0893906W", "0894429W", "0894300W", "0894358W", "0884311W", "0890508W",
-				"0872305W", "0912038W", "0900136W", "0891621W", "0884901W", "0905221W", "0903358W", "0881050W", "0874208W", "0892343W",
-				"0904357W", "0891239W", "0894633W", "0904053W", "0881823W", "0884309W", "0880635W", "0901110W", "0902733W", "0891553W",
-				"0890942W", "0894706W", "0881808W", "0873718W", "0873800W", "0905342W", "0902406W", "0905001W", "0885837W", "0883739W",
+				"089 43 32W", "089 38 34W", "089 38 32W", "0894457W", "0894454W", "0894429W", "0894259W", "0894414W", "0894038W", "0894356W",
+				"089 44 08W", "089 46 35W", "089 38 09W", "0894024W", "0893906W", "0894429W", "0894300W", "0894358W", "0884311W", "0890508W",
+				"087 23 05W", "091 20 38W", "090 01 36W", "0891621W", "0884901W", "0905221W", "0903358W", "0881050W", "0874208W", "0892343W",
+				"090 43 57W", "089 12 39W", "089 46 33W", "0904053W", "0881823W", "0884309W", "0880635W", "0901110W", "0902733W", "0891553W",
+				"089 09 42W", "089 47 06W", "088 18 08W", "0873718W", "0873800W", "0905342W", "0902406W", "0905001W", "0885837W", "0883739W",
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "PRIM_LONG_DMS", Locale.US, "COORDINATE.LONGITUDE_DMS", FTAType.STRING, 1.0);
-		assertEquals(result.getRegExp(), "(\\d{5,7}|\\d{1,2} \\d{1,2} \\d{1,2} ?)[EeWw]");
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "PRIM_LONG_DMS", Locale.US, "COORDINATE.LONGITUDE_DMS", FTAType.STRING, 1.0);
+		assertEquals(result.getRegExp(), "(\\d{5,7}|0?\\d{1,2} \\d{1,2} \\d{1,2}) ?[EeWw]");
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
 
@@ -292,7 +300,7 @@ public class TestPlugins {
 		};
 
 
-		final TextAnalysisResult result = simpleCore(inputs, "UID", Locale.forLanguageTag("de-AT"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "UID", Locale.forLanguageTag("de-AT"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
 
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
@@ -318,7 +326,7 @@ public class TestPlugins {
 				"FR85418228102", "FR88414997130", "FR89540090917", "FR90000000026", "FR96000000125"
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "TVA", Locale.forLanguageTag("fr-FR"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "TVA", Locale.forLanguageTag("fr-FR"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
 
@@ -343,7 +351,7 @@ public class TestPlugins {
 				"902905932", "654961603", "673426621", "125483810"
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "VAT Registration Number", Locale.forLanguageTag("en-UK"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "VAT Registration Number", Locale.forLanguageTag("en-UK"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), "[ \\d]{9}");
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
@@ -364,7 +372,7 @@ public class TestPlugins {
 				"915970991", "GB654430839", "GB654430839", "GB654430839"
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "VAT Registration Number", Locale.forLanguageTag("en-GB"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "VAT Registration Number", Locale.forLanguageTag("en-GB"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), "(GB ?)?[ \\d]{9}");
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
@@ -382,7 +390,7 @@ public class TestPlugins {
 				"NL806825790B01", "NL806925206B01", "NL809442127B01", "NL810195835B01", "NL810876334B01",
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "BTW-nummer", Locale.forLanguageTag("nl-NL"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 0.975);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "BTW-nummer", Locale.forLanguageTag("nl-NL"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 0.975);
 		assertEquals(result.getMatchCount(), inputs.length - 2);
 	}
 
@@ -401,7 +409,7 @@ public class TestPlugins {
 				"5272521678", "7272746817", "5210527710", "9542388146", "9691297176",
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "NIP", Locale.forLanguageTag("pl-PL"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "NIP", Locale.forLanguageTag("pl-PL"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), "\\d{10}");
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
@@ -421,7 +429,7 @@ public class TestPlugins {
 				"01813150222", "01783350224", "01273520229", "01594610220", "01611170224"
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "IVA", Locale.forLanguageTag("it-IT"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "IVA", Locale.forLanguageTag("it-IT"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), "\\d{11}");
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
@@ -481,7 +489,7 @@ public class TestPlugins {
 				"ASI-E/SOUTHEAST", "ASIAN-SOUTH", "EURO.-SOUTHERN", "MULTIRAC/ETHNIC"
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "basicRace", Locale.US, "PERSON.RACE_EN", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicRace", Locale.US, "PERSON.RACE_EN", FTAType.STRING, 1.0);
 		assertEquals(result.getOutlierCount(), 0);
 	}
 
@@ -554,7 +562,7 @@ public class TestPlugins {
 			"2547DE", "6587DS", "3215QQ", "7745VD", "4562DD", "4582SS", "2257WE", "3578HT", "4568FB", "1587SW",
 			"4573LF", "3574SS", "8122GK", "4523EW", "7128RT", "2548RF", "6873HH", "4837NR", "2358EE", "3731HY"
 		};
-		final TextAnalysisResult result = simpleCore(inputs, "P_PCODE", Locale.forLanguageTag("nl-NL"), "POSTAL_CODE.POSTAL_CODE_NL", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "P_PCODE", Locale.forLanguageTag("nl-NL"), "POSTAL_CODE.POSTAL_CODE_NL", FTAType.STRING, 1.0);
 
 		assertEquals(result.getRegExp(), "\\d{4} \\p{IsAlphabetic}{2}|\\d{4}\\p{IsAlphabetic}{2}");
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -641,7 +649,7 @@ public class TestPlugins {
 				"617.875.9182", "7818609182", "+13392237279", "+13392237280", "7818201295"
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "Phone", Locale.US, "TELEPHONE", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "Phone", Locale.US, "TELEPHONE", FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
@@ -655,7 +663,7 @@ public class TestPlugins {
 				"2814512898", "9729323185", "8303293064"
 		};
 
-		final TextAnalysisResult result = simpleCore(inputs, "Phone", Locale.US, "TELEPHONE", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "Phone", Locale.US, "TELEPHONE", FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);
 		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getConfidence(), 1.0);
@@ -921,7 +929,7 @@ public class TestPlugins {
 				"51e55fd6-74ca-4b1d-b5fd-d210209e3fc4"
 		};
 
-		simpleCore(inputs, "GUID", Locale.US, "GUID", FTAType.STRING, 1.0);
+		TestUtils.simpleCore(Sample.allValid(inputs), "GUID", Locale.US, "GUID", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -951,7 +959,7 @@ public class TestPlugins {
 				"51e55fd674ca4b1db5fdd210209e3fc4"
 		};
 
-		simpleCore(inputs, "GUID", Locale.US, "GUID", FTAType.STRING, 1.0);
+		TestUtils.simpleCore(Sample.allValid(inputs), "GUID", Locale.US, "GUID", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -982,7 +990,7 @@ public class TestPlugins {
 				"UNDER 20",
 		};
 
-		simpleCore(inputs, "AGE", Locale.US, "PERSON.AGE_RANGE", FTAType.STRING, 1.0);
+		TestUtils.simpleCore(Sample.allValid(inputs), "AGE", Locale.US, "PERSON.AGE_RANGE", FTAType.STRING, 1.0);
 	}
 
 	private final String validEmails = "Bachmann@lavastorm.com|Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
@@ -3513,49 +3521,6 @@ public class TestPlugins {
 		assertEquals(results[6].getStructureSignature(), PluginDefinition.findByName("PERIOD.QUARTER").signature);
 	}
 
-	private TextAnalysisResult simpleCore(final String[] samples, final String header, final Locale locale, final String semanticType, final FTAType type, Double confidence) throws FTAPluginException, FTAUnsupportedLocaleException {
-		final TextAnalyzer analysis = new TextAnalyzer(header);
-		analysis.setLocale(locale);
-		analysis.setDebug(2);
-		AnalysisConfig analysisConfig = analysis.getConfig();
-
-		for (final String sample : samples)
-			analysis.train(sample);
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		String boundSemanticType = semanticType == null ? null : analysisConfig.bindSemanticType(semanticType);
-
-		assertEquals(result.getSampleCount(), samples.length);
-		assertEquals(result.getSemanticType(), boundSemanticType);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getType(), type);
-		assertEquals(result.getConfidence(), confidence);
-
-		assertNull(result.checkCounts());
-
-		final String re = result.getRegExp();
-		for (final String sample : samples)
-			assertTrue(sample.matches(re), sample);
-
-		// If we detected a Semantic Type we should be able to generate samples
-		if (semanticType != null) {
-			final PluginDefinition pluginDefinition = PluginDefinition.findByName(semanticType);
-			final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, analysisConfig);
-
-			if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
-				return result;
-
-			for (int i = 0; i < 10; i++) {
-				final String value = logical.nextRandom();
-				assertTrue(logical.isValid(value), value);
-			}
-		}
-
-		return result;
-	}
-
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testMunicipalityCodeNL() throws IOException, FTAException {
 		final String[] samples = {
@@ -3569,7 +3534,7 @@ public class TestPlugins {
 				"0672", "0673", "0674", "0675", "0676", "0677", "0678", "0679", "0680", "0681"
 		};
 
-		simpleCore(samples, "GEMEENTE_CODE", Locale.forLanguageTag("nl-NL"), "STATE_PROVINCE.MUNICIPALITY_CODE_NL", FTAType.LONG, 1.0);
+		TestUtils.simpleCore(Sample.allValid(samples), "GEMEENTE_CODE", Locale.forLanguageTag("nl-NL"), "STATE_PROVINCE.MUNICIPALITY_CODE_NL", FTAType.LONG, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3581,7 +3546,7 @@ public class TestPlugins {
 				"West Melbourne", "Southbank", "Kensington", "North Melbourne", "Carlton", "South Yarra", "East Melbourne"
 		};
 
-		simpleCore(samples, "suburb", Locale.forLanguageTag("en-AU"), "STATE_PROVINCE.SUBURB_AU", FTAType.STRING, 1.0);
+		TestUtils.simpleCore(Sample.allValid(samples), "suburb", Locale.forLanguageTag("en-AU"), "STATE_PROVINCE.SUBURB_AU", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3593,7 +3558,7 @@ public class TestPlugins {
 				"812112", "813110", "238160", "484110", "423330", "444190", "445110", "238350",
 		};
 
-		simpleCore(samples, "naicscode", Locale.US, "INDUSTRY_CODE.NAICS", FTAType.LONG, 1.0);
+		TestUtils.simpleCore(Sample.allValid(samples), "naicscode", Locale.US, "INDUSTRY_CODE.NAICS", FTAType.LONG, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3607,7 +3572,7 @@ public class TestPlugins {
 				"2012-11-06-119.jpg", "2012-11-06-120.jpg", "2012-11-06-121.jpg", "2012-11-06-122.jpg"
 		};
 
-		simpleCore(samples, "name", Locale.US, "FILENAME", FTAType.STRING, 0.95);
+		TestUtils.simpleCore(Sample.allValid(samples), "name", Locale.US, "FILENAME", FTAType.STRING, 0.95);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3619,7 +3584,51 @@ public class TestPlugins {
 				"B", "B", "W", "B", "W", "W", "B", "B", "B", "B"
 		};
 
-		simpleCore(samples, "race", Locale.US, "PERSON.RACE_ABBR_EN", FTAType.STRING, 1.0);
+		TestUtils.simpleCore(Sample.allValid(samples), "race", Locale.US, "PERSON.RACE_ABBR_EN", FTAType.STRING, 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testPeriodQuarterShort() throws IOException, FTAException {
+		final String[] samples = {
+				"Q2", "Q2", "Q3", "Q1", "Q2", "Q3", "Q4", "Q1", "Q2", "Q3",
+				"Q4", "Q2", "Q4", "Q1", "Q2", "Q2", "Q3", "Q1", "Q 2", "Q3",
+				"Q4", "Q1", "Q2", "Q3", "Q 4", "Q2", "Q4", "Q1", "Q 4", "Q1",
+		};
+
+		TestUtils.simpleCore(Sample.allValid(samples), "quarter", Locale.US, "PERIOD.QUARTER", FTAType.STRING, 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testPeriodQuarter() throws IOException, FTAException {
+		final String[] ordinals = { "ST", "ND", "RD", "TH" };
+		final String[] samples = {
+				"2", "2", "3", "1", "2", "3", "4", "1", "2", "3",
+				"4", "2", "4", "1", "2", "2", "3", "1", "2", "3",
+				"4", "1", "2", "3", "4", "2", "4", "1", "4", "1",
+		};
+
+		TestUtils.simpleCore(Sample.allValid(samples), "quarter", Locale.US, "PERIOD.QUARTER", FTAType.LONG, 1.0);
+
+		String[] newSamples = new String[samples.length];
+		for (int i = 0; i < samples.length; i++)
+			newSamples[i] = "Q" + samples[i];
+
+		TestUtils.simpleCore(Sample.allValid(newSamples), "quarter", Locale.US, "PERIOD.QUARTER", FTAType.STRING, 1.0);
+
+		for (int i = 0; i < samples.length; i++)
+			newSamples[i] = "QTR" + samples[i];
+
+		TestUtils.simpleCore(Sample.allValid(newSamples), "quarter", Locale.US, "PERIOD.QUARTER", FTAType.STRING, 1.0);
+
+		for (int i = 0; i < samples.length; i++)
+			newSamples[i] = "Quarter" + samples[i];
+
+		TestUtils.simpleCore(Sample.allValid(newSamples), "quarter", Locale.US, "PERIOD.QUARTER", FTAType.STRING, 1.0);
+
+		for (int i = 0; i < samples.length; i++)
+			newSamples[i] = samples[i] + ordinals[Integer.valueOf(samples[i]) - 1];
+
+		TestUtils.simpleCore(Sample.allValid(newSamples), "quarter", Locale.US, "PERIOD.QUARTER", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4129,7 +4138,7 @@ public class TestPlugins {
 				"433240, Ульяновская обл., Сурский район, р.п.Сурское, ул. Октябрьская, 82"
 		};
 
-		simpleCore(inputs, "адрес", Locale.forLanguageTag("ru-RU"), "STREET_ADDRESS_<LANGUAGE>", FTAType.STRING, 1.0);
+		TestUtils.simpleCore(Sample.allValid(inputs), "адрес", Locale.forLanguageTag("ru-RU"), "STREET_ADDRESS_<LANGUAGE>", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4166,9 +4175,6 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void nameLast() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("naam");
-		analysis.setLocale(Locale.forLanguageTag("nl-NL"));
-
 		final String[] inputs = {
 				"LEE", "WALKER", "SIMS", "SLAUGHTER", "ACHENBACH", "BARNES", "GALIS", "RAMPAGE", "GUINN", "HALLAT",
 				"HEINER", "SMITH", "GOOSE", "MASON", "CANTOR", "SELPH", "SCHERER", "LOWENBRAU", "HAUGEN", "LEONARD",
@@ -4177,25 +4183,14 @@ public class TestPlugins {
 				"EDISON", "COATES", "COATS", "HANNINEN", "COBB", "HANNON", "HANNULA", "HANRAHAN", "DENSMORE", "HANS"
 		};
 
-		for (final String input : inputs)
-			analysis.train(input);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "naam", Locale.forLanguageTag("nl-NL"), "NAME.LAST", FTAType.STRING, 1.0);
 
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "NAME.LAST");
 		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount() - result.getInvalidCount());
-		assertEquals(result.getNullCount(), 0);
 
 		final PluginDefinition pluginDefinition = PluginDefinition.findByName("NAME.LAST");
 		final LogicalType knownSemanticType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(Locale.forLanguageTag("nl-NL")));
 
 		assertTrue(knownSemanticType.isValid("Segall"));
-
-		assertNull(result.checkCounts());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4339,14 +4334,14 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicUSStreet() throws IOException, FTAException {
-		TextAnalysisResult result = simpleCore(TestUtils.validUSStreets, "basicUSStreet", Locale.US, "STREET_ADDRESS_EN", FTAType.STRING, 1.0);
+		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(TestUtils.validUSStreets), "basicUSStreet", Locale.US, "STREET_ADDRESS_EN", FTAType.STRING, 1.0);
 
 		assertEquals(result.getCardinality(), TestUtils.validUSStreets.length);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicUSStreetTwo() throws IOException, FTAException {
-		TextAnalysisResult result = simpleCore(validUSStreets2, "basicUSStreetTwo", Locale.US, "STREET_ADDRESS_EN", FTAType.STRING, 1.0);
+		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(validUSStreets2), "basicUSStreetTwo", Locale.US, "STREET_ADDRESS_EN", FTAType.STRING, 1.0);
 
 		assertEquals(result.getCardinality(), validUSStreets2.length);
 		assertEquals(result.getMatchCount(), validUSStreets2.length);
@@ -4382,7 +4377,7 @@ public class TestPlugins {
 				"TN5904018104004942712345", "TR320010009999901234567890", "UA903052992990004149123456789",
 				"AE460090000000123456789", "GB33BUKB20201555555555", "VG21PACG0000000123456789" };
 
-		TextAnalysisResult result = simpleCore(inputs, "basicIBAN", Locale.US, "CHECKDIGIT.IBAN", FTAType.STRING, 1.0);
+		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicIBAN", Locale.US, "CHECKDIGIT.IBAN", FTAType.STRING, 1.0);
 
 		assertEquals(result.getCardinality(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -4395,7 +4390,7 @@ public class TestPlugins {
 				 "167622596", "355856417", "138265568", "479756862", "779880373", "750997751", "053438344", "199436608", "391657007", "033359472", "465043929", "977684902", "373527896"
 		};
 
-		TextAnalysisResult result = simpleCore(inputs, "basicABA", Locale.US, "CHECKDIGIT.ABA", FTAType.LONG, 1.0);
+		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicABA", Locale.US, "CHECKDIGIT.ABA", FTAType.LONG, 1.0);
 
 		assertEquals(result.getCardinality(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -4413,7 +4408,7 @@ public class TestPlugins {
 				"Sun", "Sun", "Sun", "Sun", "Sun", "Fri"
 		};
 
-		TextAnalysisResult result = simpleCore(inputs, "dayofweekUS", Locale.US, "DAY.ABBR_<LOCALE>", FTAType.STRING, 1.0);
+		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "dayofweekUS", Locale.US, "DAY.ABBR_<LOCALE>", FTAType.STRING, 1.0);
 
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
@@ -4428,7 +4423,7 @@ public class TestPlugins {
 				"Sun", "Sun", "Sun", "Sun", "Sun", "Fri"
 		};
 
-		TextAnalysisResult result = simpleCore(inputs, "dayofweekCA", Locale.forLanguageTag("en-CA"), "DAY.ABBR_<LOCALE>", FTAType.STRING, 1.0);
+		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "dayofweekCA", Locale.forLanguageTag("en-CA"), "DAY.ABBR_<LOCALE>", FTAType.STRING, 1.0);
 
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
@@ -4445,7 +4440,7 @@ public class TestPlugins {
 				"POLICE LIEUTENANT", "TRAINING CAPTAIN",
 		};
 
-		simpleCore(inputs, "job_title", Locale.forLanguageTag("en-CA"), "JOB_TITLE_EN", FTAType.STRING, 1.0);
+		TestUtils.simpleCore(Sample.allValid(inputs), "job_title", Locale.forLanguageTag("en-CA"), "JOB_TITLE_EN", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4458,7 +4453,7 @@ public class TestPlugins {
 				"2013-2014", "2012-2013", "2011-2012", "2010-2011", "2009-2010",
 		};
 
-		simpleCore(inputs, "fiscal_year", Locale.forLanguageTag("en-CA"), "PERIOD.YEAR_RANGE", FTAType.STRING, 1.0);
+		TestUtils.simpleCore(Sample.allValid(inputs), "fiscal_year", Locale.forLanguageTag("en-CA"), "PERIOD.YEAR_RANGE", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4590,157 +4585,85 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void directionCardinal() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("directionCardinal");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int ITERATIONS = 200;
+		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			analysis.train(String.valueOf(CARDINAL[random.nextInt(CARDINAL.length)]));
+			samples[i] = new Sample(String.valueOf(CARDINAL[random.nextInt(CARDINAL.length)]));
 
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getMatchCount(), ITERATIONS);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "DIRECTION");
-		assertEquals(result.getConfidence(), 1.0);
-
-		assertNull(result.checkCounts());
+		TestUtils.simpleCore(samples, "directionCardinal", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void directionInterCardinal() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("directionInterCardinal");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int ITERATIONS = 200;
+		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			analysis.train(String.valueOf(INTERCARDINAL[random.nextInt(INTERCARDINAL.length)]));
+			samples[i] = new Sample(String.valueOf(INTERCARDINAL[random.nextInt(INTERCARDINAL.length)]));
 
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getMatchCount(), ITERATIONS);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "DIRECTION");
-		assertEquals(result.getConfidence(), 1.0);
-
-		assertNull(result.checkCounts());
+		TestUtils.simpleCore(samples, "directionInterCardinal", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void directionCardinalBoth() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("directionCardinalBoth");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int ITERATIONS = 200;
+		final Sample[] samples = new Sample[2 * ITERATIONS];
 
-		for (int i = 0; i < ITERATIONS; i++) {
-			analysis.train(String.valueOf(CARDINAL[random.nextInt(CARDINAL.length)]));
-			analysis.train(String.valueOf(INTERCARDINAL[random.nextInt(INTERCARDINAL.length)]));
+		for (int i = 0; i < 2 * ITERATIONS; i += 2) {
+			samples[i] = new Sample(String.valueOf(CARDINAL[random.nextInt(CARDINAL.length)]));
+			samples[i + 1] = new Sample(String.valueOf(INTERCARDINAL[random.nextInt(INTERCARDINAL.length)]));
 		}
 
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getMatchCount(), 2 * ITERATIONS);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "DIRECTION");
-		assertEquals(result.getConfidence(), 1.0);
-
-		assertNull(result.checkCounts());
+		TestUtils.simpleCore(samples, "directionCardinalBoth", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void directionFull() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("directionFull");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int ITERATIONS = 200;
+		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			analysis.train(String.valueOf(CARDINAL_FULL[random.nextInt(CARDINAL_FULL.length)]));
+			samples[i] = new Sample(String.valueOf(CARDINAL_FULL[random.nextInt(CARDINAL_FULL.length)]));
 
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getMatchCount(), ITERATIONS);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "DIRECTION");
-		assertEquals(result.getConfidence(), 1.0);
-
-		assertNull(result.checkCounts());
+		TestUtils.simpleCore(samples, "directionInterFull", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void directionInterFull() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("directionInterFull");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int ITERATIONS = 200;
+		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			analysis.train(String.valueOf(INTERCARDINAL_FULL[random.nextInt(INTERCARDINAL_FULL.length)]));
+			samples[i] = new Sample(String.valueOf(INTERCARDINAL_FULL[random.nextInt(INTERCARDINAL_FULL.length)]));
 
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getMatchCount(), ITERATIONS);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "DIRECTION");
-		assertEquals(result.getConfidence(), 1.0);
-
-		assertNull(result.checkCounts());
+		TestUtils.simpleCore(samples, "directionInterFull", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void directionboundShort() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("directionboundShort");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int ITERATIONS = 200;
+		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			analysis.train(String.valueOf(BOUND_SHORT[random.nextInt(BOUND_SHORT.length)]));
+			samples[i] = new Sample(String.valueOf(BOUND_SHORT[random.nextInt(BOUND_SHORT.length)]));
 
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getMatchCount(), ITERATIONS);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "DIRECTION");
-		assertEquals(result.getConfidence(), 1.0);
-
-		assertNull(result.checkCounts());
+		TestUtils.simpleCore(samples, "directionboundShort", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void directionBoundLong() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("directionBoundLong");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int ITERATIONS = 200;
+		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			analysis.train(String.valueOf(BOUND_LONG[random.nextInt(BOUND_LONG.length)]));
+			samples[i] = new Sample(String.valueOf(BOUND_LONG[random.nextInt(BOUND_LONG.length)]));
 
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getMatchCount(), ITERATIONS);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "DIRECTION");
-		assertEquals(result.getConfidence(), 1.0);
-
-		assertNull(result.checkCounts());
+		TestUtils.simpleCore(samples, "directionBoundLong", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void NAICS() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("NAICS");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
 				"44522", "81393", "33999", "45321", "33711",
 				"48699", "45931", "33232", "52399", "33131",
@@ -4750,27 +4673,11 @@ public class TestPlugins {
 				"31511", "44134", "32111", "32592", "61121",
 				"31412", "32561", "32739", "45999", "21113",
 				"56152", "33991", "56143", "42381", "51921",
+				"9"
 		};
-		for (int i = 0; i < inputs.length; i++)
-			analysis.train(inputs[i]);
-		analysis.train("9");
 
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getSampleCount(), inputs.length + 1);
-		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getSemanticType(), "INDUSTRY_CODE.NAICS");
-		assertEquals(result.getConfidence(), 1.0);
-
-		assertNull(result.checkCounts());
-
-		for (final String input : inputs)
-			assertTrue(input.matches(result.getRegExp()));
+		final Sample[] samples = Sample.allValid(inputs);
+		Sample.setInvalid(samples, inputs.length - 1);
+		TestUtils.simpleCore(samples, "NAICS", Locale.US, "INDUSTRY_CODE.NAICS", FTAType.LONG, 1.0);
 	}
-
-
-
 }

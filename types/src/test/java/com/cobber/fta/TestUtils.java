@@ -16,6 +16,8 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 import java.io.IOException;
@@ -30,6 +32,8 @@ import java.util.Set;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
+import com.cobber.fta.core.FTAPluginException;
+import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.RegExpGenerator;
 
 public class TestUtils {
@@ -234,5 +238,69 @@ public class TestUtils {
 			return 8;
 
 		return Integer.parseInt(javaVersion);
+	}
+
+	protected static LogicalType getLogical(final TextAnalyzer analysis, final String semanticType) throws FTAPluginException {
+		if (semanticType == null)
+			return null;
+
+		final PluginDefinition pluginDefinition = PluginDefinition.findByName(semanticType);
+		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, analysis.getConfig());
+
+		if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
+			return null;
+
+		return logical;
+	}
+
+	protected static TextAnalysisResult simpleCore(final Sample[] samples, final String header, final Locale locale, final String semanticType, final FTAType type, Double confidence) throws FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer(header);
+		analysis.setLocale(locale);
+		analysis.setDebug(2);
+		AnalysisConfig analysisConfig = analysis.getConfig();
+
+		for (final Sample sample : samples)
+			analysis.train(sample.getSample());
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		String boundSemanticType = semanticType == null ? null : analysisConfig.bindSemanticType(semanticType);
+
+		assertEquals(result.getSampleCount(), samples.length);
+		assertEquals(result.getSemanticType(), boundSemanticType);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getType(), type);
+		assertEquals(result.getConfidence(), confidence);
+
+		assertNull(result.checkCounts());
+
+		final LogicalType logical = getLogical(analysis, semanticType);
+
+		final String re = result.getRegExp();
+		for (final Sample sample : samples) {
+			if (sample.isValid()) {
+				final String value = sample.getSample();
+				assertTrue(value.matches(re), value);
+				if (logical != null && logical.isClosed())
+					assertTrue(logical.isValid(value), value);
+			}
+		}
+
+		// If we detected a Semantic Type we should be able to generate samples
+		if (logical != null) {
+			for (int i = 0; i < 10; i++) {
+				final String value = logical.nextRandom();
+				assertTrue(logical.isValid(value), value);
+			}
+
+			// Hard to validate if these are correct, OTOH good to check that they do not generate an exception
+			logical.isClosed();
+			logical.isRegExpComplete();
+		}
+
+
+		return result;
 	}
 }

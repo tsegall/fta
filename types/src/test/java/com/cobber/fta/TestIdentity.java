@@ -16,7 +16,6 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
@@ -96,27 +95,9 @@ public class TestIdentity {
 				"532-71-2239|963-02-3609|527-99-6328|909-56-0139|934-66-4597|";
 		final String samples[] = pipedInput.split("\\|");
 
-		final TextAnalyzer analysis = new TextAnalyzer("notSSN");
-		analysis.configure(Feature.LENGTH_QUALIFIER, false);
-		for (final String sample : samples) {
-			analysis.train(sample);
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), samples.length);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(samples), "notSSN", Locale.US, null, FTAType.STRING, 1.0);
 		assertEquals(result.getMatchCount(), samples.length);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "\\d{3}-\\d{2}-\\d{4}");
-		assertFalse(result.isSemanticType());
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String sample : samples)
-			assertTrue(sample.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -175,9 +156,6 @@ public class TestIdentity {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicSSN_FR() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicSSN_FR");
-		analysis.setLocale(Locale.forLanguageTag("fr-FR"));
-
 		final String[] inputs = {
 				"186022A215325 23", "1691099352470 01", "2741147566941 55",
 				"1870364431266 17", "1620750699385 24", "1910926856381 09", "2350193443182 66",
@@ -188,37 +166,13 @@ public class TestIdentity {
 				"2760672523900 48", "2130327681550 09", "1940965237732 53", "2370790974188 20",
 		};
 
-		int locked = -1;
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicSSN_FR", Locale.forLanguageTag("fr-FR"), "IDENTITY.SSN_FR", FTAType.STRING, 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
-		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.SSN_FR");
-		assertEquals(result.getSemanticType(), defn.semanticType);
-		assertEquals(result.getStructureSignature(), defn.signature);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String input : inputs)
-			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPersonNummer_yyyy_SE() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("PersonNummer");
-		analysis.setLocale(Locale.forLanguageTag("sv-SE"));
-
 		final String[] inputs = {
 				"19781216-2449", "19781211-2444", "19600518-9557", "19570105-5401",
 				"19570602-5540", "19431023-5918", "19970113-8183", "19320417-7699",
@@ -229,37 +183,13 @@ public class TestIdentity {
 				"20140515-9656"
 		};
 
-		int locked = -1;
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "PersonNummer", Locale.forLanguageTag("sv-SE"), "IDENTITY.PERSONNUMMER_SE", FTAType.STRING, 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
-		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.PERSONNUMMER_SE");
-		assertEquals(result.getSemanticType(), defn.semanticType);
-		assertEquals(result.getStructureSignature(), defn.signature);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String input : inputs)
-			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPersonNummer_yy_SE() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("PersonNummer");
-		analysis.setLocale(Locale.forLanguageTag("sv-SE"));
-
 		final String[] inputs = {
 				"781216-2449", "781211-2444", "600518-9557", "570105-5401",
 				"570602-5540", "431023-5918", "970113-8183", "320417-7699",
@@ -270,37 +200,13 @@ public class TestIdentity {
 				"140515-9656"
 		};
 
-		int locked = -1;
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "PersonNummer", Locale.forLanguageTag("sv-SE"), "IDENTITY.PERSONNUMMER_SE", FTAType.STRING, 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
-		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.PERSONNUMMER_SE");
-		assertEquals(result.getSemanticType(), defn.semanticType);
-		assertEquals(result.getStructureSignature(), defn.signature);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String input : inputs)
-			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicIN_JA() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicIN_JA");
-		analysis.setLocale(Locale.forLanguageTag("ja"));
-
 		final String[] inputs = {
 				"182635424142", "159527866110", "468078079802", "466664186321",
 				"846926702714", "685980008501", "160213060470", "330630040728",
@@ -310,37 +216,13 @@ public class TestIdentity {
 				"812906182895", "645408744459", "668972804372", "907328637257"
 		};
 
-		int locked = -1;
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicIN_JA", Locale.forLanguageTag("ja"), "IDENTITY.INDIVIDUAL_NUMBER_JA", FTAType.STRING, 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
-		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.INDIVIDUAL_NUMBER_JA");
-		assertEquals(result.getSemanticType(), defn.semanticType);
-		assertEquals(result.getStructureSignature(), defn.signature);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String input : inputs)
-			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicSSN_CH() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicSSN_CH");
-		analysis.setLocale(Locale.forLanguageTag("de-CH"));
-
 		final String[] inputs = {
 				"756.3830.7985.38", "756.9709.5787.13", "756.7932.0847.28", "756.4391.6683.84",
 				"756.8608.5554.50", "756.7755.7020.90", "756.8274.6040.25", "756.4546.3052.49",
@@ -350,37 +232,13 @@ public class TestIdentity {
 				"756.2753.6875.23", "756.7287.4292.98", "756.2605.0921.61", "756.8724.8722.88"
 		};
 
-		int locked = -1;
-
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), inputs.length);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicSSN_CH", Locale.forLanguageTag("de-CH"), "IDENTITY.SSN_CH", FTAType.STRING, 1.0);
 		assertEquals(result.getCardinality(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.SSN_CH");
-		assertEquals(result.getSemanticType(), defn.semanticType);
-		assertEquals(result.getStructureSignature(), defn.signature);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String input : inputs)
-			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicNHS_UK() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicNHS_UK");
-		analysis.setLocale(Locale.forLanguageTag("en-UK"));
-
 		final String[] inputs = {
 				"603 235 8429", "607 639 9864", "663 217 6682", "740 844 8349", "489 161 1189",
 				"854 106 0098", "726 516 9476", "957 260 2357", "686 273 2757", "896 329 3181",
@@ -389,38 +247,12 @@ public class TestIdentity {
 				"736 088 6082", "820 530 6265", "692 233 6046", "760 019 4724", "998 607 2263"
 		};
 
-		int locked = -1;
-
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.NHS_UK");
-
-				assertEquals(result.getSampleCount(), inputs.length);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicNHS_UK", Locale.forLanguageTag("en-UK"), "IDENTITY.NHS_UK", FTAType.STRING, 1.0);
 		assertEquals(result.getCardinality(), inputs.length);
-		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), defn.semanticType);
-		assertEquals(result.getStructureSignature(), defn.signature);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String input : inputs)
-			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicAadhaar_IN() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicAadhaar_IN");
-		analysis.setLocale(Locale.forLanguageTag("en-IN"));
-
 		final String[] inputs = {
 				"6625 7361 2953", "5931 6696 0291", "8248 5984 8175", "3016 4826 5142",
 				"4434 7776 8326", "4824 7928 4386", "4685 4991 7577", "3863 3381 0102",
@@ -430,29 +262,9 @@ public class TestIdentity {
 				"6138 7065 3258", "8060 0186 2257", "7658 2380 1240", "2768 4014 3753",
 		};
 
-		int locked = -1;
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicAadhaar_IN", Locale.forLanguageTag("en-IN"), "IDENTITY.AADHAAR_IN", FTAType.STRING, 1.0);
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getCardinality(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.AADHAAR_IN");
-		assertEquals(result.getSemanticType(), defn.semanticType);
-		assertEquals(result.getStructureSignature(), defn.signature);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String input : inputs)
-			assertTrue(input.matches(result.getRegExp()));
 	}
 }

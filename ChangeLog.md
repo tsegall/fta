@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 15.1.10
+ - ENH: Improve nextRandom() for PERIOD.QUARTER
+ - ENH: Improve regExp for COORDINATE.LATITUDE_DMS and COORDINATE.LONGITUDE_DMS
+ - ENH: Bump jackson and google phonenumber
+ - INT: Work on code coverage
+
 ### 15.1.9
  - BUG: Fix for Polish VAT number generation
  - BUG: Fix for RegExp for UK VAT numbers

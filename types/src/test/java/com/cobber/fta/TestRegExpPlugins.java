@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
@@ -51,25 +52,8 @@ public class TestRegExpPlugins {
 				"00:0d:95:9d:68:16", "00:0a:90:9d:68:16", "00:0a:95:9d:66:16", "00:0e:94:9d:68:16"
 		};
 
-		final TextAnalyzer analysis = new TextAnalyzer("MAC");
-		for (final String sample : samples) {
-			analysis.train(sample);
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), samples.length);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(samples), "MAC", Locale.US, "MACADDRESS", FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), "\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}:\\p{XDigit}{2}");
-		assertEquals(result.getSemanticType(), "MACADDRESS");
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String sample : samples)
-			assertTrue(sample.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -84,31 +68,12 @@ public class TestRegExpPlugins {
 				"E1-A5-73-CD-33-51", "0E-7D-E5-82-95-FF", "18-7E-54-4D-A3-A8", "19-C2-D8-68-ED-A2", "9C-76-B8-77-AB-36",
 		};
 
-		final TextAnalyzer analysis = new TextAnalyzer("MAC");
-		for (final String sample : samples) {
-			analysis.train(sample);
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), samples.length);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(samples), "MAC", Locale.US, "MACADDRESS", FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), "\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}-\\p{XDigit}{2}");
-		assertEquals(result.getSemanticType(), "MACADDRESS");
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String sample : samples)
-			assertTrue(sample.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpLogicalType_SSN_plus_outlier() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("SSN");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String samples[] = {
 				"899-15-7132", "403-63-7601", "449-65-4529", "386-17-2441", "544-48-5289", "001-02-6231", "282-09-6397", "772-89-9633", "732-69-1882", "683-70-7033",
 				"804-64-1609", "671-19-4599", "140-04-4156", "136-33-8247", "658-02-4787", "681-85-5591", "314-42-0145", "078-25-1656", "344-13-3607", "307-16-4602",
@@ -119,32 +84,15 @@ public class TestRegExpPlugins {
 				"531-56-8962", "899-70-6700", "124-96-5266", "511-55-6231", "702-80-0175", "756-43-8140", "245-87-7568", "249-70-3875", "737-15-0606", "886-47-2270",
 				"191-97-9672", "371-41-1368", "594-01-8226", "885-75-7764", "269-33-2125", "098-97-0916", "070-25-7057", "524-89-3062", "869-16-8530", "342-83-3472",
 				"048-55-3586", "233-46-3791", "097-88-1544", "110-50-9774", "260-64-6773", "758-86-3703", "831-29-7907", "362-42-2799", "480-32-4511", "226-62-3754",
-				"136-33-7291", "039-42-1364", "510-90-7575", "626-97-6912", "768-85-9118", "654-95-4223", "700-31-1292", "767-20-5141", "063-74-4131", "740-32-9176"
+				"136-33-7291", "039-42-1364", "510-90-7575", "626-97-6912", "768-85-9118", "654-95-4223", "700-31-1292", "767-20-5141", "063-74-4131", "740-32-9176",
 		};
 
-		for (final String sample : samples)
-			analysis.train(sample);
-
-		analysis.train("510-00-7575");
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), samples.length + 1);
-		assertEquals(result.getSemanticType(), "SSN");
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(samples), "SSN", Locale.US, "SSN", FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}", result.getRegExp());
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
-		assertNull(result.checkCounts());
-
-		int matches = 0;
-		for (final String sample : samples)
-			if (sample.matches(result.getRegExp()))
-				matches++;
-
-		assertEquals(matches, samples.length);
+		final TextAnalyzer analysis = new TextAnalyzer("SSN");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		LogicalType logical = TestUtils.getLogical(analysis, "SSN");
+		assertFalse(logical.isValid("510-00-7575"));
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -184,24 +132,7 @@ public class TestRegExpPlugins {
 				"10", "9", "8", "4", "7" ,"6"
 		};
 
-		final TextAnalyzer analysis = new TextAnalyzer("Month");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
-		for (final String sample : samples)
-			analysis.train(sample);
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), samples.length);
-		assertEquals(result.getSemanticType(), "MONTH.DIGITS");
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getType(), FTAType.LONG);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String sample : samples)
-			assertTrue(sample.matches(result.getRegExp()));
+		TestUtils.simpleCore(Sample.allValid(samples), "Month", Locale.US, "MONTH.DIGITS", FTAType.LONG, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -214,23 +145,7 @@ public class TestRegExpPlugins {
 				"56.0333333", "41.54278", "29.76306", "26.46111", "51.4", "55.6666667", "33.92417", "53.4247222", "26.12194", "-37.8166667"
 		};
 
-		final TextAnalyzer analysis = new TextAnalyzer("Latitude");
-		for (final String sample : samples) {
-			analysis.train(sample);
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getSampleCount(), samples.length);
-		assertEquals(result.getSemanticType(), "COORDINATE.LATITUDE_DECIMAL");
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String sample : samples)
-			assertTrue(sample.matches(result.getRegExp()));
+		TestUtils.simpleCore(Sample.allValid(samples), "Latitude", Locale.US, "COORDINATE.LATITUDE_DECIMAL", FTAType.DOUBLE, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -243,24 +158,7 @@ public class TestRegExpPlugins {
 				"56.0333333", "41.54278", "29.76306", "26.46111", "51.4", "55.6666667", "33.92417", "53.4247222", "26.12194", "37.8166667"
 		};
 
-		final TextAnalyzer analysis = new TextAnalyzer("Latitude");
-		for (final String sample : samples) {
-			analysis.train(sample);
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), samples.length);
-		assertEquals(result.getSemanticType(), "COORDINATE.LATITUDE_DECIMAL");
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String sample : samples)
-			assertTrue(sample.matches(result.getRegExp()));
+		TestUtils.simpleCore(Sample.allValid(samples), "Latitude", Locale.US, "COORDINATE.LATITUDE_DECIMAL", FTAType.DOUBLE, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -273,26 +171,8 @@ public class TestRegExpPlugins {
 				"56,0333333", "41,54278", "29,76306", "26,46111", "51,4", "55,6666667", "33,92417", "53,4247222", "26,12194", "37,8166667"
 		};
 
-		final TextAnalyzer analysis = new TextAnalyzer("Latitude");
-		analysis.setLocale(Locale.GERMAN);
-		for (final String sample : samples) {
-			analysis.train(sample);
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), samples.length);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(samples), "Latitude", Locale.GERMAN, "COORDINATE.LATITUDE_DECIMAL", FTAType.DOUBLE, 1.0);
 		assertEquals(result.getMatchCount(), samples.length);
-		assertEquals(result.getSemanticType(), "COORDINATE.LATITUDE_DECIMAL");
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
-
-		for (final String sample : samples)
-			assertTrue(sample.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.ALL })
@@ -414,20 +294,7 @@ public class TestRegExpPlugins {
 				"Wichita", "Wilmington", "Windsor", "Winston Salem", "Woonsocket", "York", "Zaventem", "Zurich", "bellevue"
 		};
 
-		final TextAnalyzer analysis = new TextAnalyzer("Billing City");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
-		for (final String sample : samples)
-			analysis.train(sample);
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), samples.length);
-		assertEquals(result.getSemanticType(), "CITY");
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.checkCounts());
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(samples), "Billing City", Locale.US, "CITY", FTAType.STRING, 1.0);
 
 		final LogicalTypeCode logical = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByName("CITY"), new AnalysisConfig(Locale.forLanguageTag("en-US")));
 

@@ -23,7 +23,7 @@ import com.cobber.fta.core.FTAType;
  */
 public class LatitudeDMS extends CoordinateDMS {
 	/** The Regular Expression for this Semantic type. */
-	private static final String REGEXP = "(\\d{5,6}|\\d{1,3} \\d{1,2} \\d{1,2} ?)[NnSs]";
+	private static final String REGEXP = "(\\d{5,6}|\\d{1,3} \\d{1,2} \\d{1,2}) ?[NnSs]";
 	private static final char[] DIRECTION = { 'N', 'S', 'n', 's' };
 	private static final int MAX_DEGREES = 90;
 

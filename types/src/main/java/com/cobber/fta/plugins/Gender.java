@@ -319,4 +319,10 @@ public class Gender extends LogicalTypeFinite {
 
 		return new PluginAnalysis(BACKOUT_REGEX);
 	}
+
+	// Since we are happy to accept the valid 'Male' & 'Female' strings as well as one Other value - we are not really closed
+	@Override
+	public boolean isClosed() {
+		return false;
+	}
 }
