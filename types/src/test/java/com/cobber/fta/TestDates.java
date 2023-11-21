@@ -549,57 +549,41 @@ public class TestDates {
 				"201401", "200402", "200503", " 200604", " 200805", " 200906", " 201007", " 201208", " 201309", " 201110", " 200711"
 		};
 
-		for (final String input : inputs)
-			analysis.train(input);
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), inputs.length);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "Fiscal Year", Locale.US, null, FTAType.LOCALDATE, 1.0);
 		assertEquals(result.getTypeModifier(), "yyyyMM");
 		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "[ 	]*\\d{6}");
-		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getType(), FTAType.LOCALDATE);
-		assertNull(result.checkCounts());
-
-		for (final String input : inputs)
-			assertTrue(input.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicMYYYY() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("CCEXPIRES", DateResolutionMode.Auto);
-		analysis.setDebug(1);
-		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String pipedInput = "12/2025|6/2026|9/2026|9/2023|4/2023|2/2023|3/2023|3/2023|3/2026|7/2025|12/2024|4/2026|12/2023|2/2023|9/2024|8/2026|2/2025|2/2022|9/2024|7/2022|" +
 				"11/2025|11/2022|2/2023|9/2024|10/2026|3/2022|8/2023|10/2026|3/2023|8/2026|9/2022|3/2024|10/2023|7/2025|5/2022|11/2026|12/2024|8/2022|10/2023|";
 		final String inputs[] = pipedInput.split("\\|");
-		int locked = -1;
 
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
-
-		assertEquals(result.getSampleCount(), inputs.length);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "CCEXPIRES", Locale.US, null, FTAType.LOCALDATE, 1.0);
 		assertEquals(result.getTypeModifier(), "M/yyyy");
 		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{1,2}/\\d{4}");
-		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getType(), FTAType.LOCALDATE);
-		assertNull(result.checkCounts());
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
+	}
 
-		for (final String input : inputs)
-			assertTrue(input.matches(result.getRegExp()));
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void githubIssue55() throws FTAException {
+		final String[] inputs = {
+				"2008/06/21 00:00:00.000", "2008/05/04 00:00:00.000", "2008/01/01 00:00:00.000", "2008/02/01 00:00:00.000",
+				"2007/06/01 00:00:00.000", "2008/03/01 00:00:00.000", "2007/11/01 00:00:00.000", "2008/01/01 00:00:00.000",
+				"2007/03/01 00:00:00.000", "2006/10/01 00:00:12.987654321", "2006/07/09 00:00:00.000", "2005/09/01 00:00:00.000",
+				"2008/06/01 00:00:00.000", "2007/06/01 00:00:00.000", "2006/12/01 00:00:00.000", "2007/08/01 00:00:00.000",
+				"2006/03/01 00:00:00.000", "2006/12/11 00:00:00.000", "2007/04/01 00:00:00.9876854321", "2006/09/01 00:00:00.000"
+		};
+
+		final Sample[] samples = Sample.allValid(inputs);
+		// Sample 18 - "2007/04/01 00:00:00.9876854321" is invalid as it has 10 digits!
+		Sample.setInvalid(samples, 18);
+		TestUtils.simpleCore(samples, "OrderDate", Locale.US, null, FTAType.LOCALDATETIME, 0.95);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })

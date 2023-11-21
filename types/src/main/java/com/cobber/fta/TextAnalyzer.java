@@ -2555,12 +2555,15 @@ public class TextAnalyzer {
 						}
 						else if (e.getMessage().equals("Expecting end of input, extraneous input found, last token (FRACTION)")) {
 							final int offset = newTypeInfo.format.indexOf('S');
-							final int oldLength = result.timeFieldLengths[FRACTION_INDEX].getPatternLength();
-							result.timeFieldLengths[FRACTION_INDEX].set(result.timeFieldLengths[FRACTION_INDEX].getMin(),
-									result.timeFieldLengths[FRACTION_INDEX].getMax() + 1);
-							newFormatString = Utils.replaceAt(newTypeInfo.format, offset, oldLength,
-									result.timeFieldLengths[FRACTION_INDEX].getPattern('S'));
-							updated = true;
+							// If we have extra input and the existing length is not maxed out then widen and try again
+							if (result.timeFieldLengths[FRACTION_INDEX].getMax() < 9) {
+								final int oldLength = result.timeFieldLengths[FRACTION_INDEX].getPatternLength();
+								result.timeFieldLengths[FRACTION_INDEX].set(result.timeFieldLengths[FRACTION_INDEX].getMin(),
+										result.timeFieldLengths[FRACTION_INDEX].getMax() + 1);
+								newFormatString = Utils.replaceAt(newTypeInfo.format, offset, oldLength,
+										result.timeFieldLengths[FRACTION_INDEX].getPattern('S'));
+								updated = true;
+							}
 						}
 						else if (e.getMessage().equals("Invalid value for hours: 24 (expected 0-23)")) {
 							final int offset = newTypeInfo.format.indexOf('H');

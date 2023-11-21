@@ -115,7 +115,7 @@ public class Gender extends LogicalTypeFinite {
 			// Bulgarian
 			genderData = new GenderData(
 					new String[][] { new String[] { "ЖЕНСКИ", "МЪЖКИ" } },
-					new String[][] { new String[] { "Ж", "M" } } );
+					new String[][] { new String[] { "Ж", "М" } } );
 			break;
 		case "CA":
 			// Catalan
@@ -175,13 +175,13 @@ public class Gender extends LogicalTypeFinite {
 		case "PL":
 			// Polish
 			genderData = new GenderData(
-					new String[][] { new String[] { "KOBIETY", "MÊ¿CZYŸNI" } },
+					new String[][] { new String[] { "KOBIETY", "MÊ¿CZYŸNI" }, new String[] { "KOBIETY", "MĘŻCZYŹNI" } },
 					new String[][] { new String[] { "K", "M" } } );
 			break;
 		case "PT":
 			// Portuguese
 			genderData = new GenderData(
-					new String[][] { new String[] { "FEMININA", "MASCULINO" } },
+					new String[][] { new String[] { "FEMININA", "MASCULINO" }, new String[] { "FEMININO", "MASCULINO" } },
 					new String[][] { new String[] { "F", "M" } } );
 			break;
 		case "RO":
@@ -194,7 +194,7 @@ public class Gender extends LogicalTypeFinite {
 			// Russian
 			genderData = new GenderData(
 					new String[][] { new String[] { "ЖЕНЩИНА", "МУЖЧИНА" } },
-					new String[][] { new String[] { "Ж", "M" } } );
+					new String[][] { new String[] { "Ж", "М" } } );
 			break;
 		case "SV":
 			// Swedish
@@ -276,7 +276,7 @@ public class Gender extends LogicalTypeFinite {
 					thisPairCount += masculine;
 
 				// If we have a happy header and a good percentage of FEMALE/MALE F/M (localized) - then assume all is good
-				if (thisPairCount > matchCount/2)
+				if (thisPairCount > matchCount/2 && getConfidence(matchCount, realSamples, context) > 0.5)
 				{
 					final RegExpGenerator re = new RegExpGenerator(8, locale);
 					cardinality.putAll(outliers);
@@ -301,6 +301,27 @@ public class Gender extends LogicalTypeFinite {
 
 		// We have at most one outlier and if the sum of one of the word pairs == matchCount then declare success
 		for (final GenderPair candidate : genderData.getWords()) {
+			final Long feminine = cardinality.get(candidate.feminine);
+			final Long masculine = cardinality.get(candidate.masculine);
+			if (feminine == null || masculine == null)
+				continue;
+			final long thisPairCount = feminine + masculine;
+			if (thisPairCount == matchCount) {
+				final RegExpGenerator re = new RegExpGenerator(8, locale);
+				cardinality.putAll(outliers);
+				outliers.clear();
+				for (final String item : cardinality.keySet())
+					re.train(item);
+				happyRegex = re.getResult();
+				return PluginAnalysis.OK;
+			}
+		}
+
+		if (!positiveStreamName && outliers.size() != 0)
+			return new PluginAnalysis(BACKOUT_REGEX);
+
+		// We have no (outliers or a happy stream name) and the sum of one of the word abbreviations == matchCount then declare success
+		for (final GenderPair candidate : genderData.getAbbreviations()) {
 			final Long feminine = cardinality.get(candidate.feminine);
 			final Long masculine = cardinality.get(candidate.masculine);
 			if (feminine == null || masculine == null)

@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.2.0
+ - ENH: Improve GENDER detection
+ - BUG: Fix issue when encountering 10 digits in the nanoseconds field (Issue #55)
+
 ### 15.1.10
  - ENH: Improve nextRandom() for PERIOD.QUARTER
  - ENH: Improve regExp for COORDINATE.LATITUDE_DMS and COORDINATE.LONGITUDE_DMS
