@@ -10,6 +10,10 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+/**
+ * A Map of Strings to Longs with a finite capacity.
+ * Note: This maximum capacity should be set before any elements are added to the Map.
+ */
 public class FiniteMap implements Map<String, Long> {
 	private int maxCapacity;
 	private Map<String, Long> impl;
@@ -58,6 +62,16 @@ public class FiniteMap implements Map<String, Long> {
 		return sorted;
 	}
 
+	/**
+	 * Similar to {@link java.util.Map#merge} but if this FiniteMap is full and this is a new key then just return false.
+     * @param key key with which the resulting value is to be associated
+     * @param value the non-null value to be merged with the existing value
+     *        associated with the key or, if no existing value or a null value
+     *        is associated with the key, to be associated with the key
+     * @param remappingFunction the remapping function to recompute a value if
+     *        present
+     * @return A boolean indicating if there was room in the Map to merge this value.
+	 */
 	public boolean mergeIfSpace(final String key, final Long value,
 			final BiFunction<? super Long, ? super Long, ? extends Long> remappingFunction) {
 		final Long oldValue = get(key);

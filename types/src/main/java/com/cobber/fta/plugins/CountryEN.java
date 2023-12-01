@@ -17,10 +17,9 @@ package com.cobber.fta.plugins;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
-import com.cobber.fta.Content;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
-import com.cobber.fta.LogicalTypeFiniteSimple;
+import com.cobber.fta.LogicalTypeFiniteSimpleExternal;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.token.TokenStreams;
@@ -28,35 +27,28 @@ import com.cobber.fta.token.TokenStreams;
 /**
  * Plugin to detect Country names. (English-language only).
  */
-public class CountryEN extends LogicalTypeFiniteSimple {
-	/** The Semantic type for this Plugin. */
-	public static final String SEMANTIC_TYPE = "COUNTRY.TEXT_EN";
-
-	/** The Regular Expression for this Semantic type. */
-	private static final String BACKOUT = ".+";
-
+public class CountryEN extends LogicalTypeFiniteSimpleExternal {
 	/**
 	 * Construct a plugin to detect Country names based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
 	public CountryEN(final PluginDefinition plugin) {
-		super(plugin, BACKOUT, plugin.threshold);
-		setContent(new Content("resource", "/reference/en_countries.csv"));
+		super(plugin);
 	}
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (matchCount < 50 && outliers.size() > Math.sqrt(getMembers().size()))
-			return new PluginAnalysis(BACKOUT);
+			return new PluginAnalysis(defn.backout);
 
 		final int headerConfidence = getHeaderConfidence(context.getStreamName());
 
 		if (headerConfidence <= 0 && (realSamples < 10 || cardinality.size() == 1))
-			return new PluginAnalysis(BACKOUT);
+			return new PluginAnalysis(defn.backout);
 
 		if ((double)matchCount / realSamples >= getThreshold()/100.0)
 			return PluginAnalysis.OK;
 
-		return new PluginAnalysis(BACKOUT);
+		return new PluginAnalysis(defn.backout);
 	}
 }

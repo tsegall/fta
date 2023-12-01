@@ -28,7 +28,10 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
 
-public abstract class CoordinateDMS extends LogicalTypeInfinite {
+/**
+ * Base class used to support plugins to detect a Latitude or Longitude as Degrees, minutes, and seconds.
+ */
+abstract class CoordinateDMS extends LogicalTypeInfinite {
 	public CoordinateDMS(final PluginDefinition plugin) {
 		super(plugin);
 	}

@@ -27,7 +27,10 @@ import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.token.TokenStreams;
 
-public abstract class PersonName extends LogicalTypeFiniteSimple {
+/**
+ * Base class used to support plugins to detect a persons First or Last Name.
+ */
+abstract class PersonName extends LogicalTypeFiniteSimple {
 	public static final String REGEXP = "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*";
 	// The threshold we use if we have a strong signal from the header
 	private static final int IDENTIFIED_LOW_THRESHOLD = 40;

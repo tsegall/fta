@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 15.2.1
+ - ENH: Bump logback-classic and google phonenumber
+ - ENH: Improve JavaDoc
+ - INT: Bump gradle to 8.5
+ - INT: Update example web dependencies
+ - INT: Minor cleanups
+
 ### 15.2.0
  - ENH: Improve GENDER detection
  - BUG: Fix issue when encountering 10 digits in the nanoseconds field (Issue #55)

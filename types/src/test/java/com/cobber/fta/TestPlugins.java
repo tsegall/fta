@@ -54,7 +54,6 @@ import com.cobber.fta.plugins.CheckDigitEAN13;
 import com.cobber.fta.plugins.CheckDigitISBN;
 import com.cobber.fta.plugins.CheckDigitISIN;
 import com.cobber.fta.plugins.CheckDigitSEDOL;
-import com.cobber.fta.plugins.CountryEN;
 import com.cobber.fta.plugins.EmailLT;
 import com.cobber.fta.plugins.Gender;
 import com.cobber.fta.plugins.IPV4Address;
@@ -1433,7 +1432,9 @@ public class TestPlugins {
 		assertTrue(logical.isValid(valid));
 		assertFalse(logical.isValid(invalid));
 
-		logical = analyzer.getPlugins().getRegistered(CountryEN.SEMANTIC_TYPE);
+		final PluginDefinition defn = PluginDefinition.findByName("COUNTRY.TEXT_EN");
+
+		logical = analyzer.getPlugins().getRegistered(defn.semanticType);
 
 		final String ChinaUpper = "CHINA";
 		assertTrue(logical.isValid(ChinaUpper));
@@ -3961,11 +3962,12 @@ public class TestPlugins {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		final PluginDefinition defn = PluginDefinition.findByName("COUNTRY.TEXT_EN");
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), CountryEN.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("COUNTRY.TEXT_EN").signature);
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getInvalidCount(), 1);
 		final Map<String, Long> invalids = result.getInvalidDetails();
@@ -3995,11 +3997,12 @@ public class TestPlugins {
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
+		final PluginDefinition defn = PluginDefinition.findByName("COUNTRY.TEXT_EN");
 
 		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), CountryEN.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("COUNTRY.TEXT_EN").signature);
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
@@ -4231,10 +4234,11 @@ public class TestPlugins {
 			analysis.train(input);
 
 		final TextAnalysisResult result = analysis.getResult();
+		final PluginDefinition defn = PluginDefinition.findByName("COUNTRY.TEXT_EN");
 
 		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), CountryEN.SEMANTIC_TYPE);
-		assertEquals(result.getStructureSignature(),  PluginDefinition.findByName("COUNTRY.TEXT_EN").signature);
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), 4);

@@ -26,8 +26,8 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
 
 /**
-* Plugin to detect Race/Ethnicity (Person).
-*/
+ * Plugin to detect Race/Ethnicity abbreviation (Person).
+ */
 public class RaceAbbr extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "[A-Z]";

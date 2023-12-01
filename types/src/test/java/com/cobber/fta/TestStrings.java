@@ -38,7 +38,6 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.plugins.CountryEN;
 
 public class TestStrings {
 	private static final SecureRandom random = new SecureRandom();
@@ -802,11 +801,13 @@ public class TestStrings {
 		final TextAnalysisResult result1 = analysis1.getResult();
 		final TextAnalysisResult result2 = analysis2.getResult();
 
-		assertEquals(result1.getStructureSignature(), PluginDefinition.findByName("COUNTRY.TEXT_EN").signature);
+		final PluginDefinition defn = PluginDefinition.findByName("COUNTRY.TEXT_EN");
+
+		assertEquals(result1.getStructureSignature(), defn.signature);
 		assertEquals(result1.getStructureSignature(), result2.getStructureSignature());
 		assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 		assertEquals(result1.getSemanticType(), result2.getSemanticType());
-		assertEquals(result1.getSemanticType(), CountryEN.SEMANTIC_TYPE);
+		assertEquals(result1.getSemanticType(), defn.semanticType);
 		assertNull(result1.checkCounts());
 		assertNull(result2.checkCounts());
 	}

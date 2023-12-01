@@ -26,7 +26,7 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
 
 /**
- * Based on the FTA Type support the ability to convert from a String to an instance of the Type, or from an instance of
+ * Based on the FTA Type, support the ability to convert from a String to an instance of the Type, or from an instance of
  * the type to a String (correctly formatted - based on the pattern).
  * In addition provide routines to convert from any given FTAType to a double and back.  We need this conversion in
  * order to support the Sketch which assumes doubles as input where the ordering of the proxy double is equivalent to

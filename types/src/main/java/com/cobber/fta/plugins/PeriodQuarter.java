@@ -27,7 +27,7 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
 
 /**
- * Plugin to detect Quarters (e.g. Q1).
+ * Plugin to detect Quarters (for example, Q1 or QTR1 or Quarter 1).
  */
 public class PeriodQuarter extends LogicalTypeInfinite {
 

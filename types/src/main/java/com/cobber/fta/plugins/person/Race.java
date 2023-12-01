@@ -17,8 +17,8 @@ package com.cobber.fta.plugins.person;
 import com.cobber.fta.PluginDefinition;
 
 /**
-* Plugin to detect Race (Person).
-*/
+ * Plugin to detect Race/Ethnicity (Person).
+ */
 public class Race extends SimpleWords {
 	public Race(final PluginDefinition plugin) {
 		super(plugin);

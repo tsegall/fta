@@ -33,8 +33,8 @@ import com.cobber.fta.core.WordProcessor;
 import com.cobber.fta.token.TokenStreams;
 
 /**
-* Plugin to detect any Semantic Type defined by the presence of a set of words.
-*/
+ * Abstract class to detect any Semantic Type defined by the presence of a set of words.
+ */
 public abstract class SimpleWords extends LogicalTypeInfinite {
 	private Set<String> keywordsHash;
 	private final WordProcessor wordProcessor = new WordProcessor().withAdditionalBreakChars("_=");

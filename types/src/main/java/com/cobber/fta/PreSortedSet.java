@@ -21,7 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.SortedSet;
 
 /**
- * This set is basically a LinkedHashSet that implements the SortedSet interface.
+ * This set is a LinkedHashSet that implements the SortedSet interface.
  * We fundamentally want a set that is Sorted but the sort order is defined by the order of
  * insertion (i.e. the order is managed externally).
  * None of the core SortedSet functionality is implemented, however, you can run through the

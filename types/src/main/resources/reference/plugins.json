@@ -927,12 +927,17 @@
 				} ]
 			}
 		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/en_countries.csv"
+		},
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Choronym" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages" },
 			{ "source": "schema", "reference": "https://schema.org/Country" }
 		],
 		"threshold": 85,
+		"backout": ".+",
 		"priority": 109
 	},
 	{
@@ -1080,9 +1085,8 @@
 	{
 		"semanticType": "STATE_PROVINCE.STATE_PROVINCE_NA",
 		"description": "US State Code/Canadian Province Code/Mexican State Code",
-		"pluginType": "java",
+		"pluginType": "list",
 		"signature": "Q00LXfhmPibwrK8HTkzNsRosvzw=",
-		"clazz": "com.cobber.fta.plugins.NAStateProvince",
 		"validLocales": [
 			{
 				"localeTag": "en-US,en-CA,fr-CA,en-MX",
@@ -1092,9 +1096,14 @@
 				} ]
 			}
 		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/na_states_provinces.csv"
+		},
 		"documentation": [
 			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
+		"backout": "\\p{IsAlphabetic}{2}",
 		"priority": 123
 	},
 	{

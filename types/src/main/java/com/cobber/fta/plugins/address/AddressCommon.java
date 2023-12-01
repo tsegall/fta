@@ -214,6 +214,11 @@ public class AddressCommon {
 		return ordinalIndicator.contains(input.substring(i).trim());
 	}
 
+	/*
+	 * Is the input string a single digit representation (e.g. ONE, TWO etc).
+	 * @param input The input to test.
+	 * @return True if the input is a representation of a single digit.
+	 */
 	private static boolean isTextDigit(final String input) {
 		return textDigit.contains(input);
 	}
