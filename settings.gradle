@@ -35,7 +35,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail
 			library('javaxMailAPI', 'com.sun.mail:jakarta.mail:2.0.1')
 // https://mvnrepository.com/artifact/commons-validator/commons-validator
-			library('commonsValidator', 'commons-validator:commons-validator:1.7')
+			library('commonsValidator', 'commons-validator:commons-validator:1.8.0')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 			library('jacksonDataBind', 'com.fasterxml.jackson.core:jackson-databind:2.16.0')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
