@@ -186,7 +186,13 @@ public class TestStandalonePlugins {
 			final TextAnalyzer analyzer = new TextAnalyzer("*");
 			analyzer.setLocale(locale);
 			// Load the default set of plugins for Semantic Type detection (normally done by a call to train())
-			analyzer.registerDefaultPlugins(analyzer.getConfig());
+			try {
+				analyzer.registerDefaultPlugins(analyzer.getConfig());
+			}
+			catch (IllegalArgumentException e) {
+				logger.error("ERROR: Failed to register plugins for locale: {}, error: {}", locale.toLanguageTag(), e.getMessage());
+				System.exit(1);
+			}
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 
 			for (int iters = 0; iters < 10; iters++) {
