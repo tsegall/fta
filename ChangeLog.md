@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 15.3.0
+ - ENH: Bump google phonenumber and commons-validator
+ - ENH: Added 1997 codes to NAICS detection to improve detection
+ - ENH: I18N - Add new Semantic Types - COLOR.TEXT_ES (Spanish Color)
+ - ENH: I18N - Add new Semantic Types - GENDER.TEXT_TR (Turkish Gender)
+ - ENH: I18N - Add French names for Canadian provinces
+
 ### 15.2.1
  - ENH: Bump logback-classic and google phonenumber
  - ENH: Improve JavaDoc

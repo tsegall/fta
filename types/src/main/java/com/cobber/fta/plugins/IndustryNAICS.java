@@ -110,7 +110,8 @@ public class IndustryNAICS extends LogicalTypeInfinite {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		if (getConfidence(matchCount, realSamples, context) == 1.0)
+		final double confidence = getConfidence(matchCount, realSamples, context);
+		if (confidence == 1.0)
 			return PluginAnalysis.OK;
 
 		int minCardinality = 10;
@@ -126,7 +127,7 @@ public class IndustryNAICS extends LogicalTypeInfinite {
 		if (realSamples < minSamples)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
-		if ((double)matchCount/realSamples >= getThreshold()/100.0)
+		if (confidence >= getThreshold()/100.0)
 			return PluginAnalysis.OK;
 
 		return PluginAnalysis.SIMPLE_NOT_OK;
@@ -139,7 +140,7 @@ public class IndustryNAICS extends LogicalTypeInfinite {
 		if (confidence > 0.75 && getHeaderConfidence(context.getStreamName()) >= 99)
 			return 1.0;
 		else if (getHeaderConfidence(context.getStreamName()) >= 90)
-			return Math.min(1.2 * confidence, 1.0);
+			return Math.min(confidence + Math.min((1.0 - confidence)/2, 0.15), 1.0);
 
 		return confidence;
 	}

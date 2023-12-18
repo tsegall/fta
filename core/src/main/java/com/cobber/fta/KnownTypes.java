@@ -128,10 +128,6 @@ public class KnownTypes {
 		return regExp.replaceAll("\\\\d", "[\\\\d" + re + "]");
 	}
 
-	protected String getRegExp(final KnownTypes.ID id) {
-		return getByID(id).regexp;
-	}
-
 	protected void initialize(final Locale locale) {
 		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 		final char groupingSeparator = formatSymbols.getGroupingSeparator();

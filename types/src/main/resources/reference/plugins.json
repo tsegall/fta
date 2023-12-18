@@ -600,7 +600,8 @@
 			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": "(?i)(Gender|Sexo)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
 			{ "localeTag":  "ro", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
 			{ "localeTag":  "ru", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|Пол).*", "confidence": 90 } ] },
-			{ "localeTag":  "sv", "headerRegExps": [ { "regExp": ".*(?i)(Gender|kon|kön).*", "confidence": 90 } ] }
+			{ "localeTag":  "sv", "headerRegExps": [ { "regExp": ".*(?i)(Gender|kon|kön).*", "confidence": 90 } ] },
+			{ "localeTag":  "tr", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|cinsiyet).*", "confidence": 90 } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P21" },
@@ -1217,7 +1218,7 @@
 				"localeTag": "en-US,en-CA,fr-CA,en-MX",
 				"headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ],
 				"matchEntries": [ {
-					"regExpReturned": "[ \\p{IsAlphabetic}]+"
+					"regExpReturned": "[- \\p{IsAlphabetic}]+"
 				} ]
 			}
 		],
@@ -1229,7 +1230,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Provinces_and_territories_of_Canada" },
 			{ "source": "schema", "reference": "https://schema.org/State" }
 		],
-		"backout": "[ \\p{IsAlphabetic}]+",
+		"backout": "[- \\p{IsAlphabetic}]+",
 		"priority": 130
 	},
 	{
@@ -3239,6 +3240,27 @@
 		"priority": 306
 	},
 	{
+		"semanticType": "COLOR.TEXT_ES",
+		"description": "Color name (Spanish)",
+		"pluginType": "list",
+		"pluginOptions": "words=all",
+		"signature": "I2y3yXfuj8RTGMSr6exv3TnPWoE=",
+		"validLocales": [
+			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(color).*", "confidence": 90, "mandatory": true } ] }
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/es_color.csv"
+		},
+		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P462" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Web_colors" },
+			{ "source": "schema", "reference": "https://schema.org/color" }
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 306
+	},
+	{
 		"semanticType": "DIRECTION",
 		"description": "Cardinal Direction",
 		"pluginType": "java",
@@ -3252,7 +3274,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Cardinal_direction" }
 		],
 		"baseType": "STRING",
-		"priority": 307
+		"priority": 310
 	},
 	{
 		"semanticType": "INDUSTRY_CODE.NAICS",
@@ -3269,7 +3291,7 @@
 			{ "source": "schema", "reference": "https://schema.org/naics" }
 		],
 		"baseType": "LONG",
-		"priority": 308
+		"priority": 311
 	},
 	{
 		"semanticType": "NAME.LAST_FIRST",

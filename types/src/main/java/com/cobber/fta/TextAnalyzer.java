@@ -801,7 +801,7 @@ public class TextAnalyzer {
 	}
 
 	protected String getRegExp(final KnownTypes.ID id) {
-		return knownTypes.getRegExp(id);
+		return knownTypes.getByID(id).regexp;
 	}
 
 	// Track basic facts for the field - called for all input

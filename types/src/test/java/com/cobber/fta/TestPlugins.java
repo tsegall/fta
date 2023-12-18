@@ -234,6 +234,32 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicGenderTR() throws IOException, FTAException {
+		final String[] inputs = {
+				"KADIN", "ERKEK", "KADIN", "KADIN", "KADIN", "ERKEK", "ERKEK", "KADIN", "KADIN", "KADIN",
+				"ERKEK", "KADIN", "KADIN", "KADIN", "ERKEK", "ERKEK", "KADIN", "KADIN", "KADIN", "ERKEK",
+				"KADIN", "KADIN", "KADIN", "ERKEK", "ERKEK", "KADIN", "KADIN", "KADIN", "ERKEK", "ERKEK"
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "cinsiyet", Locale.forLanguageTag("tr-TR"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
+		assertEquals(result.getRegExp(), "(?i)(ERKEK|KADIN)");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicGenderTR_UnrecognizedHeader() throws IOException, FTAException {
+		final String[] inputs = {
+				"K", "E", "K", "K", "K", "E", "E", "K", "K", "K",
+				"E", "K", "K", "K", "E", "E", "K", "K", "K", "E",
+				"K", "K", "K", "E", "E", "K", "K", "K", "E", "E"
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "c i n s i y e t", Locale.forLanguageTag("tr-TR"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
+		assertEquals(result.getRegExp(), "(?i)(E|K)");
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void trickLatitude() throws IOException, FTAException {
 		final String[] inputs = {
 				"54.176658700787", "54.1523286823181", "54.1507845291159", "54.1444646959388", "54.0948626983874",
@@ -3563,6 +3589,44 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testNAICS_Short() throws IOException, FTAException {
+		final String[] samples = {
+				"53111", "2211", "2212", "2213", "453", "453", "452", "92", "42", "23",
+				"441", "446", "53", "11", "53", "446", "454", "21", "453", "22",
+				"443", "56", "52", "447", "61", "441", "21", "52", "23", "442",
+				"448", "62", "51", "448", "452", "51", "71", "71", "22", "21",
+				"71", "446", "452", "444", "454", "999999"
+		};
+
+		TestUtils.simpleCore(Sample.allValid(samples), "naics", Locale.US, "INDUSTRY_CODE.NAICS", FTAType.LONG, 0.9891304347826086);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testNAICS_Trailing_Zeroes() throws IOException, FTAException {
+		final String[] samples = {
+				"531110", "221100", "221200", "221300", "453000", "453000", "452000", "920000", "420000", "230000",
+				"441000", "446000", "530000", "110000", "530000", "446000", "454000", "210000", "453000", "220000",
+				"443000", "560000", "520000", "447000", "610000", "441000", "210000", "520000", "230000", "442000",
+				"448000", "620000", "510000", "448000", "452000", "510000", "710000", "710000", "220000", "210000",
+				"710000", "446000", "452000", "444000", "454000",
+		};
+
+		TestUtils.simpleCore(Sample.allValid(samples), "naics_code", Locale.US, "INDUSTRY_CODE.NAICS", FTAType.LONG, 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void inseeCode() throws IOException, FTAException {
+		final String[] samples = {
+				"99999", "XXXXX", "01001", "01002", "01004", "01005", "01006", "01007", "01008", "01009",
+				"01010", "01011", "01012", "01013", "01014", "01015", "01016", "01017", "01019", "01021",
+				"01022", "01023", "01024", "01025", "01026", "01027", "01028", "01029", "01030", "01031",
+				"01032", "01033", "01034", "01035", "01036", "01037", "01038", "01039", "01040",
+		};
+
+		TestUtils.simpleCore(Sample.setInvalid(Sample.allValid(samples), 0, 1), "Codes_Insee", Locale.FRANCE, "STATE_PROVINCE.INSEE_CODE_FR", FTAType.LONG, 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testFilename() throws IOException, FTAException {
 		final String[] samples = {
 				"2012-11-06-094.jpg", "2012-11-06-095.jpg", "2012-11-06-096.jpg", "2012-11-06-097.jpg", "2012-11-06-098.jpg",
@@ -4682,6 +4746,6 @@ public class TestPlugins {
 
 		final Sample[] samples = Sample.allValid(inputs);
 		Sample.setInvalid(samples, inputs.length - 1);
-		TestUtils.simpleCore(samples, "NAICS", Locale.US, "INDUSTRY_CODE.NAICS", FTAType.LONG, 1.0);
+		TestUtils.simpleCore(samples, "NAICS", Locale.US, "INDUSTRY_CODE.NAICS", FTAType.LONG, 0.9878048780487805);
 	}
 }
