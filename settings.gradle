@@ -51,7 +51,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 			library('slf4jAPI', 'org.slf4j:slf4j-api:2.0.9')
 // https://mvnrepository.com/artifact/com.google.guava/guava
-			library('guava', 'com.google.guava:guava:32.1.3-jre')
+			library('guava', 'com.google.guava:guava:33.0.0-jre')
 // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
 			library('logbackClassic', 'ch.qos.logback:logback-classic:1.4.14')
 // https://mvnrepository.com/artifact/com.datadoghq/sketches-java
