@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.4.0
+ - ENH: I18N - Add FREE_TEXT detection for a set of Langauages (da, fi, ga, hu, lv, ro, sk) and improved sample generation for all languages
+ - ENH: Bump guava and Jackson
+
 ### 15.3.0
  - ENH: Bump google phonenumber and commons-validator
  - ENH: Added 1997 codes to NAICS detection to improve detection

@@ -3586,15 +3586,26 @@
 		"validLocales": [
 			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": ".*(?i)(?u)(описание|Бележки|Забележки|коментар|причина|description).*", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "ca", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descripció|comentar|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "da", "headerRegExps": [ { "regExp": ".*(?i)(?u)(beskrivelse|noter|kommentar|årsag|description).*", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(bezeichnung|anmerkungen|bemerkungen|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(description|notes|comment|reason).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descripción|nota|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "fi", "headerRegExps": [ { "regExp": ".*(?i)(kuvaus|huomautukset|kommentti|syy|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": ".*(?i)(description|remarques|commentaire|raison).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "ga", "headerRegExps": [ { "regExp": ".*(?i)(?u)(tuairisc|nótaí|trácht|fáth|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "hu", "headerRegExps": [ { "regExp": ".*(?i)(?u)(leírás|jegyzetek|megjegyzés|indoklás|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "it", "headerRegExps": [ { "regExp": ".*(?i)(descrizione|nota|Annotazioni|motivo|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "lv", "headerRegExps": [ { "regExp": ".*(?i)(apraksts|piezīmes|komentārs|iemesls|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(omschrijving|opmerkingen|description).*", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descrição|nota|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag":  "ro", "headerRegExps": [ { "regExp": ".*(?i)(descriere|note|comentar|motiv|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
 			{ "localeTag":  "ru", "headerRegExps": [ { "regExp": ".*(?i)(?u)(описание|description).*", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(description|notes|comment|reason).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] }
+			{ "localeTag":  "sk", "headerRegExps": [ { "regExp": ".*(?i)(?u)(popis|poznámky|komentár|dôvod|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] }
 		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/<LANGUAGE>_free_text_samples.csv"
+		},
 		"threshold": 70,
 		"baseType": "STRING",
 		"priority": 390

@@ -159,12 +159,12 @@ public class TestStandalonePlugins {
 	public void randomSupport() throws IOException, FTAPluginException {
 		final int SAMPLE_SIZE = 100;
 		final Locale[] locales = {
-// TODO			Locale.forLanguageTag("bg-BG"),
+				Locale.forLanguageTag("bg-BG"),
 				Locale.forLanguageTag("da-DK"),
 				Locale.forLanguageTag("de-CH"), Locale.forLanguageTag("de-DE"),
 				Locale.forLanguageTag("en-AU"), Locale.forLanguageTag("en-CA"), Locale.forLanguageTag("en-GB"), Locale.forLanguageTag("en-IE"), Locale.forLanguageTag("en-US"),
 				Locale.forLanguageTag("es-CO"), Locale.forLanguageTag("es-ES"), Locale.forLanguageTag("es-MX"), Locale.forLanguageTag("es-PE"), Locale.forLanguageTag("es-UY"),
-// TODO				Locale.forLanguageTag("fi-FI"),
+				Locale.forLanguageTag("fi-FI"),
 				Locale.forLanguageTag("fr-CA"), Locale.forLanguageTag("fr-CH"), Locale.forLanguageTag("fr-FR"),
 				Locale.forLanguageTag("ga-IE"),
 				Locale.forLanguageTag("hr-HR"),
@@ -175,7 +175,7 @@ public class TestStandalonePlugins {
 				Locale.forLanguageTag("nl-NL"),
 				Locale.forLanguageTag("pt-BR"), Locale.forLanguageTag("pt-PT"),
 				Locale.forLanguageTag("ro-RO"),
-//	TODO		Locale.forLanguageTag("ru-RU"),
+				Locale.forLanguageTag("ru-RU"),
 				Locale.forLanguageTag("sk-SK"),
 				Locale.forLanguageTag("sv-SE"),
 				Locale.forLanguageTag("tr-TR")

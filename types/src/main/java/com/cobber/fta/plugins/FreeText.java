@@ -15,23 +15,19 @@
  */
 package com.cobber.fta.plugins;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
+import com.cobber.fta.Content;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
 import com.cobber.fta.KnownTypes;
-import com.cobber.fta.LogicalTypeCode;
-import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.LogicalTypeInfinite;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.RegExpSplitter;
@@ -47,61 +43,9 @@ public class FreeText extends LogicalTypeInfinite {
 
 	private String regExp = REGEXP;
 
-	private final static int SAMPLE_COUNT = 100;
-	private LogicalTypeCode logicalFirst;
-	private String[] samples;
+	private boolean randomInitialized;
+	private SingletonSet samples;
 	private TextProcessor processor;
-	private final Map<String, SimpleSamples> simpleSamples = new HashMap<>();
-
-	private static String[] de_verbs = { "betrachtet", "gemalt", "sah", "beobachtet", "studiert" };
-	private static String[] de_base_pronouns = { "sie", "er" };
-	private static String[] de_nouns = { "Banane", "Wand", "Kirche", "Kathedrale", "Erdbeere", "mango",
-			"Fahrrad", "Motorrad", "Auto", "Himbeere", "Zug", "Flugzeug" };
-
-	private static String[] en_verbs = { "contemplated", "painted", "spotted", "observed", "studied" };
-	private static String[] en_base_pronouns = { "She", "He", "They" };
-	private static String[] en_nouns = { "banana", "wall", "church", "cathederal", "strawberry", "mango",
-			"bicycle", "motorbike", "car", "raspberry", "train", "plane" };
-
-	class SimpleSamples {
-		String language;
-		List<String> verbs;
-		List<String> pronouns;
-		List<String> nouns;
-		String definiteArticle;
-		String indefiniteArticle;
-		String conjunction;
-
-		SimpleSamples(final String language, final List<String> verbs, final List<String> pronouns, final List<String> nouns) {
-			this.language = language;
-			this.verbs = verbs;
-			this.pronouns = pronouns;
-			this.nouns = nouns;
-
-			if ("DE".equals(language)) {
-				definiteArticle = " der ";
-				indefiniteArticle = " ein ";
-				conjunction = " und ";
-			}
-			else {
-				definiteArticle = " the ";
-				indefiniteArticle = " a ";
-				conjunction = " and ";
-			}
-		}
-
-		String getSample() {
-			return pronouns.get(getRandom().nextInt(pronouns.size())) + " " +
-					verbs.get(getRandom().nextInt(verbs.size())) +
-					definiteArticle +
-					nouns.get(getRandom().nextInt(nouns.size())) +
-					conjunction +
-					verbs.get(getRandom().nextInt(verbs.size())) +
-					indefiniteArticle +
-					nouns.get(getRandom().nextInt(nouns.size())) +
-					".";
-		}
-	}
 
 	/**
 	 * Construct a plugin to detect free-form text based on the Plugin Definition.
@@ -111,44 +55,27 @@ public class FreeText extends LogicalTypeInfinite {
 		super(plugin);
 	}
 
-	private synchronized void constructSamples() {
-		if (samples != null)
-			return;
-
+	public Content bindLanguage(final Content unbound) {
 		if (locale == null)
-			locale = Locale.getDefault();
-		final String language = this.locale.getLanguage().toUpperCase(Locale.ROOT);
+			return unbound;
 
-		final List<String> pronouns = new ArrayList<>(Arrays.asList("DE".equals(language) ? de_base_pronouns : en_base_pronouns));
+		final int languageOffset = unbound.reference.indexOf("<LANGUAGE>");
+		if (languageOffset != -1)
+			return new Content(unbound.type, unbound.reference.replace("<LANGUAGE>", locale.getLanguage().toLowerCase(Locale.ROOT)));
 
-		for (int i = 3; i < 100; i++) {
-			final String name = logicalFirst.nextRandom();
-			String initialCap = String.valueOf(name.charAt(0));
-			if (name.length() > 1)
-				initialCap += name.substring(1).toLowerCase(Locale.ROOT);
-			pronouns.add(initialCap);
-		}
-
-		final SimpleSamples simpleSample = new SimpleSamples(language, new ArrayList<>(Arrays.asList("DE".equals(language) ? de_verbs : en_verbs)), pronouns,
-				new ArrayList<>(Arrays.asList("DE".equals(language) ? de_nouns : en_nouns)));
-		simpleSamples.put(language, simpleSample);
-
-		samples = new String[SAMPLE_COUNT];
-		for (int i = 0; i < SAMPLE_COUNT; i++) {
-			samples[i] = simpleSample.getSample();
-		}
+		return unbound;
 	}
 
 	@Override
 	public String nextRandom() {
-		if (samples == null)
-			constructSamples();
+		if (!randomInitialized) {
+			// Check to see if we have been provided with a set of samples
+			if (defn.content != null && samples == null)
+				samples = new SingletonSet(bindLanguage(defn.content));
+			randomInitialized = true;
+		}
 
-		final StringBuilder result = new StringBuilder(samples[getRandom().nextInt(samples.length)]);
-		for (int i = 0; i < getRandom().nextInt(4); i++)
-			result.append("  ").append(samples[getRandom().nextInt(samples.length)]);
-
-		return result.toString();
+		return samples != null ? samples.getRandom(getRandom()) : null;
 	}
 
 	@Override
@@ -156,12 +83,6 @@ public class FreeText extends LogicalTypeInfinite {
 		super.initialize(analysisConfig);
 
 		processor = new TextProcessor(locale);
-
-		final PluginDefinition pluginFirst = PluginDefinition.findByName("NAME.FIRST");
-		// The FreeText Plugin is pseudo supported by any locale, however, if we are generating
-		// random entries we use the first name plugins (which may not be supported by the current locale)
-		final AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);
-		logicalFirst = (LogicalTypeCode) LogicalTypeFactory.newInstance(pluginFirst, pluginConfig);
 
 		return true;
 	}
