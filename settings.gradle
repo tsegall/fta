@@ -59,7 +59,7 @@ dependencyResolutionManagement {
 		}
 		testLibs {
 // https://mvnrepository.com/artifact/org.testng/testng
-			library('testng', 'org.testng:testng:7.8.0')
+			library('testng', 'org.testng:testng:7.9.0')
 		}
 	}
 }
