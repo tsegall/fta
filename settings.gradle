@@ -49,7 +49,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/dk.brics.automaton/automaton
 			library('automaton', 'dk.brics:automaton:1.12-4')
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-			library('slf4jAPI', 'org.slf4j:slf4j-api:2.0.10')
+			library('slf4jAPI', 'org.slf4j:slf4j-api:2.0.11')
 // https://mvnrepository.com/artifact/com.google.guava/guava
 			library('guava', 'com.google.guava:guava:33.0.0-jre')
 // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
