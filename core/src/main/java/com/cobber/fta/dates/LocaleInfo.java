@@ -16,6 +16,7 @@
 package com.cobber.fta.dates;
 
 import java.text.DateFormatSymbols;
+import java.text.Normalizer;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -141,7 +142,7 @@ public class LocaleInfo {
 
 		boolean isAllAlphabetic = true;
 		for (int i = 0; i <= actualMonths; i++) {
-			final String month = longMonths[i].toUpperCase(locale);
+			final String month = Normalizer.normalize(longMonths[i].toUpperCase(locale), Normalizer.Form.NFC);
 			if (isAllAlphabetic && !month.chars().allMatch(Character::isAlphabetic))
 				isAllAlphabetic = false;
 			monthsLocale.put(month, i + 1);

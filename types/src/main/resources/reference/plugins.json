@@ -6,8 +6,8 @@
 		"signature": "+A0AMjgeFlGRlPKsX/iXYmoWpfY=",
 		"clazz": "com.cobber.fta.plugins.EmailLT",
 		"validLocales": [
-			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(email|e-mail|e_mail).*", "confidence": 90 } ] },
-			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(correo|email|e-mail|e_mail).*", "confidence": 90 } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(email|e-mail|e_mail).*", "confidence": 90 } ] },
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(correo|email|e-mail|e_mail).*", "confidence": 90 } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P968" },
@@ -22,7 +22,7 @@
 		"pluginType": "java",
 		"signature": "r+muJMmeRDtmg9qyVbWCOAMusc8=",
 		"clazz": "com.cobber.fta.plugins.URLLT",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(url|web).*", "confidence": 90 } ] } ],
+		"validLocales": [ { "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(url|web).*", "confidence": 90 } ] } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P2699" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Uniform_Resource_Identifier" },
@@ -36,7 +36,7 @@
 		"pluginType": "java",
 		"signature": "tjKmv3C98nzoxPHtvYb1sp+UQEY=",
 		"clazz": "com.cobber.fta.plugins.IPV4Address",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(ip).*", "confidence": 70 } ] } ],
+		"validLocales": [ { "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(ip).*", "confidence": 70 } ] } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P511" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Internet_Protocol_version_4" }
@@ -50,7 +50,7 @@
 		"pluginType": "java",
 		"signature": "UCm9KlNKo0Hv4BULLB3qSWbMQHY=",
 		"clazz": "com.cobber.fta.plugins.IPV6Address",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(ip).*", "confidence": 70 } ] } ],
+		"validLocales": [ { "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(ip).*", "confidence": 70 } ] } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P511" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/IPv6" }
@@ -64,7 +64,7 @@
 		"pluginType": "java",
 		"signature": "YOwAVZnoqmDtMa0wUtlF+Mda69U=",
 		"clazz": "com.cobber.fta.plugins.PhoneNumberLT",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|contact.?number|mobiel|móvil|movil|telephone|telefono|telefon|telefoon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
+		"validLocales": [ { "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(?u)(phone|fax|mobile|cell|contact.?number|mobiel|móvil|movil|telephone|telefono|telefon|telefoon|téléphone|телефон|Факс|τηλέφωνο|電話).*", "confidence": 98 } ] } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P1329" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Telephone_number" },
@@ -80,7 +80,7 @@
 		"signature": "AtovlR1okrAJUeTCpYUUTXow4yM=",
 		"clazz": "com.cobber.fta.plugins.GUID",
 		"validLocales": [
-			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(guid).*", "confidence": 99 } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(guid).*", "confidence": 99 } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q254972" },
@@ -95,7 +95,7 @@
 		"pluginType": "java",
 		"signature": "JLD6IQMMMoQZTZH7OyHsGRuSoTQ=",
 		"clazz": "com.cobber.fta.plugins.VIN",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P6322" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Vehicle_identification_number" }
@@ -110,7 +110,7 @@
 		"signature": "/o1vxOzeSy+OB/GwjvwcCCv6ri0=",
 		"clazz": "com.cobber.fta.plugins.address.USZip5",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-Latn-US,en-CA,fr-CA",
+			{ "localeTag": "en-US,en-Latn-US,en-CA,fr-CA",
 				"headerRegExps": [ { "regExp": ".*(?i)(zip|postal|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
 		],
 		"documentation": [
@@ -129,7 +129,7 @@
 		"signature": "97eQHR8swSv5+VyCVyYDNayMdy4=",
 		"clazz": "com.cobber.fta.plugins.address.USZipPlus4",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-CA,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postal|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
+			{ "localeTag": "en-US,en-CA,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(zip|postal|postcode).*", "confidence": 95 }, { "regExp": "(?i).*fips.*", "confidence": -100 } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
@@ -145,7 +145,7 @@
 		"pluginType": "java",
 		"signature": "0m+ny+TVuhGGP1RGw3XKoni4Qyo=",
 		"clazz": "com.cobber.fta.plugins.address.PostalCodeUK",
-		"validLocales": [ { "localeTag":  "en-GB,en-UK" } ],
+		"validLocales": [ { "localeTag": "en-GB,en-UK" } ],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postcodes_in_the_United_Kingdom" },
 			{ "source": "schema", "reference": "https://schema.org/postalCode" }
@@ -160,7 +160,7 @@
 		"clazz": "com.cobber.fta.plugins.address.PostalCodeCA",
 		"validLocales": [
 			{
-				"localeTag":  "en-US,en-CA,fr-CA",
+				"localeTag": "en-US,en-CA,fr-CA",
 				"headerRegExps": [ { "regExp": ".*(?i)(post|zip).*", "confidence": 99, "mandatory": true } ]
 			}
 		],
@@ -180,7 +180,7 @@
 		"signature": "GGcrawbIPrKWkNlGg2vaccl1MNY=",
 		"validLocales": [
 			{
-				"localeTag":  "en-AU",
+				"localeTag": "en-AU",
 				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\d{4}"
@@ -203,7 +203,7 @@
 		"signature": "zPoRG8ivy1ZRtQmx2dYu/pc6Prk=",
 		"validLocales": [
 			{
-				"localeTag":  "en-NL,nl-NL",
+				"localeTag": "en-NL,nl-NL",
 				"headerRegExps": [ { "regExp": ".*(?i)(post).*", "confidence": 95 }, { "regExp": ".*(?i)(code).*", "confidence": 75 } ],
 				"matchEntries": [
 					{
@@ -229,7 +229,7 @@
 		"clazz": "com.cobber.fta.plugins.address.PostalCodeFR",
 		"validLocales": [
 			{
-				"localeTag":  "fr-FR",
+				"localeTag": "fr-FR",
 				"headerRegExps": [ { "regExp": ".*(?i)(code.postal|cp).*", "confidence": 95 } ]
 			} ],
 		"documentation": [
@@ -247,7 +247,7 @@
 		"pluginType": "java",
 		"signature": "90grIf//XH2xAcARIKYJPzmfhJg=",
 		"clazz": "com.cobber.fta.plugins.address.PostalCodeJA",
-		"validLocales": [ { "localeTag":  "ja" } ],
+		"validLocales": [ { "localeTag": "ja" } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Japan" },
@@ -262,7 +262,7 @@
 		"signature": "YOwVZiE8O4fMUH/RJ/34zgxi0yg=",
 		"validLocales": [
 			{
-				"localeTag":  "pt-PT",
+				"localeTag": "pt-PT",
 				"headerRegExps": [ { "regExp": ".*(?i)(?u)(código.postal).*", "confidence": 95, "mandatory": true } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\d{4}-\\d{3}"
@@ -284,7 +284,7 @@
 		"pluginType": "list",
 		"signature": "7Q/NP19OT3uFsdQkhdDLsBJdZck=",
 		"validLocales": [
-			{ "localeTag":  "de-DE", "headerRegExps": [ { "regExp": ".*(?i)(postleitzahl|zip|plz).*", "confidence": 99, "mandatory": true } ] }
+			{ "localeTag": "de-DE", "headerRegExps": [ { "regExp": ".*(?i)(postleitzahl|zip|plz).*", "confidence": 99, "mandatory": true } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -306,7 +306,7 @@
 		"pluginType": "list",
 		"signature": "wme+qdk/tsdr4Fb4qfCyAaicpmE=",
 		"validLocales": [
-			{ "localeTag":  "es-ES", "headerRegExps": [ { "regExp": ".*(?i)(postal).*", "confidence": 95, "mandatory": true } ] }
+			{ "localeTag": "es-ES", "headerRegExps": [ { "regExp": ".*(?i)(postal).*", "confidence": 95, "mandatory": true } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -329,7 +329,7 @@
 		"signature": "pfVf2x3vraje4ycWyo87F5A6e38=",
 		"clazz": "com.cobber.fta.plugins.address.PostalCodeSE",
 		"validLocales": [
-			{ "localeTag":  "sv-SE", "headerRegExps": [ { "regExp": ".*(?i)(postnummer).*", "confidence": 99 } ] }
+			{ "localeTag": "sv-SE", "headerRegExps": [ { "regExp": ".*(?i)(postnummer).*", "confidence": 99 } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
@@ -346,7 +346,7 @@
 		"pluginType": "list",
 		"signature": "bGHgk5RMF4mqRw5xkTxm8AdUMxg=",
 		"validLocales": [
-			{ "localeTag":  "es-UY", "headerRegExps": [ { "regExp": ".*(?i)(codigo.*postal).*", "confidence": 99 } ] }
+			{ "localeTag": "es-UY", "headerRegExps": [ { "regExp": ".*(?i)(codigo.*postal).*", "confidence": 99 } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -368,7 +368,7 @@
 		"signature": "z0MBnHNCyrDo8blnBUAqjNDVwdw=",
 		"clazz": "com.cobber.fta.plugins.address.PostalCodeMX",
 		"validLocales": [
-			{ "localeTag":  "es-MX", "headerRegExps": [ { "regExp": ".*(?i)(c.digo.*postal).*", "confidence": 99 } ] }
+			{ "localeTag": "es-MX", "headerRegExps": [ { "regExp": ".*(?i)(c.digo.*postal).*", "confidence": 99 } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
@@ -385,7 +385,7 @@
 		"pluginType": "list",
 		"signature": "vf445LWLa0dN+AZtiaxv3WlOrDc=",
 		"validLocales": [
-			{ "localeTag":  "bg-BG", "headerRegExps": [ { "regExp": ".*(?i)(Пощ код|Пощенски код).*", "confidence": 99 } ] }
+			{ "localeTag": "bg-BG", "headerRegExps": [ { "regExp": ".*(?i)(Пощ код|Пощенски код).*", "confidence": 99 } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -409,7 +409,7 @@
 		"clazz": "com.cobber.fta.plugins.address.PostalCodeCO",
 		"validLocales": [
 			{
-				"localeTag":  "es-CO",
+				"localeTag": "es-CO",
 				"headerRegExps": [ { "regExp": ".*(?i)(codigo.postal).*", "confidence": 95 }, { "regExp": ".*(?i)(postal).*", "confidence": 85 } ]
 			} ],
 		"documentation": [
@@ -428,7 +428,7 @@
 		"signature": "CJFV+VSRgkE9qJFlqdfK5nVpYCM=",
 		"clazz": "com.cobber.fta.plugins.address.AddressFullEN",
 		"validLocales": [
-			{ "localeTag":  "en-CA,en-US", "headerRegExps": [ { "regExp": ".*(?i)(address)", "confidence": 99 }, { "regExp": ".*(?i)(addr|location).*", "confidence": 95 } ] }
+			{ "localeTag": "en-CA,en-US", "headerRegExps": [ { "regExp": ".*(?i)(address)", "confidence": 99 }, { "regExp": ".*(?i)(addr|location).*", "confidence": 95 } ] }
 		],
 		"threshold": 90,
 		"priority": 80
@@ -440,7 +440,7 @@
 		"signature": "5P7tWzPdbjVvyHhLklpTf00Zxl8=",
 		"clazz": "com.cobber.fta.plugins.address.AddressEN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i).*(address|addr)(.*1)?", "confidence": 99 }, { "regExp": ".*(?i)(addr).*", "confidence": 95 }, { "regExp": ".*(?i)(street|location).*", "confidence": 85 } ] }
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": "(?i).*(address|addr)(.*1)?", "confidence": 99 }, { "regExp": ".*(?i)(addr).*", "confidence": 95 }, { "regExp": ".*(?i)(street|location).*", "confidence": 85 } ] }
 		],
 		"threshold": 90,
 		"priority": 81
@@ -452,7 +452,7 @@
 		"signature": "3E5oqYqSkuXljmmvAl47bS8ywxM=",
 		"clazz": "com.cobber.fta.plugins.address.AddressStreetNameEN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i)(street|road).?name", "confidence": 99 }, { "regExp": "(?i)(street|road)", "confidence": 95 }, { "regExp": ".*(?i)(street|road).*", "confidence": 90 }, { "regExp": ".*(?i)(location).*", "confidence": 85 } ] }
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": "(?i)(street|road).?name", "confidence": 99 }, { "regExp": "(?i)(street|road)", "confidence": 95 }, { "regExp": ".*(?i)(street|road).*", "confidence": 90 }, { "regExp": ".*(?i)(location).*", "confidence": 85 } ] }
 		],
 		"threshold": 90,
 		"priority": 82
@@ -464,7 +464,7 @@
 		"signature": "f4aT7BMSi+IsDI0LannEVYe/uQI=",
 		"clazz": "com.cobber.fta.plugins.address.AddressStreetNameBareEN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i).*(street|road).?name", "confidence": 99, "mandatory": true }, { "regExp": "(?i).*(name|street)", "confidence": 60, "mandatory": true } ] }
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": "(?i).*(street|road).?name", "confidence": 99, "mandatory": true }, { "regExp": "(?i).*(name|street)", "confidence": 60, "mandatory": true } ] }
 		],
 		"threshold": 90,
 		"priority": 83
@@ -475,7 +475,7 @@
 		"pluginType": "list",
 		"signature": "whIM9TwB3ArMA50gXTlOBjNCFJk=",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(street).*", "confidence": 90 } ] }
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(street).*", "confidence": 90 } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -494,7 +494,7 @@
 		"signature": "8Yl3CN3MVlSIjCrXBgZCWJskI1Q=",
 		"clazz": "com.cobber.fta.plugins.address.Address2EN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*2", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*2", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
 		],
 		"threshold": 90,
 		"priority": 85
@@ -506,7 +506,7 @@
 		"signature": "swnXMC+o9QcQEBdo3yHQEeExVxo=",
 		"clazz": "com.cobber.fta.plugins.address.Address3EN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*3", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*3", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
 		],
 		"threshold": 90,
 		"priority": 86
@@ -518,7 +518,7 @@
 		"signature": "1lNQdFYXnmRkNzRqwofC40ZHx9Q=",
 		"clazz": "com.cobber.fta.plugins.address.Address4EN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*4", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(addr|street).*4", "confidence": 99 }, { "regExp": ".*(?i)(address|addr).+", "confidence": 90 } ] }
 		],
 		"threshold": 90,
 		"priority": 87
@@ -530,8 +530,8 @@
 		"signature": "JFmqXYZjmq/aTw/EALlxloQ/tgQ=",
 		"clazz": "com.cobber.fta.plugins.address.AddressStreetNumber",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(street|house|address).?(number|num|no)", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(number|no|num)", "confidence": 80, "mandatory": true } ] },
-			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": "(?i)(huisnummer|huisnr.*)", "confidence": 99, "mandatory": true } ] }
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(street|house|address).?(number|num|no)", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(number|no|num)", "confidence": 80, "mandatory": true } ] },
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": "(?i)(huisnummer|huisnr.*)", "confidence": 99, "mandatory": true } ] }
 		],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/House_numbering" }
@@ -546,22 +546,22 @@
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.address.AddressOther",
 		"validLocales": [
-			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": "(?i)(?u)^адрес$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "ca", "headerRegExps": [ { "regExp": "(?i)(?u)^(adreça|adresse.*1)$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "da", "headerRegExps": [ { "regExp": "(?i)^(adresse|adresse.*1)$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "de", "headerRegExps": [ { "regExp": "(?i)^(adresse|adresse.*1|anschrift)$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "es", "headerRegExps": [ { "regExp": "(?i)(?u)^dirección$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "fi", "headerRegExps": [ { "regExp": "(?i)^(katuosoite|osoite)$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": "(?i)^(adresse|adresse.*1)$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "hr", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "it", "headerRegExps": [ { "regExp": "(?i)^indirizzo$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "lv", "headerRegExps": [ { "regExp": "(?i)^adrese$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": "(?i)^adres$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "pl", "headerRegExps": [ { "regExp": "(?i)^adres$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": "(?i)(?u)^endereço$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "ro", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "ru", "headerRegExps": [ { "regExp": "(?i)(?u)^адрес$", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "sk", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] }
+			{ "localeTag": "bg", "headerRegExps": [ { "regExp": "(?i)(?u)^адрес$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "ca", "headerRegExps": [ { "regExp": "(?i)(?u)^(adreça|adresse.*1)$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "da", "headerRegExps": [ { "regExp": "(?i)^(adresse|adresse.*1)$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "de", "headerRegExps": [ { "regExp": "(?i)^(adresse|adresse.*1|anschrift)$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": "(?i)(?u)^dirección$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "fi", "headerRegExps": [ { "regExp": "(?i)^(katuosoite|osoite)$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "fr", "headerRegExps": [ { "regExp": "(?i)^(adresse|adresse.*1)$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "hr", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "it", "headerRegExps": [ { "regExp": "(?i)^indirizzo$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "lv", "headerRegExps": [ { "regExp": "(?i)^adrese$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": "(?i)^adres$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "pl", "headerRegExps": [ { "regExp": "(?i)^adres$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "pt", "headerRegExps": [ { "regExp": "(?i)(?u)^endereço$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "ro", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "ru", "headerRegExps": [ { "regExp": "(?i)(?u)^адрес$", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "sk", "headerRegExps": [ { "regExp": "(?i)^adresa$", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 90,
 		"priority": 89
@@ -573,7 +573,7 @@
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.address.AddressStreetNameBare",
 		"validLocales": [
-			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": "(?i)^(straat|straatnaam)$", "confidence": 99, "mandatory": true } ] }
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": "(?i)^(straat|straatnaam)$", "confidence": 99, "mandatory": true } ] }
 		],
 		"threshold": 90,
 		"priority": 90
@@ -585,23 +585,24 @@
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.Gender",
 		"validLocales": [
-			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": "(?i)(?u)(Gender|пол).*", "confidence": 90 } ] },
-			{ "localeTag":  "ca", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sexe).*", "confidence": 90 } ] },
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": "(?i)(Gender|sex)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
-			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex|geschlecht).*", "confidence": 90 } ] },
-			{ "localeTag":  "es", "headerRegExps": [ { "regExp": "(?i)(Gender|genero|Sexo)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
-			{ "localeTag":  "fi", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Genre|Sukupuoli).*", "confidence": 90 } ] },
-			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": "(?i)(Gender|Genre|Sexe)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Genre|Sexe).*", "confidence": 90 } ] },
-			{ "localeTag":  "hr", "headerRegExps": [ { "regExp": ".*(?i)(Gender).*", "confidence": 90 } ] },
-			{ "localeTag":  "it", "headerRegExps": [ { "regExp": "(?i)(Gender|genere|sesso)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|genere|sesso).*", "confidence": 90 } ] },
-			{ "localeTag":  "ms", "headerRegExps": [ { "regExp": ".*(?i)(Gender|jantina).*", "confidence": 90 } ] },
-			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sexe|Geslach|Geslacht).*", "confidence": 90 } ] },
-			{ "localeTag":  "pl", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|Płeć|P³eæ).*", "confidence": 90 } ] },
-			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": "(?i)(Gender|Sexo)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
-			{ "localeTag":  "ro", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
-			{ "localeTag":  "ru", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|Пол).*", "confidence": 90 } ] },
-			{ "localeTag":  "sv", "headerRegExps": [ { "regExp": ".*(?i)(Gender|kon|kön).*", "confidence": 90 } ] },
-			{ "localeTag":  "tr", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|cinsiyet).*", "confidence": 90 } ] }
+			{ "localeTag": "bg", "headerRegExps": [ { "regExp": "(?i)(?u)(Gender|пол).*", "confidence": 90 } ] },
+			{ "localeTag": "ca", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sexe).*", "confidence": 90 } ] },
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": "(?i)(Gender|sex)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
+			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex|geschlecht).*", "confidence": 90 } ] },
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": "(?i)(Gender|genero|Sexo)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
+			{ "localeTag": "fi", "headerRegExps": [ { "regExp": ".*(?i)(Gender|Genre|Sukupuoli).*", "confidence": 90 } ] },
+			{ "localeTag": "fr", "headerRegExps": [ { "regExp": "(?i)(Gender|Genre|Sexe)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Genre|Sexe).*", "confidence": 90 } ] },
+			{ "localeTag": "hr", "headerRegExps": [ { "regExp": ".*(?i)(Gender).*", "confidence": 90 } ] },
+			{ "localeTag": "is", "headerRegExps": [ { "regExp": "(?i)(Gender|kyn)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|kyn).*", "confidence": 90 } ] },
+			{ "localeTag": "it", "headerRegExps": [ { "regExp": "(?i)(Gender|genere|sesso)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|genere|sesso).*", "confidence": 90 } ] },
+			{ "localeTag": "ms", "headerRegExps": [ { "regExp": ".*(?i)(Gender|jantina).*", "confidence": 90 } ] },
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sexe|Geslach|Geslacht).*", "confidence": 90 } ] },
+			{ "localeTag": "pl", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|Płeć|P³eæ).*", "confidence": 90 } ] },
+			{ "localeTag": "pt", "headerRegExps": [ { "regExp": "(?i)(Gender|Sexo)", "confidence": 99 }, { "regExp": ".*(?i)(Gender|Sexo).*", "confidence": 90 } ] },
+			{ "localeTag": "ro", "headerRegExps": [ { "regExp": ".*(?i)(Gender|sex).*", "confidence": 90 } ] },
+			{ "localeTag": "ru", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|Пол).*", "confidence": 90 } ] },
+			{ "localeTag": "sv", "headerRegExps": [ { "regExp": ".*(?i)(Gender|kon|kön).*", "confidence": 90 } ] },
+			{ "localeTag": "tr", "headerRegExps": [ { "regExp": ".*(?i)(?u)(Gender|cinsiyet).*", "confidence": 90 } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P21" },
@@ -617,7 +618,7 @@
 		"signature": "Cw4ieuKHMT4qah2mJ9uWUYg+rNk=",
 		"validLocales": [
 			{
-				"localeTag":  "ja",
+				"localeTag": "ja",
 				"headerRegExps": [ { "regExp": "(性|性別)", "confidence": 70 } ],
 				"matchEntries": [ {
 					"regExpReturned" : "(女性|女|男性|男|その他)"
@@ -644,7 +645,7 @@
 		"signature": "Cw4ieuKHMT4qah2mJ9uWUYg+rNk=",
 		"validLocales": [
 			{
-				"localeTag":  "zh",
+				"localeTag": "zh",
 				"headerRegExps": [ { "regExp": "(性|性別)", "confidence": 70 } ],
 				"matchEntries": [ {
 					"regExpReturned" : "(女性|女|女生|男性|男|男生)"
@@ -672,27 +673,27 @@
 		"clazz": "com.cobber.fta.plugins.person.Age",
 		"validLocales": [
 			{
-				"localeTag":  "en",
+				"localeTag": "en",
 				"headerRegExps": [ { "regExp": "(?i)(age|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true } ]
 			},
 			{
-				"localeTag":  "es",
+				"localeTag": "es",
 				"headerRegExps": [ { "regExp": "(?i)(edad)", "confidence": 90, "mandatory": true } ]
 			},
 			{
-				"localeTag":  "fr",
+				"localeTag": "fr",
 				"headerRegExps": [ { "regExp": "(?i)(?u)([aâ]ge|[aâ]ge[_ ].*|.*[_ '][aâ]ge)", "confidence": 90, "mandatory": true } ]
 			},
 			{
-				"localeTag":  "it",
+				"localeTag": "it",
 				"headerRegExps": [ { "regExp": "(?i)(?u)(età)", "confidence": 90, "mandatory": true } ]
 			},
 			{
-				"localeTag":  "nl",
+				"localeTag": "nl",
 				"headerRegExps": [ { "regExp": "(?i)(leeftijd)", "confidence": 90, "mandatory": true } ]
 			},
 			{
-				"localeTag":  "pt",
+				"localeTag": "pt",
 				"headerRegExps": [ { "regExp": "(?i)(idade)", "confidence": 90, "mandatory": true } ]
 			}
 		],
@@ -707,33 +708,33 @@
 		"clazz": "com.cobber.fta.plugins.person.AgeRange",
 		"validLocales": [
 			{
-				"localeTag":  "en",
+				"localeTag": "en",
 				"headerRegExps": [
 					{ "regExp": "(?i)(age|ages|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true },
 					{ "regExp": "(?i)age.*", "confidence": 60, "mandatory": true }
 				 ]
 			},
 			{
-				"localeTag":  "es",
+				"localeTag": "es",
 				"headerRegExps": [ { "regExp": "(?i).*edad.*", "confidence": 90, "mandatory": true } ]
 			},
 			{
-				"localeTag":  "fr",
+				"localeTag": "fr",
 				"headerRegExps": [
 					{ "regExp": "(?i)(?u)([aâ]ge|[aâ]ge[_ ].*|.*[_ '][aâ]ge)", "confidence": 90, "mandatory": true },
 					{ "regExp": "(?i)(?u)âge.*", "confidence": 60, "mandatory": true }
 				 ]
 			},
 			{
-				"localeTag":  "it",
+				"localeTag": "it",
 				"headerRegExps": [ { "regExp": "(?i)(?u)(età)", "confidence": 90, "mandatory": true } ]
 			},
 			{
-				"localeTag":  "nl",
+				"localeTag": "nl",
 				"headerRegExps": [ { "regExp": "(?i)leeftijd.*", "confidence": 90, "mandatory": true } ]
 			},
 			{
-				"localeTag":  "pt",
+				"localeTag": "pt",
 				"headerRegExps": [ { "regExp": "(?i)idade.*", "confidence": 90, "mandatory": true } ]
 			}
 		],
@@ -747,7 +748,7 @@
 		"clazz": "com.cobber.fta.plugins.person.Race",
 		"validLocales": [
 			{
-				"localeTag":  "*",
+				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(race|ethnic).*", "confidence": 95, "mandatory": true } ]
 			}
 		],
@@ -764,7 +765,7 @@
 		"clazz": "com.cobber.fta.plugins.person.RaceAbbr",
 		"validLocales": [
 			{
-				"localeTag":  "*",
+				"localeTag": "*",
 				"headerRegExps": [ { "regExp": "(?i)(race|ethnic).*|.*(?i)(race|ethnicity)", "confidence": 95, "mandatory": true } ]
 			}
 		],
@@ -781,7 +782,7 @@
 		"clazz": "com.cobber.fta.plugins.person.MaritalStatus",
 		"validLocales": [
 			{
-				"localeTag":  "*",
+				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(marital.?status).*", "confidence": 95, "mandatory": true } ]
 			}
 		],
@@ -796,7 +797,7 @@
 		"pluginType": "list",
 		"signature": "FO3IMfeesbLJh6WwceQWPVORcnE=",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(nationality).*", "confidence": 90 } ] }
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(nationality).*", "confidence": 90 } ] }
 		],
 		"ignoreList": [ "N/A", "OTHER" ],
 		"content": {
@@ -816,7 +817,7 @@
 		"pluginType": "list",
 		"signature": "1oOVHBz4YE+HmzPDQSy/OjpSBiA=",
 		"validLocales": [
-			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(nationaliteit).*", "confidence": 90 } ] }
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(nationaliteit).*", "confidence": 90 } ] }
 		],
 		"ignoreList": [ "N/A", "OTHER" ],
 		"content": {
@@ -836,7 +837,7 @@
 		"pluginType": "list",
 		"signature": "/Di73LZHHGjcJYhigTqSTQrtTvA=",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(honorific|title).*", "confidence": 90 } ] }
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(honorific|title).*", "confidence": 90 } ] }
 		],
 		"ignoreList": [ "N/A", "OTHER" ],
 		"content": {
@@ -857,7 +858,7 @@
 		"pluginType": "list",
 		"signature": "Rs6U63buoAAlnITZdPtJuxUrgNg=",
 		"validLocales": [
-			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(land).*", "confidence": 90 } ] }
+			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(land).*", "confidence": 90 } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -877,7 +878,7 @@
 		"pluginType": "list",
 		"signature": "fot3XHPIh18wTcBDyeN3DlY7LYY=",
 		"validLocales": [
-			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(pais).*", "confidence": 90 } ] }
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(pais).*", "confidence": 90 } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -898,7 +899,7 @@
 		"pluginType": "list",
 		"signature": "SVnejJJWKhuw1LMRsCaHojewEOk=",
 		"validLocales": [
-			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(land).*", "confidence": 90 } ] }
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(land).*", "confidence": 90 } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -921,7 +922,7 @@
 		"clazz": "com.cobber.fta.plugins.CountryEN",
 		"validLocales": [
 			{
-				"localeTag":  "*",
+				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(country).*", "confidence": 90 } ],
 				"matchEntries": [ {
 					"regExpReturned": "[\\p{IsAlphabetic}][-\\p{IsAlphabetic} '\\.(),]+"
@@ -947,7 +948,7 @@
 		"pluginType": "java",
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.MonthAbbr",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"priority": 110
 	},
 	{
@@ -956,7 +957,7 @@
 		"pluginType": "java",
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.MonthFull",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Month" }
 		],
@@ -968,7 +969,7 @@
 		"pluginType": "java",
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.DOWAbbr",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"priority": 112
 	},
 	{
@@ -977,7 +978,7 @@
 		"pluginType": "java",
 		"signature": "[NONE]",
 		"clazz": "com.cobber.fta.plugins.DOWFull",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Names_of_the_days_of_the_week" }
 		],
@@ -991,11 +992,11 @@
 		"clazz": "com.cobber.fta.plugins.PeriodQuarter",
 		"validLocales": [
 			{
-				"localeTag":  "en",
+				"localeTag": "en",
 				"headerRegExps": [ { "regExp": ".*(?i)(quarter|qtr).*", "confidence": 99, "mandatory": true } ]
 			},
 			{
-				"localeTag":  "nl",
+				"localeTag": "nl",
 				"headerRegExps": [ { "regExp": ".*(?i)(periode).*", "confidence": 99, "mandatory": true } ]
 			} ],
 		"priority": 114
@@ -1023,7 +1024,7 @@
 		"pluginType": "java",
 		"signature": "nA7JzkjHCLvvRAfhvJv12v4FNgU=",
 		"clazz": "com.cobber.fta.plugins.PeriodYearRange",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"priority": 116
 	},
 	{
@@ -1032,7 +1033,7 @@
 		"pluginType": "list",
 		"signature": "jwzKHMfuq3AO4lEKEm0e/ZmOIRA=",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-CA,fr-CA,en-MX", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] }
+			{ "localeTag": "en-US,en-CA,fr-CA,en-MX", "headerRegExps": [ { "regExp": ".*(?i)(province).*", "confidence": 90 } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -1051,7 +1052,7 @@
 		"pluginType": "list",
 		"signature": "h565UW3Wl3GYzYAriMJM6T1LsmY=",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-CA,fr-CA,en-MX,es-MX", "headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ] }
+			{ "localeTag": "en-US,en-CA,fr-CA,en-MX,es-MX", "headerRegExps": [ { "regExp": ".*(?i)(estado).*", "confidence": 90 } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -1070,7 +1071,7 @@
 		"pluginType": "list",
 		"signature": "JD5jeXHLzGctpqicY44B9iJzyXU=",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-Latn-US,en-CA,fr-CA,en-MX", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] }
+			{ "localeTag": "en-US,en-Latn-US,en-CA,fr-CA,en-MX", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -1893,7 +1894,7 @@
 		"signature": "6jAs4X5jVlK2N0D0PxVkpA7+/oM=",
 		"clazz": "com.cobber.fta.plugins.MunicipalityCodeNL",
 		"validLocales": [
-			{ "localeTag":  "en-NL,nl-NL", "headerRegExps": [ { "regExp": ".*(?i)gemeente.?(code|nummer|nr).*", "confidence": 95, "mandatory": true } ] }
+			{ "localeTag": "en-NL,nl-NL", "headerRegExps": [ { "regExp": ".*(?i)gemeente.?(code|nummer|nr).*", "confidence": 95, "mandatory": true } ] }
 		],
 		"threshold": 95,
 		"priority": 161
@@ -2969,7 +2970,7 @@
 		"pluginType": "java",
 		"signature": "QPHqJewHLBbpUTGQg7hc1+Zzu/g=",
 		"clazz": "com.cobber.fta.plugins.IMEI",
-		"validLocales": [ { "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(imei).*", "confidence": 99, "mandatory": true } ] } ],
+		"validLocales": [ { "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(imei).*", "confidence": 99, "mandatory": true } ] } ],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity" }
 		],
@@ -2982,7 +2983,7 @@
 		"pluginType": "java",
 		"signature": "ySEbGrpJCO/yoMiVxyK5vi9sBtU=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitLuhn",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Luhn_algorithm" }
 		],
@@ -2997,7 +2998,7 @@
 		"clazz": "com.cobber.fta.plugins.CheckDigitCUSIP",
 		"validLocales": [
 			{
-				"localeTag":  "*",
+				"localeTag": "*",
 				"matchEntries": [ {
 					"regExpReturned": "[\\p{IsAlphabetic}\\d]{9}"
 				} ]
@@ -3014,7 +3015,7 @@
 		"pluginType": "java",
 		"signature": "A6zVzMb8GxHKIRvQeHJYY2mUqV0=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitSEDOL",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/SEDOL" }
 		],
@@ -3026,7 +3027,7 @@
 		"pluginType": "java",
 		"signature": "ROIyMHsrinw2O/REk9ClAb0WUEs=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitISIN",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P946" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/International_Securities_Identification_Number" }
@@ -3039,7 +3040,7 @@
 		"pluginType": "java",
 		"signature": "AP6Bjl97rR4D1ogsqPqXGoD5Dq4=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitEAN13",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P212" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISBN" },
@@ -3054,7 +3055,7 @@
 		"pluginType": "java",
 		"signature": "L88o6zYDCyR84UYMe+O/ua0Kfcg=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitUPC",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Universal_Product_Code" }
 		],
@@ -3067,7 +3068,7 @@
 		"pluginType": "java",
 		"signature": "ahEtumk3vTi+ErbmmqrmBN7OeVU=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitIBAN",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/International_Bank_Account_Number" }
 		],
@@ -3079,7 +3080,7 @@
 		"pluginType": "java",
 		"signature": "z/uWdWQDM6Ln80wNSIshhGV5et4=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitABA",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ABA_routing_transit_number" }
 		],
@@ -3092,7 +3093,7 @@
 		"pluginType": "java",
 		"signature": "4ZyGddBdufT5msMx8IyO5ZJP30s=",
 		"clazz": "com.cobber.fta.plugins.CheckDigitISBN",
-		"validLocales": [ { "localeTag":  "*" } ],
+		"validLocales": [ { "localeTag": "*" } ],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISBN" },
 			{ "source": "schema", "reference": "https://schema.org/isbn" }
@@ -3106,7 +3107,7 @@
 		"signature": "6IKfzTa++cfQDm7aehEqSaJ/rek=",
 		"clazz": "com.cobber.fta.plugins.JobTitleEN",
 		"validLocales": [
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(job.title).*", "confidence": 99 }, { "regExp": ".*(?i)(title|position|occupation|profession|role).*", "confidence": 90 } ] }
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(job.title).*", "confidence": 99 }, { "regExp": ".*(?i)(title|position|occupation|profession|role).*", "confidence": 90 } ] }
 		],
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Work_(human_activity)" },
@@ -3123,7 +3124,7 @@
 		"signature": "j2TOVT5j9M0DIQyTrwOdB71iZdA=",
 		"clazz": "com.cobber.fta.plugins.IndustryEN",
 		"validLocales": [
-			{ "localeTag":  "*", "headerRegExps": [ { "regExp": "(?i)(industry)", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(industry|naics).*", "confidence": 90, "mandatory": true } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": "(?i)(industry)", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(industry|naics).*", "confidence": 90, "mandatory": true } ] }
 		],
 		"priority": 301
 	},
@@ -3202,7 +3203,7 @@
 		"pluginOptions": "words=all",
 		"signature": "CIsljBWEmutE4EulPJgCkQZyzMU=",
 		"validLocales": [
-			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(color|colour).*", "confidence": 90 } ] }
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(color|colour).*", "confidence": 90 } ] }
 		],
 		"ignoreList": [ "N/A", "OTHER" ],
 		"content": {
@@ -3224,7 +3225,7 @@
 		"pluginOptions": "words=all",
 		"signature": "+WrxpZvBxXNUyWInyd9r2FadhuY=",
 		"validLocales": [
-			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(kleur).*", "confidence": 90, "mandatory": true } ] }
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(kleur).*", "confidence": 90, "mandatory": true } ] }
 		],
 		"ignoreList": [ "NVT" ],
 		"content": {
@@ -3246,7 +3247,7 @@
 		"pluginOptions": "words=all",
 		"signature": "I2y3yXfuj8RTGMSr6exv3TnPWoE=",
 		"validLocales": [
-			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(color).*", "confidence": 90, "mandatory": true } ] }
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(color).*", "confidence": 90, "mandatory": true } ] }
 		],
 		"content": {
 			"type": "resource",
@@ -3267,7 +3268,7 @@
 		"signature": "eQbFEkaZaWJM4Quexoibt1QJsnw=",
 		"clazz": "com.cobber.fta.plugins.Direction",
 		"validLocales": [
-			{ "localeTag":  "*", "headerRegExps": [ { "regExp": ".*(?i)(direction).*", "confidence": 99 },
+			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(direction).*", "confidence": 99 },
 			 { "regExp": ".*(?i)(dir|suffix|prefix).*", "confidence": 90 } ] }
 		],
 		"documentation": [
@@ -3283,7 +3284,7 @@
 		"signature": "i2DkepwVwjhGYOf7BbaemLrr1GI=",
 		"clazz": "com.cobber.fta.plugins.IndustryNAICS",
 		"validLocales": [
-			{ "localeTag":  "en-US,en-CA,en-MX,es-MX,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(naics.?code).*", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(naics).*", "confidence": 90, "mandatory": true } ] }
+			{ "localeTag": "en-US,en-CA,en-MX,es-MX,fr-CA", "headerRegExps": [ { "regExp": ".*(?i)(naics.?code).*", "confidence": 99, "mandatory": true }, { "regExp": ".*(?i)(naics).*", "confidence": 90, "mandatory": true } ] }
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P3224" },
@@ -3417,6 +3418,13 @@
 			{
 				"localeTag": "de",
 				"headerRegExps": [ { "regExp": ".*(?i)(nachname).*", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ],
+				"matchEntries": [ {
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+				} ]
+			},
+			{
+				"localeTag": "el",
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(ΠΑΤΡΩΝΥΜΟ).*", "confidence": 90 }, { "regExp": "(?i)(ΟΝΟΜΑ)", "confidence": 60 } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
 				} ]
@@ -3584,23 +3592,26 @@
 		"signature": "7WbjWLZJ8Zdm+U8po/igrvDH3yE=",
 		"clazz": "com.cobber.fta.plugins.FreeText",
 		"validLocales": [
-			{ "localeTag":  "bg", "headerRegExps": [ { "regExp": ".*(?i)(?u)(описание|Бележки|Забележки|коментар|причина|description).*", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "ca", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descripció|comentar|description).*", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "da", "headerRegExps": [ { "regExp": ".*(?i)(?u)(beskrivelse|noter|kommentar|årsag|description).*", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "de", "headerRegExps": [ { "regExp": ".*(?i)(bezeichnung|anmerkungen|bemerkungen|description).*", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "en", "headerRegExps": [ { "regExp": ".*(?i)(description|notes|comment|reason).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "es", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descripción|nota|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "fi", "headerRegExps": [ { "regExp": ".*(?i)(kuvaus|huomautukset|kommentti|syy|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "fr", "headerRegExps": [ { "regExp": ".*(?i)(description|remarques|commentaire|raison).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "ga", "headerRegExps": [ { "regExp": ".*(?i)(?u)(tuairisc|nótaí|trácht|fáth|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "hu", "headerRegExps": [ { "regExp": ".*(?i)(?u)(leírás|jegyzetek|megjegyzés|indoklás|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "it", "headerRegExps": [ { "regExp": ".*(?i)(descrizione|nota|Annotazioni|motivo|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "lv", "headerRegExps": [ { "regExp": ".*(?i)(apraksts|piezīmes|komentārs|iemesls|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "nl", "headerRegExps": [ { "regExp": ".*(?i)(omschrijving|opmerkingen|description).*", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "pt", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descrição|nota|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "ro", "headerRegExps": [ { "regExp": ".*(?i)(descriere|note|comentar|motiv|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "ru", "headerRegExps": [ { "regExp": ".*(?i)(?u)(описание|description).*", "confidence": 99, "mandatory": true } ] },
-			{ "localeTag":  "sk", "headerRegExps": [ { "regExp": ".*(?i)(?u)(popis|poznámky|komentár|dôvod|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] }
+			{ "localeTag": "bg", "headerRegExps": [ { "regExp": ".*(?i)(?u)(описание|Бележки|Забележки|коментар|причина|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "ca", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descripció|comentar|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "da", "headerRegExps": [ { "regExp": ".*(?i)(?u)(beskrivelse|noter|kommentar|årsag|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "de", "headerRegExps": [ { "regExp": ".*(?i)(bezeichnung|anmerkungen|bemerkungen|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "en", "headerRegExps": [ { "regExp": ".*(?i)(description|notes|comment|reason).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descripción|nota|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "fi", "headerRegExps": [ { "regExp": ".*(?i)(kuvaus|huomautukset|kommentti|syy|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "fr", "headerRegExps": [ { "regExp": ".*(?i)(description|remarques|commentaire|raison).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "ga", "headerRegExps": [ { "regExp": ".*(?i)(?u)(tuairisc|nótaí|trácht|fáth|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "hr", "headerRegExps": [ { "regExp": ".*(?i)(?u)(opis|napomene|komentar|razlog|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "hu", "headerRegExps": [ { "regExp": ".*(?i)(?u)(leírás|jegyzetek|megjegyzés|indoklás|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "it", "headerRegExps": [ { "regExp": ".*(?i)(descrizione|nota|Annotazioni|motivo|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "lv", "headerRegExps": [ { "regExp": ".*(?i)(apraksts|piezīmes|komentārs|iemesls|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(omschrijving|opmerkingen|description).*|(?i)omsch.*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "pt", "headerRegExps": [ { "regExp": ".*(?i)(?u)(descrição|nota|motivo).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "ro", "headerRegExps": [ { "regExp": ".*(?i)(descriere|note|comentar|motiv|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "ru", "headerRegExps": [ { "regExp": ".*(?i)(?u)(описание|description).*", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "sk", "headerRegExps": [ { "regExp": ".*(?i)(?u)(popis|poznámky|komentár|dôvod|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "sv", "headerRegExps": [ { "regExp": ".*(?i)(?u)(beskrivning|anteckningar|kommentar|orsak|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] },
+			{ "localeTag": "tr", "headerRegExps": [ { "regExp": ".*(?i)(?u)(açıklama|notlar|yorum|sebep|description).*|.*(?i)(desc)", "confidence": 99, "mandatory": true } ] }
 		],
 		"content": {
 			"type": "resource",

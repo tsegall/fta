@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 15.4.1
+ - ENH: I18N - Add FREE_TEXT detection for a set of Langauages (hr, sv, tr)
+ - ENH: I18N - Add GENDER and Yes/No detection for Icelandic
+ - BUG - Fix SemanticTypes doc to reflect additional languages
+ - INT: Bump testng to 7.9, slf4j-api to 2.0.10, google phonenumber
+
 ### 15.4.0
  - ENH: I18N - Add FREE_TEXT detection for a set of Langauages (da, fi, ga, hu, lv, ro, sk) and improved sample generation for all languages
  - ENH: Bump guava and Jackson

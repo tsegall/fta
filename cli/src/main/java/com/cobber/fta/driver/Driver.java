@@ -219,7 +219,7 @@ public class Driver {
 			error.printf("\tMonths: ");
 			final String[] months = dfs.getMonths();
 			for (int i = 0; i <= actualMonths; i++) {
-				error.printf("%s", months[i]);
+				error.printf("%s (%S)", months[i], months[i].toUpperCase(locale));
 				if (i != actualMonths)
 					error.printf(", ");
 			}

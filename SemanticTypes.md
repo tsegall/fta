@@ -45,7 +45,7 @@
 |EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|https://en.wikipedia.org/wiki/Unix_time|*|
 |EPOCH.SECONDS|Unix Epoch (Timestamp) - seconds|https://en.wikipedia.org/wiki/Unix_time|*|
 |FILENAME|Name of file|https://en.wikipedia.org/wiki/Filename|*|
-|FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...||bg, ca, de, es, fr, it, nl, pt, ru, *|
+|FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...||bg, ca, da, de, en, es, fi, fr, ga, hr, hu, it, lv, nl, pt, ro, ru, sk, sv, tr|
 |FULL_ADDRESS_EN|Full Address (English Language)||en-CA,en-US|
 |GENDER.TEXT_&lt;LANGUAGE&gt;|Gender|https://www.wikidata.org/wiki/Property:P21, https://en.wikipedia.org/wiki/Gender, https://schema.org/gender|bg, ca, en, de, es, fi, fr, hr, it, ms, nl, pl, pt, ro, ru, sv, tr|
 |GENDER.TEXT_JA|Gender (Japanese Language)|https://www.wikidata.org/wiki/Property:P21, https://en.wikipedia.org/wiki/Gender, https://schema.org/gender|ja|
