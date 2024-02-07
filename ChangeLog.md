@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.4.2
+ - INT: Bump gradle to 8.6, slf4j-api to 2.0.12, google phonenumber to 8.13.29
+
 ### 15.4.1
  - ENH: I18N - Add FREE_TEXT detection for a set of Langauages (hr, sv, tr)
  - ENH: I18N - Add GENDER and Yes/No detection for Icelandic
