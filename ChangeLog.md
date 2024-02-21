@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.4.3
+ - INT: Bump google phonenumber to 8.13.30, logback-classic to 1.5.0
+
 ### 15.4.2
  - INT: Bump gradle to 8.6, slf4j-api to 2.0.12, google phonenumber to 8.13.29
 
