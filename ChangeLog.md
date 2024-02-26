@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 15.5.0
+ - BUG: OutOfMemoryError: Requested array size exceeds VM limit exception (Issue #70)
+ - BUG: getMinLength() was never returning 0
+ - ENH: Improve detection of non-localized numbers
+ - INT: Bump google phonenumber to 8.13.31
+ - INT: Bump copyright year and fix a few missing headers
+
 ### 15.4.3
  - INT: Bump google phonenumber to 8.13.30, logback-classic to 1.5.0
 

@@ -3352,7 +3352,8 @@
 			},
 			{
 				"localeTag": "de",
-				"headerRegExps": [ { "regExp": ".*(?i)(vornam).*", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ],
+				"headerRegExps": [ { "regExp": ".*(?i)(vornam).*", "confidence": 90 },
+					{ "regExp": "(?i)(first)", "confidence": 90 }, { "regExp": "(?i)(name)", "confidence": 60 } ],
 				"matchEntries": [ {
 					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
 				} ]

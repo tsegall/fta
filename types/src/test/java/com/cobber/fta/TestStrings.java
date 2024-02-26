@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 Tim Segall
+ * Copyright 2017-2024 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,9 +89,9 @@ public class TestStrings {
 
 		assertEquals(result.getSampleCount(), 3 * iterations + 1);
 		assertEquals(result.getMaxLength(), 6);
-		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMinLength(), 0);
 		assertEquals(result.getMaxValue(), "      ");
-		assertEquals(result.getMinValue(), " ");
+		assertEquals(result.getMinValue(), "");
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getMatchCount(), 0);
@@ -218,7 +218,7 @@ public class TestStrings {
 		assertEquals(result.getSampleCount(), 22);
 		assertEquals(result.getMatchCount(), 0);
 		assertEquals(result.getNullCount(), 2);
-		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMinLength(), 0);
 		assertEquals(result.getMaxLength(), 9);
 		assertEquals(result.getBlankCount(), 20);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BLANKORNULL));
@@ -254,7 +254,7 @@ public class TestStrings {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length - result.getBlankCount());
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getMinLength(), 2);
+		assertEquals(result.getMinLength(), 0);
 		assertEquals(result.getMaxLength(), 9);
 		assertEquals(result.getBlankCount(), 32);
 		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHANUMERIC + "{2,9}");

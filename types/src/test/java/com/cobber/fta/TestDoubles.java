@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 Tim Segall
+ * Copyright 2017-2024 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1868,7 +1868,7 @@ public class TestDoubles {
 				"105.841", "1.525", "129.605", "1.895", "12.187",
 				"12.845", "1.962", "109.736", "120.509",
 				// This one must be a double - hence we are all in on the Doubles
-				"1201.685",
+				"1201.685"
 		};
 
 		for (final String input : inputs)

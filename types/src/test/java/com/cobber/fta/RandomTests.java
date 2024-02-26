@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 Tim Segall
+ * Copyright 2017-2024 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -386,7 +386,7 @@ public class RandomTests {
 		final TextAnalyzer analysis = new TextAnalyzer("employeeNumber");
 		analysis.setTrace("enabled=true");
 		analysis.setDebug(2);
-		final String pipedInput = "||||||||||||||||||||" +
+		final String pipedInput =
 				"F944255990|F944277490|F944277490|F944285690|F944285690|F944285690|F944285690|F944285690|F944296590|F944296590|" +
 				"F944296590|F944296890|F944299990|F944299990|FN22844690|FN24121490|FN24122790|FN24623590|FN24628690|FN24628890|" +
 				"FN27016490|FN27016890|FN27381590|FN27396790|FN29563390|FN29565590|FN29565790|FN29565990|FN29568490|FN29568890|" +
@@ -419,7 +419,6 @@ public class RandomTests {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getMinLength(), 9);
 		assertEquals(result.getMaxLength(), 11);
-		assertEquals(result.getBlankCount(), 20);
 		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHANUMERIC + "{10,11}");
 		assertEquals(result.getConfidence(), 0.975609756097561);
 

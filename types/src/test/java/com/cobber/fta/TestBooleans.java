@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 Tim Segall
+ * Copyright 2017-2024 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -274,7 +274,7 @@ public class TestBooleans {
 				"Y", "N", "N", "N", "", "Y", "Y", "Y", "Y", "N",
 				"Y", "", "Y", "Y", "", "Y", "Y", "Y", "Y", "",
 				"Y", "N", "N", "N", "", "Y", "Y", "Y", "Y", "N",
-				"Y"
+				"Y", "  "
 		};
 		int locked = -1;
 
@@ -297,8 +297,8 @@ public class TestBooleans {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.BOOLEAN);
 		assertEquals(result.getTypeModifier(), "Y_N");
-		assertEquals(result.getMinLength(), 1);
-		assertEquals(result.getMaxLength(), 1);
+		assertEquals(result.getMinLength(), 0);
+		assertEquals(result.getMaxLength(), 2);
 		assertEquals(result.getMinValue(), "n");
 		assertEquals(result.getMaxValue(), "y");
 		assertTrue(inputs[0].matches(result.getRegExp()));

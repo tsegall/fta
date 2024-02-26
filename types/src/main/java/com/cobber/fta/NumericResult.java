@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.dates;
+package com.cobber.fta;
 
-import com.cobber.fta.core.FTAType;
+import com.cobber.fta.TextAnalyzer.SignStatus;
 
-public class SimpleFacts {
-	private final String matcher;
-	private final String format;
-	private final FTAType type;
+public class NumericResult {
+	int digitsSeen;
+	int alphasSeen;
+	boolean couldBeNumeric = true;
+	int numericDecimalSeparators;
+	int numericGroupingSeparators;
+	SignStatus numericSigned = SignStatus.NONE;
+	final int[] charCounts = new int[128];
+	final int[] lastIndex = new int[128];
+	int possibleExponentSeen = -1;
+	boolean nonLocalizedDouble = false;
+	StringBuilder l0;
 
-	SimpleFacts(final String matcher, final String format, final FTAType type) {
-		this.matcher = matcher;
-		this.format = format;
-		this.type = type;
-	}
-
-	public String getMatcher() {
-		return matcher;
-	}
-
-	public String getFormat() {
-		return format;
-	}
-
-	public FTAType getType() {
-		return type;
+	NumericResult() {
 	}
 }

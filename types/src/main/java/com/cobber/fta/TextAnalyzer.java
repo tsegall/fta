@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 Tim Segall
+ * Copyright 2017-2024 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.Collator;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -124,15 +122,10 @@ public class TextAnalyzer {
 	/** Context provided to this analysis - contains name, DateResolutionMode, ... */
 	private AnalyzerContext context;
 
-	private char localeDecimalSeparator;
-	private char localeGroupingSeparator;
-	private char localeMinusSign;
+	private NumericInfo ni;
+
 	private NumberFormat longFormatter;
 	private NumberFormat doubleFormatter;
-	private char negativePrefix;
-	private boolean hasNegativePrefix;
-	private char negativeSuffix;
-	private boolean hasNegativeSuffix;
 	private final FiniteMap outliersSmashed = new FiniteMap();
 	private List<String> raw; // 0245-11-98
 	// 0: d{4}-d{2}-d{2} 1: d{+}-d{+}-d{+} 2: d{+}-d{+}-d{+}
@@ -809,7 +802,7 @@ public class TextAnalyzer {
 		// We always want to track basic facts for the field
 		final int length = input.length();
 
-		if (length != 0 && length < facts.minRawLength)
+		if (length < facts.minRawLength)
 			facts.minRawLength = length;
 		if (length > facts.maxRawLength)
 			facts.maxRawLength = length;
@@ -860,7 +853,7 @@ public class TextAnalyzer {
 			if (n == null || cleaned.length() != pos.getIndex())
 				return false;
 			l = n.longValue();
-			if (trimmed.indexOf(localeGroupingSeparator) != -1) {
+			if (trimmed.indexOf(ni.groupingSeparator) != -1) {
 				facts.groupingSeparators++;
 				if (!facts.getMatchTypeInfo().isSemanticType() && !facts.getMatchTypeInfo().hasGrouping()) {
 					facts.setMatchTypeInfo(knownTypes.grouping(facts.getMatchTypeInfo().regexp));
@@ -868,9 +861,9 @@ public class TextAnalyzer {
 				}
 			}
 			digits = trimmed.length();
-			if (hasNegativePrefix && (firstCh == '-' || firstCh == '+' || firstCh == negativePrefix))
+			if (ni.hasNegativePrefix && (firstCh == '-' || firstCh == '+' || firstCh == ni.negativePrefix))
 				digits--;
-			if (l < 0 && hasNegativeSuffix)
+			if (l < 0 && ni.hasNegativeSuffix)
 				digits--;
 		}
 
@@ -1021,14 +1014,14 @@ public class TextAnalyzer {
 			if (dd == null)
 				return false;
 			d = dd;
-			if (input.indexOf(localeGroupingSeparator) != -1) {
-				if (!hasGroupingSeparator(input, localeGroupingSeparator, localeDecimalSeparator))
+			if (input.indexOf(ni.groupingSeparator) != -1) {
+				if (!hasGroupingSeparator(input, ni.groupingSeparator, ni.decimalSeparator))
 					return false;
 				facts.groupingSeparators++;
 			}
 			// Make sure to track the decimal separator being used for doubles
-			if (localeDecimalSeparator != '.' && facts.decimalSeparator != localeDecimalSeparator && input.indexOf(localeDecimalSeparator) != -1)
-				facts.decimalSeparator = localeDecimalSeparator;
+			if (ni.decimalSeparator != '.' && facts.decimalSeparator != ni.decimalSeparator && input.indexOf(ni.decimalSeparator) != -1)
+				facts.decimalSeparator = ni.decimalSeparator;
 		}
 
 		// If it is NaN/Infinity then we are all done
@@ -1250,34 +1243,7 @@ public class TextAnalyzer {
 		longFormatter = NumberFormat.getIntegerInstance(locale);
 		doubleFormatter = NumberFormat.getInstance(locale);
 
-		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
-		localeDecimalSeparator = formatSymbols.getDecimalSeparator();
-		localeGroupingSeparator = formatSymbols.getGroupingSeparator();
-		localeMinusSign = formatSymbols.getMinusSign();
-		final NumberFormat simple = NumberFormat.getNumberInstance(locale);
-		if (simple instanceof DecimalFormat) {
-			String signFacts = ((DecimalFormat) simple).getNegativePrefix();
-			// Ignore the LEFT_TO_RIGHT_MARK if it exists
-			if (!signFacts.isEmpty() && signFacts.charAt(0) == KnownTypes.LEFT_TO_RIGHT_MARK)
-				signFacts = signFacts.substring(1);
-			if (signFacts.length() > 1)
-				throw new FTAUnsupportedLocaleException("No support for locales with multi-character sign prefixes");
-			hasNegativePrefix = !signFacts.isEmpty();
-			if (hasNegativePrefix)
-				negativePrefix = signFacts.charAt(0);
-			signFacts = ((DecimalFormat) simple).getNegativeSuffix();
-			if (signFacts.length() > 1)
-				throw new FTAUnsupportedLocaleException("No support for locales with multi-character sign suffixes");
-			hasNegativeSuffix = !signFacts.isEmpty();
-			if (hasNegativeSuffix)
-				negativeSuffix = signFacts.charAt(0);
-		}
-		else {
-			final String signFacts = String.valueOf(formatSymbols.getMinusSign());
-			hasNegativePrefix = true;
-			negativePrefix = signFacts.charAt(0);
-			hasNegativeSuffix = false;
-		}
+		ni = new NumericInfo(locale);
 
 		knownTypes.initialize(locale);
 
@@ -1542,7 +1508,6 @@ public class TextAnalyzer {
 	}
 
 	private boolean trainCore(final String rawInput, final String trimmed, final long count) {
-
 		trackResult(rawInput, trimmed, true, count);
 
 		// If we have determined a type, no need to further train
@@ -1552,154 +1517,14 @@ public class TextAnalyzer {
 		for (int i = 0; i < count; i++)
 			raw.add(rawInput);
 
+
 		final int length = trimmed.length();
 
-		final StringBuilder l0 = new StringBuilder(length);
-
-		// Walk the string
-		SignStatus numericSigned = SignStatus.NONE;
-		int numericDecimalSeparators = 0;
-		int numericGroupingSeparators = 0;
-		boolean nonLocalizedDouble = false;
-		boolean couldBeNumeric = true;
-		boolean leadingZero = false;
-		int possibleExponentSeen = -1;
-		int digitsSeen = 0;
-		int alphasSeen = 0;
-		final int[] charCounts = new int[128];
-		final int[] lastIndex = new int[128];
-		int startLooking = 0;
-		int stopLooking = length;
-
-		int matchesRequired = 0;
-		int matches = 0;
-		if (hasNegativePrefix) {
-			matchesRequired++;
-			if (negativePrefix == trimmed.charAt(0)) {
-				matches++;
-				startLooking = 1;
-			}
-		}
-		if (hasNegativeSuffix) {
-			matchesRequired++;
-			if (negativeSuffix == trimmed.charAt(length - 1)) {
-				matches++;
-				stopLooking = length - 1;
-			}
-		}
-		if (matches == matchesRequired && matches > 0)
-			numericSigned = SignStatus.LOCALE_STANDARD;
-
-		int periodOffset = -1;
-		int periods = 0;
-		for (int i = startLooking; i < stopLooking; i++) {
-			final char ch = trimmed.charAt(i);
-
-			// Track counts and last occurrence for simple characters
-			if (ch <= 127) {
-				charCounts[ch]++;
-				lastIndex[ch] = i;
-			}
-
-			if ((ch == localeMinusSign || ch == '+') && i == 0)
-				numericSigned = SignStatus.LEADING_SIGN;
-			else if (!hasNegativeSuffix && numericSigned == SignStatus.NONE && ch == '-' && i == stopLooking - 1 && possibleExponentSeen == -1) {
-				numericSigned = SignStatus.TRAILING_MINUS;
-			} else if (Character.isDigit(ch)) {
-				l0.append('d');
-				if (digitsSeen == 0 && ch == '0')
-					leadingZero = true;
-				digitsSeen++;
-			} else if (ch == localeDecimalSeparator) {
-				l0.append('D');
-				numericDecimalSeparators++;
-				if (numericDecimalSeparators > 1)
-					couldBeNumeric = false;
-			} else if (digitsSeen >= 0 && leadingZero == false && ch == localeGroupingSeparator && i + 3 < stopLooking &&
-					(i + 4 == stopLooking || !Character.isDigit(trimmed.charAt(i + 4)))) {
-				l0.append('G');
-				numericGroupingSeparators++;
-			} else if (Character.isAlphabetic(ch)) {
-				l0.append('a');
-				alphasSeen++;
-				if (couldBeNumeric && (ch == 'e' || ch == 'E')) {
-					if (possibleExponentSeen != -1 || i < 1 || i + 1 >= length)
-						couldBeNumeric = false;
-					else
-						possibleExponentSeen = i;
-				}
-				else
-					couldBeNumeric = false;
-			} else {
-				l0.append(ch);
-				if (ch == '.') {
-					periodOffset = i;
-					periods++;
-				}
-				// If the last character was an exponentiation symbol then this better be a sign if it is going to be numeric
-				if (possibleExponentSeen != -1 && possibleExponentSeen == i - 1) {
-					if (ch != localeMinusSign && ch != '+')
-						couldBeNumeric = false;
-				}
-				else
-					couldBeNumeric = false;
-			}
-		}
-
-		// Handle doubles stored in non-localized format (e.g. latitude is often stored with a '.')
-		// This case handles the case where the grouping separator is not a '.'
-		if (alphasSeen == 0 && periodOffset != -1 && periods == 1 && numericDecimalSeparators == 0 && numericGroupingSeparators == 0) {
-			couldBeNumeric = true;
-			for (int i = 0; i < l0.length(); i++) {
-				if (l0.charAt(i) == '.') {
-					l0.replace(i, i + 1, "D");
-					numericDecimalSeparators++;
-					nonLocalizedDouble = true;
-					break;
-				}
-			}
-		}
-
-		if (couldBeNumeric && possibleExponentSeen != -1) {
-			final int exponentLength = stopLooking - possibleExponentSeen - 1;
-			if (exponentLength >= 5)
-				couldBeNumeric = false;
-			else {
-				int offset = possibleExponentSeen + 1;
-				// parseInt cannot cope with UTF-8 minus sign, which is used in some locales, so just skip sign
-				char ch = trimmed.charAt(possibleExponentSeen + 1);
-				if (ch == localeMinusSign || ch == '-' || ch == '+') {
-					offset++;
-					ch = trimmed.charAt(offset);
-				}
-				if (!Utils.isSimpleNumeric(ch))
-					couldBeNumeric = false;
-				else {
-					final int exponentSize = Integer.parseInt(trimmed.substring(offset, stopLooking));
-					if (exponentSize > 308)
-						couldBeNumeric = false;
-				}
-			}
-		}
-
-		// Handle doubles stored in non-localized format (e.g. latitude is often stored with a '.')
-		// This case handles the case where the grouping separator is a '.'
-		if (couldBeNumeric && numericGroupingSeparators == 1 && numericDecimalSeparators == 0 && localeGroupingSeparator == '.' &&
-				(digitsSeen - 1) / 3 > numericGroupingSeparators) {
-			for (int i = 0; i < l0.length(); i++) {
-				if (l0.charAt(i) == 'G') {
-					l0.replace(i, i + 1, "D");
-					numericGroupingSeparators--;
-					numericDecimalSeparators++;
-					nonLocalizedDouble = true;
-					break;
-				}
-			}
-		}
-
+		// Analyze the input to determine a set of attributes including whether it is numeric
+		NumericResult nr = Numeric.analyze(trimmed, length, ni);
 
 		final StringBuilder compressedl0 = new StringBuilder(length);
-		if (alphasSeen != 0 && digitsSeen != 0 && alphasSeen + digitsSeen == length) {
+		if (nr.alphasSeen != 0 && nr.digitsSeen != 0 && nr.alphasSeen + nr.digitsSeen == length) {
 			compressedl0.append(KnownTypes.PATTERN_ALPHANUMERIC).append('{').append(String.valueOf(length)).append('}');
 		} else if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) {
 			compressedl0.append(KnownTypes.PATTERN_BOOLEAN_TRUE_FALSE);
@@ -1710,9 +1535,9 @@ public class TextAnalyzer {
 		} else if ("y".equalsIgnoreCase(trimmed) || "n".equalsIgnoreCase(trimmed)) {
 			compressedl0.append(KnownTypes.PATTERN_BOOLEAN_Y_N);
 		} else {
-			String l0withSentinel = l0.toString() + "|";
+			String l0withSentinel = nr.l0.toString() + "|";
 			// Walk the new level0 to create the new level1
-			if (couldBeNumeric && numericGroupingSeparators > 0)
+			if (nr.couldBeNumeric && nr.numericGroupingSeparators > 0)
 				l0withSentinel = l0withSentinel.replace("G", "");
 			char last = l0withSentinel.charAt(0);
 			int repetitions = 1;
@@ -1744,7 +1569,7 @@ public class TextAnalyzer {
 		int c = 0;
 		for (final LogicalTypeInfinite logical : infiniteTypes) {
 			try {
-				if ((facts.getMatchTypeInfo() == null || logical.acceptsBaseType(facts.getMatchTypeInfo().getBaseType())) && logical.isCandidate(trimmed, compressedl0, charCounts, lastIndex))
+				if ((facts.getMatchTypeInfo() == null || logical.acceptsBaseType(facts.getMatchTypeInfo().getBaseType())) && logical.isCandidate(trimmed, compressedl0, nr.charCounts, nr.lastIndex))
 					candidateCounts[c]++;
 			}
 			catch (Exception e) {
@@ -1754,8 +1579,8 @@ public class TextAnalyzer {
 		}
 
 		// Create the level 1 and 2
-		if (digitsSeen > 0 && couldBeNumeric && numericDecimalSeparators <= 1) {
-			updateNumericPattern(escalation, numericSigned, numericDecimalSeparators, possibleExponentSeen, nonLocalizedDouble);
+		if (nr.digitsSeen > 0 && nr.couldBeNumeric && nr.numericDecimalSeparators <= 1) {
+			updateNumericPattern(escalation, nr.numericSigned, nr.numericDecimalSeparators, nr.possibleExponentSeen, nr.nonLocalizedDouble);
 		} else {
 			// Fast version of replaceAll("\\{\\d*\\}", "+"), e.g. replace \d{5} with \d+
 			final StringBuilder collapsed = new StringBuilder(compressedl0);
@@ -2210,7 +2035,7 @@ public class TextAnalyzer {
 				final Number n = doubleFormatter.parse(input, pos);
 				if (n == null || input.length() != pos.getIndex())
 					return false;
-				if (hasGroupingSeparator(input, localeGroupingSeparator, localeDecimalSeparator))
+				if (hasGroupingSeparator(input, ni.groupingSeparator, ni.decimalSeparator))
 					grouping = true;
 			}
 			return true;

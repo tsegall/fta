@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017-2024 Tim Segall
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
@@ -14,9 +29,12 @@ import java.util.Locale;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
@@ -63,9 +81,9 @@ public class TestIssues {
 		final String longBlank = Utils.repeat(' ', LONGEST);
 		final int SHORTEST = 1;
 		final String shortBlank = Utils.repeat(' ', SHORTEST);
-		final String[] values = { "", "cmcfarlan13@aol.com", "cgorton14@dell.com", "kkorneichike@marriott.com",
+		final String[] values = { "cmcfarlan13@aol.com", "cgorton14@dell.com", "kkorneichike@marriott.com",
 				"alovattj@qq.com", "wwinterscalek@weibo.com", "cfugglel@pen.io.co.uk", "bsel&%odp@bloglovin.com",
-				"gjoplingq@guardian.co.uk", "cvall$&owr@vkontakte.ru", "fpenas@bandcamp.com", "''", "NULL", "",
+				"gjoplingq@guardian.co.uk", "cvall$&owr@vkontakte.ru", "fpenas@bandcamp.com", "''", "NULL",
 				"kkirsteiny@icio.us", "jgeistbeckz@shutterfly.com", "achansonne10@mac.com",
 				"bpiotrkowski11#barnesandnoble.com", "jaikett15@netlog.com", "dattril17@phoca.cz",
 				"abranchet18@psu.edu", "ddisley19@alexa.com", "vspriddle1a@japanpost.jp", "fdurbin1b@intel.com",
@@ -73,7 +91,7 @@ public class TestIssues {
 				"hallenson1f@linkedin.com", "hrutley1g@phoca.cz", "kroakes1h@issuu.com", "msign1i@ocn.ne.jp",
 				"hsiderfin1j@qq.com", "civakhin1k@sphinn.com", "abetty1l@yolasite.com", "lgussin1m@ft.com",
 				"kfairleigh1n@ftc.gov", "kbrocklesby1o@tumblr.com", "nrands1p@google.com.br",
-				"thattoe1q@washingtonpost.com", "vmadle1r@soup.io", "", "twhordley2c@addtoany.com",
+				"thattoe1q@washingtonpost.com", "vmadle1r@soup.io", "twhordley2c@addtoany.com",
 				shortBlank, longBlank
 		};
 
@@ -297,5 +315,49 @@ public class TestIssues {
 		assertEquals(streetNumber.getType(), FTAType.LONG);
 		assertEquals(streetNumber.getSemanticType(), "STREET_NUMBER");
 		assertNull(streetNumber.checkCounts());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void issue70() throws FTAPluginException, FTAUnsupportedLocaleException {
+
+		TextAnalyzer analyzer = new TextAnalyzer("foo", DateResolutionMode.Auto);
+
+		analyzer.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+		analyzer.train("");
+		analyzer.train("");
+
+		TextAnalysisResult result = analyzer.getResult();
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getBlankCount(), 2);
+		assertEquals(result.getMinLength(), 0);
+		assertEquals(result.getMaxLength(), 0);
+		assertEquals(result.getTypeModifier(), "BLANK");
+	 }
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void issue71() throws FTAPluginException, FTAUnsupportedLocaleException {
+
+		String[] headers = { "First", "Last", "MI" };
+		String[][] names = { { "Anaïs", "Nin", "9,876.54" }, { "Gertrude", "Stein", "3,876.2" },
+				{ "Paul", "Campbell", "76.54" }, { "Pablo", "Picasso", "123.45" } };
+
+		AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", headers);
+		TextAnalyzer template = new TextAnalyzer(context);
+		template.setDebug(2);
+
+		template.setLocale(Locale.GERMAN);
+
+		RecordAnalyzer analysis = new RecordAnalyzer(template);
+
+		for (String[] name : names)
+			analysis.train(name);
+
+		RecordAnalysisResult recordResult = analysis.getResult();
+
+		TextAnalysisResult[] results = recordResult.getStreamResults();
+		assertEquals(results[0].getSemanticType(), "NAME.FIRST");
+		assertNull(results[2].getSemanticType());
+		assertEquals(results[2].getType(), FTAType.DOUBLE);
+		assertEquals(results[2].getTypeModifier(), "NON_LOCALIZED");
 	}
 }
