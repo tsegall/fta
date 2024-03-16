@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 15.5.1
+ - INT: Upgrade spring boot in examples
+ - INT: Bump logback-classic to 1.5.3, google phonenumber to 8.13.32, jackson to 2.17.0, guava to 33.1.0-jre
+ - INT: Improve test coverage
+
 ### 15.5.0
  - BUG: OutOfMemoryError: Requested array size exceeds VM limit exception (Issue #70)
  - BUG: getMinLength() was never returning 0

@@ -96,7 +96,7 @@ public final class Utils {
 	}
 
 	/**
-	 * Give a String as input with an offset and length return the integer at that position.
+	 * Given a String as input with an offset and length return the integer at that position.
 	 * @param input String to extract integer from
 	 * @param offset Integer offset that marks the start
 	 * @param minLength minimum length of integer to be extracted.

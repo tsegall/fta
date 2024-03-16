@@ -15,11 +15,13 @@
  */
 package com.cobber.fta.core;
 
+/*
+ * Determine the min/max for the quantity qualifier on a RegExp - input is expected to be of the form '{<number>,<number>}' or '{<number>}'.
+ */
 public class RegExpSplitter {
 	private final int min;
 	private final int max;
 	private int length;
-	private String regExp;
 
 	RegExpSplitter(final int min, final int max) {
 		this.min = min;
@@ -30,9 +32,8 @@ public class RegExpSplitter {
 		if (input == null || input.length() == 0 || input.charAt(0) != '{')
 			return null;
 
-		final int open = input.indexOf('{');
 		final int close = input.indexOf('}');
-		if (open == -1 || close == -1)
+		if (close == -1)
 			return null;
 
 		final int comma = input.indexOf(',');
@@ -45,7 +46,6 @@ public class RegExpSplitter {
 		}
 
 		facts.length = close + 1;
-		facts.regExp = input.substring(0, open);
 
 		return facts;
 	}

@@ -371,7 +371,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpSplitter_1_1() {
-		RegExpSplitter  splitter = RegExpSplitter.newInstance("{3,9}");
+		RegExpSplitter splitter = RegExpSplitter.newInstance("{3,9}");
 
 		assertEquals(splitter.getMin(), 3);
 		assertEquals(splitter.getMax(), 9);
@@ -379,7 +379,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpSplitter_1_2() {
-		RegExpSplitter  splitter = RegExpSplitter.newInstance("{3,10}");
+		RegExpSplitter splitter = RegExpSplitter.newInstance("{3,10}");
 
 		assertEquals(splitter.getMin(), 3);
 		assertEquals(splitter.getMax(), 10);
@@ -387,10 +387,56 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpSplitter_2_2() {
-		RegExpSplitter  splitter = RegExpSplitter.newInstance("{10,12}");
+		RegExpSplitter splitter = RegExpSplitter.newInstance("{10,12}");
 
 		assertEquals(splitter.getMin(), 10);
 		assertEquals(splitter.getMax(), 12);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testRegExpSplitterSingle() {
+		RegExpSplitter splitter = RegExpSplitter.newInstance("{101}");
+
+		assertEquals(splitter.getMin(), 101);
+		assertEquals(splitter.getMax(), 101);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testRegExpSplitterQualifySilly() {
+		assertEquals(RegExpSplitter.qualify(1, 1), "");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testRegExpSplitterQualify() {
+		assertEquals(RegExpSplitter.qualify(1, 2), "{1,2}");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testInvalid1() {
+		RegExpSplitter splitter = RegExpSplitter.newInstance(null);
+
+		assertNull(splitter);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testInvalid2() {
+		RegExpSplitter  splitter = RegExpSplitter.newInstance("");
+
+		assertNull(splitter);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testInvalid3() {
+		RegExpSplitter  splitter = RegExpSplitter.newInstance("Rubbish");
+
+		assertNull(splitter);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testInvalidNoClose() {
+		RegExpSplitter  splitter = RegExpSplitter.newInstance("{,9");
+
+		assertNull(splitter);
 	}
 
 	@Test(groups = { TestGroups.ALL })
