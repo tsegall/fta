@@ -9,11 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
           java-version: 11
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v2
       - name: Publish package
         run: ./gradlew -PossrhUsername="${{ secrets.OSSRH_USERNAME }}" -PossrhPassword="${{ secrets.OSSRH_PASSWORD }}" -PsigningKey="${{ secrets.SIGNING_KEY }}" -PsigningPassword="${{ secrets.SIGNING_PASSWORD }}" publish
