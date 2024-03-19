@@ -268,6 +268,8 @@ public class TextAnalyzer {
 
 	private final Plugins plugins = new Plugins(mapper);
 
+	private static final ObjectMapper serializationMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);;
+
 	/**
 	 * Construct a Text Analyzer using the supplied context.
 	 *
@@ -3495,9 +3497,9 @@ public class TextAnalyzer {
 			determineType();
 
 		final TextAnalyzerWrapper wrapper = new TextAnalyzerWrapper(analysisConfig, context, facts.calculateFacts());
-		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
 		try {
-			return mapper.writeValueAsString(mapper.convertValue(wrapper, JsonNode.class));
+			return serializationMapper.writeValueAsString(serializationMapper.convertValue(wrapper, JsonNode.class));
 		} catch (IOException e) {
 			throw new InternalErrorException("Cannot output JSON for the Analysis", e);
 		}
@@ -3513,12 +3515,10 @@ public class TextAnalyzer {
 	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
 	 */
 	public static TextAnalyzer deserialize(final String serialized) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException {
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
 		TextAnalyzer ret = null;
 
 		try {
-			final TextAnalyzerWrapper wrapper = mapper.readValue(serialized, TextAnalyzerWrapper.class);
+			final TextAnalyzerWrapper wrapper = serializationMapper.readValue(serialized, TextAnalyzerWrapper.class);
 			ret = new TextAnalyzer(wrapper.analyzerContext);
 			ret.setConfig(wrapper.analysisConfig);
 

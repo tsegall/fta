@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.5.2
+ - ENH: Speed up serialization() (662μs -> 46μs = 15x) and deserialization() (2562μs -> 1729μs) of TextAnalyzer().
+
 ### 15.5.1
  - INT: Upgrade spring boot in examples
  - INT: Bump logback-classic to 1.5.3, google phonenumber to 8.13.32, jackson to 2.17.0, guava to 33.1.0-jre
