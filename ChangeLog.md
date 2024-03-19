@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.5.3
+ - ENH: Speed up serialization() (113μs -> 8μs = 14x) and deserialization() (73μs -> 8μs = 9x) of DateTimeParser().
+
 ### 15.5.2
  - ENH: Speed up serialization() (662μs -> 46μs = 15x) and deserialization() (2562μs -> 1729μs) of TextAnalyzer().
 

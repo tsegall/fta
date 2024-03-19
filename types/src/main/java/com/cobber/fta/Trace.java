@@ -113,7 +113,6 @@ public class Trace {
 		} catch (IOException e) {
 			throw new TraceException("Cannot output JSON for the Analysis", e);
 		}
-
 	}
 
 	/**

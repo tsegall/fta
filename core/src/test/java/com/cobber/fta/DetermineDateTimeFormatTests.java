@@ -1383,6 +1383,52 @@ public class DetermineDateTimeFormatTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void serializationPerformance() throws FTAMergeException {
+		final String pipedInput = "06:58:20am|07:25:18pm|01:47:06am|05:32:48am|11:29:53pm|02:21:10pm|04:55:48am|" +
+				"03:39:14pm|09:43:02pm|10:43:15am|05:46:07am|05:09:34pm|06:03:58am|10:59:15am|10:13:28am|" +
+				"10:25:10am|10:33:03pm|04:24:44am|04:19:29pm|01:08:48am|11:11:47am|10:11:06pm|12:27:06am|" +
+				"12:35:14am|01:30:55pm|12:11:05am|09:23:51pm|10:23:20pm|01:29:57pm|04:35:17pm|06:53:23pm|" +
+				"09:23:13pm|11:40:44pm|01:01:02am|04:24:19am|08:51:48am|02:29:26am|08:48:32am|11:03:13pm|" +
+				"07:52:27pm|04:51:40pm|08:31:11am|07:53:57am|07:04:03pm|12:05:00am|01:50:13am|";
+		final String inputs[] = pipedInput.split("\\|");
+		final DateTimeParser dtp = new DateTimeParser();
+		final int ITERATIONS = 10000;
+
+		dtp.train("");
+		for (final String input : inputs)
+			dtp.train(input);
+
+		String s = dtp.serialize();
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < ITERATIONS; i++)
+			s = dtp.serialize();
+		long serializeTime = System.currentTimeMillis() - start;
+		System.err.printf("Serialization: %dms (%dμs per)\n", serializeTime, (serializeTime * 1000) / ITERATIONS);
+
+		start = System.currentTimeMillis();
+		DateTimeParser hydrated = DateTimeParser.deserialize(s);
+		for (int i = 0; i < ITERATIONS; i++)
+			hydrated = DateTimeParser.deserialize(s);
+		long deserializeTime = System.currentTimeMillis() - start;
+		System.err.printf("Deserialization: %dms (%dμs per)\n", deserializeTime, (deserializeTime * 1000) / ITERATIONS);
+
+		final DateTimeParserResult result = hydrated.getResult();
+
+		final String formatString = result.getFormatString();
+
+		assertEquals(formatString, "hh:mm:ssa");
+
+		assertTrue(result.isValid("03:14:12am"));
+		assertTrue(result.isValid("03:14:12pm"));
+
+		final String regExp = result.getRegExp();
+
+		for (final String input : inputs)
+			assertTrue(input.matches(regExp), input);
+	}
+
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void basicyyyyddMM() throws IOException {
 		final String pipedInput = "2011/28/02|2017/31/12|2016/20/10|1999/15/07|2017/31/12|2016/20/10|1999/15/07|2017/31/12|2017/31/12|2016/20/10|1999/15/07|2017/30/12|2017/21/12|2016/20/10|1999/15/07|2017/11/12|2012/31/12|2010/31/12|2016/20/10|1999/15/07|";
 		final String inputs[] = pipedInput.split("\\|");

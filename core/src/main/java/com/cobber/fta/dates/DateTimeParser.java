@@ -137,6 +137,8 @@ public class DateTimeParser {
 
 	private LocaleInfo localeInfo;
 
+	private static final ObjectMapper mapper = new ObjectMapper();
+
 	/**
 	 * Construct a DateTimeParser with DateResolutionMode = None, and in the default Locale.
 	 */
@@ -1867,8 +1869,6 @@ public class DateTimeParser {
 	 * @throws FTAMergeException When we fail to serialize the parser.
 	 */
 	public String serialize() throws FTAMergeException {
-		final ObjectMapper mapper = new ObjectMapper();
-
 		final DateTimeParserWrapper wrapper = new DateTimeParserWrapper(config, state);
 		try {
 			return mapper.writeValueAsString(mapper.convertValue(wrapper, JsonNode.class));
@@ -1886,7 +1886,6 @@ public class DateTimeParser {
 	 */
 	public static DateTimeParser deserialize(final String serialized) throws FTAMergeException {
 		try {
-			final ObjectMapper mapper = new ObjectMapper();
 			final DateTimeParserWrapper wrapper = mapper.readValue(serialized, DateTimeParserWrapper.class);
 			final DateTimeParser ret = new DateTimeParser();
 
