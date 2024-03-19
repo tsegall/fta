@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Random;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -115,6 +116,51 @@ public class TestMerge {
 		assertEquals(mergedResult.getType(), FTAType.STRING);
 		assertTrue(mergedResult.isSemanticType());
 		assertEquals(mergedResult.getSemanticType(), Gender.SEMANTIC_TYPE + "EN");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void exerciseSerialization() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+		final String[] options = { "Male", "Female", "Unknown" };
+		final Random r = new Random();
+		final int ITERATIONS = 10000;
+
+		String serialized = analysis.serialize();
+		TextAnalyzer t = TextAnalyzer.deserialize(serialized);
+		long trainTime = 0;
+		long serializeTime = 0;
+		long deserializeTime = 0;
+		long testStart = System.currentTimeMillis();
+		for (int i = 0; i < ITERATIONS; i++) {
+			long start = System.currentTimeMillis();
+			t.train(options[r.nextInt(options.length)]);
+			long postTrain = System.currentTimeMillis();
+			serialized = t.serialize();
+			long postSerialize = System.currentTimeMillis();
+			t = TextAnalyzer.deserialize(serialized);
+			long postDeserialize = System.currentTimeMillis();
+
+			trainTime += postTrain - start;
+			serializeTime += postSerialize - postTrain;
+			deserializeTime += postDeserialize - postSerialize;
+		}
+
+		System.err.printf(
+				"Test duration: %dms, total training: %dms (%dμs per), total serialization: %dms (%dμs per), deserialization: %dms (%dμs per)\n",
+				System.currentTimeMillis() - testStart, trainTime, (trainTime * 1000) / ITERATIONS, serializeTime,
+				(serializeTime * 1000) / ITERATIONS, deserializeTime, (deserializeTime * 1000) / ITERATIONS);
+		final TextAnalysisResult result = t.getResult();
+
+		assertEquals(result.getSemanticType(), "GENDER.TEXT_EN");
+		assertEquals(result.getType(), FTAType.STRING);
+
+		// Given the Semantic Type we retrieve the associated plugin
+		LogicalType semanticType = t.getPlugins().getRegistered(result.getSemanticType());
+
+		// Use the plugin to get the non-localized description
+		assertEquals(semanticType.getDescription(), "Gender");
+		assertFalse(semanticType.isValid("BLUE"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
