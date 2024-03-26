@@ -868,7 +868,7 @@ public class TestLongs {
 	public void localeLongTest() throws IOException, FTAException {
 		final int SAMPLE_SIZE = 1000;
 		final Locale[] locales = DateFormat.getAvailableLocales();
-//		Locale[] locales = new Locale[] { Locale.forLanguageTag("en-Latn-US") };
+//		Locale[] locales = new Locale[] { Locale.forLanguageTag("tok") };
 
 		for (final Locale locale : locales) {
 			long min = Long.MAX_VALUE;
@@ -915,11 +915,17 @@ public class TestLongs {
 				continue;
 			}
 
+			final int groupingSize = TestUtils.getGroupingSize(locale);
+			if (groupingSize != -1 && groupingSize != 3) {
+				logger.debug("Skipping locale '{}' as grouping is used and grouping size = {}", locale, groupingSize);
+				continue;
+			}
+
 			final Set<String> samples = new HashSet<>();
 			final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 
-//			logger.debug("Locale {}, negPrefix: {}, negSuffix: {}, min: {}, max: {}, absMax:{}.",
-//					locale.toLanguageTag(), negPrefix, negSuffix, String.valueOf(min), String.valueOf(max), absMinValue);
+//			logger.debug("Locale {}, negPrefix: {}, negSuffix: {}, groupingSize: {}, min: {}, max: {}, absMax: {}.",
+//					locale.toLanguageTag(), negPrefix, negSuffix, groupingSize, String.valueOf(min), String.valueOf(max), absMinValue);
 
 			try {
 				for (int i = 0; i < SAMPLE_SIZE; i++) {

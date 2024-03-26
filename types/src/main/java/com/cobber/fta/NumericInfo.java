@@ -54,7 +54,8 @@ public class NumericInfo {
 		minusSign = formatSymbols.getMinusSign();
 		final NumberFormat simple = NumberFormat.getNumberInstance(locale);
 		if (simple instanceof DecimalFormat) {
-			String signFacts = ((DecimalFormat) simple).getNegativePrefix();
+			DecimalFormat simpleDF = (DecimalFormat) simple;
+			String signFacts = simpleDF.getNegativePrefix();
 			// Ignore the LEFT_TO_RIGHT_MARK if it exists
 			if (!signFacts.isEmpty() && signFacts.charAt(0) == KnownTypes.LEFT_TO_RIGHT_MARK)
 				signFacts = signFacts.substring(1);
@@ -63,12 +64,14 @@ public class NumericInfo {
 			hasNegativePrefix = !signFacts.isEmpty();
 			if (hasNegativePrefix)
 				negativePrefix = signFacts.charAt(0);
-			signFacts = ((DecimalFormat) simple).getNegativeSuffix();
+			signFacts = simpleDF.getNegativeSuffix();
 			if (signFacts.length() > 1)
 				throw new FTAUnsupportedLocaleException("No support for locales with multi-character sign suffixes");
 			hasNegativeSuffix = !signFacts.isEmpty();
 			if (hasNegativeSuffix)
 				negativeSuffix = signFacts.charAt(0);
+			if (simple.isGroupingUsed() && simpleDF.getGroupingSize() != 3)
+				throw new FTAUnsupportedLocaleException("No support for locales with grouping sizes other than 3");
 		} else {
 			final String signFacts = String.valueOf(formatSymbols.getMinusSign());
 			hasNegativePrefix = true;

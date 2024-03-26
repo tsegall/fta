@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 15.5.4
+ - ENH: Minor changes to test suite to support Java 22
+ - INT: Bump google phonenumber to 8.13.33, org.springframework.boot to 3.2.4
+ - INT: Bump gradle to 8.7
+
 ### 15.5.3
  - ENH: Speed up serialization() (113μs -> 8μs = 14x) and deserialization() (73μs -> 8μs = 9x) of DateTimeParser().
  - INT: Bump CodeQL up to v3

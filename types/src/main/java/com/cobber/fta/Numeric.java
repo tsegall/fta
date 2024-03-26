@@ -85,7 +85,8 @@ public class Numeric {
 						ret.couldBeNumeric = false;
 					else
 						ret.possibleExponentSeen = i;
-				} else
+				}
+				else
 					ret.couldBeNumeric = false;
 			} else {
 				ret.l0.append(ch);
@@ -94,7 +95,8 @@ public class Numeric {
 				if (ret.possibleExponentSeen != -1 && ret.possibleExponentSeen == i - 1) {
 					if (ch != ni.minusSign && ch != '+')
 						ret.couldBeNumeric = false;
-				} else
+				}
+				else
 					ret.couldBeNumeric = false;
 			}
 		}

@@ -173,6 +173,17 @@ public class TestUtils {
 		return negSuffix;
 	}
 
+	static int
+	getGroupingSize(final Locale locale) {
+		NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+		if (!nf.isGroupingUsed())
+			return -1;
+		if (!(nf instanceof DecimalFormat))
+			return -1;
+
+		return ((DecimalFormat)nf).getGroupingSize();
+	}
+
 	static boolean isValidLocale(final String value) {
 		for (final Locale locale : Locale.getAvailableLocales()) {
 			if (value.equals(locale.toString())) {
