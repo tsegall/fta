@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.5.5
+ - INT: Bump google phonenumber to 8.13.34, testng to 7.10.1, logback-classic to 1.5.5, slf4j-api to 2.0.13
+
 ### 15.5.4
  - ENH: Minor changes to test suite to support Java 22
  - INT: Bump google phonenumber to 8.13.33, org.springframework.boot to 3.2.4
