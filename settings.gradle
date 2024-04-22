@@ -43,7 +43,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
 			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.13.34')
 // https://mvnrepository.com/artifact/org.apache.commons/commons-text
-			library('commonsText', 'org.apache.commons:commons-text:1.11.0')
+			library('commonsText', 'org.apache.commons:commons-text:1.12.0')
 // https://mvnrepository.com/artifact/com.github.krraghavan/xeger
 			library('xeger', 'com.github.krraghavan:xeger:1.0.0-RELEASE')
 // https://mvnrepository.com/artifact/dk.brics.automaton/automaton
