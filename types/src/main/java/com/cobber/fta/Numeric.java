@@ -132,11 +132,11 @@ public class Numeric {
 	}
 
 	public static NumericResult analyze(final String trimmed, final int length, final NumericInfo ni) {
-		NumericResult ret = core(trimmed, length, ni);
+		final NumericResult ret = core(trimmed, length, ni);
 
 		// If we did not find a numeric value, then try again to find a non-localized numeric value
 		if (ret.couldBeNumeric == false && ret.alphasSeen == 0 && ni.getNonLocalized() != null) {
-			NumericResult retNL = core(trimmed, length, ni.getNonLocalized());
+			final NumericResult retNL = core(trimmed, length, ni.getNonLocalized());
 			if (retNL.couldBeNumeric) {
 				if (retNL.numericDecimalSeparators == 1)
 					retNL.nonLocalizedDouble = true;

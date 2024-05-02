@@ -321,7 +321,7 @@ public class TokenList implements Iterable<FormatterToken> {
 	}
 
 	public FormatterToken findByType(final Token type) {
-		for (FormatterToken token : tokens)
+		for (final FormatterToken token : tokens)
 			if (type == token.getType())
 				return token;
 		return null;
@@ -330,7 +330,7 @@ public class TokenList implements Iterable<FormatterToken> {
 	public int findIndexByDateField(final DateField fieldType) {
 		int unbound = 0;
 		for (int i = 0; i < tokens.size(); i++) {
-			Token token = tokens.get(i).getType();
+			final Token token = tokens.get(i).getType();
 			if (token == Token.DIGITS)
 				unbound++;
 
@@ -381,7 +381,7 @@ public class TokenList implements Iterable<FormatterToken> {
 	}
 
 	public FormatterToken findByDateField(final DateField fieldType) {
-		int index = findIndexByDateField(fieldType);
+		final int index = findIndexByDateField(fieldType);
 		return index == -1 ? null : tokens.get(index);
 	}
 
@@ -394,7 +394,7 @@ public class TokenList implements Iterable<FormatterToken> {
 	}
 
 	public FormatterToken findByOffset(final int offset) {
-		int index = findIndexByOffset(offset);
+		final int index = findIndexByOffset(offset);
 		return index == -1 ? null : tokens.get(index);
 	}
 

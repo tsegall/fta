@@ -318,7 +318,7 @@ class FileProcessor {
 			consumedTime = System.currentTimeMillis();
 		}
 		catch (FileNotFoundException e) {
-			throw new FTAProcessingException(filename, "File not found");
+			throw new FTAProcessingException(filename, "File not found", e);
 		}
 		catch (TextParsingException|ArrayIndexOutOfBoundsException e) {
 			throw new FTAProcessingException(filename, "Univocity exception", e);

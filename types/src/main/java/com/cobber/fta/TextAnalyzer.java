@@ -268,7 +268,7 @@ public class TextAnalyzer {
 
 	private final Plugins plugins = new Plugins(mapper);
 
-	private static final ObjectMapper serializationMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);;
+	private static final ObjectMapper serializationMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
 	/**
 	 * Construct a Text Analyzer using the supplied context.
@@ -809,7 +809,11 @@ public class TextAnalyzer {
 		if (length > facts.maxRawLength)
 			facts.maxRawLength = length;
 
-		if (trimmed.length() != 0) {
+		final int trimmedLength = trimmed.length();
+		facts.lengths[Math.min(trimmedLength, facts.lengths.length - 1)] += count;
+
+
+		if (trimmedLength != 0) {
 			if (length != 0 && length < facts.minRawNonBlankLength)
 				facts.minRawNonBlankLength = length;
 			if (length > facts.maxRawNonBlankLength)
@@ -2425,7 +2429,7 @@ public class TextAnalyzer {
 		if (valid) {
 			facts.matchCount += count;
 			addValid(input, count);
-			facts.trackTrimmedLengthAndWhiteSpace(rawInput, trimmed);
+			facts.trackTrimmedLengthAndWhiteSpace(rawInput, trimmed, count);
 		}
 		else {
 			addOutlier(input, count);
@@ -3604,6 +3608,11 @@ public class TextAnalyzer {
 		// Set the min/maxRawLength just in case a blank field is the longest/shortest
 		ret.facts.minRawLength = Math.min(first.facts.minRawLength, second.facts.minRawLength);
 		ret.facts.maxRawLength = Math.max(first.facts.maxRawLength, second.facts.maxRawLength);
+
+		// Lengths are true representations - so just overwrite with truth
+		System.arraycopy(firstFacts.lengths, 0, ret.facts.lengths, 0, firstFacts.lengths.length);
+		for (int i = 0; i < ret.facts.lengths.length; i++)
+			ret.facts.lengths[i] += secondFacts.lengths[i];
 
 		// So if both sets are unique in their own right and the sets are non-overlapping then the merged set is unique
 		if (firstFacts.getMatchTypeInfo() != null && nonOverlappingRegions(firstFacts, secondFacts, ret.analysisConfig)) {

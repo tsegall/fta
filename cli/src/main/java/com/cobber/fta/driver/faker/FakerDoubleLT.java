@@ -54,12 +54,12 @@ public class FakerDoubleLT extends FakerLT {
 		}
 
 		double d = 0.0;
-		if (distribution.equals("random")) {
+		if ("random".equals(distribution)) {
 			d = getRandom().nextDouble();
 			d *= range;
 			if (low != null)
 				d += low;
-		} else if (distribution.equals("monotonic_increasing")) {
+		} else if ("monotonic_increasing".equals(distribution)) {
 			if (last == Double.MIN_VALUE)
 				last = low;
 			else {
@@ -68,7 +68,7 @@ public class FakerDoubleLT extends FakerLT {
 			}
 			d = last;
 
-		} else if (distribution.equals("monotonic_decreasing")) {
+		} else if ("monotonic_decreasing".equals(distribution)) {
 			if (last == Long.MIN_VALUE) {
 				last = high;
 			}
@@ -77,7 +77,7 @@ public class FakerDoubleLT extends FakerLT {
 					last = high;
 			}
 			d = last;
-		} else if (distribution.equals("gaussian")) {
+		} else if ("gaussian".equals(distribution)) {
 			d = getRandom().nextGaussian();
 			d += 5.0;				// Capture 5 SD's (basically convert [-5.0,5.0] to [0.0,10.0]
 			d = (d * range)/10;		// Scale up from [0.0,10.0] to the range

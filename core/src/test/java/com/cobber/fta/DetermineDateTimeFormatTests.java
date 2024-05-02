@@ -59,7 +59,7 @@ import com.cobber.fta.dates.SimpleDateMatcher;
 
 public class DetermineDateTimeFormatTests {
 	private static final SecureRandom random = new SecureRandom();
-	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
+	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void allOptions() {
@@ -508,7 +508,7 @@ public class DetermineDateTimeFormatTests {
 		final String fmt = dtp.determineFormatString("5 2023");
 
 		assertEquals(fmt, "M yyyy");
-		DateTimeParserResult result = DateTimeParserResult.asResult(fmt, DateResolutionMode.None, dtp.getConfig());
+		final DateTimeParserResult result = DateTimeParserResult.asResult(fmt, DateResolutionMode.None, dtp.getConfig());
 
 		assertTrue(result.isValid("2 1999"));
 		assertTrue(result.isValid("2 3345"));
@@ -1402,14 +1402,14 @@ public class DetermineDateTimeFormatTests {
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < ITERATIONS; i++)
 			s = dtp.serialize();
-		long serializeTime = System.currentTimeMillis() - start;
+		final long serializeTime = System.currentTimeMillis() - start;
 		System.err.printf("Serialization: %dms (%dμs per)\n", serializeTime, (serializeTime * 1000) / ITERATIONS);
 
 		start = System.currentTimeMillis();
 		DateTimeParser hydrated = DateTimeParser.deserialize(s);
 		for (int i = 0; i < ITERATIONS; i++)
 			hydrated = DateTimeParser.deserialize(s);
-		long deserializeTime = System.currentTimeMillis() - start;
+		final long deserializeTime = System.currentTimeMillis() - start;
 		System.err.printf("Deserialization: %dms (%dμs per)\n", deserializeTime, (deserializeTime * 1000) / ITERATIONS);
 
 		final DateTimeParserResult result = hydrated.getResult();

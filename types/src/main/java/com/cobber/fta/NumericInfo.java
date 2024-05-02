@@ -54,7 +54,7 @@ public class NumericInfo {
 		minusSign = formatSymbols.getMinusSign();
 		final NumberFormat simple = NumberFormat.getNumberInstance(locale);
 		if (simple instanceof DecimalFormat) {
-			DecimalFormat simpleDF = (DecimalFormat) simple;
+			final DecimalFormat simpleDF = (DecimalFormat) simple;
 			String signFacts = simpleDF.getNegativePrefix();
 			// Ignore the LEFT_TO_RIGHT_MARK if it exists
 			if (!signFacts.isEmpty() && signFacts.charAt(0) == KnownTypes.LEFT_TO_RIGHT_MARK)

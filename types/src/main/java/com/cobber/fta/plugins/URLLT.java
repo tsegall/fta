@@ -113,13 +113,13 @@ public class URLLT extends LogicalTypeInfinite {
 				includeScheme = false;
 			}
 
-			String scheme = uri.getScheme() != null ? uri.getScheme() + "://" : null;
-			String authority = uri.getRawAuthority() != null ? uri.getRawAuthority() : ""; // includes domain and port
+			final String scheme = uri.getScheme() != null ? uri.getScheme() + "://" : null;
+			final String authority = uri.getRawAuthority() != null ? uri.getRawAuthority() : ""; // includes domain and port
 			if (authority.length() > MAX_AUTHORITY_LENGTH)
 				return null;
-			String path = uri.getRawPath() != null ? uri.getRawPath() : "";
-			String queryString = uri.getRawQuery() != null ? "?" + uri.getRawQuery() : "";
-			String fragment = uri.getRawFragment() != null ? "#" + uri.getRawFragment() : "";
+			final String path = uri.getRawPath() != null ? uri.getRawPath() : "";
+			final String queryString = uri.getRawQuery() != null ? "?" + uri.getRawQuery() : "";
+			final String fragment = uri.getRawFragment() != null ? "#" + uri.getRawFragment() : "";
 
 			// Must convert domain to punycode separately from the path
 			url = (includeScheme ? scheme : "") + IDN.toASCII(authority) + path + queryString + fragment;

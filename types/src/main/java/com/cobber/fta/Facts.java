@@ -27,6 +27,7 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -130,6 +131,9 @@ public class Facts {
 	public int minTrimmedOutlierLength = Integer.MAX_VALUE;
 	public int maxTrimmedOutlierLength = Integer.MIN_VALUE;
 
+	// Track lengths - anything length >= 127 is counted in the 127 bucket
+	public long lengths[] = new long[128];
+
 	public long groupingSeparators;
 
 	public FiniteMap cardinality = new FiniteMap();
@@ -209,14 +213,14 @@ public class Facts {
 		public Double uniqueness;
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (this == obj)
 				return true;
 			if (obj == null)
 				return false;
 			if (getClass() != obj.getClass())
 				return false;
-			ExternalFacts other = (ExternalFacts) obj;
+			final ExternalFacts other = (ExternalFacts) obj;
 			return Objects.equals(keyConfidence, other.keyConfidence) && totalBlankCount == other.totalBlankCount
 					&& totalCount == other.totalCount && totalMaxLength == other.totalMaxLength
 					&& Objects.equals(totalMaxValue, other.totalMaxValue) && Objects.equals(totalMean, other.totalMean)
@@ -405,7 +409,7 @@ public class Facts {
 	}
 
 	// Track basic facts for the field - called for any Valid input
-	public void trackTrimmedLengthAndWhiteSpace(final String input, final String trimmed) {
+	public void trackTrimmedLengthAndWhiteSpace(final String input, final String trimmed, final long count) {
 		final int trimmedLength = trimmed.length();
 
 		// Determine if there is leading or trailing White space (if not done previously)
@@ -676,7 +680,7 @@ public class Facts {
 			return matchTypeInfo.regexp;
 
 		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
-		StringBuilder answer = new StringBuilder();
+		final StringBuilder answer = new StringBuilder();
 		if (leadingWhiteSpace)
 			answer.append(KnownTypes.PATTERN_WHITESPACE);
 		final boolean optional = matchTypeInfo.regexp.indexOf('|') != -1;
@@ -747,6 +751,7 @@ public class Facts {
 				&& Objects.equals(uniqueness, other.uniqueness)
 				&& Objects.equals(distinctCount, other.distinctCount)
 				&& Objects.equals(streamFormat, other.streamFormat)
+				&& Arrays.equals(lengths, other.lengths)
 				&& ((mean == 0.0 && other.mean == 0.0) || Math.abs(mean - other.mean) <= epsilon)
 				&& ((variance == null && other.variance == null) || (variance == 0.0 && other.variance == 0.0) || Math.abs(variance - other.variance) <= epsilon);
 	}

@@ -175,7 +175,7 @@ public class TestUtils {
 
 	static int
 	getGroupingSize(final Locale locale) {
-		NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+		final NumberFormat nf = NumberFormat.getIntegerInstance(locale);
 		if (!nf.isGroupingUsed())
 			return -1;
 		if (!(nf instanceof DecimalFormat))
@@ -268,7 +268,7 @@ public class TestUtils {
 		final TextAnalyzer analysis = new TextAnalyzer(header);
 		analysis.setLocale(locale);
 		analysis.setDebug(2);
-		AnalysisConfig analysisConfig = analysis.getConfig();
+		final AnalysisConfig analysisConfig = analysis.getConfig();
 
 		for (final Sample sample : samples)
 			analysis.train(sample.getSample());
@@ -276,7 +276,7 @@ public class TestUtils {
 		final TextAnalysisResult result = analysis.getResult();
 		TestUtils.checkSerialization(analysis);
 
-		String boundSemanticType = semanticType == null ? null : analysisConfig.bindSemanticType(semanticType);
+		final String boundSemanticType = semanticType == null ? null : analysisConfig.bindSemanticType(semanticType);
 
 		assertEquals(result.getSampleCount(), samples.length);
 		assertEquals(result.getSemanticType(), boundSemanticType);

@@ -57,7 +57,7 @@ public class DOB extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		StringBuffer b = new StringBuffer();
+		final StringBuffer b = new StringBuffer();
 		return b.append(LocalDate.now().getYear() - getRandom().nextInt(99) + 1)
 				.append('/')
 				.append(getRandom().nextInt(11) + 1)

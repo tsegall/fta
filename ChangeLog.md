@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.6.0
+ - ENH: Add support for String frequencies. See TextAnalysisResult.getLengthFrequencies(). (Issue #83)
+ - INT: Bump google phonenumber to 8.13.35, logback-classic to 1.5.6, commons-text to 1.12.0, testng to 7.10.2
+
 ### 15.5.5
  - INT: Bump google phonenumber to 8.13.34, testng to 7.10.1, logback-classic to 1.5.5, slf4j-api to 2.0.13
 

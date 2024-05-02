@@ -320,13 +320,13 @@ public class TestIssues {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void issue70() throws FTAPluginException, FTAUnsupportedLocaleException {
 
-		TextAnalyzer analyzer = new TextAnalyzer("foo", DateResolutionMode.Auto);
+		final TextAnalyzer analyzer = new TextAnalyzer("foo", DateResolutionMode.Auto);
 
 		analyzer.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		analyzer.train("");
 		analyzer.train("");
 
-		TextAnalysisResult result = analyzer.getResult();
+		final TextAnalysisResult result = analyzer.getResult();
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getBlankCount(), 2);
 		assertEquals(result.getMinLength(), 0);
@@ -337,24 +337,24 @@ public class TestIssues {
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void issue71() throws FTAPluginException, FTAUnsupportedLocaleException {
 
-		String[] headers = { "First", "Last", "MI" };
-		String[][] names = { { "Anaïs", "Nin", "9,876.54" }, { "Gertrude", "Stein", "3,876.2" },
+		final String[] headers = { "First", "Last", "MI" };
+		final String[][] names = { { "Anaïs", "Nin", "9,876.54" }, { "Gertrude", "Stein", "3,876.2" },
 				{ "Paul", "Campbell", "76.54" }, { "Pablo", "Picasso", "123.45" } };
 
-		AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", headers);
-		TextAnalyzer template = new TextAnalyzer(context);
+		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", headers);
+		final TextAnalyzer template = new TextAnalyzer(context);
 		template.setDebug(2);
 
 		template.setLocale(Locale.GERMAN);
 
-		RecordAnalyzer analysis = new RecordAnalyzer(template);
+		final RecordAnalyzer analysis = new RecordAnalyzer(template);
 
-		for (String[] name : names)
+		for (final String[] name : names)
 			analysis.train(name);
 
-		RecordAnalysisResult recordResult = analysis.getResult();
+		final RecordAnalysisResult recordResult = analysis.getResult();
 
-		TextAnalysisResult[] results = recordResult.getStreamResults();
+		final TextAnalysisResult[] results = recordResult.getStreamResults();
 		assertEquals(results[0].getSemanticType(), "NAME.FIRST");
 		assertNull(results[2].getSemanticType());
 		assertEquals(results[2].getType(), FTAType.DOUBLE);

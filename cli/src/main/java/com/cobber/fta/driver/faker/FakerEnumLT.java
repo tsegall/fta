@@ -41,9 +41,9 @@ public class FakerEnumLT extends FakerLT {
 		}
 
 		String ret = null;
-		if (distribution.equals("random")) {
+		if ("random".equals(distribution)) {
 			ret = options[getRandom().nextInt(options.length)];
-		} else if (distribution.equals("monotonic_increasing")) {
+		} else if ("monotonic_increasing".equals(distribution)) {
 			if (last == -1)
 				last = 0;
 			else {
@@ -51,7 +51,7 @@ public class FakerEnumLT extends FakerLT {
 					last = 0;
 			}
 			ret = options[last];
-		} else if (distribution.equals("monotonic_decreasing")) {
+		} else if ("monotonic_decreasing".equals(distribution)) {
 			if (last == -1) {
 				last = options.length - 1;
 			}

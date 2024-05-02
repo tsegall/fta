@@ -191,7 +191,7 @@ public class LocaleInfo {
 		// Setup the AM/PM strings
 		final Set<String> ampmStringsLocale = new LinkedHashSet<>();
 		String ampmRegExpLocale = "";
-		for (String s : amPmStrings) {
+		for (final String s : amPmStrings) {
 			if (ampmRegExpLocale.length() != 0)
 				ampmRegExpLocale += "|";
 			ampmRegExpLocale += s;

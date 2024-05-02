@@ -47,7 +47,7 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	private int nonLocal;
 	private boolean onlyDigits = true;
 
-	private final String initialValid = "0123456789(+";
+	private static final String initialValid = "0123456789(+";
 
 	/**
 	 * Construct a Phone Number plugin based on the Plugin Definition.

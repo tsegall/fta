@@ -7,7 +7,7 @@
 
 # Semantic Type Detection and Data Profiling #
 
-Metadata/data identification Java library. Identifies Base Type (e.g. Boolean, Double, Long, String, LocalDate, LocalTime, ...) and 
+Metadata/data identification Java library. Identifies Base Type (e.g. Boolean, Double, Long, String, LocalDate, LocalTime, ...) and
 [Semantic Type](SemanticTypeDetection.md) (e.g. Gender, Age, Color, Country, ...).
 Extensive country/language support. Extensible via user-defined plugins. Comprehensive Profiling support.
 
@@ -175,7 +175,7 @@ Note: For Date Format determination you only need fta-core.jar.
 
 In addition to the input/configuration attributes:
  * streamName - Name of the input stream
- * dateResolutionMode - Mode used to determine how to resolve dates in the absence of adequate data. One of None, DayFirst, MonthFirst, or Auto. 
+ * dateResolutionMode - Mode used to determine how to resolve dates in the absence of adequate data. One of None, DayFirst, MonthFirst, or Auto.
  * compositeName - Name of the Composite the Stream is a member of (e.g. Table Name)
  * compositeStreamNames - Ordered list of the Composite Stream names (including streamName)
  * detectionLocale - Locale used to run the analysis (e.g. "en-US")
@@ -215,6 +215,7 @@ There are a large number of metrics detected, which vary based on the type of th
  * outlierDetail - Details on the invalid set, list of elements and occurrence count
  * shapesDetail - Details on the shapes set, list of elements and occurrence count. This will collapse all numerics to '9', and all alphabetics to 'X'
  * shapesCardinality - The cardinality of the shapes observed
+ * lengthFrequency - String length frequencies for strings of length < 127 (Any strings >= 127 are at element 127).
  * structureSignature - A SHA-1 hash that reflects the data stream structure
  * dataSignature - A SHA-1 hash that reflects the data stream contents
  * mean (Numeric types only) - The mean (Uses Welford's algorithm)
@@ -420,7 +421,7 @@ An outlier is a data point that differs significantly from other members of the 
 
 The regular expressions detected (regExp) are a valid Java Regular Expression for the data presented.  However, it is likely that the regular expression will generally be too lax and will commonly accept input that is valid according to the regular expression but not according to a 'true' definition of the type in question.  For example, the regular expression for a Social Security Number (SSN) detected will typically present as "\\d{3}-\\d{2}-\\d{4}" which will be valid for any true SSN, however, the inverse is not true - for example, in a true SSN the first component should have 3 digits and additionally should not be 000, 666, or between 900 and 999.
 
-Where a field is detected as a Semantic Type, for example a UK Postal Code then the RegExp ("([A-Za-z][A-Ha-hK-Yk-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})") will typically be more robust, although also potentially still not a perfect match. 
+Where a field is detected as a Semantic Type, for example a UK Postal Code then the RegExp ("([A-Za-z][A-Ha-hK-Yk-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})") will typically be more robust, although also potentially still not a perfect match.
 
 ## Signatures ##
 
@@ -438,7 +439,7 @@ The DataSignature will be identical for AccountLocation and PrimaryCountry as th
 ### Signature Detail ###
 **Structure Signature** - Base 64 encoded version of '&lt;Base Type&gt;:&lt;TypeInfo&gt;'. Where &lt;Base Type&gt; is as defined above and &lt;TypeInfo&gt; is either the TypeQualifer if a known Semantic Type, e.g. NAME.FIRST or the detected Regular Expression + the set of shapes.
 
-**Data Signature** - Base 64 encoded version of a JSON structure which includes the following attributes: totalCount, sampleCount, matchCount, nullCount, blankCount, minLength, maxLength, cardinality, cardinalityDetail, outlierCardinality, outliertyDetail, shapesCardinality, shapesDetail, leadingWhiteSpace trailingWhiteSpace, multiline
+**Data Signature** - Base 64 encoded version of a JSON structure which includes the following attributes: totalCount, sampleCount, matchCount, nullCount, blankCount, minLength, maxLength, cardinality, cardinalityDetail, outlierCardinality, outlierDetail, shapesCardinality, lengthFrequency, shapesDetail, leadingWhiteSpace trailingWhiteSpace, multiline
 
 Additional attributes captured in JSON structure:
 - Included if statistics are enabled: min, max, mean, standardDeviation, topK, bottomK
@@ -498,7 +499,7 @@ If either shard has a cardinality greater than the maximum cardinality then cert
 
 If the sum of the cardinality is greater than the maximum cardinality but neither individual shard has a cardinality greater than the maximum cardinality then the only attribute that will be indeterminate is the uniqueness of the merged set and clearly the cardinality of the resulting Analysis will be limited to the maximum cardinality.
 
-Note: The input presented to the merged analysis is the union of the data captured by the cardinality detail, outliers detail and the topK and bottomK from each shard. 
+Note: The input presented to the merged analysis is the union of the data captured by the cardinality detail, outliers detail and the topK and bottomK from each shard.
 
 ## Frequently Asked Questions ##
 

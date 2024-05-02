@@ -51,8 +51,8 @@ import com.cobber.fta.token.TokenStreams;
  */
 public class AgeRange extends LogicalTypeInfinite {
 	private static final int MAX_AGE = 120;
-	private final String symbols = "<>+≤≥";
-	private final static Set<String> agesPUF = new HashSet<>();
+	private static final String symbols = "<>+≤≥";
+	private static final Set<String> agesPUF = new HashSet<>();
 	private Keywords keywords;
 
 	static {

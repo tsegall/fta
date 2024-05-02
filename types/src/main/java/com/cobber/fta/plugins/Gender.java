@@ -323,7 +323,7 @@ public class Gender extends LogicalTypeFinite {
 			}
 		}
 
-		if (!positiveStreamName && outliers.size() != 0)
+		if (!positiveStreamName && !outliers.isEmpty())
 			return new PluginAnalysis(BACKOUT_REGEX);
 
 		// We have no (outliers or a happy stream name) and the sum of one of the word abbreviations == matchCount then declare success

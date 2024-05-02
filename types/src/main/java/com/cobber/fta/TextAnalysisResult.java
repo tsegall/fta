@@ -566,6 +566,16 @@ public class TextAnalysisResult {
 	}
 
 	/**
+	 * Get the trimmed string length frequencies. The first 127 elements reflect the number of strings of the length, i.e. if array[5] = 8
+	 * then there were 8 elements observed with length 5.  The last element in the array reflects the number of elements
+	 * observed with any length >= 127.
+	 * @return An array of length 128 representing the trimmed string length frequencies.
+	 */
+	public long[] getLengthFrequencies() {
+		return facts.lengths;
+	}
+
+	/**
 	 * Is this field a key?
 	 * @return A Double (0.0 ... 1.0) representing our confidence that this field is a key.
 	 */
@@ -615,7 +625,7 @@ public class TextAnalysisResult {
 				);
 
 		for (final Map.Entry<K, V> entry : map.entrySet())
-			sortedEntries.add(new AbstractMap.SimpleImmutableEntry<K, V>(entry.getKey(), entry.getValue()));
+			sortedEntries.add(new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), entry.getValue()));
 
 		return sortedEntries;
 	}
@@ -748,7 +758,7 @@ public class TextAnalysisResult {
 
 		// If it is a Semantic Type then just use the existing definition
 		if (isSemanticType()) {
-			LogicalType semanticType = analyzer.getPlugins().getRegistered(getSemanticType());
+			final LogicalType semanticType = analyzer.getPlugins().getRegistered(getSemanticType());
 			return MAPPER.convertValue(semanticType.getPluginDefinition(), ObjectNode.class);
 		}
 
@@ -793,7 +803,7 @@ public class TextAnalysisResult {
 			plugin.put("pluginType", "list");
 			final ObjectNode content = MAPPER.createObjectNode();
 			arrayNode = MAPPER.createArrayNode();
-			for (String element : facts.cardinality.keySet())
+			for (final String element : facts.cardinality.keySet())
 				arrayNode.add(element.toUpperCase(facts.getLocale()));
 			content.put("type", "inline");
 			content.set("members", arrayNode);
@@ -927,6 +937,22 @@ public class TextAnalysisResult {
 		if (!shape.getShapes().isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("shapesDetail");
 			outputDetails(MAPPER, detail, shape.getShapes(), verbose);
+		}
+
+		int maxNonZero = -1;
+		for (int i = facts.lengths.length - 1; i >= 0; i--)
+			if (facts.lengths[i] != 0) {
+				maxNonZero = i;
+				break;
+			}
+		if (maxNonZero != -1) {
+			final ArrayNode detail = analysis.putArray("lengthFrequency");
+			for (int i = 0; i <= maxNonZero; i++) {
+				final ObjectNode elt = MAPPER.createObjectNode();
+				elt.put("key", i == facts.lengths.length - 1 ? -1 : i);
+				elt.put("count", facts.lengths[i]);
+				detail.add(elt);
+			}
 		}
 
 		// Output any quantile/histogram data

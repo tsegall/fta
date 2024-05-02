@@ -28,9 +28,9 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.driver.DriverOptions;
 
 public class Faker {
-	private DriverOptions options;
-	private PrintStream output;
-	private PrintStream error;
+	private final DriverOptions options;
+	private final PrintStream output;
+	private final PrintStream error;
 
 	public Faker(final DriverOptions options, final PrintStream output, final PrintStream error) {
 		this.options = options;

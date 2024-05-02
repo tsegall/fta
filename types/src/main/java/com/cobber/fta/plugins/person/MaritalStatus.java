@@ -15,7 +15,6 @@
  */
 package com.cobber.fta.plugins.person;
 
-
 import com.cobber.fta.PluginDefinition;
 
 /**

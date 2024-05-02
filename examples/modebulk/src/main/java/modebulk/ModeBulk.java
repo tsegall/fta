@@ -41,7 +41,7 @@ public abstract class ModeBulk {
 		System.err.println("Detail: " + result.asJSON(true, 1));
 
 		// Given the Semantic Type we retrieve the associated plugin
-		LogicalType semanticType = analysis.getPlugins().getRegistered(result.getSemanticType());
+		final LogicalType semanticType = analysis.getPlugins().getRegistered(result.getSemanticType());
 
 		// Use the plugin to get the non-localized description
 		System.err.printf("Description: %s%n", semanticType.getDescription());

@@ -22,7 +22,7 @@ import com.cobber.fta.core.FTAException;
  */
 public class FTAProcessingException extends FTAException {
 	private static final long serialVersionUID = 1L;
-	private String filename;
+	private final String filename;
 
 	public FTAProcessingException(final String filename, final String message) {
 		super(message);

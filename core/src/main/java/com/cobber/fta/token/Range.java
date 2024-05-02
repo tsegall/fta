@@ -18,7 +18,7 @@ package com.cobber.fta.token;
 import java.util.Objects;
 
 public class Range implements Comparable<Range> {
-	private char min;
+	private final char min;
 	private char max;
 
 	public Range(final char ch) {

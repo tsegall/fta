@@ -3523,8 +3523,8 @@ public class TestPlugins {
 				recordAnalyzer.train(row);
 		}
 
-		RecordAnalysisResult result = recordAnalyzer.getResult();
-		TextAnalysisResult[] results = result.getStreamResults();
+		final RecordAnalysisResult result = recordAnalyzer.getResult();
+		final TextAnalysisResult[] results = result.getStreamResults();
 
 		assertEquals(results[0].getSemanticType(), "NAME.FIRST");
 		assertEquals(results[0].getStructureSignature(), PluginDefinition.findByName("NAME.FIRST").signature);
@@ -3674,7 +3674,7 @@ public class TestPlugins {
 
 		TestUtils.simpleCore(Sample.allValid(samples), "quarter", Locale.US, "PERIOD.QUARTER", FTAType.LONG, 1.0);
 
-		String[] newSamples = new String[samples.length];
+		final String[] newSamples = new String[samples.length];
 		for (int i = 0; i < samples.length; i++)
 			newSamples[i] = "Q" + samples[i];
 
@@ -3820,6 +3820,7 @@ public class TestPlugins {
 		assertEquals(third.getKey(), "X9999X999");
 		assertEquals(third.getValue(), 16L);
 
+
 		for (final String sample : samples) {
 			assertTrue(sample.matches(preResult.getRegExp()));
 		}
@@ -3858,7 +3859,7 @@ public class TestPlugins {
 
 		// Data Signature is independent of Structure
 		assertEquals(preResult.getDataSignature(), result.getDataSignature());
-		assertEquals(preResult.getDataSignature(), "hiU3XR5WlhejAaWRPuDh0/i2A48=");
+		assertEquals(preResult.getDataSignature(), "mZPTXjyUWkImuNM+yXRg9OVRbMk=");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4402,14 +4403,14 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicUSStreet() throws IOException, FTAException {
-		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(TestUtils.validUSStreets), "basicUSStreet", Locale.US, "STREET_ADDRESS_EN", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(TestUtils.validUSStreets), "basicUSStreet", Locale.US, "STREET_ADDRESS_EN", FTAType.STRING, 1.0);
 
 		assertEquals(result.getCardinality(), TestUtils.validUSStreets.length);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicUSStreetTwo() throws IOException, FTAException {
-		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(validUSStreets2), "basicUSStreetTwo", Locale.US, "STREET_ADDRESS_EN", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(validUSStreets2), "basicUSStreetTwo", Locale.US, "STREET_ADDRESS_EN", FTAType.STRING, 1.0);
 
 		assertEquals(result.getCardinality(), validUSStreets2.length);
 		assertEquals(result.getMatchCount(), validUSStreets2.length);
@@ -4445,7 +4446,7 @@ public class TestPlugins {
 				"TN5904018104004942712345", "TR320010009999901234567890", "UA903052992990004149123456789",
 				"AE460090000000123456789", "GB33BUKB20201555555555", "VG21PACG0000000123456789" };
 
-		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicIBAN", Locale.US, "CHECKDIGIT.IBAN", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicIBAN", Locale.US, "CHECKDIGIT.IBAN", FTAType.STRING, 1.0);
 
 		assertEquals(result.getCardinality(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -4458,7 +4459,7 @@ public class TestPlugins {
 				 "167622596", "355856417", "138265568", "479756862", "779880373", "750997751", "053438344", "199436608", "391657007", "033359472", "465043929", "977684902", "373527896"
 		};
 
-		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicABA", Locale.US, "CHECKDIGIT.ABA", FTAType.LONG, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicABA", Locale.US, "CHECKDIGIT.ABA", FTAType.LONG, 1.0);
 
 		assertEquals(result.getCardinality(), inputs.length);
 		assertEquals(result.getMatchCount(), inputs.length);
@@ -4476,7 +4477,7 @@ public class TestPlugins {
 				"Sun", "Sun", "Sun", "Sun", "Sun", "Fri"
 		};
 
-		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "dayofweekUS", Locale.US, "DAY.ABBR_<LOCALE>", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "dayofweekUS", Locale.US, "DAY.ABBR_<LOCALE>", FTAType.STRING, 1.0);
 
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
@@ -4491,7 +4492,7 @@ public class TestPlugins {
 				"Sun", "Sun", "Sun", "Sun", "Sun", "Fri"
 		};
 
-		TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "dayofweekCA", Locale.forLanguageTag("en-CA"), "DAY.ABBR_<LOCALE>", FTAType.STRING, 1.0);
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "dayofweekCA", Locale.forLanguageTag("en-CA"), "DAY.ABBR_<LOCALE>", FTAType.STRING, 1.0);
 
 		assertEquals(result.getMatchCount(), inputs.length);
 	}

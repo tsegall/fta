@@ -43,9 +43,9 @@ public abstract class Token {
 		ANY_INPUT('W', ".+");
 
 		/** Each input character is encoded as one of the above possible tokens. */
-		private char encoded;
+		private final char encoded;
 		/** The RegExp that represents this token. */
-		private String regExp;
+		private final String regExp;
 
 		public char getEncoded() {
 			return encoded;

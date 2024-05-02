@@ -245,7 +245,7 @@ public class DriverOptions {
 					unprocessed.add(args[idx]);
 				}
 				else if ("--locale".equals(args[idx])) {
-					final String tag = nextStringArg(args, idx++);;
+					final String tag = nextStringArg(args, idx++);
 					locale = Locale.forLanguageTag(tag);
 					if (!locale.toLanguageTag().equals(tag)) {
 						System.err.printf("ERROR: Language tag '%s' not known - using '%s'?%n", tag, locale.toLanguageTag());

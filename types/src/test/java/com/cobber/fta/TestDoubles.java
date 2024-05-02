@@ -1132,7 +1132,7 @@ public class TestDoubles {
 			try {
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
 					final double d = random.nextDouble() * random.nextInt();
-					String sample = nf.format(d);
+					final String sample = nf.format(d);
 					if (KnownTypes.LEFT_TO_RIGHT_MARK == sample.charAt(0))
 						throw new FTAUnsupportedLocaleException("Locale uses Left-to-right Mark");
 					samples.add(sample);
@@ -2472,16 +2472,16 @@ public class TestDoubles {
 				"25.000,00",
 		};
 		final Locale locale = Locale.forLanguageTag("de-DE");
-		AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", new String[] { "Zugang/Abgang" } );
-		TextAnalyzer template = new TextAnalyzer(context);
+		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", new String[] { "Zugang/Abgang" } );
+		final TextAnalyzer template = new TextAnalyzer(context);
 		template.setLocale(locale);
 
-		RecordAnalyzer analysis = new RecordAnalyzer(template);
+		final RecordAnalyzer analysis = new RecordAnalyzer(template);
 
 		for (final String sample : ugly)
 			analysis.train(new String[] { sample });
 
-		RecordAnalysisResult recordResult = analysis.getResult();
+		final RecordAnalysisResult recordResult = analysis.getResult();
 
 		final TextAnalysisResult result = recordResult.getStreamResults()[0];
 
@@ -2671,7 +2671,7 @@ public class TestDoubles {
 			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		}
 		final long sampleCount = 100_000_000_000L;
-		boolean saveOutput = false;
+		final boolean saveOutput = false;
 		BufferedWriter bw = null;
 		final String[] samples = new String[10000];
 

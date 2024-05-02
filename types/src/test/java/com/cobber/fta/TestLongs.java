@@ -49,7 +49,7 @@ import com.cobber.fta.core.RegExpSplitter;
 
 public class TestLongs {
 	private static final SecureRandom random = new SecureRandom();
-	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
+	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	public void _variableLengthPositiveInteger(final boolean collectStatistics) throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("_variableLengthPositiveInteger");

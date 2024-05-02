@@ -48,7 +48,7 @@ abstract class PersonName extends LogicalTypeFiniteSimple {
 		setContent(new Content("resource", "/reference/" + filename));
 	}
 
-	protected abstract boolean isPlausible(final String candidate);
+	protected abstract boolean isPlausible(String candidate);
 
 	@Override
 	public String nextRandom() {

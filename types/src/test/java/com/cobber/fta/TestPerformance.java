@@ -132,7 +132,7 @@ public class TestPerformance {
 		settings.setHeaderExtractionEnabled(true);
 
 		for (int i = 0; i < iterations; i++) {
-			long start = System.currentTimeMillis();
+			final long start = System.currentTimeMillis();
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/enriched.csv"), StandardCharsets.UTF_8))) {
 
 				final CsvParser parser = new CsvParser(settings);
@@ -140,10 +140,10 @@ public class TestPerformance {
 
 				final String[] header = parser.getRecordMetadata().headers();
 
-				AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "profile", header);
-				TextAnalyzer textAnalyzer = new TextAnalyzer(context);
+				final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "profile", header);
+				final TextAnalyzer textAnalyzer = new TextAnalyzer(context);
 				textAnalyzer.setLocale(Locale.getDefault());
-				RecordAnalyzer analyzer = new RecordAnalyzer(textAnalyzer);
+				final RecordAnalyzer analyzer = new RecordAnalyzer(textAnalyzer);
 
 				String[] row;
 				int rows = 0;

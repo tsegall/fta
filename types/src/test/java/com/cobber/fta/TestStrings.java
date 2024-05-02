@@ -38,10 +38,11 @@ import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 
 public class TestStrings {
 	private static final SecureRandom random = new SecureRandom();
-	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
+	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void manyNulls() throws IOException, FTAException {
@@ -1079,6 +1080,138 @@ public class TestStrings {
 		assertEquals(result.getMinLength(), 3);
 		assertEquals(result.getMaxLength(), 22);
 		assertEquals(result.getConfidence(), 1.0);
+		assertNull(result.checkCounts());
+
+		for (final String sample : inputs)
+			assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
+	public void testLengths() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testLengths");
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+		final String[] inputs = {
+				"Hello", "World", "Gamma", "Beta", "Delta", "Omega",
+				"Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta",
+				"Eta", "Theta", "Iota", "Kappa", "Lambda", "Mu",
+				"Nu", "Xi", "Omicron", "Pi", "Rho", "Sigma",
+				"Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega",
+		};
+
+		for (final String sample : inputs)
+			analysis.train(sample);
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}{2,7}");
+		assertEquals(result.getMinLength(), 2);
+		assertEquals(result.getMaxLength(), 7);
+		assertEquals(result.getConfidence(), 1.0);
+		long[] freqs = result.getLengthFrequencies();
+		for (int i = 0; i < freqs.length; i++) {
+			switch (i) {
+			case 2:
+				assertEquals(freqs[i], 4L);
+				break;
+			case 3:
+				assertEquals(freqs[i], 6L);
+				break;
+			case 4:
+				assertEquals(freqs[i], 4L);
+				break;
+			case 5:
+				assertEquals(freqs[i], 12L);
+				break;
+			case 6:
+				assertEquals(freqs[i], 1L);
+				break;
+			case 7:
+				assertEquals(freqs[i], 3L);
+				break;
+			default:
+				assertEquals(freqs[i], 0L);
+				break;
+			}
+		}
+		assertNull(result.checkCounts());
+
+		for (final String sample : inputs)
+			assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
+	public void testLengthsLong() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testLengths");
+		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+		final int MAX_LENGTH = 129;
+		final String[] inputs = {
+				"Hello", "World", " Gamma ", "Beta", "Delta", "Omega",
+				"Alpha", "Beta", " Gamma ", "Delta", "Epsilon", "Zeta",
+				"Eta", "Theta", "Iota", "Kappa", "Lambda", "Mu",
+				"Nu", "Xi", "Omicron", "Pi", "Rho", "Sigma",
+				"Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega",
+				Utils.repeat('a', 126),
+				Utils.repeat('b', 126),
+				Utils.repeat('c', 127),
+				Utils.repeat('d', 127),
+				Utils.repeat('e', MAX_LENGTH),
+				Utils.repeat('f', MAX_LENGTH),
+		};
+
+		for (final String sample : inputs)
+			analysis.train(sample);
+
+
+
+		TextAnalysisResult result = analysis.getResult();
+		result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getMinLength(), 2);
+		assertEquals(result.getMaxLength(), MAX_LENGTH);
+		assertEquals(result.getConfidence(), 1.0);
+		long[] freqs = result.getLengthFrequencies();
+		for (int i = 0; i < freqs.length; i++) {
+			switch (i) {
+			case 2:
+				assertEquals(freqs[i], 4L);
+				break;
+			case 3:
+				assertEquals(freqs[i], 6L);
+				break;
+			case 4:
+				assertEquals(freqs[i], 4L);
+				break;
+			case 5:
+				assertEquals(freqs[i], 12L);
+				break;
+			case 6:
+				assertEquals(freqs[i], 1L);
+				break;
+			case 7:
+				assertEquals(freqs[i], 3L);
+				break;
+			case 126:
+				assertEquals(freqs[i], 2L);
+				break;
+			case 127:
+				assertEquals(freqs[i], 4L);
+				break;
+			default:
+				assertEquals(freqs[i], 0L);
+				break;
+			}
+		}
 		assertNull(result.checkCounts());
 
 		for (final String sample : inputs)

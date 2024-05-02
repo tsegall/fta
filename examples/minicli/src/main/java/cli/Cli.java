@@ -30,7 +30,7 @@ public abstract class Cli {
 				System.err.println(" --verbose - Dump JSON details");
 			}
 			else if ("--locale".equals(args[idx])) {
-				String tag = args[++idx];
+				final String tag = args[++idx];
 				locale = Locale.forLanguageTag(tag);
 				if (!locale.toLanguageTag().equals(tag)) {
 					System.err.printf("ERROR: Language tag '%s' not known - using '%s'?%n", tag, locale.toLanguageTag());
@@ -48,7 +48,7 @@ public abstract class Cli {
 			System.exit(1);
 		}
 
-		String source = args[idx];
+		final String source = args[idx];
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(source), "UTF-8"))) {
 			final CsvParserSettings settings = new CsvParserSettings();
@@ -60,7 +60,7 @@ public abstract class Cli {
 			settings.setEmptyValue("");
 			final CsvParser parser = new CsvParser(settings);
 			parser.beginParsing(in);
-			String[] header = parser.getRecordMetadata().headers();
+			final String[] header = parser.getRecordMetadata().headers();
 			final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, source, header);
 			final TextAnalyzer template = new TextAnalyzer(context);
 			if (locale != null)
@@ -81,7 +81,7 @@ public abstract class Cli {
 			}
 
 			final TextAnalysisResult[] results = recordAnalyzer.getResult().getStreamResults();
-			for (TextAnalysisResult result : results) {
+			for (final TextAnalysisResult result : results) {
 				if (verbose)
 					System.err.printf("Field: '%s':\n%s\n", result.getName(), result.asJSON(true, 0));
 				else

@@ -27,7 +27,7 @@ includeBuild 'examples/modestreaming'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '15.5.5')
+			version('fta', '15.6.0')
 			version('jacoco', '0.8.11')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
@@ -41,9 +41,9 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
 			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0')
 // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.13.34')
+			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.13.35')
 // https://mvnrepository.com/artifact/org.apache.commons/commons-text
-			library('commonsText', 'org.apache.commons:commons-text:1.11.0')
+			library('commonsText', 'org.apache.commons:commons-text:1.12.0')
 // https://mvnrepository.com/artifact/com.github.krraghavan/xeger
 			library('xeger', 'com.github.krraghavan:xeger:1.0.0-RELEASE')
 // https://mvnrepository.com/artifact/dk.brics.automaton/automaton
@@ -53,13 +53,13 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/com.google.guava/guava
 			library('guava', 'com.google.guava:guava:33.1.0-jre')
 // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-			library('logbackClassic', 'ch.qos.logback:logback-classic:1.5.5')
+			library('logbackClassic', 'ch.qos.logback:logback-classic:1.5.6')
 // https://mvnrepository.com/artifact/com.datadoghq/sketches-java
 			library('sketches', 'com.datadoghq:sketches-java:0.8.2')
 		}
 		testLibs {
 // https://mvnrepository.com/artifact/org.testng/testng
-			library('testng', 'org.testng:testng:7.10.1')
+			library('testng', 'org.testng:testng:7.10.2')
 		}
 	}
 }

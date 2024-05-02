@@ -30,7 +30,7 @@ import com.cobber.fta.core.RegExpSplitter;
  */
 public class CharClassToken extends Token {
 	private int countASCII;
-	private boolean[] seenASCII = new boolean[128];
+	private final boolean[] seenASCII = new boolean[128];
 	private int lowASCII = Integer.MAX_VALUE;
 	private int highASCII = Integer.MIN_VALUE;
 	private int maxSetASCII = -1;

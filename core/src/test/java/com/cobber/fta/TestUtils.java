@@ -371,7 +371,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpSplitter_1_1() {
-		RegExpSplitter splitter = RegExpSplitter.newInstance("{3,9}");
+		final RegExpSplitter splitter = RegExpSplitter.newInstance("{3,9}");
 
 		assertEquals(splitter.getMin(), 3);
 		assertEquals(splitter.getMax(), 9);
@@ -379,7 +379,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpSplitter_1_2() {
-		RegExpSplitter splitter = RegExpSplitter.newInstance("{3,10}");
+		final RegExpSplitter splitter = RegExpSplitter.newInstance("{3,10}");
 
 		assertEquals(splitter.getMin(), 3);
 		assertEquals(splitter.getMax(), 10);
@@ -387,7 +387,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpSplitter_2_2() {
-		RegExpSplitter splitter = RegExpSplitter.newInstance("{10,12}");
+		final RegExpSplitter splitter = RegExpSplitter.newInstance("{10,12}");
 
 		assertEquals(splitter.getMin(), 10);
 		assertEquals(splitter.getMax(), 12);
@@ -395,7 +395,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpSplitterSingle() {
-		RegExpSplitter splitter = RegExpSplitter.newInstance("{101}");
+		final RegExpSplitter splitter = RegExpSplitter.newInstance("{101}");
 
 		assertEquals(splitter.getMin(), 101);
 		assertEquals(splitter.getMax(), 101);
@@ -413,28 +413,28 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testInvalid1() {
-		RegExpSplitter splitter = RegExpSplitter.newInstance(null);
+		final RegExpSplitter splitter = RegExpSplitter.newInstance(null);
 
 		assertNull(splitter);
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void testInvalid2() {
-		RegExpSplitter  splitter = RegExpSplitter.newInstance("");
+		final RegExpSplitter  splitter = RegExpSplitter.newInstance("");
 
 		assertNull(splitter);
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void testInvalid3() {
-		RegExpSplitter  splitter = RegExpSplitter.newInstance("Rubbish");
+		final RegExpSplitter  splitter = RegExpSplitter.newInstance("Rubbish");
 
 		assertNull(splitter);
 	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void testInvalidNoClose() {
-		RegExpSplitter  splitter = RegExpSplitter.newInstance("{,9");
+		final RegExpSplitter  splitter = RegExpSplitter.newInstance("{,9");
 
 		assertNull(splitter);
 	}
@@ -566,7 +566,7 @@ public class TestUtils {
 		 }
 		 assertEquals(generator.getResult(), "(?i)(BLUE|GREEN|RED)");
 
-		 RegExpGenerator zip5 = new RegExpGenerator(20, Locale.getDefault());
+		 final RegExpGenerator zip5 = new RegExpGenerator(20, Locale.getDefault());
 		 final SecureRandom random = new SecureRandom();
 		 for (int i = 0; i < 100; i++)
 			 zip5.train(Utils.getRandomDigits(random, 5));
@@ -729,10 +729,10 @@ public class TestUtils {
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_ALPHANUMERIC_VARIABLE).isAlphabetic());
 		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_ALPHANUMERIC_VARIABLE).isAlphanumeric());
 
-		TypeInfo clone = new TypeInfo(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG_GROUPING));
+		final TypeInfo clone = new TypeInfo(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG_GROUPING));
 		assertTrue(clone.equals(knownTypes.getByID(KnownTypes.ID.ID_SIGNED_LONG_GROUPING)));
 
-		TypeInfo semantic1000 = new TypeInfo("[0-9][0-9][0-9][0-9]", FTAType.LONG, "PLUS4", knownTypes.getByID(KnownTypes.ID.ID_LONG));
+		final TypeInfo semantic1000 = new TypeInfo("[0-9][0-9][0-9][0-9]", FTAType.LONG, "PLUS4", knownTypes.getByID(KnownTypes.ID.ID_LONG));
 		assertFalse(semantic1000.equals(knownTypes.getByID(KnownTypes.ID.ID_LONG)));
 	}
 

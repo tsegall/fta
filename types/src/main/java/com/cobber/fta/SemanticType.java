@@ -39,11 +39,11 @@ public class SemanticType {
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	/** ID for the Semantic Type. */
-	private String id;
+	private final String id;
 	/** Description of the Semantic Type. */
-	private String description;
+	private final String description;
 	/** Languages supported by the Semantic Type. */
-	private String[] languages;
+	private final String[] languages;
 	/** Documentation for the Semantic Type. */
 	private String[] documentation;
 
@@ -51,7 +51,7 @@ public class SemanticType {
 		id = defn.semanticType;
 		description = defn.description;
 
-		List<String> languagesSupported = new ArrayList<>();
+		final List<String> languagesSupported = new ArrayList<>();
 		if (defn.validLocales != null) {
 			for (final PluginLocaleEntry validLocale : defn.validLocales)
 				languagesSupported.add(validLocale.localeTag);
@@ -134,7 +134,7 @@ public class SemanticType {
 	public String toJSONString() {
 		final StringBuilder b = new StringBuilder();
 		b.append("Id: ").append(id).append(", Description: ").append(description).append(", Languages: ");
-		for (String language : languages)
+		for (final String language : languages)
 			b.append(language).append(" ");
 
 		return b.toString();

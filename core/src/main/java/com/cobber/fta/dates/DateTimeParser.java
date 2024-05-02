@@ -511,7 +511,7 @@ public class DateTimeParser {
 						final DateTimeParserResult.Token toPatch = answerResult.dayOffset == -1 ? Token.DAYS : (answerResult.monthOffset == -1 ? Token.MONTHS : Token.YEARS_2);
 						// We had two unbound fields, we now have one, so we are fully resolved
 						answerResult = answerResult.updateStart();
-						int resolvedIndex = answerResult.tokenized.findIndexByDateField(FormatterToken.DateField.Unbound1);
+						final int resolvedIndex = answerResult.tokenized.findIndexByDateField(FormatterToken.DateField.Unbound1);
 						answerResult.tokenized = answerResult.tokenized.update(resolvedIndex, new FormatterToken(toPatch, answerResult.tokenized.get(resolvedIndex).getCount()));
 						answerResult = answerResult.updateEnd();
 					}
@@ -538,10 +538,10 @@ public class DateTimeParser {
 								//  - ?? (and ?) -> ?
 								//  - MMM (and MMMM) -> MMMM
 								final int index = answerResult.tokenized.findIndexByOffset(answerResult.dateFieldOffsets[i]);
-								Token type = answerResult.tokenized.get(index).getType();
+								final Token type = answerResult.tokenized.get(index).getType();
 								if (result.dateFieldLengths[i] < answerResult.dateFieldLengths[i] && (type == Token.DAYS || type == Token.DIGITS || type == Token.MONTHS)) {
 									answerResult = answerResult.updateStart();
-									FormatterToken newToken = new FormatterToken(answerResult.tokenized.get(index)).withCount(1);
+									final FormatterToken newToken = new FormatterToken(answerResult.tokenized.get(index)).withCount(1);
 									if (type == Token.DAYS || type == Token.MONTHS)
 										newToken.setFieldWidth(Math.max(answerResult.dateFieldPad[i], result.dateFieldPad[i]));
 									answerResult.tokenized = answerResult.tokenized.update(index, newToken);
@@ -1336,12 +1336,12 @@ public class DateTimeParser {
 
 				if (timeTracker.seen()) {
 					final String rest = trimmed.substring(i).toUpperCase(config.getLocale());
-					LinkedHashSet<String> all = new LinkedHashSet<>(localeInfo.getAMPMStrings());
+					final LinkedHashSet<String> all = new LinkedHashSet<>(localeInfo.getAMPMStrings());
 					if (config.allowEnglishAMPM && !all.contains("AM"))
 						all.addAll(localeInfo.getAMPMStringsNonLocalized());
-					String[] indicators = all.toArray(new String[0]);
+					final String[] indicators = all.toArray(new String[0]);
 					for (int indicator = 0; indicator < all.size(); indicator++) {
-						String s = indicators[indicator];
+						final String s = indicators[indicator];
 						if (rest.startsWith(s)) {
 							if (!timeTracker.isClosed()) {
 								if (!timeTracker.setComponent(tracker.value, tracker.digits, tracker.padding))

@@ -91,7 +91,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getRegExp(), "(?!666|000|9\\d{2})\\d{3}-(?!00)\\d{2}-(?!0{4})\\d{4}", result.getRegExp());
 		final TextAnalyzer analysis = new TextAnalyzer("SSN");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
-		LogicalType logical = TestUtils.getLogical(analysis, "SSN");
+		final LogicalType logical = TestUtils.getLogical(analysis, "SSN");
 		assertFalse(logical.isValid("510-00-7575"));
 	}
 

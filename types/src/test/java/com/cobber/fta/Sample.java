@@ -16,7 +16,7 @@
 package com.cobber.fta;
 
 public class Sample {
-	private String sample;
+	private final String sample;
 	private boolean valid;
 
 	Sample(final String sample) {

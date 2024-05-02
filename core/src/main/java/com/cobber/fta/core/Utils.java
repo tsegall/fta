@@ -207,21 +207,21 @@ public final class Utils {
 			// (U+2019) RIGHT SINGLE QUOTATION MARK
 			if (ch == '\u2018' || ch == '\u2019' || ch == '`') {
 				if (b == null)
-					b = new StringBuilder(input.substring(0, i));
+					b = new StringBuilder(len).append(input.substring(0, i));
 				b.append('\'');
 			}
 			// (U+201C) LEFT DOUBLE QUOTATION MARK
 			// (U+201D) RIGHT DOUBLE QUOTATION MARK
 			else if (ch == '\u201C' || ch == '\u201D') {
 				if (b == null)
-					b = new StringBuilder(input.substring(0, i));
+					b = new StringBuilder(len).append(input.substring(0, i));
 				b.append('\"');
 			}
 			// (U+2013) ENDASH
 			// (U+2014) EMDASH
 			else if (ch == '\u2013' || ch == '\u2014') {
 				if (b == null)
-					b = new StringBuilder(input.substring(0, i));
+					b = new StringBuilder(len).append(input.substring(0, i));
 				b.append('-');
 			}
 			else if (b != null)
@@ -382,15 +382,16 @@ public final class Utils {
 	}
 
 	/**
-	 * Calculate the probability that the set of size 'samples' is unique give the sampleSample size.
+	 * Calculate the probability that the set of size 'samples' is unique given the sampleSample size.
 	 * @param sampleSpace Size of the Sample Space
 	 * @param samples number of samples observed
 	 * @return The probability that the sample set is unique.
 	 */
 	public static double uniquenessProbability(final int sampleSpace, final int samples) {
-		double result = 1.0;
-		double sampleSpaceD = sampleSpace;
+		final double sampleSpaceD = sampleSpace;
 		double numerator = sampleSpaceD;
+		double result = 1.0;
+
 		for (int i = sampleSpace; i > sampleSpace - samples; i--) {
 			result = result * numerator / sampleSpaceD;
 			numerator -= 1.0;
