@@ -568,7 +568,7 @@ public class TextAnalysisResult {
 	/**
 	 * Get the trimmed string length frequencies. The first 127 elements reflect the number of strings of the length, i.e. if array[5] = 8
 	 * then there were 8 elements observed with length 5.  The last element in the array reflects the number of elements
-	 * observed with any length >= 127.
+	 * observed with any length &ge; 127.
 	 * @return An array of length 128 representing the trimmed string length frequencies.
 	 */
 	public long[] getLengthFrequencies() {
