@@ -39,7 +39,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 			library('jacksonDataBind', 'com.fasterxml.jackson.core:jackson-databind:2.17.0')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
-			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0')
+			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1')
 // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
 			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.13.35')
 // https://mvnrepository.com/artifact/org.apache.commons/commons-text
