@@ -3380,6 +3380,15 @@ public class TextAnalyzer {
 			}
 		}
 
+		if (!facts.getMatchTypeInfo().isSemanticType() && realSamples >= analysisConfig.getDetectWindow() &&
+				facts.outliers.size() > (realSamples >= 100 ? 2 : 1) &&
+				(facts.confidence < analysisConfig.getThreshold()/100.0 ||
+						(analysisConfig.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING) && !facts.outliers.isEmpty() && (new OutlierAnalysis(facts.outliers, facts.getMatchTypeInfo())).doubles == facts.outliers.size()))) {
+			// We thought it was an double field, but on reflection it does not feel like it
+			conditionalBackoutToPattern(realSamples, facts.getMatchTypeInfo());
+			facts.confidence = (double) facts.matchCount / realSamples;
+		}
+
 		// All outliers are actually invalid
 		if (!facts.outliers.isEmpty()) {
 			facts.invalid.putAll(facts.outliers);

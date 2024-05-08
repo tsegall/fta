@@ -2400,7 +2400,11 @@ public class TestDoubles {
 				"5.373.99",
 				"2107,85", "1039.69", "3250,63", "6678,75",
 				"2540,35", "2500", "5041,7", "1626,89", "1881", "5427,42",
-				"200", "910,45", "1931,32", "5059,16", "47214,8", "2770,97"
+				"200", "910,45", "1931,32", "5059,16", "47214,8", "2770,97",
+				"219,54", "38,607", "53452,1", "1,6356", "12,995",
+				"45,67", "12,34", "14,098", "12,4790", "1,2",
+				"34789,0", "2,3", "3,4", "9,0", "14,41",
+				"12,23", "3,14", "15,92654", "43,809", "203,01"
 		};
 		final Locale locale = Locale.forLanguageTag("it-IT");
 		final TextAnalyzer analysis = new TextAnalyzer("Numero");
@@ -2457,8 +2461,73 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getOutlierCount(), 0);
-//BUG		assertEquals(result.getInvalidCount(), 0);
-//BUG		assertEquals(result.getMatchCount(), ugly.length);
+		assertEquals(result.getInvalidCount(), 0);
+		assertEquals(result.getMatchCount(), ugly.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void issue81_DOUBLE() throws IOException, FTAException {
+
+	    final String[] doubleList = {
+	            "1.0", "1.1", "1.2", "1.3", "1.4", "1.5",
+	            "1.1", "1.2", "1.3", "1.4", "1.5", "1.6",
+	            "1.1", "1.2", "1.3", "1.4", "1.5", "1.6",
+	            "1.4", "test"
+	    };
+
+		TextAnalyzer textAnalyzer = new TextAnalyzer("Nothing");
+		textAnalyzer.setLocale(Locale.ENGLISH);
+
+		for (String input : doubleList)
+			textAnalyzer.train(input);
+		TextAnalysisResult result = textAnalyzer.getResult();
+
+	    assertEquals(result.getConfidence(), 0.95);
+	    assertEquals(result.getType().name(), "DOUBLE");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void issue81_STRING() throws IOException, FTAException {
+
+	    final String[] doubleList = {
+	            "1.0", "1.1", "1.2", "1.3", "1.4", "1.5",
+	            "1.1", "1.2", "1.3", "1.4", "1.5", "1.6",
+	            "1.1", "1.2", "1.3", "1.4", "1.5", "1.6",
+	            "1.4", "test", "zoom"
+	    };
+
+		TextAnalyzer textAnalyzer = new TextAnalyzer("Nothing");
+		textAnalyzer.setLocale(Locale.ENGLISH);
+
+		for (String input : doubleList)
+			textAnalyzer.train(input);
+		TextAnalysisResult result = textAnalyzer.getResult();
+
+	    assertEquals(result.getConfidence(), 1.0);
+	    assertEquals(result.getType().name(), "STRING");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
+	public void issue81_NL() throws IOException, FTAException {
+
+		final String[] doubleList = {
+				"648,152", "396,533", "12,2642", "0,28616046", "1,36448",
+				"0,0070301776", "0,03352375", "0,058304594", "0,27803", "0,22545675",
+				"0,58353168", "0,02087185", "0,0150214", "0,0040381682", "0,06775475",
+				"3,0292296", "0,122049178", "0,7679275", "27,2085962391327", "15,773",
+				"1,3704275e-5"
+		};
+
+		TextAnalyzer textAnalyzer = new TextAnalyzer("Nothing");
+		textAnalyzer.setLocale(Locale.forLanguageTag("nl-NL"));
+		textAnalyzer.setDebug(2);
+
+		for (String input : doubleList)
+			textAnalyzer.train(input);
+		TextAnalysisResult result = textAnalyzer.getResult();
+
+	    assertEquals(result.getType().name(), "DOUBLE");
+	    assertEquals(result.getConfidence(), 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })

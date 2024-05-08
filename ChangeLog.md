@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 15.7.0
+ - BUG: Double detection not honoring threshold (Issue #81)
+ - BUG: Double detection not handling exponentiation with a lower 'e' followed by a negative power
+ - BUG: Double detection not handling trailing minus when locale is de-DE
+ - INT: Bump org.springframework.boot to 3.2.5, google phonenumber to 8.13.36, guava to 33.2.0-jre, jackson to 2.17.1
+
 ### 15.6.1
  - BUG: Javadoc fix.
 

@@ -939,19 +939,21 @@ public class TextAnalysisResult {
 			outputDetails(MAPPER, detail, shape.getShapes(), verbose);
 		}
 
-		int maxNonZero = -1;
-		for (int i = facts.lengths.length - 1; i >= 0; i--)
-			if (facts.lengths[i] != 0) {
-				maxNonZero = i;
-				break;
-			}
-		if (maxNonZero != -1) {
-			final ArrayNode detail = analysis.putArray("lengthFrequency");
-			for (int i = 0; i <= maxNonZero; i++) {
-				final ObjectNode elt = MAPPER.createObjectNode();
-				elt.put("key", i == facts.lengths.length - 1 ? -1 : i);
-				elt.put("count", facts.lengths[i]);
-				detail.add(elt);
+		if (verbose > 0) {
+			int maxNonZero = -1;
+			for (int i = facts.lengths.length - 1; i >= 0; i--)
+				if (facts.lengths[i] != 0) {
+					maxNonZero = i;
+					break;
+				}
+			if (maxNonZero != -1) {
+				final ArrayNode detail = analysis.putArray("lengthFrequency");
+				for (int i = 0; i <= maxNonZero; i++) {
+					final ObjectNode elt = MAPPER.createObjectNode();
+					elt.put("key", i == facts.lengths.length - 1 ? -1 : i);
+					elt.put("count", facts.lengths[i]);
+					detail.add(elt);
+				}
 			}
 		}
 

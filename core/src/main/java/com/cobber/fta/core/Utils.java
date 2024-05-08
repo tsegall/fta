@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.Base64;
 import java.util.Comparator;
@@ -348,7 +349,11 @@ public final class Utils {
 			return n.doubleValue();
 
 		if (len >= 2 && cleaned.charAt(len - 1) == '-')
-			return -Double.parseDouble(cleaned.substring(0, len - 1));
+			try {
+				return -doubleFormatter.parse(cleaned.substring(0, len - 1)).doubleValue();
+			} catch (ParseException e) {
+				throw new NumberFormatException(e.getMessage());
+			}
 
 		if (upto > len - 2)
 			return Double.parseDouble(cleaned);
@@ -369,7 +374,8 @@ public final class Utils {
 		}
 
 		// Handle the wrong case for the Exponentiation character which is not supported
-		if (Character.isDigit(cleaned.charAt(upto + 1))) {
+		final char nextCh = cleaned.charAt(upto + 1);
+		if (Character.isDigit(nextCh) || (nextCh == '-' && len > upto + 2 && Character.isDigit(cleaned.charAt(upto + 2)))) {
 			final char newExp = exp == 'E' ? 'e' : 'E';
 			final String updatedInput = cleaned.substring(0, upto) + newExp + cleaned.substring(upto + 1);
 			pos.setIndex(0);
