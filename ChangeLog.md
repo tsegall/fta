@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.7.1
+ - ENH: Improve documentation for getThreshold()/setThreshold()
+ - INT: Bump io.spring.dependency-management to 1.1.5
+
 ### 15.7.0
  - BUG: Double detection not honoring threshold (Issue #81)
  - BUG: Double detection not handling exponentiation with a lower 'e' followed by a negative power

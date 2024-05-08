@@ -389,9 +389,11 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * The percentage when we declare success 0 - 100.
+	 * The threshold (0-100) used to determine if a data stream is of a particular base type.  For example, if the data stream has 100 samples
+	 * and we see 97 valid doubles and 3 malformed values like '3.456e', 'e05', and '-' then provided the threshold is below 97 this stream
+	 * will be detected as base type 'DOUBLE'.
 	 * Typically this should not be adjusted, if you want to run in Strict mode then set this to 100.
-	 * @param threshold The new threshold for detection.
+	 * @param threshold The new threshold for base type detection.
 	 */
 	public void setThreshold(final int threshold) {
 		if (trainingStarted)
@@ -404,9 +406,9 @@ public class TextAnalyzer {
 	}
 
 	/**
-	 * Get the current detection Threshold.
+	 * Get the current base type detection Threshold.
 	 *
-	 * @return The current threshold.
+	 * @return The current base type threshold.
 	 */
 	public int getThreshold() {
 		return analysisConfig.getThreshold();

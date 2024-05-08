@@ -1619,7 +1619,7 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), inputs.length - 2);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "\\d*,?\\d+");
-//		assertEquals(result.getMinValue(), "1,525");
+//BUG		assertEquals(result.getMinValue(), "1,525");
 		assertEquals(result.getMaxValue(), "542,742");
 		assertNull(result.checkCounts());
 
