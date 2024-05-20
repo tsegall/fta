@@ -16,7 +16,6 @@ subprojects {
 		gradlePluginPortal()
 	}
 
-	apply plugin: "java"
 	apply plugin: 'eclipse'
 	apply plugin: 'jacoco'
 	apply plugin: 'java-library-distribution'

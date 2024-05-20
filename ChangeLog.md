@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.7.2
+ - INT: Remove some gradle 9.0 warnings
+ - INT: Bump google phonenumber to 8.13.37, sketches-java to 0.8.3
+
 ### 15.7.1
  - ENH: Improve documentation for getThreshold()/setThreshold()
  - INT: Bump io.spring.dependency-management to 1.1.5

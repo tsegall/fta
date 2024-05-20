@@ -13,15 +13,19 @@ wrapper {
 
 group = 'com.cobber.fta'
 version = '1.0.1'
-sourceCompatibility = '17'
 
 repositories {
 	mavenCentral()
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+}
+
 war {
    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
+
 bootWar {
    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
