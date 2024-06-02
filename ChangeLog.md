@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.7.3
+ - INT: Bump google phonenumber to 8.13.38, commons-validator to 1.9.0, org.springframework.boot to 3.3.0, guava to 33.2.1-jre
+ - INT: Bump gradle to 8.8
+
 ### 15.7.2
  - INT: Remove some gradle 9.0 warnings
  - INT: Bump google phonenumber to 8.13.37, sketches-java to 0.8.3
