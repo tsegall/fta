@@ -3685,9 +3685,14 @@ public class TextAnalyzer {
 
 			// If we are numeric then we need to synthesize the mean and variance
 			if (ret.facts.getMatchTypeInfo() != null && ret.facts.getMatchTypeInfo().isNumeric()) {
-		        ret.facts.mean = (first.facts.mean*first.facts.matchCount + second.facts.mean*second.facts.matchCount)/(first.facts.matchCount + second.facts.matchCount);
-		        ret.facts.variance = ((first.facts.matchCount - 1)*first.facts.variance + (second.facts.matchCount - 1)*second.facts.variance)/(first.facts.matchCount+second.facts.matchCount-2);
-		        ret.facts.currentM2 = ret.facts.variance * ret.facts.matchCount;
+				ret.facts.mean = (first.facts.mean*first.facts.matchCount + second.facts.mean*second.facts.matchCount)/(first.facts.matchCount + second.facts.matchCount);
+				if (first.facts.variance == null)
+					ret.facts.variance = second.facts.variance;
+				else if (second.facts.variance == null)
+					ret.facts.variance = first.facts.variance;
+				else
+					ret.facts.variance = ((first.facts.matchCount - 1)*first.facts.variance + (second.facts.matchCount - 1)*second.facts.variance)/(first.facts.matchCount+second.facts.matchCount-2);
+				ret.facts.currentM2 = ret.facts.variance * ret.facts.matchCount;
 			}
 		}
 

@@ -189,6 +189,43 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void issue95_A() throws IOException, FTAException {
+		final long SAMPLE_COUNT = 100000L;
+
+		final List<String> samplesLong = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesLong.add(String.valueOf(i));
+
+		final List<String> samplesNull = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesNull.add(null);
+
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesLong, samplesNull, "long_null", null, true);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void issue95_B() throws IOException, FTAException {
+		final long SAMPLE_COUNT = 100000L;
+
+		final List<String> samplesNull = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesNull.add(null);
+
+		final List<String> samplesLong = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			samplesLong.add(String.valueOf(i));
+
+
+		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesNull, samplesLong, "null_long", null, true);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void testMonotonicIncreasing() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 

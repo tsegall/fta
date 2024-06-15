@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.7.4
+ - BUG: Fix NPE if one element being merged has a null variance (Issue #95)
+ - INT: Bump google phonenumber to 8.13.39
+
 ### 15.7.3
  - INT: Bump google phonenumber to 8.13.38, commons-validator to 1.9.0, org.springframework.boot to 3.3.0, guava to 33.2.1-jre
  - INT: Bump gradle to 8.8
