@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.7.5
+ - BUG: Fix --trailer option to the CLI
+ - INT: Improve CLI help (--trailer, --bulk)
+
 ### 15.7.4
  - BUG: Fix NPE if one element being merged has a null variance (Issue #95)
  - INT: Bump google phonenumber to 8.13.39

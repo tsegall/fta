@@ -72,7 +72,7 @@ public class Driver {
 					error.println("Usage: fta [OPTIONS] file ...");
 					error.println("Valid OPTIONS are:");
 					error.println(" --abbreviationPunctuation - Disable NO_ABBREVIATION_PUNCTUATION mode");
-					error.println(" --bulk - Enable bulk mode");
+					error.println(" --bulk - Enable bulk mode (input format = key,fieldName,fieldValue,fieldCount)");
 					error.println(" --charset <charset> - Use the supplied <charset> to read the input files");
 					error.println(" --col <n> - Only analyze column <n>");
 					error.println(" --createBloomfilter <input> <type> - Create Bloom Filter from CSV input, type: 'integer'|'string'");
@@ -110,6 +110,7 @@ public class Driver {
 					error.println(" --skip <n> - Skip the initial <n> rows of the input");
 					error.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
 					error.println(" --trace <trace_options> - Set trace options");
+					error.println(" --trailer <n> - Skip the final <n> rows of the input");
 					error.println(" --validate <n> - Set the validations level to <n>, 1 == counts, 2 == regExp");
 					error.println(" --verbose - Output each record as it is processed");
 					error.println(" --xMaxCharsPerColumn <n> - Set the maximum column width (CSV parsing option)");

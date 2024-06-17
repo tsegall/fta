@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -31,6 +32,7 @@ import java.util.Set;
 
 import org.testng.annotations.Test;
 
+import com.cobber.fta.core.CircularBuffer;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -241,6 +243,37 @@ public class TestUtils {
 				"\\QONLINE RESOURCE (EPUB EBOOK)\\E", "\\QONLINE RESOURCE (PDF EBOOK ; EPUB EBOOK)\\E", "SHEET", "VOLUME"
 		}));
 		assertEquals(TextAnalyzer.distanceLevenshtein("\\QONLINE RESOURCE (EBOOK)\\E", universe), 5);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void circularBuffer() throws IOException {
+		final com.cobber.fta.core.CircularBuffer buffer = new CircularBuffer(2);
+
+		assertFalse(buffer.isFull());
+		assertTrue(buffer.add(new String[] {"1"}));
+		assertFalse(buffer.isFull());
+		assertTrue(buffer.add(new String[] {"2"}));
+		assertTrue(buffer.isFull());
+		assertFalse(buffer.add(new String[] {"3"}));
+
+		String[] retrieve = buffer.get();
+		assertFalse(buffer.isFull());
+		assertEquals(retrieve.length, 1);
+		assertEquals(retrieve[0], "1");
+
+		retrieve = buffer.get();
+		assertFalse(buffer.isFull());
+		assertEquals(retrieve.length, 1);
+		assertEquals(retrieve[0], "2");
+
+		assertNull(buffer.get());
+
+		assertTrue(buffer.add(new String[] {"0"}));
+		for (int i = 1; i < 100; i++) {
+			assertTrue(buffer.add(new String[] {String.valueOf(i)}));
+			retrieve = buffer.get();
+			assertEquals(retrieve[0], String.valueOf(i - 1));
+		}
 	}
 
 	static int getJavaVersion() {

@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.CircularBuffer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -212,39 +213,6 @@ class FileProcessor {
 		}
 
 		return b.toString();
-	}
-
-	class CircularBuffer {
-		final int depth;
-		final String[][] buffer;
-		int current = 0;
-		int records = 0;
-
-		CircularBuffer(final int depth) {
-			this.depth = depth;
-			this.buffer = new String[depth][];
-		}
-
-		boolean add(final String[] record) {
-			if (records == depth)
-				return false;
-			this.buffer[current] = record;
-			current = current == depth - 1 ? 0 : current + 1;
-			records++;
-			return true;
-		}
-
-		String[] get() {
-			if (records == 0)
-				return null;
-			records--;
-			current = current == 0 ? depth - 1 : current - 1;
-			return this.buffer[current];
-		}
-
-		boolean isFull() {
-			return records == depth;
-		}
 	}
 
 	private void processAllFields(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException {
