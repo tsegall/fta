@@ -26,6 +26,7 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.RecordAnalyzer;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
+import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 
@@ -113,5 +114,32 @@ public class Processor {
 			return recordAnalyzer.getAnalyzers();
 
 		return analyzers;
+	}
+
+	public static Processor merge(final Processor first, final Processor second) throws FTAPluginException, IOException, FTAMergeException, FTAUnsupportedLocaleException {
+		if (first.options.col != second.options.col)
+			throw new IllegalArgumentException("Cannot merge Processors - incompatible col option.");
+
+		final DriverOptions options = first.options;
+		AnalyzerContext context;
+		Processor ret;
+
+		if (options.col == -1) {
+			context = first.recordAnalyzer.getAnalyzers()[0].getContext();
+			ret = new Processor(context.getCompositeName(), context.getCompositeStreamNames(), options);
+			ret.recordAnalyzer = RecordAnalyzer.merge(first.recordAnalyzer, second.recordAnalyzer);
+			return ret;
+		}
+
+		context = first.analyzers[options.col].getContext();
+		ret = new Processor(context.getCompositeName(), context.getCompositeStreamNames(), options);
+		final String[] fieldNames = context.getCompositeStreamNames();
+		for (int i = 0; i < fieldNames.length; i++) {
+			if (options.col == -1 || options.col == i)
+				ret.analyzers[i] = TextAnalyzer.merge(first.getAnalyzers()[i], second.getAnalyzers()[i]);
+		}
+
+
+		return ret;
 	}
 }

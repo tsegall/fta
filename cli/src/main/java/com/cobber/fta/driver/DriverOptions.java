@@ -64,6 +64,7 @@ public class DriverOptions {
 	protected boolean signature;
 	protected int skip;
 	protected int threshold = -1;
+	protected boolean testmerge;
 	protected String trace;
 	protected int trailer;
 	protected int validate;
@@ -110,6 +111,7 @@ public class DriverOptions {
 		this.signature = other.signature;
 		this.skip = other.skip;
 		this.threshold = other.threshold;
+		this.testmerge = other.testmerge;
 		this.trace = other.trace;
 		this.trailer = other.trailer;
 		this.validate = other.validate;
@@ -315,6 +317,8 @@ public class DriverOptions {
 					signature = true;
 				else if ("--skip".equals(args[idx]))
 					skip = nextIntegerArg(args, idx++);
+				else if ("--testmerge".equals(args[idx]))
+					testmerge = true;
 				else if ("--threshold".equals(args[idx]))
 					threshold = nextIntegerArg(args, idx++);
 				else if ("--trace".equals(args[idx]))

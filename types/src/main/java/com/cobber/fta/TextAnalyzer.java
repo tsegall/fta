@@ -3565,6 +3565,12 @@ public class TextAnalyzer {
 		if (!first.analysisConfig.equals(second.analysisConfig))
 			throw new FTAMergeException("The AnalysisConfig for both TextAnalyzers must be identical.");
 
+		// If we have not already determined the type - we need to force the issue
+		if (first.facts.getMatchTypeInfo() == null)
+			first.determineType();
+		if (second.facts.getMatchTypeInfo() == null)
+			second.determineType();
+
 		ret.setConfig(first.analysisConfig);
 
 		// Train using all the non-null/non-blank elements
@@ -3699,7 +3705,29 @@ public class TextAnalyzer {
 		return ret;
 	}
 
+	/*
+	 * Used when merging to preserve uniqueness/monotonicIncreasing/monotonicDecreasing.  We can preserve these facts
+	 * iff they have the same FTAType (e.g. Long/Double/Date) and they are comparable using a double as a proxy (see StringConverter).
+	 */
 	private static boolean nonOverlappingRegions(final Facts firstFacts, final Facts secondFacts, final AnalysisConfig analysisConfig) {
+		final TypeInfo firstInfo = firstFacts.getMatchTypeInfo();
+		final TypeInfo secondInfo = secondFacts.getMatchTypeInfo();
+
+		if (firstInfo == null || secondInfo == null)
+			return false;
+
+		final FTAType firstBaseType = firstInfo.getBaseType();
+		final FTAType secondBaseType = secondInfo.getBaseType();
+
+		if (firstBaseType != secondBaseType || !Objects.equals(firstInfo.typeModifier, secondInfo.typeModifier))
+			return false;
+
+		if (!firstBaseType.isNumeric() && !firstBaseType.isDateOrTimeType())
+			return false;
+
+		if (firstBaseType.isDateOrTimeType() && !firstInfo.format.equals(secondInfo.format))
+			return false;
+
 		String firstMin = firstFacts.getMinValue();
 		String secondMin = secondFacts.getMinValue();
 		if (firstMin == null || secondMin == null)

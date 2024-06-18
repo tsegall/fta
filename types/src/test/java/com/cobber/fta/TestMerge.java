@@ -100,6 +100,73 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void smallSets() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 20;
+
+		TextAnalyzer even = new TextAnalyzer("Even");
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			even.train(String.valueOf(i * 2));
+
+		TextAnalyzer odd = new TextAnalyzer("Even");
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			odd.train(String.valueOf(i * 2 + 1));
+
+		TextAnalyzer merged = TextAnalyzer.merge(even, odd);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getSampleCount(), 2 * SAMPLE_COUNT);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void differentBaseTypes() throws IOException, FTAException {
+		String[] zips = {
+			"95051", "95037", "95111", "95148", "95112", "95111", "95134", "95033", "93230", "95125",
+			"95050", "95112", "95112", "95125", "95127", "95112", "95134", "94040", "95020", "93230",
+			"95122", "95123", "95125", "95050", "95124", "95123", "94403", "93230", "94089", "95111",
+			"95966", "95050", "95127", "95116", "94306", "95112", "95966", "95129", "95008", "95125",
+			"94301", "95116", "95966", "95020", "94578", "95966", "95110", "95966", "94085", "95111",
+			"95112", "95127", "93230", "95008", "95020", "94306", "95020", "95110", "95118", "95135",
+			"95051", "95127", "95117", "95117", "95351", "95966", "95050", "95116", "95020", "97031",
+			"95050", "95127", "94301", "94306", "95051", "95124", "95116", "95134", "95014", "95023",
+			"95366", "95051", "95122", "95051", "95008", "95124", "95134", "95133", "95032", "95127",
+			"95050", "95051", "95121", "95020", "95134", "93230", "95966", "95128", "95123", "95111",
+			"95051", "95124", "94306", "95020", "95014", "93230", "97532", "95139", "95112", "95036",
+			"95051", "95116", "94306", "95050", "95112", "95148", "94621", "95129", "95125", "95125",
+			"95020", "95139", "95121", "95112", "85206", "95129", "95129", "95129", "95131", "95037",
+			"95051", "95122", "95020", "95037", "95051", "95966", "94587", "95121", "95116", "95126",
+			"95122", "94085", "95116", "95050", "95112", "93230", "95966", "95051", "93230", "95132",
+			"95051", "95111", "95020", "95125", "95110", "95111", "93230", "94024", "94301", "95112",
+			"95122", "94089", "94306", "95125", "95111", "95131", "95127", "95127", "95020", "95134",
+			"95131", "95121", "95020", "95032", "95112", "95112", "95008", "95124", "95050", "93230",
+			"94306", "95112", "95123", "95008", "95128", "85206", "94024", "95118", "95120", "95112",
+			"94612", "95116", "95604", "85206", "95020", "95123", "94089", "85206", "95136", "95117"
+		};
+
+		String[] hidden = {
+			"95118", "01810", "N/A", "95118", "N/A", "95020", "95121", "95148", "N/A", "95112",
+			"N/A", "N/A", "95121", "95020", "N/A", "N/A", "N/A", "95128", "95123", "95111",
+			"95051", "N/A", "N/A", "N/A", "90272", "95008", "N/A", "95132", "95122", "N/A",
+			"95148", "95133", "N/A", "N/A", "N/A", "N/A", "95050", "95122", "N/A", "N/A",
+		};
+
+		TextAnalyzer t1 = new TextAnalyzer("resident_zip");
+		for (int i = 0; i < zips.length; i++)
+			t1.train(zips[i]);
+
+		TextAnalyzer t2 = new TextAnalyzer("ziip");
+		for (int i = 0; i < hidden.length; i++)
+			t2.train(hidden[i]);
+
+		TextAnalyzer merged = TextAnalyzer.merge(t1, t2);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+		assertTrue(mergedResult.isSemanticType());
+		final PluginDefinition defn = PluginDefinition.findByName("POSTAL_CODE.ZIP5_US");
+		assertEquals(mergedResult.getSemanticType(), defn.semanticType);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void splitLogical() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 
@@ -223,6 +290,86 @@ public class TestMerge {
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.LONG);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void issue97_A() throws IOException, FTAException {
+		final String[] fmtYYYY_MM_DD = {
+				"2020-06-29", "2021-07-18", "2022-04-20", "2022-06-19", "2024-06-06"
+		};
+
+		final String[] fmtMMM_D_YYYY = {
+			"Aug 1, 2019", "July 18, 2019"
+		};
+
+		TextAnalyzer t1 = new TextAnalyzer("updated");
+		for (int i = 0; i < fmtYYYY_MM_DD.length; i++)
+			t1.train(fmtYYYY_MM_DD[i]);
+
+		TextAnalyzer t2 = new TextAnalyzer("updated");
+		for (int i = 0; i < fmtMMM_D_YYYY.length; i++)
+			t2.train(fmtMMM_D_YYYY[i]);
+
+		TextAnalyzer merged = TextAnalyzer.merge(t1, t2);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LOCALDATE);
+		assertEquals(mergedResult.getTypeModifier(), "yyyy-MM-dd");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void issue97_B() throws IOException, FTAException {
+		final String[] fmtYYYY_d_MMM = {
+			"2023-1(JUL)", "2023-3(AUG)"
+		};
+
+		final String[] fmtYYYY_d_SPACE_MMM = {
+			"2023-02 (AUG)"
+		};
+
+		TextAnalyzer t1 = new TextAnalyzer("updated");
+		for (int i = 0; i < fmtYYYY_d_MMM.length; i++)
+			t1.train(fmtYYYY_d_MMM[i]);
+
+		TextAnalyzer t2 = new TextAnalyzer("updated");
+		for (int i = 0; i < fmtYYYY_d_SPACE_MMM.length; i++)
+			t2.train(fmtYYYY_d_SPACE_MMM[i]);
+
+		TextAnalyzer merged = TextAnalyzer.merge(t2, t1);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LOCALDATE);
+		assertEquals(mergedResult.getTypeModifier(), "yyyy-d(MMM)");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void issue97_C() throws IOException, FTAException {
+		final String[] s1 = {
+				"1.200,00", "1.900,00", "3.475,00", "14.450,00", "1.300,00",
+				"7.500,00", "21.802,50", "24.373,50", "48.171,00", "88.979,00"
+		};
+
+		final String[] s2 = {
+				"1.500,00", "3.000,00", "13.000,00", "470.000,00", "4.920,00",
+				"14.000,00", "21.920,00", "29.672,33", "53.240,00", "379.295,00"
+		};
+
+		TextAnalyzer t1 = new TextAnalyzer("Subsidie beschikt");
+		t1.setLocale(Locale.forLanguageTag("nl-NL"));
+		for (final String sample : s1)
+			t1.train(sample);
+
+		TextAnalyzer t2 = new TextAnalyzer("Subsidie beschikt");
+		t2.setLocale(Locale.forLanguageTag("nl-NL"));
+		for (final String sample : s2)
+			t2.train(sample);
+
+		TextAnalyzer merged = TextAnalyzer.merge(t2, t1);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.DOUBLE);
+		assertEquals(mergedResult.getTypeModifier(), "GROUPING");
+//BUG		assertEquals(mergedResult.getSampleCount(), s1.length + s2.length);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })

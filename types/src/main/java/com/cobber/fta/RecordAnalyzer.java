@@ -15,12 +15,14 @@
  */
 package com.cobber.fta;
 
+import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 
 public class RecordAnalyzer {
 	private final TextAnalyzer[] analyzers;
 	private final int streamCount;
+	private final TextAnalyzer template;
 
 	/**
 	 * Construct a Record Analyzer using the supplied template.
@@ -28,6 +30,7 @@ public class RecordAnalyzer {
 	 * @param template The TextAnalyzer to be used as a template.
 	 */
 	public RecordAnalyzer(final TextAnalyzer template) {
+		this.template = template;
 		streamCount = template.getContext().getCompositeStreamNames().length;
 		analyzers = new TextAnalyzer[streamCount];
 
@@ -140,6 +143,15 @@ public class RecordAnalyzer {
 		final TextAnalysisResult newResult = analyzer.reAnalyze((result.getFacts().synthesizeBulk()));
 
 		return newResult.isSemanticType() ? newResult : result;
+	}
+
+	public static RecordAnalyzer merge(final RecordAnalyzer first, final RecordAnalyzer second) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException {
+		RecordAnalyzer ret = new RecordAnalyzer(first.template);
+		for (int i = 0; i < first.streamCount; i++) {
+			ret.analyzers[i] = TextAnalyzer.merge(first.analyzers[i], second.analyzers[i]);
+		}
+
+		return ret;
 	}
 
 	/**

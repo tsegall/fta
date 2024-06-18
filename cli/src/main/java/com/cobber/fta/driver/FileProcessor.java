@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.CircularBuffer;
+import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,7 +58,7 @@ class FileProcessor {
 		this.options = new DriverOptions(cmdLineOptions);
 	}
 
-	protected void process() throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException {
+	protected void process() throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException, FTAMergeException {
 		if (Files.exists(Paths.get(filename + ".options"))) {
 			options.addFromFile(filename + ".options");
 		}
@@ -215,12 +216,13 @@ class FileProcessor {
 		return b.toString();
 	}
 
-	private void processAllFields(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException {
+	private void processAllFields(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException, FTAMergeException {
 		final long startTime = System.currentTimeMillis();
 		long initializedTime = -1;
 		long consumedTime = -1;
 		long resultsTime = -1;
 		Processor processor = null;
+		Processor altProcessor = null;
 		String[] header = null;
 		int numFields = 0;
 		long rawRecordIndex = 0;
@@ -252,6 +254,8 @@ class FileProcessor {
 			}
 
 			processor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
+			if (options.testmerge)
+				altProcessor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
 			initializedTime = System.currentTimeMillis();
 
 			final CircularBuffer buffer = new CircularBuffer(options.trailer + 1);
@@ -277,7 +281,16 @@ class FileProcessor {
 					continue;
 				row = buffer.get();
 				processedRecords++;
-				processor.consume(row);
+
+				if (options.testmerge) {
+					if (processedRecords % 2 == 0)
+						processor.consume(row);
+					else
+						altProcessor.consume(row);
+				}
+				else
+					processor.consume(row);
+
 				if (processedRecords == options.recordsToProcess) {
 					parser.stopParsing();
 					break;
@@ -291,6 +304,9 @@ class FileProcessor {
 		catch (TextParsingException|ArrayIndexOutOfBoundsException e) {
 			throw new FTAProcessingException(filename, "Univocity exception", e);
 		}
+
+		if (options.testmerge)
+			processor = Processor.merge(processor, altProcessor);
 
 		if (!errors.isEmpty()) {
 			long toSkip = -1;

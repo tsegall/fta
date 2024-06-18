@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 15.7.6
+ - ENH: Add --testmerge option to CLI to enable test suite to run each test using two analyzers and merging result
+ - BUG: Issue when merging where each shard has a different type (Issue #97)
+ - BUG: Issue when merging where each shard has the same date type but the formats differ (Issue #97)
+ - BUG: Issue when merging where each shard has the same numeric type but the modifiers differ (Issue #97)
+
 ### 15.7.5
  - BUG: Fix --trailer option to the CLI
  - INT: Improve CLI help (--trailer, --bulk)
