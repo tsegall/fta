@@ -162,6 +162,7 @@ public class TestMerge {
 
 		assertEquals(mergedResult.getType(), FTAType.LONG);
 		assertTrue(mergedResult.isSemanticType());
+		System.err.printf("Locale: '%s'\n", merged.getConfig().getLocaleTag());
 		final PluginDefinition defn = PluginDefinition.findByName("POSTAL_CODE.ZIP5_US");
 		assertEquals(mergedResult.getSemanticType(), defn.semanticType);
 	}
