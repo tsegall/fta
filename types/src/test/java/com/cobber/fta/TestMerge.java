@@ -150,17 +150,18 @@ public class TestMerge {
 		};
 
 		TextAnalyzer t1 = new TextAnalyzer("resident_zip");
+		t1.setLocale(Locale.US);
 		for (int i = 0; i < zips.length; i++)
 			t1.train(zips[i]);
 
 		TextAnalyzer t2 = new TextAnalyzer("ziip");
+		t2.setLocale(Locale.US);
 		for (int i = 0; i < hidden.length; i++)
 			t2.train(hidden[i]);
 
 		TextAnalyzer merged = TextAnalyzer.merge(t1, t2);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
-		System.err.printf("Locale: '%s'\n", merged.getConfig().getLocaleTag());
 		assertEquals(mergedResult.getType(), FTAType.LONG);
 		assertTrue(mergedResult.isSemanticType());
 		final PluginDefinition defn = PluginDefinition.findByName("POSTAL_CODE.ZIP5_US");
