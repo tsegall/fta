@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.7.7
+ - INT: Bump org.springframework.boot to 3.3.1
+ - INT: Bump google phonenumber to 8.13.40
+
 ### 15.7.6
  - ENH: Add --testmerge option to CLI to enable test suite to run each test using two analyzers and merging result
  - BUG: Issue when merging where each shard has a different type (Issue #97)
