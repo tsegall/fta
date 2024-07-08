@@ -3349,7 +3349,6 @@ public class TestPlugins {
 			assertTrue(input.trim().matches(result.getRegExp()), input);
 	}
 
-
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testNames() throws IOException, FTAException {
 		final CsvParserSettings settings = new CsvParserSettings();
@@ -3394,6 +3393,53 @@ public class TestPlugins {
 
 		final LogicalType logicalFirst = analysis[0].getPlugins().getRegistered("NAME.FIRST");
 		assertTrue(logicalFirst.isValid("Harry"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testNamesSecond() throws IOException, FTAException {
+		final CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaderExtractionEnabled(true);
+		String[] header;
+		String[] row;
+		TextAnalyzer[] analysis;
+
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/NamesSecond.txt"), StandardCharsets.UTF_8))) {
+
+			final CsvParser parser = new CsvParser(settings);
+			parser.beginParsing(in);
+
+			header = parser.getRecordMetadata().headers();
+			analysis = new TextAnalyzer[header.length];
+			for (int i = 0; i < header.length; i++) {
+				analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "NamesSecond.txt", header));
+				analysis[i].setLocale(Locale.forLanguageTag("es-CO"));
+			}
+			while ((row = parser.parseNext()) != null) {
+				for (int i = 0; i < row.length; i++) {
+					analysis[i].train(row[i]);
+				}
+			}
+		}
+
+		// File Header is '"cons","nombre1","nombre2","apellido1","apellido2"'
+
+		final TextAnalysisResult first = analysis[1].getResult();
+		assertEquals(first.getSemanticType(), "NAME.FIRST");
+		assertEquals(first.getStructureSignature(), PluginDefinition.findByName("NAME.FIRST").signature);
+
+//		final String BUG = "NAME.MIDDLE";
+		final String BUG = "NAME.FIRST";
+		final TextAnalysisResult first_2 = analysis[2].getResult();
+		assertEquals(first_2.getSemanticType(), BUG);
+		assertEquals(first_2.getStructureSignature(), PluginDefinition.findByName(BUG).signature);
+
+		final TextAnalysisResult last = analysis[3].getResult();
+		assertEquals(last.getSemanticType(), "NAME.LAST");
+		assertEquals(last.getStructureSignature(), PluginDefinition.findByName("NAME.LAST").signature);
+
+		final TextAnalysisResult last_2 = analysis[3].getResult();
+		assertEquals(last_2.getSemanticType(), "NAME.LAST");
+		assertEquals(last_2.getStructureSignature(), PluginDefinition.findByName("NAME.LAST").signature);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })

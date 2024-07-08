@@ -27,7 +27,7 @@ includeBuild 'examples/modestreaming'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '15.7.7')
+			version('fta', '15.7.8')
 			version('jacoco', '0.8.11')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
@@ -37,9 +37,9 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/commons-validator/commons-validator
 			library('commonsValidator', 'commons-validator:commons-validator:1.9.0')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-			library('jacksonDataBind', 'com.fasterxml.jackson.core:jackson-databind:2.17.1')
+			library('jacksonDataBind', 'com.fasterxml.jackson.core:jackson-databind:2.17.2')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
-			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1')
+			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2')
 // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
 			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:8.13.40')
 // https://mvnrepository.com/artifact/org.apache.commons/commons-text

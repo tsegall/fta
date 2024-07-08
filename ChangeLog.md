@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.7.8
+ - INT: Bump jackson to 2.17.2
+ - INT: Add new test (that fails) for a second first name (common in Spanish)
+
 ### 15.7.7
  - INT: Bump org.springframework.boot to 3.3.1
  - INT: Bump google phonenumber to 8.13.40

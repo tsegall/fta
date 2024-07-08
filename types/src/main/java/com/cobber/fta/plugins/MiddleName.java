@@ -77,7 +77,7 @@ public class MiddleName extends FirstName {
 
 		// For the balance of the 'not found' we will say they are invalid if it is not just a single word
 		if (!Utils.isAlphas(input))
-				return false;
+			return false;
 
 		if (detectMode) {
 			// Assume 40% of the remaining are good - hopefully this will not bias the determination excessively.
