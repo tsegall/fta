@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.7.9
+ - INT: Bump gradle to 8.9, google phonenumber to 8.13.41
+
 ### 15.7.8
  - INT: Bump jackson to 2.17.2
  - INT: Add new test (that fails) for a second first name (common in Spanish)
