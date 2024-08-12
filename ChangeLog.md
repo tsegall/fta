@@ -2,6 +2,9 @@
 ## Changes ##
 
 ### 15.7.10
+ - INT: Bump google phonenumber to 8.13.43, slf4j-api to 2.0.16
+
+### 15.7.10
  - INT: Bump org.springframework.boot to 3.3.2, google phonenumber to 8.13.42
 
 ### 15.7.9
