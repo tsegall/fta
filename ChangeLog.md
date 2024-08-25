@@ -1,7 +1,10 @@
 
 ## Changes ##
 
-### 15.7.10
+### 15.7.12
+ - INT: Bump gradle to 8.10, logback-classic to 1.5.7, google phonenumber to 8.13.43, guava to 33.3.0-jre
+
+### 15.7.11
  - INT: Bump google phonenumber to 8.13.43, slf4j-api to 2.0.16
 
 ### 15.7.10
