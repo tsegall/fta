@@ -928,8 +928,11 @@ public class TestLongs {
 //					locale.toLanguageTag(), negPrefix, negSuffix, groupingSize, String.valueOf(min), String.valueOf(max), absMinValue);
 
 			try {
+				long l = 0;
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
-					long l = random.nextLong();
+					// Make sure we have at least one duplicate - so the field is not detected as an IDENTIFIER
+					if (i != SAMPLE_SIZE - 1)
+						l = random.nextLong();
 					if (l % 2 == 0)
 						l = -l;
 					final String sample = nf.format(l);
@@ -1934,7 +1937,7 @@ public class TestLongs {
 			analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		}
 		final long sampleCount = 100_000_000_000L;
-		boolean saveOutput = false;
+		final boolean saveOutput = false;
 		BufferedWriter bw = null;
 		final String[] samples = new String[10000];
 
