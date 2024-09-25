@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.7.14
+ - INT: Bump google phonenumber to 8.13.46, org.springframework.boot to 3.3.4, gradle to 8.10.2, guava to 33.3.1-jre
+
 ### 15.7.13
  - INT: Fix flaky test localeLongTest
  - INT: Bump org.springframework.boot to 3.3.3, google phonenumber to 8.13.45, logback-classic to 1.5.8, gradle to 8.10.1
