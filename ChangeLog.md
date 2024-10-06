@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.7.15
+ - INT: Bump google phonenumber to 8.13.46, jackson to 2.18.0
+
 ### 15.7.14
  - INT: Bump google phonenumber to 8.13.46, org.springframework.boot to 3.3.4, gradle to 8.10.2, guava to 33.3.1-jre
 
