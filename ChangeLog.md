@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.7.16
+ - INT: Bump logback-classic to 1.5.11, bump google phonenumber to 8.13.48
+
 ### 15.7.15
  - INT: Bump google phonenumber to 8.13.46, jackson to 2.18.0
 
