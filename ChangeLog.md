@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.7.17
+ - INT: Bump logback-classic to 1.5.12, org.springframework.boot to 3.3.5
+
 ### 15.7.16
  - INT: Bump logback-classic to 1.5.11, bump google phonenumber to 8.13.48
 
