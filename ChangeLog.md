@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.7.18
+ - INT: Bump jackson to 2.18.1, bump google phonenumber to 8.13.48
+
 ### 15.7.17
  - INT: Bump logback-classic to 1.5.12, org.springframework.boot to 3.3.5
 
