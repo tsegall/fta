@@ -1,0 +1,19 @@
+plugins {
+	id 'application'
+}
+
+wrapper {
+	gradleVersion = '8.10.2'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'com.cobber.fta:fta:15.+'
+}
+
+application {
+	mainClass = 'mergesimple.MergeSimple'
+}

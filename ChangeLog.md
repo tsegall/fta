@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.7.19
+ - ENH: Add an example to demonstrate merging two separate analyses
+
 ### 15.7.18
  - INT: Bump jackson to 2.18.1, bump google phonenumber to 8.13.48
 
