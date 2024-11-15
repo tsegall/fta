@@ -46,6 +46,7 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 public class TestLongs {
 	private static final SecureRandom random = new SecureRandom();
@@ -435,6 +436,39 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 0.99);
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void testIssue117() throws IOException, FTAException {
+		AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "Issue112", new String[] { "myNan" });
+		final TextAnalyzer template = new TextAnalyzer(context);
+		template.setDebug(2);
+		RecordAnalyzer analysis = new RecordAnalyzer(template);
+		final int maxCardinality = 20000;
+		final int EIN_COUNT = 125;
+
+		for (int i = 0; i < EIN_COUNT; i++)
+			analysis.train(new String[] {String.valueOf(100000000 + random.nextInt(1000)) });
+		for (int i = 0; i < maxCardinality; i++)
+			analysis.train(new String[] { String.valueOf(1200000000000L + random.nextInt(100000000)) });
+		analysis.train(new String[] { "1.01E+12" });
+
+
+		final RecordAnalysisResult recordResult = analysis.getResult();
+		final TextAnalysisResult result = recordResult.getStreamResults()[0];
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeModifier());
+		assertEquals(result.getSampleCount(), maxCardinality + EIN_COUNT + 1);
+		assertEquals(result.getMatchCount(), maxCardinality + EIN_COUNT);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getLeadingZeroCount(), 0);
+		assertEquals(result.getUniqueness(), -1.0);
+		assertEquals(result.getDistinctCount(), -1);
 		assertNull(result.checkCounts());
 
 		TestSupport.checkHistogram(result, 10, true);

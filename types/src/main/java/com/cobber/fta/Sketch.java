@@ -64,24 +64,24 @@ public class Sketch {
 
 	public void complete(final Map<String, Long> map) {
 		for (final Map.Entry<String, Long> entry : map.entrySet()) {
-			if (isCardinalityExceeded()) {
-				ddSketch.accept(stringConverter.toDouble(entry.getKey().trim()), entry.getValue());
-				totalSketchEntries += entry.getValue();
+			try {
+				if (isCardinalityExceeded()) {
+					ddSketch.accept(stringConverter.toDouble(entry.getKey().trim()), entry.getValue());
+					totalSketchEntries += entry.getValue();
+				}
+				else {
+					// Cardinality map - has entries that differ only based on whitespace, so for example it may include
+					// "47" 10 times and " 47" 20 times, for the purposes of calculating quantiles these are coalesced
+					// Similarly 47.0 and 47.000 will be collapsed since the typedMap is type aware and will consider these equal
+					// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
+					// if there happens to be an issue then we will lose this entry in the Cardinality map.
+						typedMap.merge(entry.getKey().trim(), entry.getValue(), Long::sum);
+						totalMapEntries += entry.getValue();
+				}
 			}
-			else {
-				// Cardinality map - has entries that differ only based on whitespace, so for example it may include
-				// "47" 10 times and " 47" 20 times, for the purposes of calculating quantiles these are coalesced
-				// Similarly 47.0 and 47.000 will be collapsed since the typedMap is type aware and will consider these equal
-				// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
-				// if there happens to be an issue then we will lose this entry in the Cardinality map.
-				try {
-					typedMap.merge(entry.getKey().trim(), entry.getValue(), Long::sum);
-					totalMapEntries += entry.getValue();
-				}
-				catch (RuntimeException e) {
-					if (debug != 0)
-						throw new InternalErrorException(e.getMessage(), e);
-				}
+			catch (RuntimeException e) {
+				if (debug != 0)
+					throw new InternalErrorException("Discarding sketch entry: " + entry.getKey(), e);
 			}
         }
 		isComplete = true;

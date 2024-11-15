@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.7.20
+ - INT: Bump gradle to 8.11, bump google phonenumber to 8.13.50
+ - BUG: Fix issue with very late changing of mind from LONG to DOUBLE, also new test case (Issue117), also improve error message (#117)
+
 ### 15.7.19
  - ENH: Add an example to demonstrate merging two separate analyses
 

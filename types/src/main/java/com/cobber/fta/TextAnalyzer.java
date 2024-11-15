@@ -3316,7 +3316,10 @@ public class TextAnalyzer {
 				}
 			}
 
+		// Do we want to back out to a DOUBLE?  Only do this if we have seen a reasonable number of samples and have
+		// not blown out the maximum cardinality.
 		if (!facts.getMatchTypeInfo().isSemanticType() && realSamples >= analysisConfig.getDetectWindow() &&
+				facts.getCardinalityOverflow() == null &&
 				(facts.confidence < analysisConfig.getThreshold()/100.0 ||
 						(analysisConfig.isEnabled(TextAnalyzer.Feature.NUMERIC_WIDENING) && !facts.outliers.isEmpty() && (new OutlierAnalysis(facts.outliers, facts.getMatchTypeInfo())).doubles == facts.outliers.size()))) {
 			// We thought it was an integer field, but on reflection it does not feel like it

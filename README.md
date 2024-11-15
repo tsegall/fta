@@ -477,13 +477,14 @@ cli --faker "FirstName[type=NAME.FIRST],LastName[type=NAME.LAST],Age[type=LONG;l
 
 Will produce a file with 100 records with five columns (FirstName,LastName,Age,Gender,CreateDate).
 
-Within the specification the type is required and can either be a Semantic Type or a Base Type.  There are an additional set of optional parameters including:
+Within the specification the type is required and can either be a Semantic Type, a Base Type or ENUM.  There are an additional set of optional parameters including:
  - low - the low bound
  - high - the high bound
  - format - the format for outputting this field (e.g. %03d for a LONG)
  - distribution - the distribution of the samples (gaussian, monotonic_increasing, monotonic_decreasing; the default is normal)
  - nulls - the percentage of nulls in this field
  - blanks - the percentage of blanks in this field
+ - values - for an ENUM type, the possible set of values can be specified
 
 ## Merging Analyses ##
 FTA supports merging of analyses run on distinct data shards.  So for example, if part of the data to be profiled resides on one shard and the balance on a separate shard then FTA can be invoked on each shard separately and then merged.  To accomplish this individual analyses should be executed (with similar configurations), the resulting serialized forms should then be deserialized on a common node and merged. Refer to the Merge example for further details.
