@@ -1254,6 +1254,39 @@ public class TestStrings {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
+	public void testScale() throws IOException, FTAException {
+		final String possibles = "abcdefghijklmnopqrsturvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		final int SAMPLE_COUNT = 10000;
+		TextAnalyzer analysis = new TextAnalyzer("Analysis");
+		TextAnalyzer accumulator = new TextAnalyzer("Scale");
+
+		for (int i = 1; i <= SAMPLE_COUNT; i++) {
+			int wordCount = random.nextInt(10) + 1;
+			int wordLength = random.nextInt(15) + 1;
+			StringBuffer sample = new StringBuffer();
+			for (int c = 0; c < wordCount; c++) {
+				sample.append(Utils.repeat(possibles.charAt(random.nextInt(possibles.length())), random.nextInt(wordLength)));
+				sample.append(' ');
+			}
+			analysis.train(sample.toString().substring(0, Math.min(sample.length(), 64)));
+			if (i % 100 == 0) {
+				accumulator = TextAnalyzer.merge(accumulator, analysis);
+				analysis = new TextAnalyzer("Analysis");
+			}
+		}
+		final TextAnalysisResult accumulatorResult = accumulator.getResult();
+		System.err.println(accumulatorResult.asJSON(true, 0));
+		final TextAnalysisResult analysisResult = analysis.getResult();
+		System.err.println(analysisResult.asJSON(true, 0));
+
+		final TextAnalysisResult result = accumulator.getResult();
+
+		assertNull(result.getTypeModifier());
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.checkCounts());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void testStrange() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testStrange");
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);

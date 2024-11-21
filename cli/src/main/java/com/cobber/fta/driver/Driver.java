@@ -82,11 +82,10 @@ public class Driver {
 					error.println(" --delimiter <ch> - Set the delimiter to the character <ch>");
 					error.println(" --detectWindow <n> - Set the size of the detect window to <n>");
 					error.println(" --faker <header> - Header is a comma separated list of Semantic Types");
+					error.println(" --format <OutputFormat> - Set the output format, possible values: json, faker");
 					error.println(" --formatDetection - Enable Format Detection");
 					error.println(" --help - Print this help");
-					error.println(" --json - Output as JSON");
 					error.println(" --knownTypes <SemanticTypes> - Comma separated list of Semantic Types");
-					error.println(" --legacyJSON - Output legacy JSON - compatible with FTA 11.X or lower");
 					error.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
 					error.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");
 					error.println(" --maxInputLength <n> - Set the Maximum Input length supported");

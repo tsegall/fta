@@ -32,6 +32,11 @@ public class FakerParameters {
 
 		for (final String attribute : attributes) {
 			final String[] components = attribute.split("=");
+			// If there are quotes around the parameter value remove them
+			final int len = components[1].length();
+			if (len > 2 && components[1].charAt(0) == '"' && components[1].charAt(len - 1) == '"')
+				components[1] = components[1].substring(1, len - 1);
+
 			if ("format".equals(components[0]))
 				format = components[1];
 			else if ("low".equals(components[0]))
@@ -55,10 +60,16 @@ public class FakerParameters {
 				clazz = "com.cobber.fta.driver.faker.FakerLocalDateLT";
 			else if ("LOCALDATETIME".equals(type))
 				clazz = "com.cobber.fta.driver.faker.FakerLocalDateTimeLT";
+			else if ("OFFSETDATETIME".equals(type))
+				clazz = "com.cobber.fta.driver.faker.FakerOffsetDateTimeLT";
+			else if ("LOCALTIME".equals(type))
+				clazz = "com.cobber.fta.driver.faker.FakerLocalTimeLT";
 			else if ("DOUBLE".equals(type))
 				clazz = "com.cobber.fta.driver.faker.FakerDoubleLT";
 			else if ("LONG".equals(type))
 				clazz = "com.cobber.fta.driver.faker.FakerLongLT";
+			else if ("BOOLEAN".equals(type))
+				clazz = "com.cobber.fta.driver.faker.FakerBooleanLT";
 			else if ("ENUM".equals(type))
 				clazz = "com.cobber.fta.driver.faker.FakerEnumLT";
 		}

@@ -15,20 +15,20 @@
  */
 package com.cobber.fta.driver.faker;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import com.cobber.fta.PluginDefinition;
 
-public class FakerLocalDateLT extends FakerLT {
+public class FakerLocalTimeLT extends FakerLT {
 	private boolean initialized = false;
-	private LocalDate low;
-	private LocalDate high;
+	private LocalTime low;
+	private LocalTime high;
 	private DateTimeFormatter dtf;
 	private long range;
 
-	public FakerLocalDateLT(final PluginDefinition plugin) {
+	public FakerLocalTimeLT(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -38,26 +38,26 @@ public class FakerLocalDateLT extends FakerLT {
 			if (parameters != null) {
 				if (locale == null)
 					locale = Locale.getDefault();
-				dtf = DateTimeFormatter.ofPattern(parameters.format == null ? "yyyy-MM-dd" : parameters.format, locale);
-				if (parameters.low != null)
-					low = LocalDate.parse(parameters.low, dtf);
-				if (parameters.high != null)
-					high = LocalDate.parse(parameters.high, dtf);
+				dtf = DateTimeFormatter.ofPattern(parameters.format == null ? "yyyy-MM-dd HH:mm:ss" : parameters.format, locale);
+	            if (parameters.low != null)
+                    low = LocalTime.parse(parameters.low, dtf);
+	            if (parameters.high != null)
+                    high = LocalTime.parse(parameters.high, dtf);
 			}
 
 			if (high == null)
-				high = LocalDate.of(2035, 1, 1);
+				high = LocalTime.of(0, 0, 0, 0);
 			if (low == null)
-				low = LocalDate.of(1960, 1, 1);
+				low = LocalTime.of(23, 59, 59, 0);
 
-			range = high.toEpochDay() - low.toEpochDay();
+			range =  high.toNanoOfDay() - low.toNanoOfDay();
 
 			initialized = true;
 		}
 
-		final long offset = getRandom().nextInt((int) range);
-		final LocalDate newDateTime = low.plusDays(offset);
+		final long offset = (long)(Math.abs(getRandom().nextDouble() * range));
+		final LocalTime newDateTime = low.plusSeconds(offset);
 
-		return dtf.format(newDateTime);
+        return dtf.format(newDateTime);
 	}
 }

@@ -36,15 +36,14 @@ public class DriverOptions {
 	protected int col = -1;
 	protected int debug = -1;
 	protected String semanticTypes;
-	protected boolean json;
 	// Used to pass in a list of known Semantic Types - e.g. User-stated, or previously identified in some manner
 	protected String knownTypes;
-	protected boolean legacyJSON;
 	protected boolean noAnalysis;
 	protected boolean noSemanticTypes;
 	protected boolean noDistributions;
 	protected boolean noStatistics;
 	protected boolean noNullAsText;
+	protected String outputFormat = "json";
 	protected boolean output;
 	protected boolean formatDetection;
 	public long recordsToProcess = -1;
@@ -84,15 +83,14 @@ public class DriverOptions {
 		this.col = other.col;
 		this.debug = other.debug;
 		this.semanticTypes = other.semanticTypes;
-		this.json = other.json;
 		this.knownTypes = other.knownTypes;
-		this.legacyJSON = other.legacyJSON;
 		this.noAnalysis = other.noAnalysis;
 		this.noSemanticTypes = other.noSemanticTypes;
 		this.noDistributions = other.noDistributions;
 		this.noStatistics = other.noStatistics;
 		this.noNullAsText = other.noNullAsText;
 		this.output = other.output;
+		this.outputFormat = other.outputFormat;
 		this.formatDetection = other.formatDetection;
 		this.recordsToProcess = other.recordsToProcess;
 		this.detectWindow = other.detectWindow;
@@ -137,8 +135,6 @@ public class DriverOptions {
 			analyzer.setPluginThreshold(this.pluginThreshold);
 		if (this.locale != null)
 			analyzer.setLocale(this.locale);
-		if (this.legacyJSON)
-			analyzer.configure(TextAnalyzer.Feature.LEGACY_JSON, true);
 		if (this.noDistributions)
 			analyzer.configure(TextAnalyzer.Feature.DISTRIBUTIONS, false);
 		if (this.noStatistics)
@@ -254,12 +250,10 @@ public class DriverOptions {
 						System.exit(1);
 					}
 				}
-				else if ("--json".equals(args[idx]))
-					json = true;
+				else if ("--format".equals(args[idx]))
+					outputFormat = args[++idx];
 				else if ("--knownTypes".equals(args[idx]))
 					knownTypes = nextStringArg(args, idx++);
-				else if ("--legacyJSON".equals(args[idx]))
-					legacyJSON = true;
 				else if ("--maxInputLength".equals(args[idx]))
 					maxInputLength = nextIntegerArg(args, idx++);
 				else if ("--maxOutlierCardinality".equals(args[idx]))

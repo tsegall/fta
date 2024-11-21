@@ -1,7 +1,12 @@
 
 ## Changes ##
 
-### 15.7.20
+### 15.9.0
+ - ENH: Remove support for TextAnalyzer.Feature.LEGACY_JSON
+ - ENH: cli option --json changed to --format json (default), added --format faker (to output a faker specification)
+ - ENH: Added Boolean, LocalTime, OffsetDateTime support to faker
+
+### 15.8.0
  - INT: Bump gradle to 8.11, bump google phonenumber to 8.13.50
  - BUG: Fix issue with very late changing of mind from LONG to DOUBLE, also new test case (Issue117), also improve error message (#117)
 

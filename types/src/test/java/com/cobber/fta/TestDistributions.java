@@ -764,8 +764,10 @@ public class TestDistributions {
 		assertEquals(q1_0, "+37.4436377");
 	}
 
+	// FLAKY!!!!!
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void normalCurve() throws IOException, FTAException {
+		for (int iter = 0; iter < 100; iter++) {
 		final TextAnalyzer analysis = new TextAnalyzer("normalCurve");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final SecureRandom random = new SecureRandom();
@@ -831,6 +833,7 @@ public class TestDistributions {
 			double low = Double.parseDouble(answers[i]);
 			double high = Double.parseDouble(answers[100 - i]);
 //			System.err.printf("low: %f, high: %f\n", low, high);
+		}
 		}
 	}
 

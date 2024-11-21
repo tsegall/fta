@@ -838,7 +838,6 @@ public class TextAnalysisResult {
 
 	private String internalAsJSON(final boolean pretty, final int verbose, final SignatureTarget target) {
 		final ObjectWriter writer = pretty ? MAPPER.writerWithDefaultPrettyPrinter() : MAPPER.writer();
-		final boolean legacyJSON = analysisConfig.isEnabled(TextAnalyzer.Feature.LEGACY_JSON);
 
 		final ObjectNode analysis = MAPPER.createObjectNode();
 		if (target != SignatureTarget.STRUCTURE_SIGNATURE && target != SignatureTarget.DATA_SIGNATURE)
@@ -866,19 +865,10 @@ public class TextAnalysisResult {
 			analysis.put("confidence", facts.confidence);
 			analysis.put("type", facts.getMatchTypeInfo().getBaseType().toString());
 
-			analysis.put(legacyJSON ? "logicalType" : "isSemanticType", isSemanticType());
-			if (legacyJSON) {
-				if (isSemanticType())
-					analysis.put("typeQualifier", facts.getMatchTypeInfo().getSemanticType());
-				else if (facts.getMatchTypeInfo().typeModifier != null)
-					analysis.put("typeQualifier", facts.getMatchTypeInfo().typeModifier);
-			}
-			else {
-				if (facts.getMatchTypeInfo().typeModifier != null)
-					analysis.put("typeModifier", facts.getMatchTypeInfo().typeModifier);
-				if (isSemanticType())
-					analysis.put("semanticType", facts.getMatchTypeInfo().getSemanticType());
-			}
+			if (facts.getMatchTypeInfo().typeModifier != null)
+				analysis.put("typeModifier", facts.getMatchTypeInfo().typeModifier);
+			if (isSemanticType())
+				analysis.put("semanticType", facts.getMatchTypeInfo().getSemanticType());
 			if (analysisConfig.isEnabled(TextAnalyzer.Feature.FORMAT_DETECTION))
 				analysis.put("contentFormat", facts.streamFormat);
 		}

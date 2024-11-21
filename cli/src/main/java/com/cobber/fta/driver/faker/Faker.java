@@ -17,6 +17,7 @@ package com.cobber.fta.driver.faker;
 
 import java.io.PrintStream;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Random;
 
 import com.cobber.fta.LogicalType;
@@ -38,12 +39,31 @@ public class Faker {
 		this.error = error;
 	}
 
+	private String[] quoteAwareSplit(String input, char splitOn) {
+		final LinkedHashSet<String> result = new LinkedHashSet<>();
+		boolean inQuotes = false;
+		int start = 0;
+
+		for (int i = 0; i < input.length(); i++) {
+			if (input.charAt(i) == '"')
+				inQuotes = !inQuotes;
+			else if (!inQuotes && input.charAt(i) == splitOn) {
+				result.add(input.substring(start, i));
+				start = i + 1;
+			}
+		}
+
+		result.add(input.substring(start, input.length()));
+
+		return result.toArray(String[]::new);
+	}
+
 	public void fake() {
 		final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
 		final Random random = new Random(31415926);
 		final long outputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
 		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
-		final String[] pluginDefinitions = options.faker.split(",");
+		final String[] pluginDefinitions = quoteAwareSplit(options.faker, ',');
 		final LogicalType[] logicals = new LogicalType[pluginDefinitions.length];
 		final FakerParameters[] parameters = new FakerParameters[pluginDefinitions.length];
 		final String[] pluginNames = new String[pluginDefinitions.length];
@@ -70,7 +90,8 @@ public class Faker {
 			// If we did not find the Semantic Type it must be one of the Base Types
 			if (logicals[i] == null) {
 				final String baseType = parameters[i].type;
-				if (!"DOUBLE".equals(baseType) && !"LONG".equals(baseType) && !"LOCALDATE".equals(baseType) && !"LOCALDATETIME".equals(baseType) && !"ENUM".equals(baseType)) {
+				if (!"DOUBLE".equals(baseType) && !"LONG".equals(baseType) && !"LOCALDATE".equals(baseType) && !"LOCALTIME".equals(baseType) &&
+						!"LOCALDATETIME".equals(baseType) && !"OFFSETDATETIME".equals(baseType) && !"BOOLEAN".equals(baseType) && !"ENUM".equals(baseType)) {
 					error.printf("ERROR: Unknown type '%s', use --help%n", baseType);
 					System.exit(1);
 				}

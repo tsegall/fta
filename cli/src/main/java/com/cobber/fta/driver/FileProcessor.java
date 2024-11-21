@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
@@ -377,7 +378,10 @@ class FileProcessor {
 		long matchCount = 0;
 		long sampleCount = 0;
 		TextAnalysisResult result = null;
-		if (options.json)
+		final boolean outputJSON = "json".equalsIgnoreCase(options.outputFormat);
+		final boolean outputFaker = "faker".equalsIgnoreCase(options.outputFormat);
+
+		if (outputJSON)
 			output.printf("[%n");
 		final TextAnalysisResult[] results = processor.getResult();
 		for (int i = 0; i < numFields; i++) {
@@ -387,13 +391,53 @@ class FileProcessor {
 					analyzer.setTotalCount(rawRecordIndex);
 
 				result = results[i];
-				if (options.json) {
-					if (i != 0 && options.col == -1)
-						output.printf(",");
+				if (i != 0 && options.col == -1)
+					output.printf(",");
+				if (outputJSON) {
+					output.printf("%s%n", result.asJSON(options.pretty, options.verbose));
 				}
-				else
-					output.printf("Field '%s' (%d) - ", sanitize(analyzer.getStreamName()), i);
-				output.printf("%s%n", result.asJSON(options.pretty, options.verbose));
+				else if (outputFaker) {
+					output.printf("%s[type=", sanitize(analyzer.getStreamName()));
+					if (result.isSemanticType())
+						output.printf("%s]", result.getSemanticType());
+					else {
+						final double nullPercent = (double)result.getNullCount()/result.getSampleCount();
+						final double blankPercent = (double)result.getBlankCount()/result.getSampleCount();
+						switch (result.getType()) {
+						case LOCALDATE:
+						case LOCALDATETIME:
+						case LOCALTIME:
+						case OFFSETDATETIME:
+						case ZONEDDATETIME:
+							output.printf("%s;low=\"%s\";high=\"%s\";format=\"%s\"", result.getType().name(), result.getMinValue(), result.getMaxValue(), result.getTypeModifier());
+							break;
+						case DOUBLE:
+							output.printf("%s;low=%s;high=%s;format=%%.2f", result.getType().name(), result.getMinValue(), result.getMaxValue());
+							break;
+						case LONG:
+							output.printf("%s;low=%s;high=%s", result.getType().name(), result.getMinValue(), result.getMaxValue());
+							break;
+						case STRING:
+							if (result.getCardinality() > 20)
+								output.printf("%s", result.getType().name());
+							else {
+								Map<String, Long> map = result.getCardinalityDetails();
+								map.keySet().stream().sorted().collect(Collectors.joining(","));
+								output.printf("%s;values=\"%s\"", "ENUM",
+										map.keySet().stream().sorted().collect(Collectors.joining("^")));
+							}
+							break;
+						case BOOLEAN:
+							output.printf("%s;format=%s", result.getType().name(), result.getTypeModifier());
+							break;
+						}
+						if (nullPercent != 0.0)
+							output.printf("nulls=%.02f", nullPercent);
+						if (blankPercent != 0.0)
+							output.printf("nulls=%.02f", nullPercent);
+						output.printf("]");
+					}
+				}
 
 				if (options.pluginDefinition) {
 					final ObjectNode pluginDefinition = result.asPlugin(analyzer);
@@ -439,15 +483,17 @@ class FileProcessor {
 				}
 			}
 		}
-		if (options.json)
+		if (outputJSON)
 			output.printf("]%n");
+		else if (outputFaker)
+			output.printf("%n");
 		resultsTime = System.currentTimeMillis();
 
 	    final Runtime instance = Runtime.getRuntime();
 		final double usedMemory = (instance.totalMemory() - instance.freeMemory()) / (1024 * 1024);
 		final long durationTime = System.currentTimeMillis() - startTime;
 
-		if (!options.json) {
+		if (options.verbose != 0) {
 			if (options.col == -1) {
 				final double percentage = numFields == 0 ? 0 : ((double)typesDetected*100)/numFields;
 				error.printf("Summary: File: %s, Types detected %d of %d (%.2f%%), Matched %d, Samples %d, Used Memory: %.2fMB.%n",

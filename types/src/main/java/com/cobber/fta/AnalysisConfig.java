@@ -107,9 +107,6 @@ public class AnalysisConfig {
 	/** Should we attempt to do Stream format detection.  For example, HTML, XML, JSON, BASE64, ... */
 	private boolean formatDetection = false;
 
-	/** Should we generate Legacy JSON (i.e. compatible with FTA 11.X and below. */
-	private boolean legacyJSON = false;
-
 	/** Should we attempt to qualify the size of the returned RexExp. */
 	private boolean lengthQualifier = true;
 
@@ -186,9 +183,6 @@ public class AnalysisConfig {
 		case FORMAT_DETECTION:
 			formatDetection = state;
 			break;
-		case LEGACY_JSON:
-			legacyJSON = state;
-			break;
 		case LENGTH_QUALIFIER:
 			lengthQualifier = state;
 			break;
@@ -221,8 +215,6 @@ public class AnalysisConfig {
 			return distributions;
 		case FORMAT_DETECTION:
 			return formatDetection;
-		case LEGACY_JSON:
-			return legacyJSON;
 		case LENGTH_QUALIFIER:
 			return lengthQualifier;
 		case NO_ABBREVIATION_PUNCTUATION:

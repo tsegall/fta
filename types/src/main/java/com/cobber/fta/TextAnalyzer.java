@@ -168,8 +168,6 @@ public class TextAnalyzer {
 		DISTRIBUTIONS,
 		/** Feature that indicates whether to attempt to detect the stream format (HTML, XML, JSON, BASE64, OTHER). Feature is disabled by default. */
 		FORMAT_DETECTION,
-		/** Indicate whether we should generate Legacy JSON (compatible with FTA 11.X). */
-		LEGACY_JSON,
 		/** Indicate whether we should qualify the size of the RegExp. Feature is enabled by default. */
 		LENGTH_QUALIFIER,
 		/**
