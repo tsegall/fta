@@ -1254,11 +1254,19 @@ public class TestStrings {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
-	public void testScale() throws IOException, FTAException {
+	public void issue119() throws IOException, FTAException {
 		final String possibles = "abcdefghijklmnopqrsturvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-		final int SAMPLE_COUNT = 10000;
-		TextAnalyzer analysis = new TextAnalyzer("Analysis");
+		final int SAMPLE_COUNT = 100_000;
+		final int MAX_SAMPLE_LENGTH = 64;
+		final AllocationTracker tracker = new AllocationTracker();
 		TextAnalyzer accumulator = new TextAnalyzer("Scale");
+		TextAnalyzer analysis = new TextAnalyzer("Analysis");
+		final boolean tracking = false;
+
+		if (tracking)
+			System.err.printf("Allocated (initial): %,d\n", tracker.getAllocated());
+
+		final long startTime = System.currentTimeMillis();
 
 		for (int i = 1; i <= SAMPLE_COUNT; i++) {
 			int wordCount = random.nextInt(10) + 1;
@@ -1267,17 +1275,30 @@ public class TestStrings {
 			for (int c = 0; c < wordCount; c++) {
 				sample.append(Utils.repeat(possibles.charAt(random.nextInt(possibles.length())), random.nextInt(wordLength)));
 				sample.append(' ');
+				if (sample.length() > MAX_SAMPLE_LENGTH)
+					break;
 			}
-			analysis.train(sample.toString().substring(0, Math.min(sample.length(), 64)));
+			analysis.train(sample.toString().substring(0, Math.min(sample.length(), MAX_SAMPLE_LENGTH)));
 			if (i % 100 == 0) {
+				long preMergeAllocation = 0;
+
+				if (tracking) {
+					preMergeAllocation = tracker.getAllocated();
+					System.err.printf("Allocated (pre-merge): %,d\n", preMergeAllocation);
+				}
+				String accumulatorSerialized = accumulator.serialize();
+				String analysisSerialized = analysis.serialize();
+				accumulator = TextAnalyzer.merge(TextAnalyzer.deserialize(accumulatorSerialized), TextAnalyzer.deserialize(analysisSerialized));
 				accumulator = TextAnalyzer.merge(accumulator, analysis);
 				analysis = new TextAnalyzer("Analysis");
+				if (tracking)
+					System.err.printf("Allocated (post-merge): +%,d\n", tracker.getAllocated() - preMergeAllocation);
 			}
 		}
 		final TextAnalysisResult accumulatorResult = accumulator.getResult();
 		System.err.println(accumulatorResult.asJSON(true, 0));
-		final TextAnalysisResult analysisResult = analysis.getResult();
-		System.err.println(analysisResult.asJSON(true, 0));
+
+		System.err.printf("Duration: %,dms\n", System.currentTimeMillis() - startTime);
 
 		final TextAnalysisResult result = accumulator.getResult();
 

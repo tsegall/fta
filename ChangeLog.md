@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.10.0
+ - ENH: Improve performance of TextAnalyzer.merge (both memory usage and speed)
+ - INT: Bump gradle to 8.11.1, org.springframework.boot to 3.4.0
+
 ### 15.9.0
  - ENH: Remove support for TextAnalyzer.Feature.LEGACY_JSON
  - ENH: cli option --json changed to --format json (default), added --format faker (to output a faker specification)

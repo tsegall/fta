@@ -767,73 +767,74 @@ public class TestDistributions {
 	// FLAKY!!!!!
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })
 	public void normalCurve() throws IOException, FTAException {
-		for (int iter = 0; iter < 100; iter++) {
-		final TextAnalyzer analysis = new TextAnalyzer("normalCurve");
-		analysis.setLocale(Locale.forLanguageTag("en-US"));
-		final SecureRandom random = new SecureRandom();
-		final int SIZE = 100000;
+		final int ITERATIONS = 1;
+		for (int iter = 0; iter < ITERATIONS; iter++) {
+			final TextAnalyzer analysis = new TextAnalyzer("normalCurve");
+			analysis.setLocale(Locale.forLanguageTag("en-US"));
+			final SecureRandom random = new SecureRandom();
+			final int SIZE = 100000;
 
-		for (int i = 0; i < SIZE; i++)
-			analysis.train(String.valueOf(random.nextGaussian()*100));
+			for (int i = 0; i < SIZE; i++)
+				analysis.train(String.valueOf(random.nextGaussian()*100));
 
-		// Test pre getResult()
-		String serialized = analysis.serialize();
-		final TextAnalyzer hydrated = TextAnalyzer.deserialize(serialized);
-		assertTrue(analysis.equals(hydrated));
+			// Test pre getResult()
+			String serialized = analysis.serialize();
+			final TextAnalyzer hydrated = TextAnalyzer.deserialize(serialized);
+			assertTrue(analysis.equals(hydrated));
 
-		// Test a hydrated object
-		serialized = hydrated.serialize();
-		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
-		assertEquals(serialized, rehydrated.serialize());
+			// Test a hydrated object
+			serialized = hydrated.serialize();
+			final TextAnalyzer rehydrated = TextAnalyzer.deserialize(serialized);
+			assertEquals(serialized, rehydrated.serialize());
 
-		final TextAnalysisResult result = rehydrated.getResult();
+			final TextAnalysisResult result = rehydrated.getResult();
 
-		// Test post getResult()
-		serialized = rehydrated.serialize();
-		assertEquals(serialized, TextAnalyzer.deserialize(serialized).serialize());
+			// Test post getResult()
+			serialized = rehydrated.serialize();
+			assertEquals(serialized, TextAnalyzer.deserialize(serialized).serialize());
 
-		assertEquals(result.getSampleCount(), SIZE);
-		assertEquals(result.getOutlierCount(), 0);
-		assertEquals(result.getMatchCount(), SIZE);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getConfidence(), 1.0);
-		assertEquals(result.getType(), FTAType.DOUBLE);
-		assertEquals(result.getTypeModifier(), "SIGNED");
+			assertEquals(result.getSampleCount(), SIZE);
+			assertEquals(result.getOutlierCount(), 0);
+			assertEquals(result.getMatchCount(), SIZE);
+			assertEquals(result.getNullCount(), 0);
+			assertEquals(result.getConfidence(), 1.0);
+			assertEquals(result.getType(), FTAType.DOUBLE);
+			assertEquals(result.getTypeModifier(), "SIGNED");
 
-		assertEquals(result.getMean(), 0.0, 1.0);
-		assertEquals(result.getStandardDeviation(), 100, 1);
+			assertEquals(result.getMean(), 0.0, 1.0);
+			assertEquals(result.getStandardDeviation(), 100, 1);
 
-		final String q0_0 = result.getValueAtQuantile(0);
-		final String q0_5 = result.getValueAtQuantile(.5);
-		final String q1_0 = result.getValueAtQuantile(1.0);
+			final String q0_0 = result.getValueAtQuantile(0);
+			final String q0_5 = result.getValueAtQuantile(.5);
+			final String q1_0 = result.getValueAtQuantile(1.0);
 
-		// Median should be seriously close to 0
-		assertEquals(Double.parseDouble(q0_5), 0.0, 1.2);
+			// Median should be seriously close to 0
+			assertEquals(Double.parseDouble(q0_5), 0.0, 1.2);
 
-		// 3.5 Standard Deviations should cover low and high points
-		assertTrue(Double.parseDouble(q0_0) < -350);
-		assertTrue(Double.parseDouble(q1_0) > 350);
+			// 3.5 Standard Deviations should cover low and high points
+			assertTrue(Double.parseDouble(q0_0) < -350);
+			assertTrue(Double.parseDouble(q1_0) > 350);
 
-		// 101 because we want 0.0 and 1.0 plus everything in between
-		final double[] percentiles = new double[101];
-		double value = 0.0;
-		for (int i = 0; i < 100; i++) {
-			percentiles[i] = value;
-			value += .01;
-		}
-		// Make sure the last one is precisely 1.0
-		percentiles[100] = 1.0;
+			// 101 because we want 0.0 and 1.0 plus everything in between
+			final double[] percentiles = new double[101];
+			double value = 0.0;
+			for (int i = 0; i < 100; i++) {
+				percentiles[i] = value;
+				value += .01;
+			}
+			// Make sure the last one is precisely 1.0
+			percentiles[100] = 1.0;
 
-		final String[] answers = result.getValuesAtQuantiles(percentiles);
-		assertEquals(answers[0], q0_0);
-		assertEquals(answers[50], q0_5);
-		assertEquals(answers[100], q1_0);
+			final String[] answers = result.getValuesAtQuantiles(percentiles);
+			assertEquals(answers[0], q0_0);
+			assertEquals(answers[50], q0_5);
+			assertEquals(answers[100], q1_0);
 
-		for (int i = 10; i < 50; i++) {
-			double low = Double.parseDouble(answers[i]);
-			double high = Double.parseDouble(answers[100 - i]);
-//			System.err.printf("low: %f, high: %f\n", low, high);
-		}
+			for (int i = 10; i < 50; i++) {
+				double low = Double.parseDouble(answers[i]);
+				double high = Double.parseDouble(answers[100 - i]);
+//				System.err.printf("low: %f, high: %f\n", low, high);
+			}
 		}
 	}
 

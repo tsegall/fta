@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.cobber.fta.CacheLRU;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.Utils;
@@ -65,6 +66,8 @@ public class TokenStream {
 	private boolean isCompressed;
 	/* The number of occurrences of this 'Pattern'. */
 	private long occurrences;
+
+	private final static CacheLRU<String, Automaton> cache = new CacheLRU<>(10);
 
 	/** The TokenStream that represents any input that is too long. */
 	public final static TokenStream ANYSHAPE = new TokenStream(Utils.repeat('x', Token.MAX_LENGTH + 1), 1);
@@ -462,7 +465,11 @@ public class TokenStream {
 	 * @return True if the TokenStream matches the supplied Regular Expression.
 	 */
 	public boolean matches(final String regExp) {
-		final Automaton automaton = new RegExp(RegExpGenerator.toAutomatonRE(regExp, false), RegExp.AUTOMATON).toAutomaton(new DatatypesAutomatonProvider());
+		Automaton automaton = cache.get(regExp);
+		if (automaton == null) {
+			automaton = new RegExp(RegExpGenerator.toAutomatonRE(regExp, false), RegExp.AUTOMATON).toAutomaton(new DatatypesAutomatonProvider());
+			cache.put(regExp, automaton);
+		}
 
 		return matches(automaton.getInitialState(), 0);
 	}
