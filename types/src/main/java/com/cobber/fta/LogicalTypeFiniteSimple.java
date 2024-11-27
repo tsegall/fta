@@ -34,6 +34,8 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected Reader reader;
 	protected SingletonSet memberSet;
 
+	private final static CacheLRU<String, String> cache = new CacheLRU<>(30);
+
 	public LogicalTypeFiniteSimple(final PluginDefinition plugin, final String backout, final int threshold) {
 		super(plugin);
 		this.semanticType = plugin.semanticType;
@@ -74,12 +76,18 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 		// If the Regular Expression has not been set then generate one based on the content
 		if (regExp == null) {
+			final String cacheKey = semanticType + "___" + analysisConfig.getLocaleTag();
+			regExp = cache.get(cacheKey);
+			if (regExp != null)
+				return true;
+
 			final RegExpGenerator gen = new RegExpGenerator(15, Locale.getDefault());
 
 			for (final String elt : getMembers())
 			       gen.train(elt);
 
 			regExp = gen.getResult();
+			cache.put(cacheKey, regExp);
 		}
 
 		return true;

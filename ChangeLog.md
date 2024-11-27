@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.10.1
+ - ENH: Improve performance of TextAnalyzer.initialize() - especially significant if merge() is being called and causing lots of deserialization
+
 ### 15.10.0
  - ENH: Improve performance of TextAnalyzer.merge (both memory usage and speed)
  - INT: Bump gradle to 8.11.1, org.springframework.boot to 3.4.0

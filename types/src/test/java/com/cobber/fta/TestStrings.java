@@ -1271,28 +1271,34 @@ public class TestStrings {
 		for (int i = 1; i <= SAMPLE_COUNT; i++) {
 			int wordCount = random.nextInt(10) + 1;
 			int wordLength = random.nextInt(15) + 1;
-			StringBuffer sample = new StringBuffer();
+			StringBuffer sampleb = new StringBuffer();
 			for (int c = 0; c < wordCount; c++) {
-				sample.append(Utils.repeat(possibles.charAt(random.nextInt(possibles.length())), random.nextInt(wordLength)));
-				sample.append(' ');
-				if (sample.length() > MAX_SAMPLE_LENGTH)
+				sampleb.append(Utils.repeat(possibles.charAt(random.nextInt(possibles.length())), random.nextInt(wordLength) + 1));
+				if (sampleb.length() > MAX_SAMPLE_LENGTH)
 					break;
+				if (c + 1 < wordCount)
+					sampleb.append(' ');
 			}
-			analysis.train(sample.toString().substring(0, Math.min(sample.length(), MAX_SAMPLE_LENGTH)));
-			if (i % 100 == 0) {
+			sampleb.setLength(Math.min(sampleb.length(), MAX_SAMPLE_LENGTH));
+
+			analysis.train(sampleb.toString());
+			if (i % 1000 == 0) {
 				long preMergeAllocation = 0;
 
-				if (tracking) {
+				if (tracking && i % 10000 == 0) {
+					System.gc();
 					preMergeAllocation = tracker.getAllocated();
-					System.err.printf("Allocated (pre-merge): %,d\n", preMergeAllocation);
+					System.err.printf("Allocated (%d pre-merge): %,d, Free memory: %,d\n", i, preMergeAllocation, Runtime.getRuntime().freeMemory());
 				}
 				String accumulatorSerialized = accumulator.serialize();
 				String analysisSerialized = analysis.serialize();
 				accumulator = TextAnalyzer.merge(TextAnalyzer.deserialize(accumulatorSerialized), TextAnalyzer.deserialize(analysisSerialized));
-				accumulator = TextAnalyzer.merge(accumulator, analysis);
 				analysis = new TextAnalyzer("Analysis");
-				if (tracking)
-					System.err.printf("Allocated (post-merge): +%,d\n", tracker.getAllocated() - preMergeAllocation);
+				if (tracking && i % 10000 == 0) {
+					System.gc();
+					System.err.printf("Allocated (%d post-merge): +%,d, Free memory: %,d, Serialized length: %d\n",
+							i, tracker.getAllocated() - preMergeAllocation, Runtime.getRuntime().freeMemory(), accumulatorSerialized.length());
+				}
 			}
 		}
 		final TextAnalysisResult accumulatorResult = accumulator.getResult();
