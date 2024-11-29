@@ -16,7 +16,9 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +37,8 @@ import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
@@ -336,7 +340,6 @@ public class TestIssues {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void issue71() throws FTAPluginException, FTAUnsupportedLocaleException {
-
 		final String[] headers = { "First", "Last", "MI" };
 		final String[][] names = { { "Anaïs", "Nin", "9,876.54" }, { "Gertrude", "Stein", "3,876.2" },
 				{ "Paul", "Campbell", "76.54" }, { "Pablo", "Picasso", "123.45" } };
@@ -359,5 +362,61 @@ public class TestIssues {
 		assertNull(results[2].getSemanticType());
 		assertEquals(results[2].getType(), FTAType.DOUBLE);
 		assertEquals(results[2].getTypeModifier(), "NON_LOCALIZED");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
+	public void checkJSON() throws IOException, FTAException {
+		// Issue #120
+		final String[] headers = { "First", "Last", "MI" };
+		final String[][] names = { { "Anaïs", "Nin", "9,876.54" }, { "Gertrude", "Stein", "3,876.2" },
+				{ "Paul", "Campbell", "76.54" }, { "Pablo", "Picasso", "123.45" } };
+
+		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", headers);
+		final TextAnalyzer template = new TextAnalyzer(context);
+
+		template.setLocale(Locale.GERMAN);
+
+		final RecordAnalyzer analysis = new RecordAnalyzer(template);
+
+		for (final String[] name : names)
+			analysis.train(name);
+
+		final RecordAnalysisResult recordResult = analysis.getResult();
+		final TextAnalysisResult[] results = recordResult.getStreamResults();
+
+		final String jsonRepresentation = results[0].asJSON(false, 0);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = objectMapper.readTree(jsonRepresentation);
+
+		// Validate that the JSON representation has all the fields we expect - with the values we expect
+		assertTrue(jsonNode.get("isSemanticType").asBoolean());
+		assertEquals(jsonNode.get("semanticType").asText(), "NAME.FIRST");
+
+		assertEquals(jsonNode.get("fieldName").asText(), "First");
+		assertEquals(jsonNode.get("sampleCount").asInt(), 4);
+		assertEquals(jsonNode.get("matchCount").asInt(), 4);
+		assertEquals(jsonNode.get("nullCount").asInt(), 0);
+		assertEquals(jsonNode.get("blankCount").asInt(), 0);
+		assertEquals(jsonNode.get("distinctCount").asInt(), 4);
+		assertEquals(jsonNode.get("confidence").asDouble(), 1.0);
+		assertEquals(jsonNode.get("type").asText(), "String");
+		assertEquals(jsonNode.get("min").asText(), "Anaïs");
+		assertEquals(jsonNode.get("max").asText(), "Paul");
+		assertEquals(jsonNode.get("minLength").asInt(), 4);
+		assertEquals(jsonNode.get("maxLength").asInt(), 8);
+		assertEquals(jsonNode.get("min").asText(), "Anaïs");
+		assertEquals(jsonNode.get("cardinality").asInt(), 4);
+		assertEquals(jsonNode.get("outlierCardinality").asInt(), 0);
+		assertEquals(jsonNode.get("invalidCardinality").asInt(), 0);
+		assertEquals(jsonNode.get("shapesCardinality").asInt(), 3);
+		assertFalse(jsonNode.get("leadingWhiteSpace").asBoolean());
+		assertFalse(jsonNode.get("trailingWhiteSpace").asBoolean());
+		assertFalse(jsonNode.get("multiline").asBoolean());
+		assertEquals(jsonNode.get("keyConfidence").asDouble(), 0.0);
+		assertEquals(jsonNode.get("uniqueness").asDouble(), 1.0);
+		assertEquals(jsonNode.get("detectionLocale").asText(), "de");
+		assertEquals(jsonNode.get("structureSignature").asText(), "slggsAEDZ26rz9dqs15eNF23j2w=");
+		assertEquals(jsonNode.get("dataSignature").asText(), "hOm2Ez8xHWr6iDeQ1j/A3hBtz0Y=");
 	}
 }

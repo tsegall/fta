@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 15.10.2
+ - BUG: Fix bug introduced in 15.9 which accidently removed isSemanticType field from Json (#120), also added test!
+
 ### 15.10.1
  - ENH: Improve performance of TextAnalyzer.initialize() - especially significant if merge() is being called and causing lots of deserialization
 

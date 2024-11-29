@@ -865,6 +865,7 @@ public class TextAnalysisResult {
 			analysis.put("confidence", facts.confidence);
 			analysis.put("type", facts.getMatchTypeInfo().getBaseType().toString());
 
+			analysis.put("isSemanticType", isSemanticType());
 			if (facts.getMatchTypeInfo().typeModifier != null)
 				analysis.put("typeModifier", facts.getMatchTypeInfo().typeModifier);
 			if (isSemanticType())
