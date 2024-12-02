@@ -26,7 +26,7 @@ import com.cobber.fta.core.FTAException;
 public abstract class MergeSimple {
 	public static void main(final String[] args) throws FTAException {
 
-		// Analyze the data in the first shard
+		// Analyze the data in the first shard - no Semantic Type detected
 		final TextAnalyzer analysisOne = new TextAnalyzer("Col1");
 		final Map<String, Long> onlyMale = new HashMap<>();
 
@@ -35,7 +35,7 @@ public abstract class MergeSimple {
 		final TextAnalysisResult resultOne = analysisOne.getResult();
 		System.err.printf("Shard1 - Semantic Type: %s (%s)%n", resultOne.getSemanticType(), resultOne.getType());
 
-		// Analyze the data in the second shard
+		// Analyze the data in the second shard - no Semantic Type detected
 		final TextAnalyzer analysisTwo = new TextAnalyzer("Col1");
 		final Map<String, Long> onlyFemale = new HashMap<>();
 
@@ -44,7 +44,7 @@ public abstract class MergeSimple {
 		final TextAnalysisResult resultTwo = analysisTwo.getResult();
 		System.err.printf("Shard2 - Semantic Type: %s (%s)%n", resultTwo.getSemanticType(), resultTwo.getType());
 
-		// Now merge the two shards
+		// Now merge the two shards - Semantic Type correctly identified
 		final TextAnalyzer analysisMerged = TextAnalyzer.merge(analysisOne, analysisTwo);
 		final TextAnalysisResult resultMerged = analysisMerged.getResult();
 		System.err.printf("Merged - Semantic Type: %s (%s)%n", resultMerged.getSemanticType(), resultMerged.getType());

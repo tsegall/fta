@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.10.3
+ - ENH: Move around the examples, so they can be executed and are not shipped with the core libraries
+ - INT: Bump jackson to 2.18.2, bump google phonenumber to 8.13.51
+
 ### 15.10.2
  - BUG: Fix bug introduced in 15.9 which accidently removed isSemanticType field from Json (#120), also added test!
 

@@ -15,5 +15,5 @@ dependencies {
 }
 
 application {
-	mainClass = 'modestreaming.ModeStreaming'
+	mainClass = 'validation.Validation'
 }

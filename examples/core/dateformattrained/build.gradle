@@ -11,9 +11,9 @@ repositories {
 }
 
 dependencies {
-	implementation group: 'com.cobber.fta', name: 'fta', version: '15.+'
+	implementation group: 'com.cobber.fta', name: 'fta-core', version: '15.+'
 }
 
 application {
-	mainClass = 'modestreaming.ModeStreaming'
+	mainClass = 'dateformattrained.DateFormatTrained'
 }

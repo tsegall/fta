@@ -21,15 +21,23 @@ Design objectives:
 * Support for sharded analysis (i.e. Analysis results can be merged)
 * Once stream is profiled then subsequent samples can be validated and/or new samples can be generated
 
-Notes:
-* Date detection supports ~750 locales (no support for locales using non-Gregorian calendars or non-Arabic numerals).
+Note: Date detection supports ~750 locales (no support for locales using non-Gregorian calendars or non-Arabic numerals).
 
-## Modes
+## Usage
 
-### Streaming
+FTA is available in Maven Central. Include it in your project with:
+
+```xml
+<dependency>
+    <groupId>com.cobber.fta</groupId>
+    <artifactId>fta</artifactId>
+    <version>15.10.2</version>
+</dependency>
+```
+
+### Streaming Mode Example
 Used when the source is inherently continuous, e.g. IOT device, flat file, etc.
 
-Example:
 ```java
 	String[] inputs = {
 				"Anaïs Nin", "Gertrude Stein", "Paul Cézanne", "Pablo Picasso", "Theodore Roosevelt",
@@ -54,10 +62,9 @@ Example:
 
 Result: Semantic Type: **NAME.FIRST_LAST** (String)
 
-### Bulk
+### Bulk Mode Example
 Used when the source offers the ability to group at source, e.g. a Database.  The advantages of using Bulk mode are that as the data is pre-aggregated the analysis is significantly faster, and the Semantic Type detection is not biased by a set of outliers present early in the analysis.
 
-Example:
 ```java
 	TextAnalyzer analysis = new TextAnalyzer("Gender");
 	HashMap<String, Long> basic = new HashMap<>();
@@ -77,10 +84,10 @@ Example:
 
 Result: Semantic Type: **GENDER.TEXT_EN** (String)
 
-### Record
+### Record Mode Example
 Used when the primary objective is Semantic Type information and not profiling, or when the focus is on a subset of the data (e.g. fewer than MAX_CARDINALITY records).  The advantage of using Record mode is that the Semantic Type detection is stronger and there is support for cross-stream analysis.
 
-Example:
+
 ```java
 	String[] headers = { "First", "Last", "MI" };
 	String[][] names = {
@@ -115,6 +122,9 @@ Semantic Type: ***NAME.LAST*** (String)
 </br>
 Semantic Type: ***NAME.MIDDLE*** (String)
 
+### Additional Examples
+
+Are in the [example](examples) directory.
 
 ## Date Format determination ##
 
@@ -513,10 +523,6 @@ CITY is relatively unusual in that it is based  primarily on the header and not 
 
 For real word data (see for example https://github.com/tsegall/semantic-types) the detection performance for CITY is ~99.5%.
 
-## Getting Starting ##
-
-Fastest way to get started is to review the examples included.
-
 ## Releasing a new version ##
 
 ### Compile ###
@@ -578,11 +584,6 @@ Analyze a Dutch CSV file:
 Generate a set of samples:
 
 `$ cli/build/install/fta/bin/cli --faker "Country[type=COUNTRY.TEXT_EN]" --records 20`
-
-## Java code ##
-
-Download the latest jars from the [MVN
-Repository](https://mvnrepository.com/artifact/com.cobber.fta/fta) or [Maven.org](https://search.maven.org/artifact/com.cobber.fta/fta).
 
 ## Javadoc ##
 
