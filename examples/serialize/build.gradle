@@ -1,0 +1,19 @@
+plugins {
+	id 'application'
+}
+
+wrapper {
+	gradleVersion = '8.11.1'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation group: 'com.cobber.fta', name: 'fta', version: '15.+'
+}
+
+application {
+	mainClass = 'serialize.Serialize'
+}
