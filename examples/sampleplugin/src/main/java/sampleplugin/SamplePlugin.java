@@ -20,7 +20,6 @@ import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
-import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
@@ -83,5 +82,5 @@ public abstract class SamplePlugin {
 			System.exit(1);
 		}
     }
-    
+
 }

@@ -44,8 +44,8 @@ public abstract class Cli {
 		}
 
 		if (idx == args.length) {
-			System.err.println("ERROR: No file to process supplied, use --help");
-			System.exit(1);
+			System.err.println("WARNING: No file to process supplied, use --help");
+			System.exit(0);
 		}
 
 		final String source = args[idx];

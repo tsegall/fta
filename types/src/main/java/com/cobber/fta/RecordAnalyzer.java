@@ -18,6 +18,7 @@ package com.cobber.fta;
 import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
+import com.cobber.fta.core.InternalErrorException;
 
 public class RecordAnalyzer {
 	private final TextAnalyzer[] analyzers;
@@ -34,15 +35,28 @@ public class RecordAnalyzer {
 		streamCount = template.getContext().getCompositeStreamNames().length;
 		analyzers = new TextAnalyzer[streamCount];
 
+
 		for (int i = 0; i < streamCount; i++) {
-			analyzers[i] = new TextAnalyzer(getStreamContext(template.getContext(), i));
+			final AnalyzerContext templateContext = getStreamContext(template.getContext(), i);
+			analyzers[i] = new TextAnalyzer(templateContext);
 			analyzers[i].setConfig(new AnalysisConfig(template.getConfig()));
+			try {
+				analyzers[i].getPlugins().registerPluginList(template.getPlugins().getUserDefinedPlugins(), getFieldName(templateContext, i), template.getConfig());
+			} catch (Exception e) {
+				// As we previously successfully registered the plugin on the template, there is no reason to ever get here
+				throw new InternalErrorException("Issue registering templated plugin", e);
+			}
 		}
 	}
 
-	private AnalyzerContext getStreamContext(final AnalyzerContext templateContext, final int streamIndex) {
+	private String getFieldName(final AnalyzerContext templateContext, final int streamIndex) {
 		final String fieldName = templateContext.getCompositeStreamNames()[streamIndex];
-		return  new AnalyzerContext(fieldName == null ? "" : fieldName.trim(), templateContext.getDateResolutionMode(), templateContext.getCompositeName(), templateContext.getCompositeStreamNames());
+		return fieldName == null ? "" : fieldName.trim();
+	}
+
+	private AnalyzerContext getStreamContext(final AnalyzerContext templateContext, final int streamIndex) {
+		final String fieldName = getFieldName(templateContext, streamIndex);
+		return new AnalyzerContext(fieldName, templateContext.getDateResolutionMode(), templateContext.getCompositeName(), templateContext.getCompositeStreamNames());
 	}
 
 	/**

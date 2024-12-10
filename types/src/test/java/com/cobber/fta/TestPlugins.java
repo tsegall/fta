@@ -859,6 +859,68 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testRegisterRecordAnalyzer() throws IOException, FTAException {
+		final String[] headers = { "First", "Last", "MI", "C U S I P" };
+		final String[][] names = {
+				{ "Anaïs", "Nin", "9,876.54", validCUSIPs[0] },
+				{ "Gertrude", "Stein", "3,876.2", validCUSIPs[1] },
+				{ "Paul", "Campbell", "76.54", validCUSIPs[2] },
+				{ "Pablo", "Picasso", "123.45", validCUSIPs[3] },
+				{ "Theodore", "Camp", "23.56", validCUSIPs[4] },
+				{ "Henri", "Matisse", "47.09", validCUSIPs[5] },
+				{ "Georges", "Braque", "100.33", validCUSIPs[6] },
+				{ "Ernest", "Hemingway", "12.45", validCUSIPs[7] },
+				{ "Alice", "Toklas", "234.1", validCUSIPs[8] },
+				{ "Eleanor", "Roosevelt", "12.12", validCUSIPs[9] },
+				{ "Edgar", "Degas", "133.24", validCUSIPs[10] },
+				{ "Pierre-Auguste", "Wren", "124.56", validCUSIPs[11] },
+				{ "Claude", "Monet", "19.01", validCUSIPs[12] },
+				{ "Édouard", "Sorenson", "12.02", validCUSIPs[13] },
+				{ "Mary", "Dunning", "13.23", validCUSIPs[14] },
+				{ "Alfred", "Jones", "14.45", validCUSIPs[15] },
+				{ "Joseph", "Smith", "15.90", validCUSIPs[16] },
+				{ "Camille", "Pissarro", "99.21", validCUSIPs[17] },
+				{ "Franklin", "Roosevelt", "90.1", validCUSIPs[18] },
+				{ "Winston", "Churchill", "100.2", validCUSIPs[19] }
+		};
+
+		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", headers);
+		final TextAnalyzer template = new TextAnalyzer(context);
+		template.setMaxCardinality(20000);
+
+		final List<PluginDefinition> plugins = new ArrayList<>();
+		final PluginDefinition plugin = new PluginDefinition("CUSIP", "com.cobber.fta.PluginCUSIP");
+		plugin.priority = PluginDefinition.PRIORITY_EXTERNAL;
+		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\p{IsDigit}]{9}";
+		plugin.validLocales = new PluginLocaleEntry[] { new PluginLocaleEntry("en", ".*(?i)(cusip).*", 90, CUSIP_REGEXP) };
+		plugins.add(plugin);
+
+		try {
+			template.getPlugins().registerPluginList(plugins, "C U S I P", template.getConfig());
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+
+		final RecordAnalyzer analysis = new RecordAnalyzer(template);
+
+		for (final String[] name : names)
+			analysis.train(name);
+
+		final RecordAnalysisResult recordResult = analysis.getResult();
+		final TextAnalysisResult[] results = recordResult.getStreamResults();
+
+		assertEquals(results[3].getType(), FTAType.STRING);
+		assertEquals(results[3].getRegExp(), CUSIP_REGEXP);
+		assertEquals(results[3].getSemanticType(), "CUSIP");
+		assertEquals(results[3].getMinLength(), 9);
+		assertEquals(results[3].getMaxLength(), 9);
+
+		// Retrieve the PluginDefinition associated with the detected Semantic Type and make sure it is the one we registered
+		PluginDefinition defn = template.getPlugins().getRegistered("CUSIP").defn;
+		assertEquals(defn.priority, PluginDefinition.PRIORITY_EXTERNAL);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRegisterInfinite() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
 		analysis.setLocale(Locale.forLanguageTag("en-AU"));

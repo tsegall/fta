@@ -40,7 +40,7 @@ includeBuild 'examples/core/speed'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '15.10.3')
+			version('fta', '15.11.0')
 			version('jacoco', '0.8.12')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,20 +31,35 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * A singleton (per thread) used to track the set of plugins.
+ * A class used to track the set of plugins.
  */
 public class Plugins {
 	private final Map<String, LogicalType> registered = new HashMap<>();
 	private final ObjectMapper MAPPER;
+	private final List<PluginDefinition> userDefinedPlugins = new ArrayList<>();
 
 	Plugins(final ObjectMapper mapper) {
 		this.MAPPER = mapper;
 	}
 
+	/**
+	 * Register a new Plugin by providing a JSON Plugin definition.
+	 *
+	 * @param JSON The definition of the plugin.
+	 * @param dataStreamName The name of the datastream.
+	 * @param analysisConfig The Analysis configuration used for this analysis.
+	 */
 	public void registerPlugins(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
 		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, false);
 	}
 
+	/**
+	 * Register a set of Plugins by providing a list of Plugin definitions.
+	 *
+	 * @param plugins The list of PluginDefinitions.
+	 * @param dataStreamName The name of the datastream.
+	 * @param analysisConfig The Analysis configuration used for this analysis.
+	 */
 	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
 		registerPluginListCore(plugins, dataStreamName, analysisConfig, false);
 	}
@@ -74,6 +90,9 @@ public class Plugins {
 					registerLogicalTypeRegExp(plugin, analysisConfig);
 				else
 					throw new FTAPluginException("Semantic type: '" + plugin.semanticType + "' unknown type.");
+
+			if (!internal)
+				userDefinedPlugins.add(plugin);
 		}
 	}
 
@@ -154,5 +173,9 @@ public class Plugins {
 	 */
 	public LogicalType getRegistered(final String semanticTypeName) {
 		return registered.get(semanticTypeName);
+	}
+
+	protected List<PluginDefinition> getUserDefinedPlugins() {
+		return userDefinedPlugins;
 	}
 }

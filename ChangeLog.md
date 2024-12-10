@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 15.11.0
+ - ENH: Add support for registering plugins on the RecordAnalyzer (via the template)
+ - BUG: Added missing source for DateDemo and Serialize examples
+ - INT: Add ability to execute all examples (as well as build them) - task: examples.run
+
 ### 15.10.3
  - ENH: Move around the examples, so they can be executed and are not shipped with the core libraries
  - INT: Bump jackson to 2.18.2, bump google phonenumber to 8.13.51

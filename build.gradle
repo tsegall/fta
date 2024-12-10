@@ -6,8 +6,12 @@ wrapper {
 	gradleVersion = '8.11.1'
 }
 
-tasks.register('examples') {
+tasks.register('examples.build') {
     dependsOn gradle.includedBuilds*.task(':build')
+}
+
+tasks.register('examples.run') {
+    dependsOn gradle.includedBuilds*.task(':run')
 }
 
 subprojects {
