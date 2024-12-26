@@ -133,11 +133,7 @@ public class AgeRange extends LogicalTypeInfinite {
 		if (len == 1 && symbols.indexOf(modifier.charAt(0)) != -1)
 			return true;
 
-		if (keywords.match(modifier, "UNDER") >= 90 ||
-				keywords.match(modifier, "OVER") >= 90)
-			return true;
-
-		return false;
+		return keywords.match(modifier, "UNDER") >= 90 || keywords.match(modifier, "OVER") >= 90;
 	}
 
 	/*

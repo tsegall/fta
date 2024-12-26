@@ -33,8 +33,8 @@ public class NumericInfo {
 
 	private NumericInfo nonLocalized;
 
-	private NumericInfo(char decimalSeparator, char groupingSeparator, char minusSign,
-			boolean hasNegativePrefix, char negativePrefix, boolean hasNegativeSuffix, char negativeSuffix) {
+	private NumericInfo(final char decimalSeparator, final char groupingSeparator, final char minusSign,
+			final boolean hasNegativePrefix, final char negativePrefix, final boolean hasNegativeSuffix, final char negativeSuffix) {
 		this.decimalSeparator = decimalSeparator;
 		this.groupingSeparator = groupingSeparator;
 		this.minusSign = minusSign;
@@ -47,7 +47,7 @@ public class NumericInfo {
 		return nonLocalized;
 	}
 
-	NumericInfo(Locale locale) throws FTAUnsupportedLocaleException {
+	NumericInfo(final Locale locale) throws FTAUnsupportedLocaleException {
 		final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(locale);
 		decimalSeparator = formatSymbols.getDecimalSeparator();
 		groupingSeparator = formatSymbols.getGroupingSeparator();

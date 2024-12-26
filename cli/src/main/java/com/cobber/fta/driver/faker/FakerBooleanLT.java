@@ -23,7 +23,7 @@ import com.cobber.fta.PluginDefinition;
 
 public class FakerBooleanLT extends FakerLT {
 	private boolean initialized = false;
-	private String[] values = new String[2];
+	private final String[] values = new String[2];
 	final Random random = new Random(31415926);
 
 	public FakerBooleanLT(final PluginDefinition plugin) {

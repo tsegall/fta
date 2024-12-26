@@ -3,7 +3,7 @@ plugins {
 }
 
 wrapper {
-	gradleVersion = '8.11.1'
+	gradleVersion = '8.12'
 }
 
 tasks.register('examples.build') {
@@ -31,6 +31,7 @@ subprojects {
 
 	compileJava {
 	    options.release = 11
+	    options.compilerArgs.add("-Xlint:unchecked")
 	}
 
 	java {

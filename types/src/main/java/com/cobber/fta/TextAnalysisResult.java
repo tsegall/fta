@@ -610,7 +610,7 @@ public class TextAnalysisResult {
 		return analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS);
 	}
 
-	private static <K extends Comparable,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
+	private static <K extends Comparable<? super K>,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(final Map<K,V> map) {
 		final SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<>(
 				new Comparator<Map.Entry<K,V>>() {
 					@Override public int compare(final Map.Entry<K,V> e1, final Map.Entry<K,V> e2) {
@@ -763,7 +763,6 @@ public class TextAnalysisResult {
 		}
 
 		final ObjectNode plugin = MAPPER.createObjectNode();
-		ArrayNode arrayNode;
 
 		// Check to see if the Regular Expression is too boring to report - e.g. '.*' or '.{3,31}'
 		final String regExp = getRegExp();
@@ -802,7 +801,7 @@ public class TextAnalysisResult {
 		if (boringRegExp) {
 			plugin.put("pluginType", "list");
 			final ObjectNode content = MAPPER.createObjectNode();
-			arrayNode = MAPPER.createArrayNode();
+			ArrayNode arrayNode = MAPPER.createArrayNode();
 			for (final String element : facts.cardinality.keySet())
 				arrayNode.add(element.toUpperCase(facts.getLocale()));
 			content.put("type", "inline");

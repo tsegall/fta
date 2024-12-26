@@ -675,7 +675,7 @@ public class TestUtils {
 		knownTypes.initialize(Locale.US);
 		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_LONG).equals(knownTypes.getByID(KnownTypes.ID.ID_LONG)));
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).equals(knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING)));
-		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).equals(null));
+		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG) == null);
 
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).hasGrouping());
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isSigned());

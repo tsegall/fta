@@ -1527,7 +1527,7 @@ public class TextAnalyzer {
 		final int length = trimmed.length();
 
 		// Analyze the input to determine a set of attributes including whether it is numeric
-		NumericResult nr = Numeric.analyze(trimmed, length, ni);
+		final NumericResult nr = Numeric.analyze(trimmed, length, ni);
 
 		final StringBuilder compressedl0 = new StringBuilder(length);
 		if (nr.alphasSeen != 0 && nr.digitsSeen != 0 && nr.alphasSeen + nr.digitsSeen == length) {
@@ -2680,7 +2680,7 @@ public class TextAnalyzer {
 	 * @return The Levenshtein distance from the best match.
 	 */
 	protected static int distanceLevenshtein(final String source, final Set<String> universe) {
-		final LevenshteinDistance distance = new LevenshteinDistance();
+		final LevenshteinDistance distance = new LevenshteinDistance(null);
 
 		Integer best = Integer.MAX_VALUE;
 		for (final String test : universe) {
@@ -3111,7 +3111,7 @@ public class TextAnalyzer {
 		}
 
 		final PluginDefinition pluginDefinition = PluginDefinition.findByName("IDENTIFIER");
-		LogicalType identifier = LogicalTypeFactory.newInstance(pluginDefinition, analysisConfig);
+		final LogicalType identifier = LogicalTypeFactory.newInstance(pluginDefinition, analysisConfig);
 
 		if (!facts.getMatchTypeInfo().isSemanticType() && !getContext().isNested() &&
 				((facts.external.keyConfidence != null && facts.external.keyConfidence == 1.0) ||
@@ -3729,8 +3729,8 @@ public class TextAnalyzer {
 		if (firstBaseType.isDateOrTimeType() && !firstInfo.format.equals(secondInfo.format))
 			return false;
 
-		String firstMin = firstFacts.getMinValue();
-		String secondMin = secondFacts.getMinValue();
+		final String firstMin = firstFacts.getMinValue();
+		final String secondMin = secondFacts.getMinValue();
 		if (firstMin == null || secondMin == null)
 			return false;
 

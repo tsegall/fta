@@ -34,7 +34,7 @@ public abstract class Serialize {
 
 		String serialized = analysis.serialize();
 		for (int i = 0; i < 10000; i++) {
-			TextAnalyzer t = TextAnalyzer.deserialize(serialized);
+			final TextAnalyzer t = TextAnalyzer.deserialize(serialized);
 			t.train(options[r.nextInt(options.length)]);
 			serialized = t.serialize();
 		}
@@ -46,7 +46,7 @@ public abstract class Serialize {
 		System.err.println("Detail: " + result.asJSON(true, 1));
 
 		// Given the Semantic Type we retrieve the associated plugin
-		LogicalType semanticType = finalAnalysis.getPlugins().getRegistered(result.getSemanticType());
+		final LogicalType semanticType = finalAnalysis.getPlugins().getRegistered(result.getSemanticType());
 
 		// Use the plugin to get the non-localized description
 		System.err.printf("Description: %s%n", semanticType.getDescription());

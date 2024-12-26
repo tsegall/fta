@@ -23,14 +23,14 @@ import com.google.common.cache.CacheBuilder;
 public class CacheLRU<K, V> {
     private final Cache<K, V> cache;
 
-    public CacheLRU(int capacity) {
+    public CacheLRU(final int capacity) {
         this.cache = CacheBuilder.newBuilder()
                 .maximumSize(capacity)
                 .expireAfterAccess(10, TimeUnit.MINUTES)
                 .build();
     }
 
-    public void put(K key, V value) {
+    public void put(final K key, final V value) {
         cache.put(key, value);
     }
 
@@ -38,7 +38,7 @@ public class CacheLRU<K, V> {
         return cache.getIfPresent(key);
     }
 
-    public void invalidate(K key) {
+    public void invalidate(final K key) {
         cache.invalidate(key);
     }
 

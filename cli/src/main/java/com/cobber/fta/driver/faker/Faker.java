@@ -39,7 +39,7 @@ public class Faker {
 		this.error = error;
 	}
 
-	private String[] quoteAwareSplit(String input, char splitOn) {
+	private String[] quoteAwareSplit(final String input, final char splitOn) {
 		final LinkedHashSet<String> result = new LinkedHashSet<>();
 		boolean inQuotes = false;
 		int start = 0;

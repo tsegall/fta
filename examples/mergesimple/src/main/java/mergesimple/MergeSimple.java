@@ -18,7 +18,6 @@ package mergesimple;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.cobber.fta.LogicalType;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;

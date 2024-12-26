@@ -2773,6 +2773,46 @@ public class TestDates {
 			assertTrue(input.matches(result.getRegExp()));
 	}
 
+//	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
+	public void strange() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("Year");
+		final String[] inputs = {
+				"１９３５", "１９４０", "１９４５", "１９５０",
+				"１９５５", "１９５６", "１９５７", "１９５８",
+				"１９６０", "１９６１", "１９６２", "１９６３",
+				"１９６４", "１９６５", "１９６６", "１９６７",
+				"１９６８", "１９６９", "１９７０", "１９７１",
+				"１９７２", "１９７３", "１９７４", "１９７５",
+				"１９７６", "１９７７", "１９７８", "１９７９",
+				"１９８０", "１９８１", "１９８２", "１９８３",
+				"１９８４", "１９８５", "１９８６", "１９８７",
+				"１９８８", "１９８９", "１９９０", "１９９１",
+				"１９９２", "１９９５", "１９９６", "１９９７",
+				"１９９８", "１９９９", "２０００", "２００１",
+				"２００２", "２００３", "２００４", "２００５",
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeModifier(), "yyyy");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getMinValue(), "1935");
+		assertEquals(result.getMaxValue(), "2005");
+		assertNull(result.checkCounts());
+
+		TestSupport.checkHistogram(result, 10, true);
+		TestSupport.checkQuantiles(result);
+	}
+
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void yearsAsDoubles() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Year");

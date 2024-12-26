@@ -160,7 +160,7 @@ public class RecordAnalyzer {
 	}
 
 	public static RecordAnalyzer merge(final RecordAnalyzer first, final RecordAnalyzer second) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException {
-		RecordAnalyzer ret = new RecordAnalyzer(first.template);
+		final RecordAnalyzer ret = new RecordAnalyzer(first.template);
 		for (int i = 0; i < first.streamCount; i++) {
 			ret.analyzers[i] = TextAnalyzer.merge(first.analyzers[i], second.analyzers[i]);
 		}

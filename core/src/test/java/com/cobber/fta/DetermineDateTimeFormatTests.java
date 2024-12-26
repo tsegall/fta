@@ -149,7 +149,7 @@ public class DetermineDateTimeFormatTests {
 						text = offsetDateTime.format(formatter);
 						offsetDateTime = offsetDateTime.minusHours(209);
 					}
-					answer.append("\"").append(text).append("\"");
+					answer.append('"').append(text).append('"');
 					if (i + 1 < inputs.length)
 						answer.append(',');
 					else
@@ -2165,7 +2165,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitAlmostISO4() {
-		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.MonthFirst);;
+		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.MonthFirst);
 		final String sample = "2004-01-01 12:35:41.999";
 		assertEquals(det.determineFormatString(sample), "yyyy-MM-dd HH:mm:ss.SSS");
 

@@ -26,7 +26,7 @@ import java.util.TreeMap;
 
 import com.cobber.fta.core.FTAType;
 
-public class CommonComparator<T extends Comparable> implements Comparator<String> {
+public class CommonComparator<T extends Comparable<? super T>> implements Comparator<String> {
 	private final StringConverter stringConverter;
 
 	public CommonComparator(final StringConverter stringConverter) {
@@ -39,7 +39,7 @@ public class CommonComparator<T extends Comparable> implements Comparator<String
 		if (val1 == null)
 			System.err.println("*** Failed to convert ... " + input1);
 		final T val2 = (T)stringConverter.getValue(input2);
-		final int value =  val1.compareTo(val2);
+		final int value = val1.compareTo(val2);
 
         if (value < 0)
             return -1;

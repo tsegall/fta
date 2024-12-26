@@ -27,7 +27,7 @@ import java.util.TreeSet;
  * @param <T> The type of the object being tracked.
  * @param <C> The Class of a comparator used to compare objects of this type.
  */
-public class TopBottomK<T extends Comparable<C>, C> {
+public class TopBottomK<T extends Comparable<? super T>, C> {
 	private static final int DEFAULT_SIZE = 10;
 	private int size;
 	private NavigableSet<T> starter;
@@ -72,13 +72,13 @@ public class TopBottomK<T extends Comparable<C>, C> {
 			}
 		}
 		else {
-			if (item.compareTo((C) top.first()) > 0) {
+			if (item.compareTo(top.first()) > 0) {
 				if (!top.contains(item)) {
 					top.add(item);
 					top.pollFirst();
 				}
 			}
-			else if (item.compareTo((C) bottom.last()) < 0) {
+			else if (item.compareTo(bottom.last()) < 0) {
 				if (!bottom.contains(item)) {
 					bottom.add(item);
 					bottom.pollLast();

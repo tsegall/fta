@@ -100,10 +100,8 @@ public class EIN extends LogicalTypeInfinite {
 			len = 9;
 		}
 
-		if (len == 9) {
-			if (!Utils.isNumeric(nInput))
-				return false;
-		}
+		if (len == 9 && !Utils.isNumeric(nInput))
+			return false;
 
 		final int initialTwo = Integer.parseInt(nInput.subSequence(0, 2).toString());
 		if (invalid[initialTwo])

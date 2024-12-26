@@ -39,7 +39,7 @@ public class CircularBuffer {
 	public String[] get() {
 		if (records == 0)
 			return null;
-		String[] ret = this.buffer[retrieve];
+		final String[] ret = this.buffer[retrieve];
 		records--;
 		retrieve = retrieve == depth - 1 ? 0 : retrieve + 1;
 		return ret;
