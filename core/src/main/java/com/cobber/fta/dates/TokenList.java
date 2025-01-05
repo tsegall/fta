@@ -409,7 +409,7 @@ public class TokenList implements Iterable<FormatterToken> {
 		return getTokenList(newTokenList.getFormatString());
 	}
 
-	class TokenIterator<FormatterToken> implements Iterator<FormatterToken> {
+	class TokenIterator<F> implements Iterator<FormatterToken> {
 		Iterator<FormatterToken> iter;
 
 	    public TokenIterator(final List<FormatterToken> list) {

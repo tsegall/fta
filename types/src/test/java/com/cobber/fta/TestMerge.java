@@ -103,15 +103,15 @@ public class TestMerge {
 	public void smallSets() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 20;
 
-		TextAnalyzer even = new TextAnalyzer("Even");
+		final TextAnalyzer even = new TextAnalyzer("Even");
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			even.train(String.valueOf(i * 2));
 
-		TextAnalyzer odd = new TextAnalyzer("Even");
+		final TextAnalyzer odd = new TextAnalyzer("Even");
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			odd.train(String.valueOf(i * 2 + 1));
 
-		TextAnalyzer merged = TextAnalyzer.merge(even, odd);
+		final TextAnalyzer merged = TextAnalyzer.merge(even, odd);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getSampleCount(), 2 * SAMPLE_COUNT);
@@ -119,7 +119,7 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void differentBaseTypes() throws IOException, FTAException {
-		String[] zips = {
+		final String[] zips = {
 			"95051", "95037", "95111", "95148", "95112", "95111", "95134", "95033", "93230", "95125",
 			"95050", "95112", "95112", "95125", "95127", "95112", "95134", "94040", "95020", "93230",
 			"95122", "95123", "95125", "95050", "95124", "95123", "94403", "93230", "94089", "95111",
@@ -142,24 +142,24 @@ public class TestMerge {
 			"94612", "95116", "95604", "85206", "95020", "95123", "94089", "85206", "95136", "95117"
 		};
 
-		String[] hidden = {
+		final String[] hidden = {
 			"95118", "01810", "N/A", "95118", "N/A", "95020", "95121", "95148", "N/A", "95112",
 			"N/A", "N/A", "95121", "95020", "N/A", "N/A", "N/A", "95128", "95123", "95111",
 			"95051", "N/A", "N/A", "N/A", "90272", "95008", "N/A", "95132", "95122", "N/A",
 			"95148", "95133", "N/A", "N/A", "N/A", "N/A", "95050", "95122", "N/A", "N/A",
 		};
 
-		TextAnalyzer t1 = new TextAnalyzer("resident_zip");
+		final TextAnalyzer t1 = new TextAnalyzer("resident_zip");
 		t1.setLocale(Locale.US);
-		for (int i = 0; i < zips.length; i++)
-			t1.train(zips[i]);
+		for (final String sample : zips)
+			t1.train(sample);
 
-		TextAnalyzer t2 = new TextAnalyzer("ziip");
+		final TextAnalyzer t2 = new TextAnalyzer("ziip");
 		t2.setLocale(Locale.US);
-		for (int i = 0; i < hidden.length; i++)
-			t2.train(hidden[i]);
+		for (final String sample : hidden)
+			t2.train(sample);
 
-		TextAnalyzer merged = TextAnalyzer.merge(t1, t2);
+		final TextAnalyzer merged = TextAnalyzer.merge(t1, t2);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.LONG);
@@ -200,15 +200,15 @@ public class TestMerge {
 		long trainTime = 0;
 		long serializeTime = 0;
 		long deserializeTime = 0;
-		long testStart = System.currentTimeMillis();
+		final long testStart = System.currentTimeMillis();
 		for (int i = 0; i < ITERATIONS; i++) {
-			long start = System.currentTimeMillis();
+			final long start = System.currentTimeMillis();
 			t.train(options[r.nextInt(options.length)]);
-			long postTrain = System.currentTimeMillis();
+			final long postTrain = System.currentTimeMillis();
 			serialized = t.serialize();
-			long postSerialize = System.currentTimeMillis();
+			final long postSerialize = System.currentTimeMillis();
 			t = TextAnalyzer.deserialize(serialized);
-			long postDeserialize = System.currentTimeMillis();
+			final long postDeserialize = System.currentTimeMillis();
 
 			trainTime += postTrain - start;
 			serializeTime += postSerialize - postTrain;
@@ -225,7 +225,7 @@ public class TestMerge {
 		assertEquals(result.getType(), FTAType.STRING);
 
 		// Given the Semantic Type we retrieve the associated plugin
-		LogicalType semanticType = t.getPlugins().getRegistered(result.getSemanticType());
+		final LogicalType semanticType = t.getPlugins().getRegistered(result.getSemanticType());
 
 		// Use the plugin to get the non-localized description
 		assertEquals(semanticType.getDescription(), "Gender");
@@ -304,15 +304,15 @@ public class TestMerge {
 			"Aug 1, 2019", "July 18, 2019"
 		};
 
-		TextAnalyzer t1 = new TextAnalyzer("updated");
-		for (int i = 0; i < fmtYYYY_MM_DD.length; i++)
-			t1.train(fmtYYYY_MM_DD[i]);
+		final TextAnalyzer t1 = new TextAnalyzer("updated");
+		for (final String sample : fmtYYYY_MM_DD)
+			t1.train(sample);
 
-		TextAnalyzer t2 = new TextAnalyzer("updated");
-		for (int i = 0; i < fmtMMM_D_YYYY.length; i++)
-			t2.train(fmtMMM_D_YYYY[i]);
+		final TextAnalyzer t2 = new TextAnalyzer("updated");
+		for (final String sample : fmtMMM_D_YYYY)
+			t2.train(sample);
 
-		TextAnalyzer merged = TextAnalyzer.merge(t1, t2);
+		final TextAnalyzer merged = TextAnalyzer.merge(t1, t2);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.LOCALDATE);
@@ -329,15 +329,15 @@ public class TestMerge {
 			"2023-02 (AUG)"
 		};
 
-		TextAnalyzer t1 = new TextAnalyzer("updated");
-		for (int i = 0; i < fmtYYYY_d_MMM.length; i++)
-			t1.train(fmtYYYY_d_MMM[i]);
+		final TextAnalyzer t1 = new TextAnalyzer("updated");
+		for (final String sample : fmtYYYY_d_MMM)
+			t1.train(sample);
 
-		TextAnalyzer t2 = new TextAnalyzer("updated");
-		for (int i = 0; i < fmtYYYY_d_SPACE_MMM.length; i++)
-			t2.train(fmtYYYY_d_SPACE_MMM[i]);
+		final TextAnalyzer t2 = new TextAnalyzer("updated");
+		for (final String sample : fmtYYYY_d_SPACE_MMM)
+			t2.train(sample);
 
-		TextAnalyzer merged = TextAnalyzer.merge(t2, t1);
+		final TextAnalyzer merged = TextAnalyzer.merge(t2, t1);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.LOCALDATE);
@@ -356,17 +356,17 @@ public class TestMerge {
 				"14.000,00", "21.920,00", "29.672,33", "53.240,00", "379.295,00"
 		};
 
-		TextAnalyzer t1 = new TextAnalyzer("Subsidie beschikt");
+		final TextAnalyzer t1 = new TextAnalyzer("Subsidie beschikt");
 		t1.setLocale(Locale.forLanguageTag("nl-NL"));
 		for (final String sample : s1)
 			t1.train(sample);
 
-		TextAnalyzer t2 = new TextAnalyzer("Subsidie beschikt");
+		final TextAnalyzer t2 = new TextAnalyzer("Subsidie beschikt");
 		t2.setLocale(Locale.forLanguageTag("nl-NL"));
 		for (final String sample : s2)
 			t2.train(sample);
 
-		TextAnalyzer merged = TextAnalyzer.merge(t2, t1);
+		final TextAnalyzer merged = TextAnalyzer.merge(t2, t1);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.DOUBLE);

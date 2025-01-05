@@ -26,7 +26,10 @@ dependencies {
 	implementation project(':types')
 
 	implementation libs.univocity
+	implementation libs.jacksonDataCore
 	implementation libs.jacksonDataBind
+	implementation libs.jacksonAnnotations
+	implementation libs.jacksonDataType
 	implementation libs.guava
 	implementation libs.commonsText
 

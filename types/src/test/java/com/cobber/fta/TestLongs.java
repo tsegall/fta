@@ -444,10 +444,10 @@ public class TestLongs {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testIssue117() throws IOException, FTAException {
-		AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "Issue112", new String[] { "myNan" });
+		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "Issue112", new String[] { "myNan" });
 		final TextAnalyzer template = new TextAnalyzer(context);
 		template.setDebug(2);
-		RecordAnalyzer analysis = new RecordAnalyzer(template);
+		final RecordAnalyzer analysis = new RecordAnalyzer(template);
 		final int maxCardinality = 20000;
 		final int EIN_COUNT = 125;
 

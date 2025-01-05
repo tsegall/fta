@@ -23,18 +23,18 @@ java {
 }
 
 war {
-   duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 bootWar {
-   duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.univocity:univocity-parsers:2.9.1'
-	implementation fileTree(dir: '/Users/tsegall/src/fta/cli/build/install/fta/lib', include: '*.jar')
+	implementation group: 'com.cobber.fta', name: 'fta', version: '15.+'
 	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

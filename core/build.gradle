@@ -3,7 +3,10 @@ jar {
 }
 
 dependencies {
+	implementation libs.jacksonDataCore
 	implementation libs.jacksonDataBind
+	implementation libs.jacksonAnnotations
+	implementation libs.jacksonDataType
 
 	testImplementation libs.logbackClassic
 

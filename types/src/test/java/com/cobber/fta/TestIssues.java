@@ -56,7 +56,7 @@ public class TestIssues {
 	@Test
 	public void issue48() throws Exception {
 		final String[] fieldnames = { "AddressLine2" };
-		final String[][] values = new String[][] {
+		final String[][] values = {
 				{ "MIDDLEBURY, CT 06762" }, { "DANVERS, MA 01923-3782" },
 				{ "SAN JOSE, CA 95123-3696" }, { "JACKSONVILLE, FL 32202-1031" },
 				{ "MORIARTY, NM 87035" }, { "ALEXANDRIA, MO 63430-9801" },
@@ -386,8 +386,8 @@ public class TestIssues {
 
 		final String jsonRepresentation = results[0].asJSON(false, 0);
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = objectMapper.readTree(jsonRepresentation);
+		final ObjectMapper objectMapper = new ObjectMapper();
+		final JsonNode jsonNode = objectMapper.readTree(jsonRepresentation);
 
 		// Validate that the JSON representation has all the fields we expect - with the values we expect
 		assertTrue(jsonNode.get("isSemanticType").asBoolean());

@@ -801,7 +801,7 @@ public class TextAnalysisResult {
 		if (boringRegExp) {
 			plugin.put("pluginType", "list");
 			final ObjectNode content = MAPPER.createObjectNode();
-			ArrayNode arrayNode = MAPPER.createArrayNode();
+			final ArrayNode arrayNode = MAPPER.createArrayNode();
 			for (final String element : facts.cardinality.keySet())
 				arrayNode.add(element.toUpperCase(facts.getLocale()));
 			content.put("type", "inline");

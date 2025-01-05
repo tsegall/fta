@@ -287,6 +287,7 @@ public final class Utils {
 					DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(sample)));
 					fmtXML++;
 				} catch (Exception e) {
+					// Ignore
 				}
 				continue;
 			}

@@ -916,7 +916,7 @@ public class TestPlugins {
 		assertEquals(results[3].getMaxLength(), 9);
 
 		// Retrieve the PluginDefinition associated with the detected Semantic Type and make sure it is the one we registered
-		PluginDefinition defn = template.getPlugins().getRegistered("CUSIP").defn;
+		final PluginDefinition defn = template.getPlugins().getRegistered("CUSIP").defn;
 		assertEquals(defn.priority, PluginDefinition.PRIORITY_EXTERNAL);
 	}
 
@@ -1080,7 +1080,7 @@ public class TestPlugins {
 		TestUtils.simpleCore(Sample.allValid(inputs), "AGE", Locale.US, "PERSON.AGE_RANGE", FTAType.STRING, 1.0);
 	}
 
-	private final String validEmails = "Bachmann@lavastorm.com|Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
+	private static final String validEmails = "Bachmann@lavastorm.com|Biedermann@lavastorm.com|buchheim@lavastorm.com|" +
 			"coleman@lavastorm.com|Drici@lavastorm.com|Garvey@lavastorm.com|jackson@lavastorm.com|" +
 			"Jones@lavastorm.com|Marinelli@lavastorm.com|Nason@lavastorm.com|Parker@lavastorm.com|" +
 			"Pigneri@lavastorm.com|Rasmussen@lavastorm.com|Regan@lavastorm.com|Segall@Lavastorm.com|" +

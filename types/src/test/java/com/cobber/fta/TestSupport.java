@@ -112,9 +112,9 @@ public class TestSupport {
 	private static long getMaxCount(final Histogram.Entry[] histogram) {
 		long max = Long.MIN_VALUE;
 
-		for (int i = 0; i < histogram.length; i++)
-			if (histogram[i].getCount() > max)
-				max = histogram[i].getCount();
+		for (final Histogram.Entry h : histogram)
+			if (h.getCount() > max)
+				max = h.getCount();
 
 		return max;
 	}

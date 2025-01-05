@@ -11,7 +11,9 @@ dependencies {
 	implementation libs.univocity
 	implementation libs.javaxMailAPI
 	implementation libs.commonsValidator
+	implementation libs.jacksonDataCore
 	implementation libs.jacksonDataBind
+	implementation libs.jacksonAnnotations
 	implementation libs.jacksonDataType
 	implementation libs.googlePhoneNumber
 	implementation libs.commonsText

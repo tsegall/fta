@@ -2475,12 +2475,12 @@ public class TestDoubles {
 	            "1.4", "test"
 	    };
 
-		TextAnalyzer textAnalyzer = new TextAnalyzer("Nothing");
+		final TextAnalyzer textAnalyzer = new TextAnalyzer("Nothing");
 		textAnalyzer.setLocale(Locale.ENGLISH);
 
-		for (String input : doubleList)
+		for (final String input : doubleList)
 			textAnalyzer.train(input);
-		TextAnalysisResult result = textAnalyzer.getResult();
+		final TextAnalysisResult result = textAnalyzer.getResult();
 
 	    assertEquals(result.getConfidence(), 0.95);
 	    assertEquals(result.getType().name(), "DOUBLE");
@@ -2496,12 +2496,12 @@ public class TestDoubles {
 	            "1.4", "test", "zoom"
 	    };
 
-		TextAnalyzer textAnalyzer = new TextAnalyzer("Nothing");
+		final TextAnalyzer textAnalyzer = new TextAnalyzer("Nothing");
 		textAnalyzer.setLocale(Locale.ENGLISH);
 
-		for (String input : doubleList)
+		for (final String input : doubleList)
 			textAnalyzer.train(input);
-		TextAnalysisResult result = textAnalyzer.getResult();
+		final TextAnalysisResult result = textAnalyzer.getResult();
 
 	    assertEquals(result.getConfidence(), 1.0);
 	    assertEquals(result.getType().name(), "STRING");
@@ -2518,13 +2518,13 @@ public class TestDoubles {
 				"1,3704275e-5"
 		};
 
-		TextAnalyzer textAnalyzer = new TextAnalyzer("Nothing");
+		final TextAnalyzer textAnalyzer = new TextAnalyzer("Nothing");
 		textAnalyzer.setLocale(Locale.forLanguageTag("nl-NL"));
 		textAnalyzer.setDebug(2);
 
-		for (String input : doubleList)
+		for (final String input : doubleList)
 			textAnalyzer.train(input);
-		TextAnalysisResult result = textAnalyzer.getResult();
+		final TextAnalysisResult result = textAnalyzer.getResult();
 
 	    assertEquals(result.getType().name(), "DOUBLE");
 	    assertEquals(result.getConfidence(), 1.0);

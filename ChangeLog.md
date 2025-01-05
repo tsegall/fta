@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 15.11.2
+ - INT: Minor gradle cleanup
+ - INT: Minor code cleanup
+
 ### 15.11.1
  - INT: Bump google phonenumber to 8.13.52, commons-text to 1.13.0, guava to 33.4.0-jre, logback-classic to 1.5.15, gradle to 8.12, org.springframework.boot to 3.4.1, io.spring.dependency-management to 1.1.7
  - INT: Some minor cleaning

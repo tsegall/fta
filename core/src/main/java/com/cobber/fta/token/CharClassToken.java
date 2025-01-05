@@ -167,7 +167,7 @@ public class CharClassToken extends Token {
 			if (token.getSimpleRegExp(enumerateRanges).equals(lastToken.getSimpleRegExp(enumerateRanges)))
 				lastToken.coalesce(token);
 			else {
-				b.append(lastToken.getSimpleRegExp(enumerateRanges) + RegExpSplitter.qualify(lastToken.minObserved, lastToken.maxObserved));
+				b.append(lastToken.getSimpleRegExp(enumerateRanges)).append(RegExpSplitter.qualify(lastToken.minObserved, lastToken.maxObserved));
 				lastToken = token.newCopy();
 			}
         }

@@ -424,7 +424,7 @@ public class TestDates {
 				else if (resolutionMode == DateResolutionMode.MonthFirst)
 					expected = "M/d/yy";
 				else
-					expected = locale.toLanguageTag().equals("en-GB") ? "d/M/yy" : "M/d/yy";
+					expected = "en-GB".equals(locale.toLanguageTag()) ? "d/M/yy" : "M/d/yy";
 				assertEquals(result.getTypeModifier(), expected);
 				assertEquals(result.getSampleCount(), inputs.length);
 				assertEquals(result.getMatchCount(), inputs.length);
@@ -1568,7 +1568,7 @@ public class TestDates {
 		final TextAnalyzer analysis = new TextAnalyzer("Mobile_VehicleYear");
 		analysis.setDebug(1);
 
-		for (String sample : samples)
+		for (final String sample : samples)
 			analysis.train(sample);
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -3392,7 +3392,7 @@ public class TestDates {
 				analysis.configure(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION, false);
 				analysis.setLocale(locale);
 
-				if (locale.toLanguageTag().equals("mgh"))
+				if ("mgh".equals(locale.toLanguageTag()))
 					continue;
 
 				if (LocaleInfo.isSupported(locale) != null) {
