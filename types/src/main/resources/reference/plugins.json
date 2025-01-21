@@ -2486,6 +2486,34 @@
 		"priority": 197
 	},
 	{
+		"semanticType": "SPATIAL.WKT",
+		"description": "coordinate reference systems - Well-known Text",
+		"pluginType": "java",
+		"signature": "09rKmA75p2NzFk4hu+n8tE/zl4E=",
+		"clazz": "com.cobber.fta.plugins.SpatialWKT",
+		"validLocales": [ { "localeTag": "*" } ],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry" }
+		],
+		"threshold": 99,
+		"baseType": "STRING",
+		"priority": 198
+	},
+	{
+		"semanticType": "SPATIAL.GEOJSON",
+		"description": "coordinate reference systems - GEOJSON",
+		"pluginType": "java",
+		"signature": "Shc4oC+TQFgklEcjAUNRhERFLoQ=",
+		"clazz": "com.cobber.fta.plugins.SpatialGeoJSON",
+		"validLocales": [ { "localeTag": "*" } ],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/GeoJSON" }
+		],
+		"threshold": 99,
+		"baseType": "STRING",
+		"priority": 199
+	},
+	{
 		"semanticType": "CITY",
 		"description": "City/Town",
 		"pluginType": "java",

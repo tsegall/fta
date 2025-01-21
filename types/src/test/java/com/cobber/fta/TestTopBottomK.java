@@ -68,8 +68,8 @@ public class TestTopBottomK {
 	public void basicIntegers9() throws IOException {
 		final int SIZE = 9;
 		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
-		final Set<Integer> topK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8 ));
-		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8 ));
+		final Set<Integer> topK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
+		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
 
 		boolean[] used;
 		int usedCount = 0;

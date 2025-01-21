@@ -173,7 +173,9 @@ public class Driver {
 			System.exit(0);
 		}
 
-		if (helpRequested && cmdLineOptions.verbose != 0) {
+		if (helpRequested) {
+			if (cmdLineOptions.verbose == 0)
+				System.exit(0);
 			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.locale);
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 			final Set<String> names = new TreeSet<>();

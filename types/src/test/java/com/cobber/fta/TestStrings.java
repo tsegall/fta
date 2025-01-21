@@ -1113,7 +1113,7 @@ public class TestStrings {
 		assertEquals(result.getMinLength(), 2);
 		assertEquals(result.getMaxLength(), 7);
 		assertEquals(result.getConfidence(), 1.0);
-		long[] freqs = result.getLengthFrequencies();
+		final long[] freqs = result.getLengthFrequencies();
 		for (int i = 0; i < freqs.length; i++) {
 			switch (i) {
 			case 2:
@@ -1180,7 +1180,7 @@ public class TestStrings {
 		assertEquals(result.getMinLength(), 2);
 		assertEquals(result.getMaxLength(), MAX_LENGTH);
 		assertEquals(result.getConfidence(), 1.0);
-		long[] freqs = result.getLengthFrequencies();
+		final long[] freqs = result.getLengthFrequencies();
 		for (int i = 0; i < freqs.length; i++) {
 			switch (i) {
 			case 2:
@@ -1269,9 +1269,9 @@ public class TestStrings {
 		final long startTime = System.currentTimeMillis();
 
 		for (int i = 1; i <= SAMPLE_COUNT; i++) {
-			int wordCount = random.nextInt(10) + 1;
-			int wordLength = random.nextInt(15) + 1;
-			StringBuffer sampleb = new StringBuffer();
+			final int wordCount = random.nextInt(10) + 1;
+			final int wordLength = random.nextInt(15) + 1;
+			final StringBuffer sampleb = new StringBuffer();
 			for (int c = 0; c < wordCount; c++) {
 				sampleb.append(Utils.repeat(possibles.charAt(random.nextInt(possibles.length())), random.nextInt(wordLength) + 1));
 				if (sampleb.length() > MAX_SAMPLE_LENGTH)
@@ -1290,8 +1290,8 @@ public class TestStrings {
 					preMergeAllocation = tracker.getAllocated();
 					System.err.printf("Allocated (%d pre-merge): %,d, Free memory: %,d\n", i, preMergeAllocation, Runtime.getRuntime().freeMemory());
 				}
-				String accumulatorSerialized = accumulator.serialize();
-				String analysisSerialized = analysis.serialize();
+				final String accumulatorSerialized = accumulator.serialize();
+				final String analysisSerialized = analysis.serialize();
 				accumulator = TextAnalyzer.merge(TextAnalyzer.deserialize(accumulatorSerialized), TextAnalyzer.deserialize(analysisSerialized));
 				analysis = new TextAnalyzer("Analysis");
 				if (tracking && i % 10000 == 0) {

@@ -297,7 +297,7 @@ public class TestUtils {
 		return logical;
 	}
 
-	protected static TextAnalysisResult simpleCore(final Sample[] samples, final String header, final Locale locale, final String semanticType, final FTAType type, Double confidence) throws FTAException {
+	protected static TextAnalysisResult simpleCore(final Sample[] samples, final String header, final Locale locale, final String semanticType, final FTAType type, final Double confidence) throws FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer(header);
 		analysis.setLocale(locale);
 		analysis.setDebug(2);
@@ -307,7 +307,7 @@ public class TestUtils {
 			analysis.train(sample.getSample());
 
 		final TextAnalysisResult result = analysis.getResult();
-		TestUtils.checkSerialization(analysis);
+		checkSerialization(analysis);
 
 		final String boundSemanticType = semanticType == null ? null : analysisConfig.bindSemanticType(semanticType);
 

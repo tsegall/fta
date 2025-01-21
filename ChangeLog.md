@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 15.12.0
+ - ENH: Add new Semantic Types - SPATIAL.WKT, SPATIAL.GEOJSON (#121)
+ - INT: Bump logback-classic to 1.5.16, google phonenumber to 8.13.53
+ - INT: Some minor cleaning
+ - BUG: If FORMAT_DETECTION is enabled - error messages were being printed to stdout
+
 ### 15.11.2
  - INT: Minor gradle cleanup
  - INT: Minor code cleanup

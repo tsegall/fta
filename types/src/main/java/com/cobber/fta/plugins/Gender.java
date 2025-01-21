@@ -46,7 +46,6 @@ public class Gender extends LogicalTypeFinite {
 	private GenderData genderData;
 	private Set<String> languageMembers;
 
-
 	class GenderPair {
 		String feminine;
 		String masculine;

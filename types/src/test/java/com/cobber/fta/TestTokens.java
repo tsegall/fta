@@ -288,7 +288,7 @@ public class TestTokens {
 
 		for (final String prefix : prefixes) {
 			for (int i = 1000; i < 2000; i++) {
-				final String sample = i%2 == 0 ? prefix + String.valueOf(i) : String.valueOf(alpha.charAt(r.nextInt(alpha.length())));
+				final String sample = i%2 == 0 ? prefix + i : String.valueOf(alpha.charAt(r.nextInt(alpha.length())));
 
 				tokenStreams.track(sample, 1);
 			}

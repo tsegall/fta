@@ -617,11 +617,11 @@ public class TestMerge {
 
 		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
-			shardOne.add(String.valueOf(i) + ".0");
+			shardOne.add(Integer.toString(i) + ".0");
 
 		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
-			shardTwo.add(String.valueOf(100000 + i) + ".0");
+			shardTwo.add(Integer.toString(100000 + i) + ".0");
 
 		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDouble", null, true);
 	}
@@ -631,11 +631,11 @@ public class TestMerge {
 
 		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
-			shardOne.add(String.valueOf(i) + ".0");
+			shardOne.add(Integer.toString(i) + ".0");
 
 		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
-			shardTwo.add(String.valueOf(100000 + i) + ".0");
+			shardTwo.add(Integer.toString(100000 + i) + ".0");
 
 		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDouble", null, false);
 	}
@@ -645,11 +645,11 @@ public class TestMerge {
 
 		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
-			shardOne.add(String.valueOf(i) + ",0");
+			shardOne.add(Integer.toString(i) + ",0");
 
 		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
-			shardTwo.add(String.valueOf(100000 + i) + ",0");
+			shardTwo.add(Integer.toString(100000 + i) + ",0");
 
 		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDoubleFrench", Locale.FRANCE, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
@@ -667,11 +667,11 @@ public class TestMerge {
 
 		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
-			shardOne.add(String.valueOf(i) + ",00");
+			shardOne.add(Integer.toString(i) + ",00");
 
 		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
-			shardTwo.add(String.valueOf(100000 + i) + ",00");
+			shardTwo.add(Integer.toString(100000 + i) + ",00");
 
 		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDoubleFrench", Locale.FRANCE, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
@@ -683,11 +683,11 @@ public class TestMerge {
 
 		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20; i++)
-			shardOne.add(String.valueOf(i) + ",0");
+			shardOne.add(Integer.toString(i) + ",0");
 
 		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20; i++)
-			shardTwo.add(String.valueOf(100000 + i) + ",0");
+			shardTwo.add(Integer.toString(100000 + i) + ",0");
 
 		checkTextAnalyzerMerge(shardOne, shardTwo, "doubleFrench", Locale.FRANCE, true);
 	}

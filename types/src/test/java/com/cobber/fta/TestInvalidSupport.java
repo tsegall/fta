@@ -79,7 +79,7 @@ public class TestInvalidSupport {
 		final int SIZE = 1000;
 
 		for (long i = 0; i < SIZE; i++)
-			analysis.train(String.valueOf(i) + "." + String.valueOf(i%10));
+			analysis.train(Long.toString(i) + "." + i%10);
 
 		analysis.train(null);
 

@@ -28,9 +28,13 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -282,9 +286,24 @@ public final class Utils {
 					// Ignore
 				}
 			}
-			if (first == '<' && last == '>'&& samples - fmtXML < 5) {
+			if (first == '<' && last == '>' && samples - fmtXML < 5) {
 				try {
-					DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(sample)));
+					DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+					db.setErrorHandler(new ErrorHandler()
+					{
+					    @Override
+					    public void fatalError(SAXParseException exception) throws SAXException {
+					    }
+
+					    @Override
+					    public void error(SAXParseException exception) throws SAXException {
+					    }
+
+					    @Override
+					    public void warning(SAXParseException exception) throws SAXException {
+					    }
+					});
+					db.parse(new InputSource(new StringReader(sample)));
 					fmtXML++;
 				} catch (Exception e) {
 					// Ignore
@@ -405,5 +424,26 @@ public final class Utils {
 		}
 
 		return 1.0 - result;
+	}
+
+	public static boolean containsIgnoreCase(String src, String hunting) {
+	    final int len = hunting.length();
+	    if (len == 0)
+	        return true; // Empty string is contained
+
+	    final char firstLower = Character.toLowerCase(hunting.charAt(0));
+	    final char firstUpper = Character.toUpperCase(hunting.charAt(0));
+
+	    for (int i = src.length() - len; i >= 0; i--) {
+	        // Quick check before calling the more expensive regionMatches() method:
+	        final char ch = src.charAt(i);
+	        if (ch != firstLower && ch != firstUpper)
+	            continue;
+
+	        if (src.regionMatches(true, i, hunting, 0, len))
+	            return true;
+	    }
+
+	    return false;
 	}
 }

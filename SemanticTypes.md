@@ -47,7 +47,7 @@
 |FILENAME|Name of file|https://en.wikipedia.org/wiki/Filename|*|
 |FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...||bg, ca, da, de, en, es, fi, fr, ga, hr, hu, it, lv, nl, pt, ro, ru, sk, sv, tr|
 |FULL_ADDRESS_EN|Full Address (English Language)||en-CA,en-US|
-|GENDER.TEXT_&lt;LANGUAGE&gt;|Gender|https://www.wikidata.org/wiki/Property:P21, https://en.wikipedia.org/wiki/Gender, https://schema.org/gender|bg, ca, en, de, es, fi, fr, hr, it, ms, nl, pl, pt, ro, ru, sv, tr|
+|GENDER.TEXT_&lt;LANGUAGE&gt;|Gender|https://www.wikidata.org/wiki/Property:P21, https://en.wikipedia.org/wiki/Gender, https://schema.org/gender|bg, ca, en, de, es, fi, fr, hr, is, it, ms, nl, pl, pt, ro, ru, sv, tr|
 |GENDER.TEXT_JA|Gender (Japanese Language)|https://www.wikidata.org/wiki/Property:P21, https://en.wikipedia.org/wiki/Gender, https://schema.org/gender|ja|
 |GENDER.TEXT_ZH|Gender (Chinese Language)|https://www.wikidata.org/wiki/Property:P21, https://en.wikipedia.org/wiki/Gender, https://schema.org/gender|zh|
 |GUID|Globally Unique Identifier, e.g. 30DD879E-FE2F-11DB-8314-9800310C9A67|https://www.wikidata.org/wiki/Q254972, https://en.wikipedia.org/wiki/Universally_unique_identifier|*|
@@ -82,7 +82,7 @@
 |MONTH.FULL_&lt;LOCALE&gt;|Full Month name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)|https://en.wikipedia.org/wiki/Month|*|
 |NAME.FIRST|First Name|https://www.wikidata.org/wiki/Property:P735, https://schema.org/givenName|en, de, es, fr, it, nl, pt|
 |NAME.FIRST_LAST|Merged Name (First Last)|https://en.wikipedia.org/wiki/Personal_name|en, de, es, fr, it, nl, pt|
-|NAME.LAST|Last Name|https://www.wikidata.org/wiki/Property:P734, https://en.wikipedia.org/wiki/https://en.wikipedia.org/wiki/Surname, https://schema.org/familyName|en, de, es, fr, it, nl, pt|
+|NAME.LAST|Last Name|https://www.wikidata.org/wiki/Property:P734, https://en.wikipedia.org/wiki/https://en.wikipedia.org/wiki/Surname, https://schema.org/familyName|en, de, el, es, fr, it, nl, pt|
 |NAME.LAST_FIRST|Merged Name (Last, First)|https://en.wikipedia.org/wiki/Personal_name|en, de, es, fr, it, nl, pt|
 |NAME.MIDDLE|Middle Name|https://en.wikipedia.org/wiki/Middle_name, https://schema.org/additionalName|en|
 |NAME.MIDDLE_INITIAL|Middle Initial|https://en.wikipedia.org/wiki/Middle_name|en|
@@ -115,6 +115,8 @@
 |POSTAL_CODE.POSTAL_CODE_UY|Postal Code (UY)|https://www.wikidata.org/wiki/Property:P281, https://schema.org/postalCode|es-UY|
 |POSTAL_CODE.ZIP5_PLUS4_US|Postal Code + 4 (US)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/ZIP_Code, https://schema.org/postalCode|en-US,en-CA,fr-CA|
 |POSTAL_CODE.ZIP5_US|Postal Code (US)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/ZIP_Code, https://schema.org/postalCode|en-US,en-Latn-US,en-CA,fr-CA|
+|SPATIAL.GEOJSON|coordinate reference systems - GEOJSON|https://en.wikipedia.org/wiki/GeoJSON|*|
+|SPATIAL.WKT|coordinate reference systems - Well-known Text|https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry|*|
 |SSN|Social Security Number (US)|https://en.wikipedia.org/wiki/Social_Security_number|en-US|
 |STATE_PROVINCE.CANTON_CH|Swiss CANTON Code|https://en.wikipedia.org/wiki/Cantons_of_Switzerland, https://schema.org/State|de-CH,fr-CH,it-CH|
 |STATE_PROVINCE.CANTON_NAME_CH|Swiss CANTON Name|https://en.wikipedia.org/wiki/Cantons_of_Switzerland|de-CH,fr-CH,it-CH|

@@ -25,6 +25,9 @@ import com.cobber.fta.core.Utils;
 
 public class TestSupport {
 
+	private TestSupport() {
+	}
+
 	public static long countHistogram(final Histogram.Entry[] histogram) {
 		long count = 0;
 		for (final Histogram.Entry entry : histogram)

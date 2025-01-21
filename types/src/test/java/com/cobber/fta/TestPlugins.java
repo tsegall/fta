@@ -2739,7 +2739,7 @@ public class TestPlugins {
 		int locked = -1;
 
 		for (int i = start; i < end; i++) {
-			if (analysis.train(i < 80000 ? String.valueOf(i) : "A" + String.valueOf(i)) && locked == -1)
+			if (analysis.train(i < 80000 ? Integer.toString(i) : "A" + i) && locked == -1)
 				locked = i;
 		}
 

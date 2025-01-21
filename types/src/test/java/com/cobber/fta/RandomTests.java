@@ -2861,9 +2861,9 @@ public class RandomTests {
 			final String semanticType = someSemanticTypes[index];
 			final String heading = someSemanticTypesHeader[index];
 			if (
-					semanticType.equals("COORDINATE_PAIR.DECIMAL") ||
-					semanticType.equals("COORDINATE.LONGITUDE_DECIMAL") ||
-					semanticType.equals("SSN")
+					"COORDINATE_PAIR.DECIMAL".equals(semanticType) ||
+					"COORDINATE.LONGITUDE_DECIMAL".equals(semanticType) ||
+					"SSN".equals(semanticType)
 					) {
 				continue;
 			}

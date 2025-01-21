@@ -961,7 +961,7 @@ public class TestDoubles {
 			final long randomLong = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
 			if (randomLong >  9999999999L)
 				continue;
-			final String sample = String.valueOf(randomLong) + "." + random.nextInt(10);
+			final String sample = Long.toString(randomLong) + "." + random.nextInt(10);
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = cnt;
@@ -2676,7 +2676,7 @@ public class TestDoubles {
 				long l = random.nextInt(10000000);
 				if (l % 2 == 0)
 					l = -l;
-				final String sample = String.valueOf(l) + "." + random.nextInt(10);
+				final String sample = Long.toString(l) + "." + random.nextInt(10);
 
 				if (l < min) {
 					min = l;

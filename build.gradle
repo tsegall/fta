@@ -6,6 +6,10 @@ wrapper {
 	gradleVersion = '8.12'
 }
 
+tasks.register('examples.clean') {
+    dependsOn gradle.includedBuilds*.task(':clean')
+}
+
 tasks.register('examples.build') {
     dependsOn gradle.includedBuilds*.task(':build')
 }

@@ -57,7 +57,7 @@ import com.cobber.fta.dates.LocaleInfoConfig;
 import com.cobber.fta.dates.SimpleDateMatcher;
 
 public class TestDates {
-	private Logger logger = LoggerFactory.getLogger("com.cobber.fta");
+	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateOutlier() throws IOException, FTAException {
@@ -1750,6 +1750,8 @@ public class TestDates {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void basicGermanDatePassThree() throws IOException, FTAException {
+		if (!TestUtils.isValidLocale("de_AT"))
+			return;
 
 		final String[] samplesOld = {
 				"17.Jul.2003",	"21.Mai.2010", "03.Jul.2017", "15.Nov.2018",
@@ -1771,8 +1773,6 @@ public class TestDates {
 				"06.Feb.2007", "25.Dez.1999", "07.Juni.2022", "15.Okt.2020",
 				"10.Feb.2010", "28.Sep.2008", "24.Feb.1996"
 		};
-		if (!TestUtils.isValidLocale("de_AT"))
-			return;
 
 		final String[] samples = TestUtils.getJavaVersion() == 8 ? samplesOld : samplesNew;
 		final String expectedRE = TestUtils.getJavaVersion() == 8 ? "\\d{2}\\.\\p{IsAlphabetic}{3}\\.\\d{4}" : "\\d{2}\\.\\p{IsAlphabetic}{3,4}\\.\\d{4}";
