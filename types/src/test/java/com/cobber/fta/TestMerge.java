@@ -196,14 +196,17 @@ public class TestMerge {
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			shardOneAnalyzer.train(String.valueOf(i %2 == 0 ? i : -i));
 		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOneAnalyzer.serialize());
+		hydratedOne.setTotalCount(SAMPLE_COUNT);
 		final TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
 		assertEquals(hydratedOneResult.getSampleCount(), SAMPLE_COUNT);
+		assertEquals(hydratedOneResult.getTotalCount(), SAMPLE_COUNT);
 
 		final TextAnalyzer shardTwoAnalyzer = new TextAnalyzer("issue124");
 		final List<String> shardTwo = new ArrayList<>();
 		for (int i = SAMPLE_COUNT; i < SAMPLE_COUNT  * 2; i++)
 			shardTwoAnalyzer.train(String.valueOf(i %2 == 0 ? i : -i));
 		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(shardTwoAnalyzer.serialize());
+		hydratedTwo.setTotalCount(SAMPLE_COUNT);
 		final TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
 		assertEquals(hydratedTwoResult.getSampleCount(), SAMPLE_COUNT);
 
@@ -213,6 +216,7 @@ public class TestMerge {
 
 		assertEquals(mergedResult.getType(), FTAType.LONG);
 		assertEquals(mergedResult.getSampleCount(), 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 4 * 10);
+		assertEquals(mergedResult.getTotalCount(), 2 * SAMPLE_COUNT);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })

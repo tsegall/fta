@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 16.0.1
+ - ENH: Improve documentation related to sampleCount and merging
+
 ### 16.0.0
  - **ENH:** Changed name of Feature NULL_AS_TEXT to NULL_TEXT_AS_NULL
  - ENH: Added mini-cache to train() entry - speeds up processing by ~4x if you have a large number of similar values (e.g. a boolean field with Y/N)

@@ -523,6 +523,10 @@ CITY is relatively unusual in that it is based  primarily on the header and not 
 
 For real word data (see for example https://github.com/tsegall/semantic-types) the detection performance for CITY is ~99.5%.
 
+### Why does sampleCount not reflect the number samples I provided ###
+
+The sampleCount reflects the number of samples each individual TextAnalyzer has seen. In instances where the cardinality is high and you are merging Analyzes - this will not be the sum of the samples provided to the individual TextAnalyzers.  If you want the TextAnalysisResult to track the total number of samples observed then you must invoke setTotalCount() on the individual TextAnalyzers priot to merging, FTA will then return (via getTotalCount()) the correct result post merging.
+
 ## Releasing a new version ##
 
 ### Compile ###
