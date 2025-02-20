@@ -194,7 +194,7 @@ In addition to the input/configuration attributes:
 There are a large number of metrics detected, which vary based on the type of the input stream.
 
 <details>
-<summary><b>Metrics Supported</b></summary>
+<summary><b>Supported Metrics</b></summary>
 
  * sampleCount - Number of samples observed (read [Merging Analyzes](#merging-analyses) for subtleties associated with merging)
  * matchCount - Number of samples that match the detected Base (or Semantic) type
@@ -235,7 +235,7 @@ There are a large number of metrics detected, which vary based on the type of th
  * quantiles - access to q-quantiles. See Note 2.
  * histograms - access to the associated histogram. See Note 3.
 
-The following fields are *not* calculated by FTA (but may be set on the Analyzer).
+The following fields are **not** calculated by FTA (but may be set on the Analyzer).  These 'total' fields will be set appropriately if two Analyzers are merged, and are available on the Analysis result.
  * totalCount - The total number of elements in the entire data stream (-1 unless set explicitly).
  * totalNullCount - The number of null elements in the entire data stream (-1 unless set explicitly).
  * totalBlankCount - The number of blank elements in the entire data stream (-1 unless set explicitly).
