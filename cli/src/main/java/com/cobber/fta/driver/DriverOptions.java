@@ -42,7 +42,7 @@ public class DriverOptions {
 	protected boolean noSemanticTypes;
 	protected boolean noDistributions;
 	protected boolean noStatistics;
-	protected boolean noNullAsText;
+	protected boolean noNullTextAsNull;
 	protected String outputFormat = "json";
 	protected boolean output;
 	protected boolean formatDetection;
@@ -88,7 +88,7 @@ public class DriverOptions {
 		this.noSemanticTypes = other.noSemanticTypes;
 		this.noDistributions = other.noDistributions;
 		this.noStatistics = other.noStatistics;
-		this.noNullAsText = other.noNullAsText;
+		this.noNullTextAsNull = other.noNullTextAsNull;
 		this.output = other.output;
 		this.outputFormat = other.outputFormat;
 		this.formatDetection = other.formatDetection;
@@ -139,8 +139,8 @@ public class DriverOptions {
 			analyzer.configure(TextAnalyzer.Feature.DISTRIBUTIONS, false);
 		if (this.noStatistics)
 			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
-		if (!this.noNullAsText)
-			analyzer.configure(TextAnalyzer.Feature.NULL_AS_TEXT, true);
+		if (this.noNullTextAsNull)
+			analyzer.configure(TextAnalyzer.Feature.NULL_TEXT_AS_NULL, false);
 		if (this.noSemanticTypes)
 			analyzer.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		if (this.formatDetection)
@@ -268,8 +268,8 @@ public class DriverOptions {
 					noSemanticTypes = true;
 				else if ("--noStatistics".equals(args[idx]))
 					noStatistics = true;
-				else if ("--noNullAsText".equals(args[idx]))
-					noNullAsText = true;
+				else if ("--noNullTextAsNull".equals(args[idx]))
+					noNullTextAsNull = true;
 				else if ("--output".equals(args[idx]))
 					output = true;
 				else if ("--pluginDefinition".equals(args[idx]))

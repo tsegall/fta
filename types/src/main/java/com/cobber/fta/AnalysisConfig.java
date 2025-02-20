@@ -118,7 +118,7 @@ public class AnalysisConfig {
 	private boolean allowEnglishAMPM = true;
 
 	/** Should we should treat "NULL" (and similar) as Null values. */
-	private boolean nullAsText = false;
+	private boolean nullTextAsNull = true;
 
 	public enum TrainingMode {
 		/** Training is doing via train() - i.e. one sample at a time. */
@@ -157,7 +157,7 @@ public class AnalysisConfig {
 		this.formatDetection = other.formatDetection;
 		this.lengthQualifier = other.lengthQualifier;
 		this.noAbbreviationPunctuation = other.noAbbreviationPunctuation;
-		this.nullAsText = other.nullAsText;
+		this.nullTextAsNull = other.nullTextAsNull;
 		this.distributions = other.distributions;
 	}
 
@@ -189,8 +189,8 @@ public class AnalysisConfig {
 		case NO_ABBREVIATION_PUNCTUATION:
 			noAbbreviationPunctuation = state;
 			break;
-		case NULL_AS_TEXT:
-			nullAsText = state;
+		case NULL_TEXT_AS_NULL:
+			nullTextAsNull = state;
 			break;
 		case NUMERIC_WIDENING:
 			numericWidening = state;
@@ -219,8 +219,8 @@ public class AnalysisConfig {
 			return lengthQualifier;
 		case NO_ABBREVIATION_PUNCTUATION:
 			return noAbbreviationPunctuation;
-		case NULL_AS_TEXT:
-			return nullAsText;
+		case NULL_TEXT_AS_NULL:
+			return nullTextAsNull;
 		case NUMERIC_WIDENING:
 			return numericWidening;
 		}

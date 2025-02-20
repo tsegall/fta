@@ -3033,6 +3033,143 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testBulkWithNull() throws IOException, FTAException {
+		final long SIZE = 1000L;
+		TextAnalysisResult result;
+
+		// 1 - BULK make sure "NULL" is recognized as NULL
+		final Map<String, Long> basic = new HashMap<>();
+		basic.put("0", SIZE);
+		basic.put("1", SIZE);
+		basic.put("2", SIZE);
+		basic.put("3", SIZE);
+		basic.put("NULL", SIZE);
+
+		TextAnalyzer analysisBulk = new TextAnalyzer("testBulkWithNull");
+		assertTrue(analysisBulk.isEnabled(Feature.NULL_TEXT_AS_NULL));
+		analysisBulk.trainBulk(basic);
+
+		result = analysisBulk.getResult();
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getSampleCount(), SIZE * 5);
+		assertEquals(result.getNullCount(), SIZE);
+
+		// 2 - BULK make sure "NULL" is NOT recognized as NULL
+		analysisBulk = new TextAnalyzer("testBulkWithNull");
+		analysisBulk.configure(TextAnalyzer.Feature.NULL_TEXT_AS_NULL, false);
+		analysisBulk.trainBulk(basic);
+
+		result = analysisBulk.getResult();
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSampleCount(), SIZE * 5);
+		assertEquals(result.getNullCount(), 0);
+
+		// 3 - Non BULK make sure "NULL" is recognized as NULL
+		TextAnalyzer analysis = new TextAnalyzer("testBulkWithNull");
+
+		for (long i = 0; i < SIZE; i++) {
+			analysis.train("0");
+			analysis.train("1");
+			analysis.train("2");
+			analysis.train("3");
+			analysis.train("NULL");
+		}
+
+		result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getSampleCount(), SIZE * 5);
+		assertEquals(result.getNullCount(), SIZE);
+
+		// 3 - Non BULK make sure "NULL" is NOT recognized as NULL
+		// Non BULK - Third test make sure "NULL" is recognized as NULL
+		analysis = new TextAnalyzer("testBulkWithNull");
+		analysis.configure(TextAnalyzer.Feature.NULL_TEXT_AS_NULL, false);
+
+		for (long i = 0; i < SIZE; i++) {
+			analysis.train("0");
+			analysis.train("1");
+			analysis.train("2");
+			analysis.train("3");
+			analysis.train("NULL");
+		}
+
+		result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSampleCount(), SIZE * 5);
+		assertEquals(result.getNullCount(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testIntegerCache() throws IOException, FTAException {
+		final long SIZE = 20_000_000L;
+
+		final TextAnalyzer analysis = new TextAnalyzer("integerCacheOff");
+		long start = System.currentTimeMillis();
+		for (long i = 0; i < SIZE/4; i++) {
+			analysis.train("0");
+			analysis.train("1");
+			analysis.train("2");
+			analysis.train("3");
+		}
+		analysis.train("4");
+		analysis.train("5");
+		analysis.train("6");
+		analysis.train("7");
+		analysis.train("8");
+		analysis.train("9");
+		analysis.train("10");
+		analysis.train("11");
+		analysis.train(null);
+
+		TextAnalysisResult result = analysis.getResult();
+		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
+
+		assertEquals(result.getSampleCount(), SIZE + 9);
+		assertEquals(result.getMatchCount(), SIZE + 8);
+		assertEquals(result.getNullCount(), 1);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getMaxValue(), "11");
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxLength(), 2);
+
+		final TextAnalyzer analysisCache = new TextAnalyzer("integerCacheOff");
+
+		final Map<String, Long> basic = new HashMap<>();
+		basic.put("0", SIZE/4);
+		basic.put("1", SIZE/4);
+		basic.put("2", SIZE/4);
+		basic.put("3", SIZE/4);
+		basic.put("4",  1L);
+		basic.put("5",  1L);
+		basic.put("6",  1L);
+		basic.put("7",  1L);
+		basic.put("8",  1L);
+		basic.put("9",  1L);
+		basic.put("10",  1L);
+		basic.put("11",  1L);
+		basic.put(null,  1L);
+		start = System.currentTimeMillis();
+		analysisCache.trainBulk(basic);
+
+		result = analysisCache.getResult();
+		System.err.printf("Duration(ms): %d%n", System.currentTimeMillis() - start);
+
+		assertEquals(result.getSampleCount(), SIZE + 9);
+		assertEquals(result.getMatchCount(), SIZE + 8);
+		assertEquals(result.getNullCount(), 1);
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getMinValue(), "0");
+		assertEquals(result.getMaxValue(), "11");
+		assertEquals(result.getMinLength(), 1);
+		assertEquals(result.getMaxLength(), 2);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testLogicalTypeThreading() throws IOException, FTAException, InterruptedException {
 		final int THREADS = 1000;
 		final Thread[] threads = new Thread[THREADS];

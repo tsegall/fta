@@ -196,7 +196,7 @@ There are a large number of metrics detected, which vary based on the type of th
 <details>
 <summary><b>Metrics Supported</b></summary>
 
- * sampleCount - Number of samples observed
+ * sampleCount - Number of samples observed (read [Merging Analyzes](#merging-analyses) for subtleties associated with merging)
  * matchCount - Number of samples that match the detected Base (or Semantic) type
  * nullCount - Number of null samples
  * blankCount - Number of blank samples
@@ -510,7 +510,7 @@ If either shard has a cardinality greater than the maximum cardinality then cert
 
 If the sum of the cardinality is greater than the maximum cardinality but neither individual shard has a cardinality greater than the maximum cardinality then the only attribute that will be indeterminate is the uniqueness of the merged set and clearly the cardinality of the resulting Analysis will be limited to the maximum cardinality.
 
-Note: The input presented to the merged analysis is the union of the data captured by the cardinality detail, outliers detail and the topK and bottomK from each shard.
+Note: The input presented to the merged analysis is the union of the data captured by the cardinality detail, outliers detail and the topK and bottomK from each shard, and hence the sampleCount on the merged analysis will reflect these numbers.
 
 ## Frequently Asked Questions ##
 

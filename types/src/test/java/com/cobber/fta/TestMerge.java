@@ -188,6 +188,34 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void issue124() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 20000;
+
+		final TextAnalyzer shardOneAnalyzer = new TextAnalyzer("issue124");
+		final List<String> shardOne = new ArrayList<>();
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			shardOneAnalyzer.train(String.valueOf(i %2 == 0 ? i : -i));
+		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOneAnalyzer.serialize());
+		final TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
+		assertEquals(hydratedOneResult.getSampleCount(), SAMPLE_COUNT);
+
+		final TextAnalyzer shardTwoAnalyzer = new TextAnalyzer("issue124");
+		final List<String> shardTwo = new ArrayList<>();
+		for (int i = SAMPLE_COUNT; i < SAMPLE_COUNT  * 2; i++)
+			shardTwoAnalyzer.train(String.valueOf(i %2 == 0 ? i : -i));
+		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(shardTwoAnalyzer.serialize());
+		final TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
+		assertEquals(hydratedTwoResult.getSampleCount(), SAMPLE_COUNT);
+
+		// Merge the two hydrated TextAnalyzers
+		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+		assertEquals(mergedResult.getSampleCount(), 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 4 * 10);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void exerciseSerialization() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);

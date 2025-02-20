@@ -137,6 +137,9 @@ public class AddressCommon {
 	 * @return True if the input looks plausible as a 'numeric'.
 	 */
 	public static boolean isAddressNumber(final String input) {
+		if (input == null || input.length() == 0)
+			return false;
+
 		// Check for a simple text digit - e.g. 'One', 'Two' etc.
 		final char firstCh = input.charAt(0);
 		if (Character.isAlphabetic(firstCh) && isTextDigit(input))

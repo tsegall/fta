@@ -177,8 +177,8 @@ public class TextAnalyzer {
 		 */
 		NO_ABBREVIATION_PUNCTUATION,
 		/** Indicate whether we should treat "NULL" (and similar) as Null values. Feature is enabled by default. */
-		NULL_AS_TEXT,
-		/** Feature that if enabled return a double if we see a set of integers followed by some doubles call it a double. Feature is enabled by default. */
+		NULL_TEXT_AS_NULL,
+		/** Feature that if enabled returns a double if we see a set of integers followed by some doubles call it a double. Feature is enabled by default. */
 		NUMERIC_WIDENING
 	}
 
@@ -1421,7 +1421,7 @@ public class TextAnalyzer {
 	private void trainBulkCore(final String rawInput, final long count) {
 		facts.sampleCount += count;
 
-		if (rawInput == null) {
+		if (rawInput == null || isNullEquivalent(rawInput)) {
 			facts.nullCount += count;
 			return;
 		}
@@ -1448,6 +1448,37 @@ public class TextAnalyzer {
 		}
 	}
 
+	final int CACHE_SIZE = 10;
+	FiniteMap cache = new FiniteMap(CACHE_SIZE);
+
+	private void emptyCache() {
+		final TypeInfo typeInfo = facts.getMatchTypeInfo();
+		LogicalType logical = null;
+		String regExp = null;
+		if (typeInfo != null)
+			if (typeInfo.isSemanticType())
+				logical = plugins.getRegistered(typeInfo.getSemanticType());
+			else
+				regExp = typeInfo.regexp;
+
+		final Map<String, Long> invalid = new HashMap<>();
+
+		// Process the valid entries first
+		for (Map.Entry<String, Long> entry : cache.entrySet()) {
+			final String key = entry.getKey();
+			if (key != null && ((logical != null && logical.isValid(key)) || (regExp != null && key.matches(regExp))))
+				trainBulkCore(entry.getKey(), entry.getValue());
+			else
+				invalid.put(key, entry.getValue());
+		}
+
+		// Now process the invalid entres
+		for (Map.Entry<String, Long> entry : invalid.entrySet())
+			trainBulkCore(entry.getKey(), entry.getValue());
+
+		cache.clear();
+	}
+
 	/**
 	 * Train is the streaming entry point used to supply input to the Text Analyzer.
 	 *
@@ -1463,6 +1494,16 @@ public class TextAnalyzer {
 			initialize(AnalysisConfig.TrainingMode.SIMPLE);
 			handleForce();
 			trainingStarted = true;
+		}
+
+		// If we have a large number of repetitive samples, then cache them to speed up the analysis
+		if (facts.sampleCount > 100 && facts.getMatchTypeInfo() != null && facts.cardinality.size() < 2 * CACHE_SIZE) {
+			final boolean added = cache.mergeIfSpace(rawInput, 1L, Long::sum);
+			if (added)
+				return facts.getMatchTypeInfo().getBaseType() != null;
+			else {
+				emptyCache();
+			}
 		}
 
 		if (traceConfig != null)
@@ -1503,7 +1544,7 @@ public class TextAnalyzer {
 	}
 
 	protected boolean isNullEquivalent(final String input) {
-		return input == null || (analysisConfig.isEnabled(TextAnalyzer.Feature.NULL_AS_TEXT) && keywords.match(input, "NO_DATA") == 100);
+		return input == null || (analysisConfig.isEnabled(TextAnalyzer.Feature.NULL_TEXT_AS_NULL) && keywords.match(input, "NO_DATA") == 100);
 	}
 
 	enum SignStatus {
@@ -2720,6 +2761,8 @@ public class TextAnalyzer {
 		if (!initialized)
 			initialize(AnalysisConfig.TrainingMode.UNSET);
 
+		emptyCache();
+
 		// If we have not already determined the type, now we need to
 		if (facts.getMatchTypeInfo() == null)
 			determineType();
@@ -3432,10 +3475,16 @@ public class TextAnalyzer {
 				// We are wary of outliers that only have one instance, do an extra check that the characters in the
 				// outlier exist in the real set.
 				if (entry.getValue() == 1) {
+					boolean onlyAlphas = true;
+					boolean onlyNumeric = true;
 					// Build the universe of valid characters
 					for (final String existing : cardinalityUpper.keySet()) {
 						for (int i = 0; i < existing.length(); i++) {
 							final char ch = existing.charAt(i);
+							if (onlyAlphas && !Character.isAlphabetic(ch))
+								onlyAlphas = false;
+							if (onlyNumeric && !Character.isDigit(ch))
+								onlyNumeric = false;
 							if (!Character.isAlphabetic(ch) && !Character.isDigit(ch))
 								if (validChars.indexOf(ch) == -1)
 									validChars += ch;
@@ -3443,7 +3492,8 @@ public class TextAnalyzer {
 					}
 					for (int i = 0; i < keyUpper.length(); i++) {
 						final char ch = keyUpper.charAt(i);
-						if (!Character.isAlphabetic(ch) && !Character.isDigit(ch) && validChars.indexOf(ch) == -1) {
+						if ((onlyAlphas && !Character.isAlphabetic(ch)) || (onlyNumeric && !Character.isDigit(ch)) ||
+								(!Character.isAlphabetic(ch) && !Character.isDigit(ch) && validChars.indexOf(ch) == -1)) {
 							skip = true;
 							break;
 						}
@@ -3508,6 +3558,8 @@ public class TextAnalyzer {
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
 	public String serialize() throws FTAPluginException, FTAUnsupportedLocaleException {
+		emptyCache();
+
 		// If we have not already determined the type - we need to force the issue
 		if (facts.getMatchTypeInfo() == null)
 			determineType();

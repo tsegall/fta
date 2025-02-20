@@ -1,6 +1,14 @@
 
 ## Changes ##
 
+### 16.0.0
+ - **ENH:** Changed name of Feature NULL_AS_TEXT to NULL_TEXT_AS_NULL
+ - ENH: Added mini-cache to train() entry - speeds up processing by ~4x if you have a large number of similar values (e.g. a boolean field with Y/N)
+ - BUG: NULL_TEXT_AS_NULL not being honored in trainBulk()
+ - BUG: Fix NPE in isValid() for some addresses
+ - INT: Bump org.springframework.boot to 3.4.1, com.github.ben-manes.versions to 0.52.0, gradle to 8.12.1, google phonenumber to 8.13.55, testng to 7.11.0
+ - ENH: Enhance documentation as it relates to sampleCount and merging
+
 ### 15.12.0
  - ENH: Add new Semantic Types - SPATIAL.WKT, SPATIAL.GEOJSON (#121)
  - INT: Bump logback-classic to 1.5.16, google phonenumber to 8.13.53

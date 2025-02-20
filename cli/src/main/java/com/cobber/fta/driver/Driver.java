@@ -100,7 +100,7 @@ public class Driver {
 					error.println(" --pluginName <PluginName> - Use supplied Plugin to generate samples or a signature (record count based on --records)");
 					error.println(" --pluginThreshold <n> - Set the plugin threshold percentage (0-100) for detection");
 					error.println(" --quoteChar <ch> - Set the quote character to  <ch>");
-					error.println(" --records <n> - The number of records to analyze");
+					error.println(" --records <n> - The number of records to analyze/output");
 					error.println(" --replay <file>.fta - Replay the FTA trace file");
 					error.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
 					error.println(" --samples - If set then generate samples (see --faker for comprehensive support)");
