@@ -3672,8 +3672,35 @@ public class TextAnalyzer {
 		ret.facts.nullCount = firstFacts.nullCount + secondFacts.nullCount;
 		ret.facts.blankCount = firstFacts.blankCount + secondFacts.blankCount;
 		ret.facts.sampleCount += ret.facts.nullCount + ret.facts.blankCount;
+
 		if (firstFacts.external.totalCount != -1 && secondFacts.external.totalCount != -1)
 			ret.facts.external.totalCount = firstFacts.external.totalCount + secondFacts.external.totalCount;
+		if (firstFacts.external.totalNullCount != -1 && secondFacts.external.totalNullCount != -1)
+			ret.facts.external.totalNullCount = firstFacts.external.totalNullCount + secondFacts.external.totalNullCount;
+		if (firstFacts.external.totalBlankCount != -1 && secondFacts.external.totalBlankCount != -1)
+			ret.facts.external.totalBlankCount = firstFacts.external.totalBlankCount + secondFacts.external.totalBlankCount;
+		if (firstFacts.external.totalBlankCount != -1 && secondFacts.external.totalBlankCount != -1)
+			ret.facts.external.totalBlankCount = firstFacts.external.totalBlankCount + secondFacts.external.totalBlankCount;
+		if (firstFacts.external.totalMinLength != -1 && secondFacts.external.totalMinLength != -1)
+			ret.facts.external.totalMinLength = Math.min(firstFacts.external.totalMinLength, secondFacts.external.totalMinLength);
+		if (firstFacts.external.totalMaxLength != -1 && secondFacts.external.totalMaxLength != -1)
+			ret.facts.external.totalMaxLength = Math.max(firstFacts.external.totalMaxLength, secondFacts.external.totalMaxLength);
+		if (firstFacts.external.totalMinValue != null && secondFacts.external.totalMinValue != null) {
+			final CommonComparator<?> comparator = new CommonComparator<>(firstFacts.getStringConverter());
+			if (comparator.compare(firstFacts.external.totalMinValue, secondFacts.external.totalMinValue) < 0)
+				ret.facts.external.totalMinValue = firstFacts.external.totalMinValue;
+			else
+				ret.facts.external.totalMinValue = secondFacts.external.totalMinValue;
+		}
+		if (firstFacts.external.totalMaxValue != null && secondFacts.external.totalMaxValue != null) {
+			final CommonComparator<?> comparator = new CommonComparator<>(firstFacts.getStringConverter());
+			if (comparator.compare(firstFacts.external.totalMaxValue, secondFacts.external.totalMaxValue) > 0)
+				ret.facts.external.totalMaxValue = firstFacts.external.totalMaxValue;
+			else
+				ret.facts.external.totalMaxValue = secondFacts.external.totalMaxValue;
+		}
+		// Unfortunately nothing we can do for totalMean/totalStandardDeviation when we are merging
+		// as we do not have the requisite data.
 
 		// Set the min/maxRawLength just in case a blank field is the longest/shortest
 		ret.facts.minRawLength = Math.min(first.facts.minRawLength, second.facts.minRawLength);

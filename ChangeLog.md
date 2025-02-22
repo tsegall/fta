@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 16.0.2
+ - BUG: Most total* (except totalCount) not surviving merge (and associated tests)
+ - INT: Upgrade all examples to point to 16.+
+ - INT: Bump org.springframework.boot to 3.4.3
+
 ### 16.0.1
  - ENH: Improve documentation related to sampleCount and merging
 

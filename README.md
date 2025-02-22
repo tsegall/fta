@@ -235,14 +235,14 @@ There are a large number of metrics detected, which vary based on the type of th
  * quantiles - access to q-quantiles. See Note 2.
  * histograms - access to the associated histogram. See Note 3.
 
-The following fields are **not** calculated by FTA (but may be set on the Analyzer).  These 'total' fields will be set appropriately if two Analyzers are merged, and are available on the Analysis result.
+The following fields are **not** calculated by FTA (but may be set on the Analyzer).  With the exception of totalMean and totalStandardDeviation these 'total' fields will be set appropriately if two Analyzers are merged, and are available on the Analysis result.
  * totalCount - The total number of elements in the entire data stream (-1 unless set explicitly).
  * totalNullCount - The number of null elements in the entire data stream (-1 unless set explicitly).
  * totalBlankCount - The number of blank elements in the entire data stream (-1 unless set explicitly).
  * totalMean - The mean for Numeric types (Long, Double) across the entire data stream (null unless set explicitly).
  * totalStandardDeviation - The standard deviation for Numeric types (Long, Double) across the entire data stream (null unless set explicitly).
- * totalMinValue - The minimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly).
- * totalMaxValue - The maximum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly).
+ * totalMinValue - The minimum value across the entire data stream (null unless set explicitly).
+ * totalMaxValue - The maximum value across the entire data stream (null unless set explicitly).
  * totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly).
  * totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly).
 
@@ -525,7 +525,7 @@ For real word data (see for example https://github.com/tsegall/semantic-types) t
 
 ### Why does sampleCount not reflect the number of samples I provided ###
 
-The sampleCount reflects the number of samples each individual TextAnalyzer has seen. In instances where the cardinality is high and you are merging Analyzes - this will not be the number of samples provided to the individual TextAnalyzers.  If you want the TextAnalysisResult to track the total number of samples observed then you must invoke setTotalCount() on the individual TextAnalyzers priot to merging, FTA will then return (via getTotalCount()) the correct result post merging.
+The sampleCount reflects the number of samples each individual TextAnalyzer has seen. In instances where the cardinality is high and you are merging Analyzes - this will not be the number of samples provided to the individual TextAnalyzers.  If you want the TextAnalysisResult to track the total number of samples observed then you must invoke setTotalCount() on the individual TextAnalyzers prior to merging, FTA will then return (via getTotalCount()) the correct result post merging.
 
 ## Releasing a new version ##
 

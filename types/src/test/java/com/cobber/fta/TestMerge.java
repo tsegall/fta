@@ -24,8 +24,10 @@ import static org.testng.Assert.fail;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -188,35 +190,188 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void issue124() throws IOException, FTAException {
+	public void basicTotals() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 20000;
 
 		final TextAnalyzer shardOneAnalyzer = new TextAnalyzer("issue124");
-		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < SAMPLE_COUNT; i++)
 			shardOneAnalyzer.train(String.valueOf(i %2 == 0 ? i : -i));
+		shardOneAnalyzer.train(null);
+		shardOneAnalyzer.train(null);
 		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOneAnalyzer.serialize());
-		hydratedOne.setTotalCount(SAMPLE_COUNT);
+		// Note we must set the totalCount on the analyzer pre-merge
 		final TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
-		assertEquals(hydratedOneResult.getSampleCount(), SAMPLE_COUNT);
-		assertEquals(hydratedOneResult.getTotalCount(), SAMPLE_COUNT);
+		hydratedOne.setTotalCount(hydratedOneResult.getSampleCount());
+		hydratedOne.setTotalNullCount(hydratedOneResult.getNullCount());
+		hydratedOne.setTotalMinValue(hydratedOneResult.getMinValue());
+		// Add 200 blanks from an external source
+		hydratedOne.setTotalBlankCount(200);
+		assertEquals(hydratedOneResult.getSampleCount(), SAMPLE_COUNT + 2);
+		assertEquals(hydratedOneResult.getTotalCount(), SAMPLE_COUNT + 2);
 
 		final TextAnalyzer shardTwoAnalyzer = new TextAnalyzer("issue124");
-		final List<String> shardTwo = new ArrayList<>();
 		for (int i = SAMPLE_COUNT; i < SAMPLE_COUNT  * 2; i++)
 			shardTwoAnalyzer.train(String.valueOf(i %2 == 0 ? i : -i));
 		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(shardTwoAnalyzer.serialize());
-		hydratedTwo.setTotalCount(SAMPLE_COUNT);
+		// Note we must set the totalCount on the analyzer pre-merge
 		final TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
 		assertEquals(hydratedTwoResult.getSampleCount(), SAMPLE_COUNT);
+		assertEquals(hydratedOneResult.getTotalCount(), SAMPLE_COUNT + 2);
+		hydratedTwo.setTotalCount(hydratedTwoResult.getSampleCount());
+		hydratedTwo.setTotalNullCount(hydratedTwoResult.getNullCount());
+		hydratedTwo.setTotalMinValue(hydratedTwoResult.getMinValue());
+		// Add 100 blanks from an external source
+		hydratedTwo.setTotalBlankCount(100);
 
 		// Merge the two hydrated TextAnalyzers
 		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.LONG);
-		assertEquals(mergedResult.getSampleCount(), 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 4 * 10);
+		assertEquals(mergedResult.getSampleCount(), 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 4 * 10 + 2);
+		assertEquals(mergedResult.getTotalCount(), 2 * SAMPLE_COUNT + 2);
+
+		// We saw the nulls in the samples provided and we set totalNullCount
+		assertEquals(mergedResult.getNullCount(), 2);
+		assertEquals(mergedResult.getTotalNullCount(), 2);
+
+		// We did NOT see the blanks in the samples provided and we set totalBlankCount
+		assertEquals(mergedResult.getBlankCount(), 0);
+		assertEquals(mergedResult.getTotalBlankCount(), 300);
+
+		assertEquals(mergedResult.getMinValue(), String.valueOf(-(2 * SAMPLE_COUNT - 1)));
+		assertEquals(mergedResult.getTotalMinValue(), String.valueOf(-(2 * SAMPLE_COUNT - 1)));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void extendedTotals() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 20000;
+
+		final TextAnalyzer shardOneAnalyzer = new TextAnalyzer("issue124");
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			shardOneAnalyzer.train(String.valueOf(i %2 == 0 ? i : -i));
+		shardOneAnalyzer.train(null);
+		shardOneAnalyzer.train(null);
+		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOneAnalyzer.serialize());
+		// Note we must set the totalCount on the analyzer pre-merge
+		final TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
+		hydratedOne.setTotalCount(hydratedOneResult.getSampleCount());
+		hydratedOne.setTotalNullCount(hydratedOneResult.getNullCount());
+		hydratedOne.setTotalMinValue(hydratedOneResult.getMinValue());
+		hydratedOne.setTotalMinLength(hydratedOneResult.getMinLength());
+		hydratedOne.setTotalMaxLength(hydratedOneResult.getMaxLength());
+		hydratedOne.setTotalMean(hydratedOneResult.getTotalMean());
+		hydratedOne.setTotalStandardDeviation(hydratedOneResult.getTotalStandardDeviation());
+		// Add 200 blanks from an external source
+		hydratedOne.setTotalBlankCount(200);
+		assertEquals(hydratedOneResult.getSampleCount(), SAMPLE_COUNT + 2);
+		assertEquals(hydratedOneResult.getTotalCount(), SAMPLE_COUNT + 2);
+
+		final TextAnalyzer shardTwoAnalyzer = new TextAnalyzer("issue124");
+		for (int i = SAMPLE_COUNT; i < SAMPLE_COUNT  * 2; i++)
+			shardTwoAnalyzer.train(String.valueOf(i %2 == 0 ? i : -i));
+		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(shardTwoAnalyzer.serialize());
+		// Note we must set the totalCount on the analyzer pre-merge
+		final TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
+		assertEquals(hydratedTwoResult.getSampleCount(), SAMPLE_COUNT);
+		assertEquals(hydratedOneResult.getTotalCount(), SAMPLE_COUNT + 2);
+		hydratedTwo.setTotalCount(hydratedTwoResult.getSampleCount());
+		hydratedTwo.setTotalNullCount(hydratedTwoResult.getNullCount());
+		hydratedTwo.setTotalMinValue(hydratedTwoResult.getMinValue());
+		hydratedTwo.setTotalMinLength(hydratedTwoResult.getMinLength());
+		hydratedTwo.setTotalMaxLength(hydratedTwoResult.getMaxLength());
+		hydratedTwo.setTotalMean(hydratedTwoResult.getTotalMean());
+		hydratedTwo.setTotalStandardDeviation(hydratedTwoResult.getTotalStandardDeviation());
+		// Add 100 blanks from an external source
+		hydratedTwo.setTotalBlankCount(100);
+
+		// Merge the two hydrated TextAnalyzers
+		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+		assertEquals(mergedResult.getSampleCount(), 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 4 * 10 + 2);
+		assertEquals(mergedResult.getTotalCount(), 2 * SAMPLE_COUNT + 2);
+
+		// We saw the nulls in the samples provided and we set totalNullCount
+		assertEquals(mergedResult.getNullCount(), 2);
+		assertEquals(mergedResult.getTotalNullCount(), 2);
+
+		// We did NOT see the blanks in the samples provided and we set totalBlankCount
+		assertEquals(mergedResult.getBlankCount(), 0);
+		assertEquals(mergedResult.getTotalBlankCount(), 300);
+
+		assertEquals(mergedResult.getMinLength(), 1);
+		assertEquals(mergedResult.getTotalMinLength(), 1);
+		assertEquals(mergedResult.getMaxLength(), 6);
+		assertEquals(mergedResult.getTotalMaxLength(), 6);
+
+		assertEquals(mergedResult.getMinValue(), String.valueOf(-(2 * SAMPLE_COUNT - 1)));
+		assertEquals(mergedResult.getTotalMinValue(), String.valueOf(-(2 * SAMPLE_COUNT - 1)));
+
+		// Neither the mean nor the standard deviation survive the merge
+		assertEquals(mergedResult.getMean(), -0.5, 0.00000000001);
+		assertNull(mergedResult.getTotalMean());
+		assertEquals(mergedResult.getStandardDeviation(), 23093.577749, 0.000001);
+		assertNull(mergedResult.getTotalStandardDeviation());
+
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void extendedTotalsDates() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 20000;
+		final Locale locale = Locale.forLanguageTag("en-US");
+		final String dateTimeFormat = "MM/dd/yy HH:mm:ss.SSS";
+		final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat, locale);
+
+		final TextAnalyzer shardOneAnalyzer = new TextAnalyzer("extendedTotalsDates");
+		shardOneAnalyzer.setLocale(locale);
+
+		Calendar calendar = Calendar.getInstance();
+		for (int i = 0; i < SAMPLE_COUNT; i++) {
+			final String sample = sdf.format(calendar.getTime());
+			shardOneAnalyzer.train(sample);
+			calendar.add(Calendar.SECOND, -1);
+		}
+		final Calendar calendarMin = Calendar.getInstance();
+		calendarMin.setTimeInMillis(calendar.getTimeInMillis() + 1000);
+		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOneAnalyzer.serialize());
+		// Note we must set the totalCount on the analyzer pre-merge
+		final TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
+		hydratedOne.setTotalCount(hydratedOneResult.getSampleCount());
+		hydratedOne.setTotalMinValue(hydratedOneResult.getMinValue());
+		hydratedOne.setTotalMaxValue(hydratedOneResult.getMaxValue());
+
+		calendar = Calendar.getInstance();
+		final TextAnalyzer shardTwoAnalyzer = new TextAnalyzer("extendedTotalsDates");
+		shardTwoAnalyzer.setLocale(locale);
+		for (int i = 0; i < SAMPLE_COUNT; i++) {
+			final String sample = sdf.format(calendar.getTime());
+			shardTwoAnalyzer.train(sample);
+			calendar.add(Calendar.SECOND, 1);
+		}
+		final Calendar calendarMax = Calendar.getInstance();
+		calendarMax.setTimeInMillis(calendar.getTimeInMillis() - 1000);
+		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(shardTwoAnalyzer.serialize());
+		// Note we must set the totalCount on the analyzer pre-merge
+		final TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
+		hydratedTwo.setTotalCount(hydratedTwoResult.getSampleCount());
+		hydratedTwo.setTotalMinValue(hydratedTwoResult.getMinValue());
+		hydratedTwo.setTotalMaxValue(hydratedTwoResult.getMaxValue());
+
+		// Merge the two hydrated TextAnalyzers
+		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getType(), FTAType.LOCALDATETIME);
+		assertEquals(mergedResult.getSampleCount(), 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 2 * 10);
 		assertEquals(mergedResult.getTotalCount(), 2 * SAMPLE_COUNT);
+
+		assertEquals(mergedResult.getMinValue(), sdf.format(calendarMin.getTime()));
+		assertEquals(mergedResult.getTotalMinValue(), sdf.format(calendarMin.getTime()));
+
+		assertEquals(mergedResult.getMaxValue(), sdf.format(calendarMax.getTime()));
+		assertEquals(mergedResult.getTotalMaxValue(), sdf.format(calendarMax.getTime()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
