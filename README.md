@@ -31,7 +31,7 @@ FTA is available in Maven Central. Include it in your project with:
 <dependency>
     <groupId>com.cobber.fta</groupId>
     <artifactId>fta</artifactId>
-    <version>15.10.2</version>
+    <version>16.0.3</version>
 </dependency>
 ```
 
@@ -479,22 +479,65 @@ There are multiple Semantic Types associated with addresses:
 
 ## Faker ##
 
-To create synthetic data, invoke the CLI with --faker and then a string used to describe the desired output. This string consists of multiple instances of a 'fieldName' and then a specification used to populate data for that field separated by commas.  For example:
+To create synthetic data, invoke the CLI with --faker and then a JSON file used to describe the desired output. This JSON description consists of multiple instances of a 'fieldName' and then a specification used to populate data.  For example:
 
 ```
-cli --faker "FirstName[type=NAME.FIRST],LastName[type=NAME.LAST],Age[type=LONG;low=18;high=100;distribution=gaussian;nulls=.01],Gender[type=ENUM;values=M^F^U],CreateDate[type=LOCALDATETIME;format=yyyy.MM.dd HH:mm:ss;low=2000.01.01 12:00:00;high=2022.08.08 12:00:00]" --records 100
+cli --faker Simple.json --records 100
+
+With the Simple.json below:
+
+[
+  {
+    "fieldName": "FirstName",
+    "index": 0,
+    "type": "NAME.FIRST"
+  },
+  {
+    "fieldName": "LastName",
+    "index": 1,
+    "type": "NAME.LAST"
+  },
+  {
+    "fieldName": "AGE",
+    "index": 2,
+    "type": "LONG",
+    "low": 18,
+    "high": 100,
+    "distribution": "gaussian",
+    "nullPercent": 0.01
+  },
+  {
+    "fieldName": "Gender",
+    "index": 3,
+    "type": "STRING",
+    "values": [
+      "M",
+      "F",
+      "U"
+    ]
+  },
+  {
+    "fieldName": "CreateDate",
+    "index": 4,
+    "type": "LOCALDATETIME",
+    "format": "yyyy.MM.dd HH:mm:ss",
+    "low": "2000.01.01 12:00:00",
+    "high": "2022.08.08 12:00:00"
+  }
+]
+
 ```
 
 Will produce a file with 100 records with five columns (FirstName,LastName,Age,Gender,CreateDate).
 
-Within the specification the type is required and can either be a Semantic Type, a Base Type or ENUM.  There are an additional set of optional parameters including:
+Within the specification the type is required and can either be a Semantic Type or a Base Type.  There are an additional set of optional parameters including:
  - low - the low bound
  - high - the high bound
  - format - the format for outputting this field (e.g. %03d for a LONG)
  - distribution - the distribution of the samples (gaussian, monotonic_increasing, monotonic_decreasing; the default is normal)
- - nulls - the percentage of nulls in this field
- - blanks - the percentage of blanks in this field
- - values - for an ENUM type, the possible set of values can be specified
+ - nullPercent - the percentage of nulls in this field
+ - blankPerent - the percentage of blanks in this field
+ - values - for an STRING type, the possible set of values can be specified
 
 ## Merging Analyses ##
 FTA supports merging of analyses run on distinct data shards.  So for example, if part of the data to be profiled resides on one shard and the balance on a separate shard then FTA can be invoked on each shard separately and then merged.  To accomplish this individual analyses should be executed (with similar configurations), the resulting serialized forms should then be deserialized on a common node and merged. Refer to the Merge example for further details.

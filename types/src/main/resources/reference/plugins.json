@@ -2226,6 +2226,27 @@
 		"priority": 180
 	},
 	{
+		"semanticType": "FILENAME_EXT",
+		"description": "Filename extension",
+		"pluginType": "list",
+		"signature": "WZsuA/fgXpEx24rM6LXZNlRKyUU=",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(file.?name).*|ext.*", "confidence": 99 } ]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/file_extension.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Filename_extension" }
+		],
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 181
+	},
+	{
 		"semanticType": "PERSON.YEAR_OF_BIRTH",
 		"description": "Person - Year of Birth",
 		"pluginType": "java",
@@ -2242,7 +2263,7 @@
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q2389905" }
 		],
 		"baseType": "LOCALDATE",
-		"priority": 181
+		"priority": 182
 	},
 	{
 		"semanticType": "PERSON.DATE_OF_BIRTH",
@@ -2269,7 +2290,7 @@
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q2389905" },
 			{ "source": "schema", "reference": "https://schema.org/birthDate" }
 		],
-		"priority": 182
+		"priority": 183
 	},
 	{
 		"semanticType": "COORDINATE.LATITUDE_DECIMAL",

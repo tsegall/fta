@@ -41,6 +41,7 @@ public class DriverOptions {
 	protected boolean noAnalysis;
 	protected boolean noSemanticTypes;
 	protected boolean noDistributions;
+	protected boolean noQuantiles;
 	protected boolean noStatistics;
 	protected boolean noNullTextAsNull;
 	protected String outputFormat = "json";
@@ -137,6 +138,8 @@ public class DriverOptions {
 			analyzer.setLocale(this.locale);
 		if (this.noDistributions)
 			analyzer.configure(TextAnalyzer.Feature.DISTRIBUTIONS, false);
+		if (this.noQuantiles)
+			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		if (this.noStatistics)
 			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		if (this.noNullTextAsNull)
@@ -264,6 +267,8 @@ public class DriverOptions {
 					pretty = false;
 				else if ("--noDistributions".equals(args[idx]))
 					noDistributions = true;
+				else if ("--noQuantiles".equals(args[idx]))
+					noQuantiles = true;
 				else if ("--noSemanticTypes".equals(args[idx]))
 					noSemanticTypes = true;
 				else if ("--noStatistics".equals(args[idx]))
@@ -311,7 +316,7 @@ public class DriverOptions {
 					signature = true;
 				else if ("--skip".equals(args[idx]))
 					skip = nextIntegerArg(args, idx++);
-				else if ("--testmerge".equals(args[idx]))
+				else if ("--testMerge".equals(args[idx]))
 					testmerge = true;
 				else if ("--threshold".equals(args[idx]))
 					threshold = nextIntegerArg(args, idx++);

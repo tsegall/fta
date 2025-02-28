@@ -140,6 +140,14 @@ public class TokenStream {
 		return b.toString();
 	}
 
+	public boolean isComplete() {
+		for (int i = 0; i < tokens.length;i++)
+			if (!tokens[i].isComplete())
+				return false;
+
+		return true;
+	}
+
 	/**
 	 * Construct a new TokenStream from an existing TokenStream.
 	 * @param other The template for the new TokenStream.

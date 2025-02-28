@@ -32,7 +32,7 @@ public class FakerEnumLT extends FakerLT {
 		if (!initialized) {
 			if (parameters != null) {
 	            if (parameters.values != null)
-                    options = parameters.values.split("\\^");
+                    options = parameters.values;
 	            if (parameters.distribution != null)
 	            	distribution = parameters.distribution;
 			}

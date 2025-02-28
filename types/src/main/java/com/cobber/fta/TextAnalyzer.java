@@ -355,6 +355,8 @@ public class TextAnalyzer {
 
 		if (analysisConfig.getLocaleTag() != null)
 			setLocale(Locale.forLanguageTag(analysisConfig.getLocaleTag()));
+
+		setDebug(analysisConfig.getDebug());
 	}
 
 	/**
@@ -1206,6 +1208,7 @@ public class TextAnalyzer {
 	}
 
 	private void initialize(final AnalysisConfig.TrainingMode trainingMode) throws FTAPluginException, FTAUnsupportedLocaleException {
+		memoryDebug("initialize.entry");
 		analysisConfig.setTrainingMode(trainingMode);
 		mapper.registerModule(new JavaTimeModule());
 		mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
@@ -1298,6 +1301,7 @@ public class TextAnalyzer {
 //		correlation.initialize();
 
 		initialized = true;
+		memoryDebug("initialize.exit");
 	}
 
 	private void
@@ -1554,7 +1558,12 @@ public class TextAnalyzer {
 		TRAILING_MINUS
 	}
 
+	private int reported = 0;
 	private boolean trainCore(final String rawInput, final String trimmed, final long count) {
+		if (reported%100_000 == 0)
+			memoryDebug("trainCore.100K");
+		reported++;
+
 		trackResult(rawInput, trimmed, true, count);
 
 		// If we have determined a type, no need to further train
@@ -1563,7 +1572,6 @@ public class TextAnalyzer {
 
 		for (int i = 0; i < count; i++)
 			raw.add(rawInput);
-
 
 		final int length = trimmed.length();
 
@@ -1784,6 +1792,12 @@ public class TextAnalyzer {
 			}
 			frequencies.add(Utils.sortByValue(keyFrequency));
 		}
+	}
+
+	final AllocationTracker tracker = new AllocationTracker();
+	private void memoryDebug(final String where) {
+		if (analysisConfig.getDebug() >= 3)
+			debug("Memory, location: {}, initialization - Allocated: {}, Free memory: {}", where, tracker.getAllocated(), Runtime.getRuntime().freeMemory());
 	}
 
 	void debug(final String format, final Object... arguments) {
@@ -2757,6 +2771,7 @@ public class TextAnalyzer {
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
 	public TextAnalysisResult getResult() throws FTAPluginException, FTAUnsupportedLocaleException {
+		memoryDebug("getResult.entry");
 		// Normally we will initialize as a consequence of the first call to train() but just in case no training happens!
 		if (!initialized)
 			initialize(AnalysisConfig.TrainingMode.UNSET);

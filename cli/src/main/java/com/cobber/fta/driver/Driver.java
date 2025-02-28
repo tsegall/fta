@@ -107,6 +107,7 @@ public class Driver {
 					error.println(" --semanticType <JSON representation of Semantic Types> - Can be inline or as a File");
 					error.println(" --signature - Output the Signature for the supplied pluginName");
 					error.println(" --skip <n> - Skip the initial <n> rows of the input");
+					error.println(" --testMerge - exercise merging");
 					error.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
 					error.println(" --trace <trace_options> - Set trace options");
 					error.println(" --trailer <n> - Skip the final <n> rows of the input");

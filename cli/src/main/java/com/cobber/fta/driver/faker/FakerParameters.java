@@ -16,62 +16,42 @@
 package com.cobber.fta.driver.faker;
 
 public class FakerParameters {
-	String format;
-	String low;
-	String high;
+	public String fieldName;
+	public int index;
+	public String type;
+	public String format;
+	public String low;
+	public String high;
+	public int minLength;
+	public int maxLength;
 	public double nullPercent = 0.0;
 	public double blankPercent = 0.0;
 	public int blankLength = -1;
-	public String type;
 	public String clazz;
 	public String distribution;
-	public String values;
+	public String[] values;
 
-	public FakerParameters(final String config) {
-		final String[] attributes = config.split(";");
+	public FakerParameters() {
+	}
 
-		for (final String attribute : attributes) {
-			final String[] components = attribute.split("=");
-			// If there are quotes around the parameter value remove them
-			final int len = components[1].length();
-			if (len > 2 && components[1].charAt(0) == '"' && components[1].charAt(len - 1) == '"')
-				components[1] = components[1].substring(1, len - 1);
-
-			if ("format".equals(components[0]))
-				format = components[1];
-			else if ("low".equals(components[0]))
-				low = components[1];
-			else if ("high".equals(components[0]))
-				high = components[1];
-			else if ("type".equals(components[0]))
-				type = components[1];
-			else if ("nulls".equals(components[0]))
-				nullPercent = Double.parseDouble(components[1]);
-			else if ("blanks".equals(components[0]))
-				blankPercent = Double.parseDouble(components[1]);
-			else if ("distribution".equals(components[0]))
-				distribution = components[1];
-			else if ("blankLength".equals(components[0]))
-				blankLength = Integer.parseInt(components[1]);
-			else if ("values".equals(components[0]))
-				values = components[1];
-
-			if ("LOCALDATE".equals(type))
-				clazz = "com.cobber.fta.driver.faker.FakerLocalDateLT";
-			else if ("LOCALDATETIME".equals(type))
-				clazz = "com.cobber.fta.driver.faker.FakerLocalDateTimeLT";
-			else if ("OFFSETDATETIME".equals(type))
-				clazz = "com.cobber.fta.driver.faker.FakerOffsetDateTimeLT";
-			else if ("LOCALTIME".equals(type))
-				clazz = "com.cobber.fta.driver.faker.FakerLocalTimeLT";
-			else if ("DOUBLE".equals(type))
-				clazz = "com.cobber.fta.driver.faker.FakerDoubleLT";
-			else if ("LONG".equals(type))
-				clazz = "com.cobber.fta.driver.faker.FakerLongLT";
-			else if ("BOOLEAN".equals(type))
-				clazz = "com.cobber.fta.driver.faker.FakerBooleanLT";
-			else if ("ENUM".equals(type))
-				clazz = "com.cobber.fta.driver.faker.FakerEnumLT";
-		}
+	public void bind() {
+		if ("LOCALDATE".equals(type))
+			clazz = "com.cobber.fta.driver.faker.FakerLocalDateLT";
+		else if ("LOCALDATETIME".equals(type))
+			clazz = "com.cobber.fta.driver.faker.FakerLocalDateTimeLT";
+		else if ("OFFSETDATETIME".equals(type))
+			clazz = "com.cobber.fta.driver.faker.FakerOffsetDateTimeLT";
+		else if ("LOCALTIME".equals(type))
+			clazz = "com.cobber.fta.driver.faker.FakerLocalTimeLT";
+		else if ("DOUBLE".equals(type))
+			clazz = "com.cobber.fta.driver.faker.FakerDoubleLT";
+		else if ("LONG".equals(type))
+			clazz = "com.cobber.fta.driver.faker.FakerLongLT";
+		else if ("BOOLEAN".equals(type))
+			clazz = "com.cobber.fta.driver.faker.FakerBooleanLT";
+		else if ("ENUM".equals(type))
+			clazz = "com.cobber.fta.driver.faker.FakerEnumLT";
+		else if ("STRING".equals(type))
+			clazz = "com.cobber.fta.driver.faker.FakerStringLT";
 	}
 }

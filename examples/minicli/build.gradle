@@ -3,16 +3,29 @@ plugins {
 }
 
 wrapper {
-	gradleVersion = '8.12.1'
+	gradleVersion = '8.13'
 }
 
 repositories {
 	mavenCentral()
 }
 
+project.tasks.named("distZip") {
+        duplicatesStrategy = 'exclude'
+}
+
+project.tasks.named("distTar") {
+        duplicatesStrategy = 'exclude'
+}
+
+project.tasks.named("installDist") {
+        duplicatesStrategy = 'exclude'
+}
+
 dependencies {
 	implementation group: 'com.cobber.fta', name: 'fta', version: '16.+'
 	implementation 'com.univocity:univocity-parsers:2.9.1'
+	implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.17'
 }
 
 application {

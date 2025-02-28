@@ -96,6 +96,8 @@ public abstract class Token {
 		return ch;
 	}
 
+	abstract public boolean isComplete();
+
 	/**
 	 * Construct the key based on the input.
 	 * @param trimmed The trimmed input.

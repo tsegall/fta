@@ -88,6 +88,11 @@ public class CharClassToken extends Token {
 		return countASCII + countNonASCII;
 	}
 
+	@Override
+	public boolean isComplete() {
+		return maxSetASCII == countASCII;
+	}
+
 	private Set<Character> getFullSet() {
 		final Set<Character> ret = new TreeSet<>(seenNonASCII);
 

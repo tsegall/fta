@@ -26,6 +26,7 @@ public class AllocationTracker {
     }
 
     public long getAllocated() {
-    	return threadMxBean.getCurrentThreadAllocatedBytes();
+		System.gc();
+    	return threadMxBean.getThreadAllocatedBytes(Thread.currentThread().getId());
     }
 }

@@ -60,19 +60,23 @@ public class TokenStreams {
 			return;
 		}
 
-		final TokenStream ts = new TokenStream(trimmed, count);
-		final TokenStream current = tokenStreams.get(ts.getKey());
+		final String key = TokenStream.getKey(trimmed);
+		final TokenStream current = tokenStreams.get(key);
 		if (current == null)
             // New Stream found - add it if there is room, otherwise call it a day
 			if (tokenStreams.size() < maxStreams)
-				 tokenStreams.put(ts.getKey(), ts);
+				tokenStreams.put(key, new TokenStream(trimmed, count));
 			else {
                 tokenStreams.clear();
                 tokenStreams.put(TokenStream.ANYSHAPE.getKey(), TokenStream.ANYSHAPE);
                 anyShape = true;
 			}
-		else
-			current.merge(ts);
+		else {
+			if (current.isComplete())
+				current.mergeCount(count);
+			else
+				current.merge(new TokenStream(trimmed, count));
+		}
 	}
 
 	public boolean isAnyShape() {

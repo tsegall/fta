@@ -44,4 +44,9 @@ public class SimpleToken extends Token {
 	public String getRegExp(final boolean fitted) {
 		return RegExpGenerator.slosh(ch);
 	}
+
+	@Override
+	public boolean isComplete() {
+		return true;
+	}
 }

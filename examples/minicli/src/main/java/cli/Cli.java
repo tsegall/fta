@@ -17,7 +17,9 @@ import com.univocity.parsers.csv.CsvParserSettings;
 
 public abstract class Cli {
 	public static void main(final String[] args) throws FTAException, IOException {
+		final AllocationTracker tracker = new AllocationTracker();
 		Locale locale = null;
+		boolean memory = false;
 		boolean verbose = false;
 		int idx = 0;
 
@@ -27,6 +29,7 @@ public abstract class Cli {
 				System.err.println("Valid OPTIONS are:");
 				System.err.println(" --help - Print this help");
 				System.err.println(" --locale <LocaleIdentifier> - Locale to use as opposed to default");
+				System.err.println(" --memory - Print Memory details");
 				System.err.println(" --verbose - Dump JSON details");
 			}
 			else if ("--locale".equals(args[idx])) {
@@ -37,11 +40,17 @@ public abstract class Cli {
 					System.exit(1);
 				}
 			}
+			else if ("--memory".equals(args[idx])) {
+				memory = true;
+			}
 			else if ("--verbose".equals(args[idx])) {
 				verbose = true;
 			}
 			idx++;
 		}
+
+		if (memory)
+			System.err.printf("Startup - Allocated: %,d, Free memory: %,d\n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
 
 		if (idx == args.length) {
 			System.err.println("WARNING: No file to process supplied, use --help");
@@ -65,6 +74,8 @@ public abstract class Cli {
 			final TextAnalyzer template = new TextAnalyzer(context);
 			if (locale != null)
 				template.setLocale(locale);
+			if (memory)
+				template.setDebug(3);
 			final RecordAnalyzer recordAnalyzer = new RecordAnalyzer(template);
 
 			String[] row;
@@ -80,6 +91,9 @@ public abstract class Cli {
 				recordAnalyzer.train(row);
 			}
 
+			if (memory)
+				System.err.printf("Training complete - Allocated: %,d, Free memory: %,d\n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
+
 			final TextAnalysisResult[] results = recordAnalyzer.getResult().getStreamResults();
 			for (final TextAnalysisResult result : results) {
 				if (verbose)
@@ -88,6 +102,11 @@ public abstract class Cli {
 					System.err.printf("Field: '%s', IsSemanticType?: %b, Type: '%s', TypeModifier: '%s', SemanticType: '%s', Confidence: %.2f, Max: '%s', Min: '%s'\n",
 						result.getName(), result.isSemanticType(), result.getType().toString(), result.getTypeModifier(), result.getSemanticType(), result.getConfidence(), result.getMaxValue(), result.getMinValue());
 			}
+		}
+
+		if (memory) {
+			System.gc();
+			System.err.printf("All Done - Allocated: %,d, Free memory: %,d\n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
 		}
 	}
 }

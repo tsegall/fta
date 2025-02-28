@@ -1,6 +1,16 @@
 
 ## Changes ##
 
+### 16.0.3
+ - ENH: Faker - Switch to JSON definition, add String support to faker
+ - ENH: Improve the list of file extensions
+ - ENH: Minor performance improvements
+ - BUG: Fixed trivial bug in MergeSimple example
+ - BUG: Setting debug on the RecordAnalyzer template was not setting debug on the individual Analyzers
+ - BUG: Minor change to support building on Java 17
+ - ENH: Add memory diagnostics (debug level >= 3)
+ - INT: Bump gradle to 8.13, logback-classic to 1.5.17
+
 ### 16.0.2
  - BUG: Most total* (except totalCount) not surviving merge (and associated tests)
  - INT: Upgrade all examples to point to 16.+

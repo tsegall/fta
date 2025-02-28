@@ -37,4 +37,9 @@ public class AnyInputToken extends Token {
 	public int charactersUsed() {
 		return -1;
 	}
+
+	@Override
+	public boolean isComplete() {
+		return true;
+	}
 }

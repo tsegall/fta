@@ -92,7 +92,7 @@ public abstract class MergeSimple {
 		final long totalNullCount = mergedResult.getTotalNullCount();
 
 		System.err.printf("Merged - Type: %s (samples: %d, total: %d, nulls: %d, total nulls: %d)%n", mergedResult.getType(), sampleCount, totalCount, nullCount, totalNullCount);
-		if (sampleCount !=  2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 4 * 10 || totalCount != 2 * SAMPLE_COUNT)
-			System.err.println("ERROR - in sampleCount or totalCount");
+		if (sampleCount != 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 4 * 10 + 2 || totalCount != 2 * SAMPLE_COUNT + 2)
+			System.err.printf("ERROR - in sampleCount or totalCount");
 	}
 }

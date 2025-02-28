@@ -15,9 +15,11 @@
  */
 package com.cobber.fta.driver.faker;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Random;
 
 import com.cobber.fta.LogicalType;
@@ -27,11 +29,14 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.driver.DriverOptions;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Faker {
 	private final DriverOptions options;
 	private final PrintStream output;
 	private final PrintStream error;
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	public Faker(final DriverOptions options, final PrintStream output, final PrintStream error) {
 		this.options = options;
@@ -39,48 +44,27 @@ public class Faker {
 		this.error = error;
 	}
 
-	private String[] quoteAwareSplit(final String input, final char splitOn) {
-		final LinkedHashSet<String> result = new LinkedHashSet<>();
-		boolean inQuotes = false;
-		int start = 0;
-
-		for (int i = 0; i < input.length(); i++) {
-			if (input.charAt(i) == '"')
-				inQuotes = !inQuotes;
-			else if (!inQuotes && input.charAt(i) == splitOn) {
-				result.add(input.substring(start, i));
-				start = i + 1;
-			}
-		}
-
-		result.add(input.substring(start, input.length()));
-
-		return result.toArray(String[]::new);
-	}
-
 	public void fake() {
 		final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
 		final Random random = new Random(31415926);
 		final long outputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
 		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
-		final String[] pluginDefinitions = quoteAwareSplit(options.faker, ',');
-		final LogicalType[] logicals = new LogicalType[pluginDefinitions.length];
-		final FakerParameters[] parameters = new FakerParameters[pluginDefinitions.length];
-		final String[] pluginNames = new String[pluginDefinitions.length];
 
-		for (int i = 0; i < pluginDefinitions.length; i++) {
-			final int parameterIndex = pluginDefinitions[i].indexOf('[');
-			if (parameterIndex == -1) {
-				error.printf("ERROR: Failed to retrieve parameters for '%s', missing open ('[')?, use --help%n", pluginDefinitions[i]);
-				System.exit(1);
-			}
-			if (pluginDefinitions[i].charAt(pluginDefinitions[i].length() - 1) != ']') {
-				error.printf("ERROR: Missing close (']') for parameter definition for '%s', use --help%n", pluginDefinitions[i]);
-				System.exit(1);
-			}
-			parameters[i] = new FakerParameters(pluginDefinitions[i].substring(parameterIndex + 1, pluginDefinitions[i].length() - 1));
-			pluginNames[i] = pluginDefinitions[i].substring(0, parameterIndex);
+		// Read in the faker specification ...
+		List<FakerParameters> params = null;
+		try {
+			params = mapper.readValue(new File(options.faker), new TypeReference<List<FakerParameters>>() {});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		final FakerParameters[] parameters = new FakerParameters[params.size()];
+		final LogicalType[] logicals = new LogicalType[params.size()];
+		for (FakerParameters param : params) {
+			parameters[param.index] = param;
+			parameters[param.index].bind();
+		}
 
+		for (int i = 0; i < params.size(); i++) {
 			for (final LogicalType logical : registered)
 				if (logical.getSemanticType().equals(parameters[i].type)) {
 					logicals[i] = logical;
@@ -90,8 +74,9 @@ public class Faker {
 			// If we did not find the Semantic Type it must be one of the Base Types
 			if (logicals[i] == null) {
 				final String baseType = parameters[i].type;
-				if (!"DOUBLE".equals(baseType) && !"LONG".equals(baseType) && !"LOCALDATE".equals(baseType) && !"LOCALTIME".equals(baseType) &&
-						!"LOCALDATETIME".equals(baseType) && !"OFFSETDATETIME".equals(baseType) && !"BOOLEAN".equals(baseType) && !"ENUM".equals(baseType)) {
+				if (!"DOUBLE".equals(baseType) && !"LONG".equals(baseType) && !"BOOLEAN".equals(baseType) && !"ENUM".equals(baseType) && !"STRING".equals(baseType) &&
+						!"LOCALDATE".equals(baseType) && !"LOCALTIME".equals(baseType) && !"LOCALDATETIME".equals(baseType) && !"OFFSETDATETIME".equals(baseType)
+						) {
 					error.printf("ERROR: Unknown type '%s', use --help%n", baseType);
 					System.exit(1);
 				}
@@ -100,7 +85,7 @@ public class Faker {
 					logicals[i] = LogicalTypeFactory.newInstance(plugin, analyzer.getConfig());
 					((FakerLT)logicals[i]).setControl(parameters[i]);
 				} catch (FTAPluginException e) {
-					error.printf("ERROR: Failed to locate plugin named '%s', use --help%n", pluginDefinitions[i]);
+					error.printf("ERROR: Failed to locate plugin named '%s', use --help%n", parameters[i].fieldName);
 					System.exit(1);
 				}
 			}
@@ -112,8 +97,9 @@ public class Faker {
 		for (int i = 0; i < logicals.length; i++) {
 			if (i != 0)
 				line.append(',');
-			line.append(quoteIfNeeded(pluginNames[i]));
-			if (logicals[i] instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logicals[i]).isRegExpComplete())
+			line.append(quoteIfNeeded(parameters[i].fieldName));
+			if (logicals[i] instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logicals[i]).isRegExpComplete()
+					&& logicals[i].getPluginDefinition().content == null)
 				error.printf("ERROR: Semantic Type (%s) does implement LTRandom interface - however samples may not be useful.%n", logicals[i].getSemanticType());
 		}
 		output.println(line);

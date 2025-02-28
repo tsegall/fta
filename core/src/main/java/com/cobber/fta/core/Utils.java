@@ -255,6 +255,15 @@ public final class Utils {
 		return b.toString();
 	}
 
+	// Get a random alpha string of length len digits
+	public static String getRandomAlphas(final SecureRandom random, final int len) {
+		final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		final StringBuilder b = new StringBuilder(len);
+		for (int i = 0; i < len; i++)
+			b.append(alphabet.charAt(random.nextInt(alphabet.length())));
+		return b.toString();
+	}
+
 	public static String determineStreamFormat(final ObjectMapper mapper, final Map<String, Long> cardinality) {
 		final int totalSamples = cardinality.size();
 

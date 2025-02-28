@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.dates.DateTimeParser;
 
 public class FakerLocalDateLT extends FakerLT {
 	private boolean initialized = false;
@@ -38,7 +39,10 @@ public class FakerLocalDateLT extends FakerLT {
 			if (parameters != null) {
 				if (locale == null)
 					locale = Locale.getDefault();
-				dtf = DateTimeFormatter.ofPattern(parameters.format == null ? "yyyy-MM-dd" : parameters.format, locale);
+
+				final DateTimeParser dtp = new DateTimeParser().withLocale(locale);
+
+				dtf = dtp.ofPattern(parameters.format == null ? "yyyy-MM-dd" : parameters.format);
 				if (parameters.low != null)
 					low = LocalDate.parse(parameters.low, dtf);
 				if (parameters.high != null)

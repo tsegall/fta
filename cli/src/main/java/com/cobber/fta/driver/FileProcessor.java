@@ -41,6 +41,7 @@ import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.univocity.parsers.common.TextParsingException;
 import com.univocity.parsers.csv.CsvParser;
@@ -52,6 +53,7 @@ class FileProcessor {
 	private final PrintStream error;
 	private final String filename;
 	private PrintStream output;
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	FileProcessor(final PrintStream error, final String filename, final DriverOptions cmdLineOptions) {
 		this.error = error;
@@ -383,7 +385,10 @@ class FileProcessor {
 
 		if (outputJSON)
 			output.printf("[%n");
+
 		final TextAnalysisResult[] results = processor.getResult();
+		final ArrayNode fieldsArray = mapper.createArrayNode();
+
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
 				final TextAnalyzer analyzer = processor.getAnalyzer(i);
@@ -391,51 +396,74 @@ class FileProcessor {
 					analyzer.setTotalCount(rawRecordIndex);
 
 				result = results[i];
-				if (i != 0 && options.col == -1)
-					output.printf(",");
 				if (outputJSON) {
+					if (i != 0 && options.col == -1)
+						output.printf(",");
 					output.printf("%s%n", result.asJSON(options.pretty, options.verbose));
 				}
 				else if (outputFaker) {
-					output.printf("%s[type=", sanitize(analyzer.getStreamName()));
-					if (result.isSemanticType())
-						output.printf("%s]", result.getSemanticType());
+					final ObjectNode fieldNode = mapper.createObjectNode();
+					if (result.isSemanticType()) {
+						fieldNode.put("fieldName", sanitize(analyzer.getStreamName()));
+						fieldNode.put("index", i);
+						fieldNode.put("type", result.getSemanticType());
+						fieldsArray.add(fieldNode);
+					}
 					else {
 						final double nullPercent = (double)result.getNullCount()/result.getSampleCount();
 						final double blankPercent = (double)result.getBlankCount()/result.getSampleCount();
+						fieldNode.put("fieldName", sanitize(analyzer.getStreamName()));
+						fieldNode.put("index", i);
+						fieldNode.put("type", result.getType().name());
 						switch (result.getType()) {
 						case LOCALDATE:
 						case LOCALDATETIME:
 						case LOCALTIME:
 						case OFFSETDATETIME:
 						case ZONEDDATETIME:
-							output.printf("%s;low=\"%s\";high=\"%s\";format=\"%s\"", result.getType().name(), result.getMinValue(), result.getMaxValue(), result.getTypeModifier());
+							fieldNode.put("low", result.getMinValue());
+							fieldNode.put("high", result.getMaxValue());
+							fieldNode.put("format", result.getTypeModifier());
 							break;
 						case DOUBLE:
-							output.printf("%s;low=%s;high=%s;format=%%.2f", result.getType().name(), result.getMinValue(), result.getMaxValue());
+							fieldNode.put("low", result.getMinValue());
+							fieldNode.put("high", result.getMaxValue());
+							fieldNode.put("format", "%.2f");
 							break;
 						case LONG:
-							output.printf("%s;low=%s;high=%s", result.getType().name(), result.getMinValue(), result.getMaxValue());
+							fieldNode.put("low", result.getMinValue());
+							fieldNode.put("high", result.getMaxValue());
 							break;
 						case STRING:
-							if (result.getCardinality() > 20)
-								output.printf("%s", result.getType().name());
+							if (result.getCardinality() == 0) {
+							}
+							else if (result.getCardinality() > 20) {
+								fieldNode.put("minLength", result.getMinLength());
+								fieldNode.put("maxLength", result.getMaxLength());
+								fieldNode.put("format", result.getRegExp());
+							}
 							else {
+								final ArrayNode enumArray = mapper.createArrayNode();
+
+								for (String key : result.getCardinalityDetails().keySet())
+									enumArray.add(key);
+								fieldNode.set("values", enumArray);
+
 								Map<String, Long> map = result.getCardinalityDetails();
 								map.keySet().stream().sorted().collect(Collectors.joining(","));
-								output.printf("%s;values=\"%s\"", "ENUM",
-										map.keySet().stream().sorted().collect(Collectors.joining("^")));
 							}
 							break;
 						case BOOLEAN:
-							output.printf("%s;format=%s", result.getType().name(), result.getTypeModifier());
+							fieldNode.put("format", result.getTypeModifier());
 							break;
 						}
-						if (nullPercent != 0.0)
-							output.printf("nulls=%.02f", nullPercent);
-						if (blankPercent != 0.0)
-							output.printf("nulls=%.02f", nullPercent);
-						output.printf("]");
+						if (nullPercent != 0.0) {
+							fieldNode.put("nullPercent", String.format("%.02f", nullPercent));
+						}
+						if (blankPercent != 0.0) {
+							fieldNode.put("blankPercent", String.format("%.02f", blankPercent));
+						}
+						fieldsArray.add(fieldNode);
 					}
 				}
 
@@ -483,10 +511,20 @@ class FileProcessor {
 				}
 			}
 		}
+
+
 		if (outputJSON)
 			output.printf("]%n");
-		else if (outputFaker)
+		else if (outputFaker) {
+			final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+			try {
+				output.printf("%s%n", writer.writeValueAsString(fieldsArray));
+			} catch (JsonProcessingException e) {
+				throw new FTAProcessingException(filename, "JsonProcessing exception", e);
+			}
+
 			output.printf("%n");
+		}
 		resultsTime = System.currentTimeMillis();
 
 	    final Runtime instance = Runtime.getRuntime();

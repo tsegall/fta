@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * Note: This maximum capacity should be set before any elements are added to the Map.
  */
 public class FiniteMap implements Map<String, Long> {
-	private int maxCapacity;
+	private int maxCapacity = -1;
 	private Map<String, Long> impl;
 	private boolean sorted = false;
 

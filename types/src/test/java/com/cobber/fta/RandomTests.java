@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1442,6 +1443,105 @@ public class RandomTests {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), KnownTypes.freezeANY(minTrimmedLength, maxTrimmedLength, minLength, maxLength, result.getLeadingWhiteSpace(), result.getTrailingWhiteSpace(), result.getMultiline()));
 		assertEquals(result.getConfidence(), 1.0);
+	}
+
+//	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void leakInt() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("leakInt");
+		analysis.setDebug(3);
+		final int iterations = 1_000_000;
+
+		for (int i = 0; i < iterations; i++)
+			analysis.train(String.valueOf(i));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getSampleCount(), iterations);
+		assertEquals(result.getType(), FTAType.LONG);
+	}
+
+//	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void leakString() throws IOException, FTAException {
+		final StringBuilder line = new StringBuilder();
+		final String alphabet = "abcdefhijklmnopqrstuvwxyz";
+		final TextAnalyzer analysis = new TextAnalyzer("leakString");
+		analysis.setDebug(3);
+		final int iterations = 1_000_000;
+
+		for (int i = 0; i < iterations; i++) {
+			line.setLength(0);
+			final int wordCount = random.nextInt(20);
+			for (int words = 0; words < wordCount; words++) {
+				final int charCount = random.nextInt(10);
+				for (int chars = 0; chars < charCount; chars++) {
+					line.append(alphabet.charAt(random.nextInt(25)));
+				}
+				line.append(' ');
+			}
+			final String sample = line.toString().trim();
+			analysis.train(sample);
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getSampleCount(), iterations);
+		assertEquals(result.getType(), FTAType.STRING);
+	}
+
+//	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void leakLocalDateTime() throws IOException, FTAException {
+		LocalDateTime start = LocalDateTime.of(1960, 1, 1, 1, 0, 0);
+		final TextAnalyzer analysis = new TextAnalyzer("leakLocalDateTime");
+		analysis.setDebug(3);
+		final int iterations = 1_000_000;
+
+		for (int i = 0; i < iterations; i++) {
+			start = start.plusSeconds(random.nextInt(100));
+			analysis.train(String.valueOf(start));
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getSampleCount(), iterations);
+		assertEquals(result.getType(), FTAType.STRING);
+
+	}
+
+//	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void leakAnalyzer() throws IOException, FTAException {
+		final StringBuilder line = new StringBuilder();
+		final String alphabet = "abcdefhijklmnopqrstuvwxyz";
+		final int iterations = 10;
+		final int samples = 100_000;
+		final TextAnalyzer[] analyzers = new TextAnalyzer[iterations];
+
+		for (int i = 0; i < iterations; i++) {
+			analyzers[i] = new TextAnalyzer("leakAnalyzer-" + i);
+			analyzers[i].setDebug(3);
+			int j = samples;
+			while (j-- > 0) {
+				line.setLength(0);
+				final int wordCount = random.nextInt(20);
+				for (int words = 0; words < wordCount; words++) {
+					final int charCount = random.nextInt(10);
+					for (int chars = 0; chars < charCount; chars++) {
+						line.append(alphabet.charAt(random.nextInt(25)));
+					}
+					line.append(' ');
+				}
+				analyzers[i].train(line.toString().trim());
+			}
+		}
+
+		for (int i = 0; i < iterations; i++) {
+			final TextAnalysisResult result = analyzers[i].getResult();
+			assertEquals(result.getNullCount(), 0);
+			assertEquals(result.getSampleCount(), samples);
+			assertEquals(result.getType(), FTAType.STRING);
+		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
@@ -2926,6 +3026,67 @@ public class RandomTests {
 			if (threads[t].isAlive())
 				threads[t].join();
 	}
+
+	class MemThread implements Runnable {
+		private final String id;
+		private final int samples;
+		private final TextAnalyzer analysis;
+
+		MemThread(final String id, final int samples) throws IOException, FTAException {
+			this.id = id;
+			this.samples = samples;
+			analysis = new TextAnalyzer("AnalysisThread-<" + id + ">");
+			//			logger.debug("Thread %s: created, Stream: type: %s, length: %d.",
+			//					this.id, decoder[this.streamType], this.stream.length);
+		}
+
+		@Override
+		public void run() {
+			//			long start = System.currentTimeMillis();
+			try {
+
+				final TextAnalyzer analysis = new TextAnalyzer("testThreading");
+				for (int i = 0; i < samples; i++) {
+					final int type = random.nextInt(decoder.length);
+					final int length = 30 + random.nextInt(10000);
+					analysis.train(generateTestData(type, 1)[0]);
+				}
+
+				final TextAnalysisResult result = analysis.getResult();
+
+			} catch (FTAException e) {
+				e.printStackTrace();
+			}
+
+			// logger.debug("Thread %s: exiting, duration %d.", id, System.currentTimeMillis() - start);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testMemThreading() throws IOException, FTAException, FTAException, InterruptedException {
+		final int THREADS = 50;
+		final Thread[] threads = new Thread[THREADS];
+		final AllocationTracker tracker = new AllocationTracker();
+
+		System.err.printf("Initialization - Allocated: %,d, Free memory: %,d\n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
+
+		for (int t = 0; t < THREADS; t++) {
+			threads[t] = new Thread(new MemThread(String.valueOf(t), 100000));
+			System.err.printf("Thread creation - Allocated: %,d, Free memory: %,d\n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
+		}
+
+		for (int t = 0; t < THREADS; t++) {
+			threads[t].start();
+			System.err.printf("Thread start - Allocated: %,d, Free memory: %,d\n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
+		}
+		System.err.printf("Thread all running - Allocated: %,d, Free memory: %,d\n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
+
+		for (int t = 0; t < THREADS; t++)
+			if (threads[t].isAlive())
+				threads[t].join();
+	}
+
+
 
 	class GetPlugin {
 		// one instance of plugins per thread

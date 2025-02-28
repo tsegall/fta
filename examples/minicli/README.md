@@ -4,6 +4,6 @@
 `$ ./gradlew installDist`
 
 ## Execute ##
-`build/install/cli/bin/cli <CSV file>`
+`build/install/minicli/bin/minicli <CSV file>`
 
 
