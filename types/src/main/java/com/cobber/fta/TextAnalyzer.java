@@ -58,6 +58,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.InternalErrorException;
+import com.cobber.fta.core.PatternFG;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 import com.cobber.fta.core.TraceException;
@@ -152,6 +153,8 @@ public class TextAnalyzer {
 	private Correlation correlation;
 
 	private static List<PluginDefinition> pluginDefinitions = new ArrayList<>();
+
+	private static boolean nullTextAsNull;
 
 	/** Enumeration that defines all on/off features for parsers. */
 	public enum Feature {
@@ -751,7 +754,7 @@ public class TextAnalyzer {
 	/**
 	 * Sets the number of bins to use for the underlying approximation used to hold the Histogram once maxCardinality is exceeded.
 	 * Default is {@link AnalysisConfig#HISTOGRAM_BINS_DEFAULT}.
-	 * @param histogramBins the number of bins to use for the underlying approximation, note larger values require more memory!
+	 * @param histogramBins the number of bins to use for the underlying approximation, note larger values require more memory, and significantly impact performance!
 	 *
 	 * @return The previous value of this parameter.
 	 */
@@ -1209,6 +1212,7 @@ public class TextAnalyzer {
 
 	private void initialize(final AnalysisConfig.TrainingMode trainingMode) throws FTAPluginException, FTAUnsupportedLocaleException {
 		memoryDebug("initialize.entry");
+
 		analysisConfig.setTrainingMode(trainingMode);
 		mapper.registerModule(new JavaTimeModule());
 		mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
@@ -1257,6 +1261,9 @@ public class TextAnalyzer {
 		knownTypes.initialize(locale);
 
 		keywords = Keywords.getInstance(locale);
+
+		nullTextAsNull = analysisConfig.isEnabled(TextAnalyzer.Feature.NULL_TEXT_AS_NULL);
+		keywords.get("NO_DATA");
 
 		if (knownTypes.getByID(KnownTypes.ID.ID_BOOLEAN_YES_NO_LOCALIZED) != null) {
 			localizedYes = keywords.get("YES");
@@ -1547,8 +1554,18 @@ public class TextAnalyzer {
 		return result;
 	}
 
+	private static PatternFG patternFG = null;
 	protected boolean isNullEquivalent(final String input) {
-		return input == null || (analysisConfig.isEnabled(TextAnalyzer.Feature.NULL_TEXT_AS_NULL) && keywords.match(input, "NO_DATA") == 100);
+		if (input == null)
+			return true;
+
+		if (!nullTextAsNull)
+			return false;
+
+		if (patternFG == null)
+			patternFG = PatternFG.compile(keywords.get("NO_DATA"));
+
+		return patternFG.matcher(input);
 	}
 
 	enum SignStatus {

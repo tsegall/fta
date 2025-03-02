@@ -738,6 +738,11 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testKeyWords() {
+		final Keywords keywordsFR = Keywords.getInstance(Locale.FRANCE);
+		assertEquals(keywordsFR.match("année", "YEAR"), 90);
+		assertEquals(keywordsFR.get("YES"), "oui");
+		assertEquals(keywordsFR.match("year", "YEAR"), 90);
+
 		final Keywords keywordsUS = Keywords.getInstance(Locale.US);
 		assertEquals(keywordsUS.get("YES"), "yes");
 		assertNull(keywordsUS.get("YODEL"));
@@ -748,10 +753,5 @@ public class TestUtils {
 		assertEquals(keywordsUS.match("rubbish", "YEAR"), 0);
 		assertEquals(keywordsUS.match("yodel", "YODEL"), 0);
 		assertEquals(keywordsUS.match("yodel", "YES"), 0);
-
-		final Keywords keywordsFR = Keywords.getInstance(Locale.FRANCE);
-		assertEquals(keywordsFR.get("YES"), "oui");
-		assertEquals(keywordsFR.match("année", "YEAR"), 90);
-		assertEquals(keywordsFR.match("year", "YEAR"), 90);
 	}
 }

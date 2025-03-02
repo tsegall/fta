@@ -159,11 +159,9 @@
 	},
 	{
 		"keytag": "NO_DATA",
-		"keyType": "REGEX",
-		"validLocales": [
-			{ "localeTag": "*",
-				"headerRegExps": [ { "regExp": "(?i)(null|no data|sin dato)", "confidence": 100 } ]
-			}
+		"keyType": "WORD",
+		"wordLocales": [
+			{ "localeTag": "*", "value": "null|no data|sin dato" }
 		]
 	},
 	{

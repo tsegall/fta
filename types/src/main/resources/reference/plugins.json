@@ -2218,6 +2218,10 @@
 			{
 				"localeTag": "*",
 				"headerRegExps": [ { "regExp": ".*(?i)(file.?name).*", "confidence": 99 } ]
+			},
+			{
+				"localeTag": "nl",
+				"headerRegExps": [ { "regExp": ".*(?i)(file.?name|file.?naam).*", "confidence": 99 } ]
 			}
 		],
 		"documentation": [

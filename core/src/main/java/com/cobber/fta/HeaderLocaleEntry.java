@@ -26,14 +26,14 @@ public class HeaderLocaleEntry {
 	public HeaderEntry[] headerRegExps;
 
 	/**
-	 * Determine the confidence that the name of the data stream is likely a valid header
-	 * @param dataStreamName The name of this data stream
-	 * @return An integer between -100 and 100 reflecting the confidence that this stream name is a valid header.  O indicates no data.
+	 * Determine the confidence that the input is valid
+	 * @param input The input to be validated
+	 * @return An integer between -100 and 100 reflecting the confidence that the input is valid.  O indicates no data.
 	 */
-	public int getHeaderConfidence(final String dataStreamName) {
+	public int getHeaderConfidence(final String input) {
 		if (headerRegExps != null)
 			for (final HeaderEntry headerEntry : headerRegExps) {
-				if (headerEntry.matches(dataStreamName))
+				if (headerEntry.matches(input))
 					return headerEntry.confidence;
 			}
 

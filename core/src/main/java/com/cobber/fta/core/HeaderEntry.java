@@ -51,13 +51,13 @@ public class HeaderEntry {
 		return (new StringBuilder()).append('[').append(regExp).append(':').append(confidence).append(':').append(mandatory).append(']').toString();
 	}
 
-	public boolean matches(final String streamName) {
+	public boolean matches(final String input) {
 		if (pattern == null) {
 			synchronized (this) {
 				pattern = Pattern.compile(regExp);
 			}
 		}
 
-		return pattern.matcher(streamName).matches();
+		return pattern.matcher(input).matches();
 	}
 }

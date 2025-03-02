@@ -37,6 +37,7 @@ import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.RegExpGenerator;
+import com.cobber.fta.core.PatternFG;
 
 public class TestUtils {
 	public final static double EPSILON = 0.00000001;
@@ -243,6 +244,20 @@ public class TestUtils {
 				"\\QONLINE RESOURCE (EPUB EBOOK)\\E", "\\QONLINE RESOURCE (PDF EBOOK ; EPUB EBOOK)\\E", "SHEET", "VOLUME"
 		));
 		assertEquals(TextAnalyzer.distanceLevenshtein("\\QONLINE RESOURCE (EBOOK)\\E", universe), 5);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testPatternFG() throws IOException {
+		PatternFG patternFG = PatternFG.compile("|null|no data|sin dato|");
+
+		assertFalse(patternFG.matcher("ß - Eszett as in straße	"));
+		assertTrue(patternFG.matcher("null"));
+		assertTrue(patternFG.matcher("NULL"));
+		assertFalse(patternFG.matcher("zoom"));
+		assertFalse(patternFG.matcher("a"));
+		assertTrue(patternFG.matcher("no data"));
+		assertTrue(patternFG.matcher("sin dato"));
+		assertFalse(patternFG.matcher("long string"));
 	}
 
 	@Test(groups = { TestGroups.ALL })

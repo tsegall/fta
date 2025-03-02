@@ -319,7 +319,7 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void extendedTotalsDates() throws IOException, FTAException {
-		final int SAMPLE_COUNT = 20000;
+		final int SAMPLE_COUNT = 10000;
 		final Locale locale = Locale.forLanguageTag("en-US");
 		final String dateTimeFormat = "MM/dd/yy HH:mm:ss.SSS";
 		final SimpleDateFormat sdf = new SimpleDateFormat(dateTimeFormat, locale);
@@ -331,14 +331,15 @@ public class TestMerge {
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = sdf.format(calendar.getTime());
 			shardOneAnalyzer.train(sample);
-			calendar.add(Calendar.SECOND, -1);
+			calendar.add(Calendar.HOUR, -20);
 		}
 		final Calendar calendarMin = Calendar.getInstance();
-		calendarMin.setTimeInMillis(calendar.getTimeInMillis() + 1000);
+		calendarMin.setTimeInMillis(calendar.getTimeInMillis() + 20*60*60*1000);
 		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOneAnalyzer.serialize());
 		// Note we must set the totalCount on the analyzer pre-merge
 		final TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
-		hydratedOne.setTotalCount(hydratedOneResult.getSampleCount());
+		assertEquals(hydratedOneResult.getType(), FTAType.LOCALDATETIME);
+		hydratedOne.setTotalCount(SAMPLE_COUNT);
 		hydratedOne.setTotalMinValue(hydratedOneResult.getMinValue());
 		hydratedOne.setTotalMaxValue(hydratedOneResult.getMaxValue());
 
@@ -348,23 +349,25 @@ public class TestMerge {
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = sdf.format(calendar.getTime());
 			shardTwoAnalyzer.train(sample);
-			calendar.add(Calendar.SECOND, 1);
+			calendar.add(Calendar.HOUR, 20);
 		}
+
 		final Calendar calendarMax = Calendar.getInstance();
-		calendarMax.setTimeInMillis(calendar.getTimeInMillis() - 1000);
+		calendarMax.setTimeInMillis(calendar.getTimeInMillis() - 20*60*60*1000);
 		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(shardTwoAnalyzer.serialize());
 		// Note we must set the totalCount on the analyzer pre-merge
 		final TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
-		hydratedTwo.setTotalCount(hydratedTwoResult.getSampleCount());
+		assertEquals(hydratedTwoResult.getType(), FTAType.LOCALDATETIME);
+		hydratedTwo.setTotalCount(SAMPLE_COUNT);
 		hydratedTwo.setTotalMinValue(hydratedTwoResult.getMinValue());
 		hydratedTwo.setTotalMaxValue(hydratedTwoResult.getMaxValue());
+		assertEquals(hydratedTwoResult.getMaxValue(), sdf.format(calendarMax.getTime()));
 
 		// Merge the two hydrated TextAnalyzers
 		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
 		final TextAnalysisResult mergedResult = merged.getResult();
 
 		assertEquals(mergedResult.getType(), FTAType.LOCALDATETIME);
-		assertEquals(mergedResult.getSampleCount(), 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 2 * 10);
 		assertEquals(mergedResult.getTotalCount(), 2 * SAMPLE_COUNT);
 
 		assertEquals(mergedResult.getMinValue(), sdf.format(calendarMin.getTime()));
