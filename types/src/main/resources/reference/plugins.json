@@ -2053,6 +2053,27 @@
 		"priority": 171
 	},
 	{
+		"semanticType": "CRYPTOCURRENCY.TEXT_EN",
+		"description": "Cryptocurrency Name",
+		"pluginType": "list",
+		"signature": "cCY9GY7idXKkqWH3vfjMkumvUuQ=",
+		"validLocales": [
+			{
+				"localeTag": "en",
+				"headerRegExps": [ { "regExp": ".*(?i)(currency).*", "confidence": 90 } ]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/en_cryptocurrency_full.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Cryptocurrency" }
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 172
+	},
+	{
 		"semanticType": "COUNTRY.ISO-3166-3",
 		"description": "Country as defined by ISO 3166 - Alpha 3",
 		"pluginType": "list",
@@ -2069,7 +2090,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3" }
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 172
+		"priority": 173
 	},
 	{
 		"semanticType": "COUNTRY.ISO-3166-2",
@@ -2089,7 +2110,7 @@
 			{ "source": "schema", "reference": "https://schema.org/eligibleRegion" }
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 173
+		"priority": 174
 	},
 	{
 		"semanticType": "TIMEZONE.IANA",
@@ -2108,7 +2129,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" }
 		],
 		"backout": "[-_/A-Za-z]+",
-		"priority": 174
+		"priority": 175
 	},
 	{
 		"semanticType": "CONTINENT.TEXT_EN",
@@ -2126,7 +2147,7 @@
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P30" }
 		],
-		"priority": 175
+		"priority": 176
 	},
 	{
 		"semanticType": "CONTINENT.CODE_EN",
@@ -2141,7 +2162,7 @@
 			"reference": "/reference/en_continent_code.csv"
 		},
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 176
+		"priority": 177
 	},
 	{
 		"semanticType": "AIRPORT_CODE.IATA",
@@ -2164,7 +2185,7 @@
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
 		"threshold": 97,
-		"priority": 177
+		"priority": 178
 	},
 	{
 		"semanticType": "AIRLINE.IATA_CODE",
@@ -2187,7 +2208,7 @@
 		],
 		"backout": "\\p{Alnum}{2}",
 		"threshold": 97,
-		"priority": 178
+		"priority": 179
 	},
 	{
 		"semanticType": "AIRLINE.TEXT_EN",
@@ -2206,7 +2227,7 @@
 		},
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"threshold": 85,
-		"priority": 179
+		"priority": 180
 	},
 	{
 		"semanticType": "FILENAME",
@@ -2227,7 +2248,7 @@
 		"documentation": [
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Filename" }
 		],
-		"priority": 180
+		"priority": 181
 	},
 	{
 		"semanticType": "FILENAME_EXT",
@@ -2248,7 +2269,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Filename_extension" }
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 181
+		"priority": 182
 	},
 	{
 		"semanticType": "PERSON.YEAR_OF_BIRTH",
@@ -2267,7 +2288,7 @@
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q2389905" }
 		],
 		"baseType": "LOCALDATE",
-		"priority": 182
+		"priority": 183
 	},
 	{
 		"semanticType": "PERSON.DATE_OF_BIRTH",
@@ -2294,7 +2315,7 @@
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Q2389905" },
 			{ "source": "schema", "reference": "https://schema.org/birthDate" }
 		],
-		"priority": 183
+		"priority": 184
 	},
 	{
 		"semanticType": "COORDINATE.LATITUDE_DECIMAL",

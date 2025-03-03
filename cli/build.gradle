@@ -32,6 +32,8 @@ dependencies {
 	implementation libs.jacksonDataType
 	implementation libs.guava
 	implementation libs.commonsText
+	implementation libs.automaton
+	implementation libs.xeger
 
 	implementation libs.logbackClassic
 

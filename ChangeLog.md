@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 16.0.5
+ - ENH: Add new Semantic Type - CRYPTOCURRENCY.TEXT_EN
+ - ENH: Faker - add String support to faker
+ - INT: Bump jackson to 2.18.3
+
 ### 16.0.4
  - ENH: Add new Semantic Type - FILENAME_EXT
  - ENH: ~15% improvement in throughput if not calculating distributions (~3% if calculating distributions)
