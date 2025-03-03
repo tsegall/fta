@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 16.0.6
+ - ENH: Change the default number of Histogram bins to 200 from 1000 (improves performance by ~3x for large inputs), to revert to prior behavior invoked setHistogramBins(1000) on the AnalysisConfig.  Note: If distributions (Quantiles/Histograms) are not required they can be disabled via configure() on the AnalysisConfig which will dramatically improve performance further.
+ - BUG: Honor minLength in FakerStringLT
+
 ### 16.0.5
  - ENH: Add new Semantic Type - CRYPTOCURRENCY.TEXT_EN
  - ENH: Faker - add String support to faker
@@ -9,7 +13,6 @@
 ### 16.0.4
  - ENH: Add new Semantic Type - FILENAME_EXT
  - ENH: ~15% improvement in throughput if not calculating distributions (~3% if calculating distributions)
- - ENH: Change the default number of Histogram bins to 200 from 1000 (improves performance by ~3x for large inputs), to revert to prior behavior invoked setHistogramBins(1000) on the AnalysisConfig.  Note: If distributions (Quantiles/Histograms) are not required they can be disabled via configure() on the AnalysisConfig which will dramatically improve performance further..
  - BUG: Fix flaky test case - extendedTotalsDates
  - INT: Bump google phonenumber to 9.0.0
 

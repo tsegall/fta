@@ -33,7 +33,7 @@ public class AnalysisConfig {
 	public static final double QUANTILE_RELATIVE_ACCURACY_DEFAULT = .01;
 
 	/** The default value for the number of Histogram bins. */
-	public static final int HISTOGRAM_BINS_DEFAULT = 1000;
+	public static final int HISTOGRAM_BINS_DEFAULT = 200;
 
 	/** The default value for the maximum # of outliers tracked. */
 	public static final int MAX_OUTLIERS_DEFAULT = 300;

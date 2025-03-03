@@ -35,6 +35,7 @@
 |COUNTRY.TEXT_ES|Country as a string (Spanish)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|es|
 |COUNTRY.TEXT_NL|Country as a string (Dutch)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|nl|
 |CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|https://en.wikipedia.org/wiki/Credit_card, https://schema.org/CreditCard|*|
+|CRYPTOCURRENCY.TEXT_EN|Cryptocurrency Name|https://en.wikipedia.org/wiki/Cryptocurrency|en|
 |CURRENCY.TEXT_EN|Currency Name|https://en.wikipedia.org/wiki/Currency|en|
 |CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|https://www.wikidata.org/wiki/Property:P498, https://en.wikipedia.org/wiki/ISO_4217, https://schema.org/priceCurrency|*|
 |DAY.ABBR_&lt;LOCALE&gt;|Day of Week Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)||*|
@@ -44,7 +45,7 @@
 |EMAIL|Email Address|https://www.wikidata.org/wiki/Property:P968, https://https://en.wikipedia.org/wiki/Email_address, https://schema.org/email|*, es|
 |EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|https://en.wikipedia.org/wiki/Unix_time|*|
 |EPOCH.SECONDS|Unix Epoch (Timestamp) - seconds|https://en.wikipedia.org/wiki/Unix_time|*|
-|FILENAME|Name of file|https://en.wikipedia.org/wiki/Filename|*|
+|FILENAME|Name of file|https://en.wikipedia.org/wiki/Filename|*, nl|
 |FILENAME_EXT|Filename extension|https://en.wikipedia.org/wiki/Filename_extension|*|
 |FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...||bg, ca, da, de, en, es, fi, fr, ga, hr, hu, it, lv, nl, pt, ro, ru, sk, sv, tr|
 |FULL_ADDRESS_EN|Full Address (English Language)||en-CA,en-US|

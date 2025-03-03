@@ -52,12 +52,12 @@ public class FakerStringLT extends FakerLT {
 	public String nextRandom() {
 		if (!initialized) {
 			if (parameters != null) {
-                minLength = parameters.minLength;
-                maxLength = parameters.maxLength;
-                format = parameters.format;
-                values = parameters.values;
-                if (format != null)
-                	generator = new Xeger(RegExpGenerator.toAutomatonRE(format, true));
+				minLength = parameters.minLength;
+				maxLength = parameters.maxLength;
+				format = parameters.format;
+				values = parameters.values;
+				if (format != null)
+					generator = new Xeger(RegExpGenerator.toAutomatonRE(format, true));
 			}
 
 			initialized = true;
@@ -68,13 +68,15 @@ public class FakerStringLT extends FakerLT {
 
 		if (format.startsWith(".{")) {
 			String text = freeText.nextRandom();
+			while (text.length() < minLength) {
+				text += " " + freeText.nextRandom();
+			}
 			if (text.length() > maxLength) {
 				int offset = maxLength;
 				while (text.charAt(offset) != ' ' && offset != 0)
 					offset--;
 				if (offset != 0)
 					return text.substring(0, offset);
-
 			}
 		}
 
