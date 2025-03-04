@@ -70,7 +70,7 @@ public abstract class MergeSimple {
 		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOneAnalyzer.serialize());
 		// Note we must set the totalCount on the analyzer pre-merge
 		final TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
-		hydratedOne.setTotalCount(hydratedOneResult.getSampleCount());
+		hydratedOne.setTotalCount(SAMPLE_COUNT);
 		hydratedOne.setTotalNullCount(hydratedOneResult.getNullCount());
 
 		final TextAnalyzer shardTwoAnalyzer = new TextAnalyzer("issue124");
@@ -79,7 +79,7 @@ public abstract class MergeSimple {
 		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(shardTwoAnalyzer.serialize());
 		// Note we must set the totalCount on the analyzer pre-merge
 		final TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
-		hydratedTwo.setTotalCount(hydratedTwoResult.getSampleCount());
+		hydratedTwo.setTotalCount(SAMPLE_COUNT);
 		hydratedTwo.setTotalNullCount(hydratedTwoResult.getNullCount());
 
 		// Merge the two hydrated TextAnalyzers
