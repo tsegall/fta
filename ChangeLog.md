@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 16.0.7
+ - ENH: Add new Semantic Type - IDENTITY.SIN_CA (Canadian - Social Insurance Number)
+ - ENH: Support --faker with inline specification (also fix incorrect example in README)
+ - INT: Improve error message if calling Distributions entry points with DISTRIBUTIONS not enabled
+ - INT: Add some more test cases for totalCount and merging
+ - INT: Bump google phonenumber to 9.0.1, logback-classic to 1.5.18
+
 ### 16.0.6
  - ENH: Change the default number of Histogram bins to 200 from 1000 (improves performance by ~3x for large inputs), to revert to prior behavior invoked setHistogramBins(1000) on the AnalysisConfig.  Note: If distributions (Quantiles/Histograms) are not required they can be disabled via configure() on the AnalysisConfig which will dramatically improve performance further.
  - BUG: Honor minLength in FakerStringLT

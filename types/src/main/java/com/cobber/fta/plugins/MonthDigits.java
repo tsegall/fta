@@ -93,11 +93,11 @@ public class MonthDigits extends LogicalTypeInfinite {
 		if (getHeaderConfidence(streamName) == 0 || (double) matchCount / realSamples < getThreshold() / 100.0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
-		if (facts.minLong < 1 || facts.maxLong > 12)
+		if (facts.getMinLong() < 1 || facts.getMaxLong() > 12)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// If we have seen both the expected minimum and expected maximum we feel excellent
-		if (facts.minLong == 1 && facts.maxLong == 12)
+		if (facts.getMinLong() == 1 && facts.getMaxLong() == 12)
 			return PluginAnalysis.OK;
 
 		final int columns = context.getCompositeStreamNames().length;

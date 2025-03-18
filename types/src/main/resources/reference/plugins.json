@@ -2842,6 +2842,21 @@
 		"priority": 240
 	},
 	{
+		"semanticType": "IDENTITY.SIN_CA",
+		"description": "Social Insurance Number",
+		"pluginType": "java",
+		"signature": "/AkLVAphMDS2Jx+CRemAdX3LPww=",
+		"clazz": "com.cobber.fta.plugins.identity.SIN_CA",
+		"validLocales": [
+			{ "localeTag": "en-CA", "headerRegExps": [ { "regExp": "(?i)(SIN|social.?insurance.?number)", "confidence": 95 } ] }
+		],
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Social_insurance_number" }
+		],
+		"threshold": 95,
+		"priority": 241
+	},
+	{
 		"semanticType": "LANGUAGE.ISO-639-2",
 		"description": "Language code - ISO 639, three character",
 		"pluginType": "list",

@@ -830,11 +830,11 @@ public class TextAnalyzer {
 
 	private boolean trackLong(final String trimmed, final TypeInfo typeInfo, final boolean register, final long count) {
 		// Track String facts - just in case we end up backing out.
-		if (facts.minString == null || facts.minString.compareTo(trimmed) > 0)
-			facts.minString = trimmed;
+		if (facts.getMinString() == null || facts.getMinString().compareTo(trimmed) > 0)
+			facts.setMinString(trimmed);
 
-		if (facts.maxString == null || facts.maxString.compareTo(trimmed) < 0)
-			facts.maxString = trimmed;
+		if (facts.getMaxString() == null || facts.getMaxString().compareTo(trimmed) < 0)
+			facts.setMaxString(trimmed);
 
 		long l;
 
@@ -894,16 +894,16 @@ public class TextAnalyzer {
 			if (digits > facts.maxTrimmedLengthNumeric)
 				facts.maxTrimmedLengthNumeric = digits;
 
-			if (l != 0 && l < facts.minLongNonZero)
-				facts.minLongNonZero = l;
+			if (l != 0 && l < facts.getMinLongNonZero())
+				facts.setMinLongNonZero(l);
 
-			if (l < facts.minLong)
-				facts.minLong = l;
+			if (l < facts.getMinLong())
+				facts.setMinLong(l);
 			else
 				facts.monotonicDecreasing = false;
 
-			if (l > facts.maxLong)
-				facts.maxLong = l;
+			if (l > facts.getMaxLong())
+				facts.setMaxLong(l);
 			else
 				facts.monotonicIncreasing = false;
 
@@ -974,11 +974,11 @@ public class TextAnalyzer {
 	private void updateStats(final String cleaned) {
 		final int len = cleaned.trim().length();
 
-		if (facts.minString == null || facts.minString.compareTo(cleaned) > 0)
-			facts.minString = cleaned;
+		if (facts.getMinString() == null || facts.getMinString().compareTo(cleaned) > 0)
+			facts.setMinString(cleaned);
 
-		if (facts.maxString == null || facts.maxString.compareTo(cleaned) < 0)
-			facts.maxString = cleaned;
+		if (facts.getMaxString() == null || facts.getMaxString().compareTo(cleaned) < 0)
+			facts.setMaxString(cleaned);
 
 		if (len < facts.minTrimmedLength)
 			facts.minTrimmedLength = len;
@@ -2255,8 +2255,8 @@ public class TextAnalyzer {
 				trackString(entry.getKey(), entry.getKey().trim(), newTypeInfo, false, entry.getValue());
 		}
 		else if (facts.getMatchTypeInfo().getBaseType().equals(FTAType.DOUBLE)) {
-			facts.minDouble = facts.minLong;
-			facts.maxDouble = facts.maxLong;
+			facts.minDouble = facts.getMinLong();
+			facts.maxDouble = facts.getMaxLong();
 			for (final Map.Entry<String, Long> entry : facts.outliers.entrySet())
 				trackDouble(entry.getKey(), facts.getMatchTypeInfo(), true, entry.getValue());
 		}
@@ -3289,9 +3289,9 @@ public class TextAnalyzer {
 	}
 
 	private boolean plausibleYear(final long realSamples) {
-		return (facts.minLongNonZero > DateTimeParser.RECENT_EARLY_LONG_YYYY && facts.maxLong <= DateTimeParser.LATE_LONG_YYYY &&
+		return (facts.getMinLongNonZero() > DateTimeParser.RECENT_EARLY_LONG_YYYY && facts.getMaxLong() <= DateTimeParser.LATE_LONG_YYYY &&
 				realSamples >= reflectionSamples && facts.cardinality.size() > 10) ||
-				(facts.minLongNonZero >= DateTimeParser.EARLY_LONG_YYYY && facts.maxLong <= DateTimeParser.LATE_LONG_YYYY &&
+				(facts.getMinLongNonZero() >= DateTimeParser.EARLY_LONG_YYYY && facts.getMaxLong() <= DateTimeParser.LATE_LONG_YYYY &&
 				(keywords.match(context.getStreamName(), "YEAR") >= 90 ||
 					keywords.match(context.getStreamName(), "DATE") >= 90 ||
 					keywords.match(context.getStreamName(), "PERIOD") >= 90));
@@ -3310,33 +3310,33 @@ public class TextAnalyzer {
 	}
 
 	boolean isReallyDate(final long realSamples) {
-		if (facts.groupingSeparators != 0 || facts.minLongNonZero == Long.MAX_VALUE)
+		if (facts.groupingSeparators != 0 || facts.getMinLongNonZero() == Long.MAX_VALUE)
 			return false;
 
-		if (facts.minLongNonZero > EARLY_LONG_YYYYMMDD && facts.maxLong < LATE_LONG_YYYYMMDD &&
-				DateTimeParser.plausibleDateLong(facts.minLongNonZero, 4) && DateTimeParser.plausibleDateLong(facts.maxLong, 4) &&
+		if (facts.getMinLongNonZero() > EARLY_LONG_YYYYMMDD && facts.getMaxLong() < LATE_LONG_YYYYMMDD &&
+				DateTimeParser.plausibleDateLong(facts.getMinLongNonZero(), 4) && DateTimeParser.plausibleDateLong(facts.getMaxLong(), 4) &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || keywords.match(context.getStreamName(), "DATE") >= 90)) {
 			// Sometimes a Long is not a Long but it is really a date (yyyyMMdd)
 			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, "yyyyMMdd");
 			final DateTimeFormatter dtf = dateTimeParser.ofPattern(newTypeInfo.format);
-			switchToDate(newTypeInfo, LocalDate.parse(String.valueOf(facts.minLongNonZero), dtf), LocalDate.parse(String.valueOf(facts.maxLong), dtf));
+			switchToDate(newTypeInfo, LocalDate.parse(String.valueOf(facts.getMinLongNonZero()), dtf), LocalDate.parse(String.valueOf(facts.getMaxLong()), dtf));
 			return true;
 		}
 
-		if (facts.minLongNonZero > EARLY_LONG_YYYYMMDD/100 && facts.maxLong < LATE_LONG_YYYYMMDD/100 &&
-				DateTimeParser.plausibleDateLong(facts.minLongNonZero * 100 + 1, 4) && DateTimeParser.plausibleDateLong(facts.maxLong * 100 + 1, 4) &&
+		if (facts.getMinLongNonZero() > EARLY_LONG_YYYYMMDD/100 && facts.getMaxLong() < LATE_LONG_YYYYMMDD/100 &&
+				DateTimeParser.plausibleDateLong(facts.getMinLongNonZero() * 100 + 1, 4) && DateTimeParser.plausibleDateLong(facts.getMaxLong() * 100 + 1, 4) &&
 				((realSamples >= reflectionSamples && facts.cardinality.size() > 10) || keywords.match(context.getStreamName(), "PERIOD") >= 90)) {
 			// Sometimes a Long is not a Long but it is really a date (yyyyMM)
 			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{6}", FTAType.LOCALDATE, "yyyyMM", false, "yyyyMM");
 			final DateTimeFormatter dtf = dateTimeParser.ofPattern(newTypeInfo.format);
-			switchToDate(newTypeInfo, LocalDate.parse(String.valueOf(facts.minLongNonZero), dtf), LocalDate.parse(String.valueOf(facts.maxLong), dtf));
+			switchToDate(newTypeInfo, LocalDate.parse(String.valueOf(facts.getMinLongNonZero()), dtf), LocalDate.parse(String.valueOf(facts.getMaxLong()), dtf));
 			return true;
 		}
 
-		if (facts.groupingSeparators == 0 && facts.minLongNonZero != Long.MAX_VALUE && plausibleYear(realSamples)) {
+		if (facts.groupingSeparators == 0 && facts.getMinLongNonZero() != Long.MAX_VALUE && plausibleYear(realSamples)) {
 			// Sometimes a Long is not a Long but it is really a date (yyyy)
 			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{4}", FTAType.LOCALDATE, "yyyy", false, "yyyy");
-			switchToDate(newTypeInfo, LocalDate.of((int)facts.minLongNonZero, 1, 1), LocalDate.of((int)facts.maxLong, 1, 1));
+			switchToDate(newTypeInfo, LocalDate.of((int)facts.getMinLongNonZero(), 1, 1), LocalDate.of((int)facts.getMaxLong(), 1, 1));
 			return true;
 		}
 
@@ -3345,7 +3345,7 @@ public class TextAnalyzer {
 
 	// Called to finalize a LONG type determination when NOT a Semantic type
 	void finalizeLong(final long realSamples) {
-		if (KnownTypes.ID.ID_LONG == facts.getMatchTypeInfo().id && facts.getMatchTypeInfo().typeModifier == null && facts.minLong < 0) {
+		if (KnownTypes.ID.ID_LONG == facts.getMatchTypeInfo().id && facts.getMatchTypeInfo().typeModifier == null && facts.getMinLong() < 0) {
 			facts.setMatchTypeInfo(knownTypes.negation(facts.getMatchTypeInfo().regexp));
 			ctxdebug("Type determination", "now with sign {}", facts.getMatchTypeInfo());
 		}
@@ -3353,7 +3353,7 @@ public class TextAnalyzer {
 		if (isReallyDate(realSamples))
 			return;
 
-		if (facts.cardinality.size() == 2 && facts.minLong == 0 && facts.maxLong == 1) {
+		if (facts.cardinality.size() == 2 && facts.getMinLong() == 0 && facts.getMaxLong() == 1) {
 			// boolean by any other name
 			facts.minBoolean = "0";
 			facts.maxBoolean = "1";

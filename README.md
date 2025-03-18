@@ -630,7 +630,7 @@ Analyze a Dutch CSV file:
 
 Generate a set of samples:
 
-`$ cli/build/install/fta/bin/cli --faker "Country[type=COUNTRY.TEXT_EN]" --records 20`
+`$ cli/build/install/fta/bin/cli --faker '[ { "fieldName": "Country", "index": 0, "type": "COUNTRY.TEXT_EN" } ]' --records 20`
 
 ## Javadoc ##
 

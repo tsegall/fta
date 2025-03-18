@@ -94,15 +94,15 @@ public class DayDigits extends LogicalTypeInfinite {
 		if (headerConfidence == 0 || (double) matchCount / realSamples < getThreshold() / 100.0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
-		if (facts.minLong < 1 || facts.maxLong > 31)
+		if (facts.getMinLong() < 1 || facts.getMaxLong() > 31)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// If we have seen both the expected minimum and expected maximum we feel excellent
-		if (headerConfidence == 99 || (facts.minLong == 1 && facts.maxLong == 31))
+		if (headerConfidence == 99 || (facts.getMinLong() == 1 && facts.getMaxLong() == 31))
 			return PluginAnalysis.OK;
 
 		// Confidence in header is not great, so could easily be "day of week" unless we have seen a large number
-		if (facts.maxLong <= 7)
+		if (facts.getMaxLong() <= 7)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// Locate the current column

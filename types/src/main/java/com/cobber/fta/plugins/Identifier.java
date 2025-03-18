@@ -96,10 +96,10 @@ public class Identifier extends LogicalTypeInfinite {
 		if (FTAType.LONG.equals(facts.getMatchTypeInfo().getBaseType())) {
 			// We know whether it is monotonic increasing or decreasing - if so declare it good
 			if (facts.matchCount >= THRESHOLD_MONOTONIC && (facts.monotonicDecreasing || facts.monotonicIncreasing)
-					&& facts.minLong >= 0 && facts.maxLong - facts.minLong == facts.matchCount - 1)
+					&& facts.getMinLong() >= 0 && facts.getMaxLong() - facts.getMinLong() == facts.matchCount - 1)
 				return PluginAnalysis.OK;
 			// Given the size of the Sample Space and the number of samples we can calculate the likelihood that is is unique
-			if (facts.matchCount >= THRESHOLD_UNIQUENESS_TEST && Utils.uniquenessProbability((int)(facts.maxLong - facts.minLong), (int)facts.matchCount) > .99)
+			if (facts.matchCount >= THRESHOLD_UNIQUENESS_TEST && Utils.uniquenessProbability((int)(facts.getMaxLong() - facts.getMinLong()), (int)facts.matchCount) > .99)
 				return PluginAnalysis.OK;
 		}
 

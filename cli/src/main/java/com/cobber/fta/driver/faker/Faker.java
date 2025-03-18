@@ -53,7 +53,10 @@ public class Faker {
 		// Read in the faker specification ...
 		List<FakerParameters> params = null;
 		try {
-			params = mapper.readValue(new File(options.faker), new TypeReference<List<FakerParameters>>() {});
+			if (options.faker.charAt(0) == '[')
+				params = mapper.readValue(options.faker, new TypeReference<List<FakerParameters>>() {});
+			else
+				params = mapper.readValue(new File(options.faker), new TypeReference<List<FakerParameters>>() {});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -1510,6 +1510,66 @@ public class TestMerge {
 		checkTextAnalyzerMerge(samplesAlphaData, samplesAlphaData, "ALPHADATA_ALPHADATA", null, true);
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void testMergeTotalCountsA() throws IOException, FTAException {
+		final int ITERATIONS = 10;
+		final int SAMPLES = 20000;
+		TextAnalyzer merged = new TextAnalyzer("merge");
+		merged.setTotalCount(0);
+
+		for (int iterations = 0; iterations < ITERATIONS; iterations++) {
+			TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+			TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+			for (int j = 0; j < SAMPLES; j++) {
+				shardOne.train(String.valueOf(j));
+				shardTwo.train(String.valueOf(-j));
+			}
+			shardOne.setTotalCount(SAMPLES);
+			shardTwo.setTotalCount(SAMPLES);
+
+			merged = TextAnalyzer.merge(merged, shardOne);
+			merged = TextAnalyzer.merge(merged, shardTwo);
+		}
+
+
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getTotalCount(), ITERATIONS * SAMPLES * 2);
+		assertEquals(mergedResult.getMinValue(), String.valueOf(-SAMPLES+1));
+		assertEquals(mergedResult.getMaxValue(), String.valueOf(SAMPLES-1));
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void testMergeTotalCountsB() throws IOException, FTAException {
+		final int ITERATIONS = 10;
+		final int SAMPLES = 20000;
+		TextAnalyzer merged = new TextAnalyzer("merge");
+		merged.setTotalCount(0);
+
+		for (int iterations = 0; iterations < ITERATIONS; iterations++) {
+			TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+			TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+			for (int j = 0; j < SAMPLES; j++) {
+				shardOne.train(String.valueOf(j));
+				shardTwo.train(String.valueOf(-j));
+			}
+			shardOne.setTotalCount(SAMPLES);
+			shardTwo.setTotalCount(SAMPLES);
+
+			TextAnalyzer blend = TextAnalyzer.merge(shardOne, shardTwo);
+			merged = TextAnalyzer.merge(merged, blend);
+		}
+
+
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getTotalCount(), ITERATIONS * SAMPLES * 2);
+		assertEquals(mergedResult.getMinValue(), String.valueOf(-SAMPLES+1));
+		assertEquals(mergedResult.getMaxValue(), String.valueOf(SAMPLES-1));
+		assertEquals(mergedResult.getType(), FTAType.LONG);
+	}
+
 	public void testHistogramMerge(final long sizeOne, final long sizeTwo) throws IOException, FTAException {
 		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
 		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");

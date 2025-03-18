@@ -53,7 +53,8 @@ public class TextAnalysisResult {
 
 	private final static ObjectMapper MAPPER = new ObjectMapper();
 
-	private static final String NOT_ENABLED = "Statistics not enabled.";
+	private static final String DISTRIBUTIONS_NOT_ENABLED = "Distributions not enabled.";
+	private static final String STATISTICS_NOT_ENABLED = "Statistics not enabled.";
 
 	private final String name;
 	private final Facts facts;
@@ -159,7 +160,7 @@ public class TextAnalysisResult {
 	 */
 	public String getMinValue() {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
-			throw new IllegalArgumentException(NOT_ENABLED);
+			throw new IllegalArgumentException(STATISTICS_NOT_ENABLED);
 		return facts.getMinValue();
 	}
 
@@ -169,7 +170,7 @@ public class TextAnalysisResult {
 	 */
 	public String getMaxValue() {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
-			throw new IllegalArgumentException(NOT_ENABLED);
+			throw new IllegalArgumentException(STATISTICS_NOT_ENABLED);
 		return facts.getMaxValue();
 	}
 
@@ -214,7 +215,7 @@ public class TextAnalysisResult {
 	 */
 	public Double getMean() {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
-			throw new IllegalArgumentException(NOT_ENABLED);
+			throw new IllegalArgumentException(STATISTICS_NOT_ENABLED);
 
 		return facts.getMatchTypeInfo().isNumeric() ? facts.mean : null;
 	}
@@ -225,7 +226,7 @@ public class TextAnalysisResult {
 	 */
 	public Double getStandardDeviation() {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
-			throw new IllegalArgumentException(NOT_ENABLED);
+			throw new IllegalArgumentException(STATISTICS_NOT_ENABLED);
 
 		return facts.getMatchTypeInfo().isNumeric() ? Math.sqrt(facts.variance) : null;
 	}
@@ -237,7 +238,7 @@ public class TextAnalysisResult {
 	 */
 	public String getValueAtQuantile(final double quantile) {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.DISTRIBUTIONS))
-			throw new IllegalArgumentException(NOT_ENABLED);
+			throw new IllegalArgumentException(DISTRIBUTIONS_NOT_ENABLED);
 
 		if (!facts.getSketch().isComplete())
 			facts.getSketch().complete(facts.cardinality);
@@ -281,7 +282,7 @@ public class TextAnalysisResult {
 	 */
 	public Histogram.Entry[] getHistogram(final int buckets) {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.DISTRIBUTIONS))
-			throw new IllegalArgumentException(NOT_ENABLED);
+			throw new IllegalArgumentException(DISTRIBUTIONS_NOT_ENABLED);
 
 		if (buckets <= 0)
 			throw new IllegalArgumentException("Number of buckets must be > 0.");
@@ -299,7 +300,7 @@ public class TextAnalysisResult {
 	 */
 	public Set<String> getTopK() {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
-			throw new IllegalArgumentException(NOT_ENABLED);
+			throw new IllegalArgumentException(STATISTICS_NOT_ENABLED);
 		return facts.topK;
 	}
 
@@ -309,7 +310,7 @@ public class TextAnalysisResult {
 	 */
 	public Set<String> getBottomK() {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
-			throw new IllegalArgumentException(NOT_ENABLED);
+			throw new IllegalArgumentException(STATISTICS_NOT_ENABLED);
 		return facts.bottomK;
 	}
 

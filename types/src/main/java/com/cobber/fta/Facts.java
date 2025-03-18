@@ -77,9 +77,9 @@ public class Facts {
 	public String minBoolean;
 	public String maxBoolean;
 
-	public long minLong = Long.MAX_VALUE;
-	public long minLongNonZero = Long.MAX_VALUE;
-	public long maxLong = Long.MIN_VALUE;
+	private long minLong = Long.MAX_VALUE;
+	private long minLongNonZero = Long.MAX_VALUE;
+	private long maxLong = Long.MIN_VALUE;
 	public final TopBottomK<Long, Long> tbLong = new TopBottomK<>();
 
 	public double minDouble = Double.MAX_VALUE;
@@ -87,8 +87,8 @@ public class Facts {
 	public double minDoubleNonZero = Double.MAX_VALUE;
 	public final TopBottomK<Double, Double> tbDouble = new TopBottomK<>();
 
-	public String minString;
-	public String maxString;
+	private String minString;
+	private String maxString;
 	public final TopBottomK<String, String> tbString = new TopBottomK<>();
 
 	public LocalDate minLocalDate;
@@ -354,6 +354,46 @@ public class Facts {
 			return maxOffsetDateTime;
 		}
 		return null;
+	}
+
+	public long getMinLong() {
+		return minLong;
+	}
+
+	public void setMinLong(long minLong) {
+		this.minLong = minLong;
+	}
+
+	public long getMaxLong() {
+		return maxLong;
+	}
+
+	public void setMaxLong(long maxLong) {
+		this.maxLong = maxLong;
+	}
+
+	public long getMinLongNonZero() {
+		return minLongNonZero;
+	}
+
+	public void setMinLongNonZero(long minLongNonZero) {
+		this.minLongNonZero = minLongNonZero;
+	}
+
+	public String getMinString() {
+		return minString;
+	}
+
+	public void setMinString(final String minString) {
+		this.minString = minString;
+	}
+
+	public String getMaxString() {
+		return maxString;
+	}
+
+	public void setMaxString(final String maxString) {
+		this.maxString = maxString;
 	}
 
 	public String getMinValue() {
