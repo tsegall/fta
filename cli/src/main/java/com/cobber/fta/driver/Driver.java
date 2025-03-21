@@ -90,6 +90,7 @@ public class Driver {
 					error.println(" --maxCardinality <n> - Set the size of the Maximum Cardinality set supported");
 					error.println(" --maxInputLength <n> - Set the Maximum Input length supported");
 					error.println(" --maxOutlierCardinality <n> - Set the size of the Maximum Outlier Cardinality set supported");
+					error.println(" --maxShapes <n> - Set the size of the Maximum number of Shapes tracked");
 					error.println(" --noAnalysis - Do not do analysis");
 					error.println(" --noPretty - Do not pretty print analysis");
 					error.println(" --noQuantiles - Do not track quantiles");

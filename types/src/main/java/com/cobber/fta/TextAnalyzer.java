@@ -133,7 +133,7 @@ public class TextAnalyzer {
 	// 0: d{4} 1: d{+} 2: [-]d{+}
 	// input "hello world" 0: a{5} a{5} 1: a{+} a{+} 2: a{+}
 
-	private final TokenStreams tokenStreams = new TokenStreams(AnalysisConfig.MAX_SHAPES_DEFAULT);
+	private TokenStreams tokenStreams;
 
 	private final Random random = new Random(271828);
 
@@ -581,6 +581,34 @@ public class TextAnalyzer {
 			throw new IllegalArgumentException("Invalid value for invalid count " + newMaxInvalids);
 
 		return analysisConfig.setMaxInvalids(newMaxInvalids);
+	}
+
+	/**
+	 * Get the maximum number of shapes that will be tracked. See
+	 * {@link #setMaxShapes(int) setMaxShapes()} method.
+	 *
+	 * @return The maximum number of shapes to track.
+	 */
+	public int getMaxShapes() {
+		return analysisConfig.getMaxShapes();
+	}
+
+	/**
+	 * Set the maximum number of shapes that will be tracked.
+	 * Default is {@link AnalysisConfig#MAX_SHAPES_DEFAULT}.
+	 * <p>Note: It is not possible to change this value once training has started.
+	 *
+	 * @param newMaxShapes
+	 *            The maximum number of shapes that will be tracked (0 implies no tracking)
+	 * @return The previous value of this parameter.
+	 */
+	public int setMaxShapes(final int newMaxShapes) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot change maximum shapes once training has started");
+		if (newMaxShapes < 0)
+			throw new IllegalArgumentException("Invalid value for maximum shapes " + newMaxShapes);
+
+		return analysisConfig.setMaxShapes(newMaxShapes);
 	}
 
 	/**
@@ -1225,6 +1253,8 @@ public class TextAnalyzer {
 
 		raw = new ArrayList<>(analysisConfig.getDetectWindow());
 		detectWindowEscalations = new ArrayList<>(analysisConfig.getDetectWindow());
+
+		tokenStreams = new TokenStreams(getMaxShapes());
 
 		// If enabled, load the default set of plugins for Semantic Type detection
 		if (analysisConfig.isEnabled(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES))

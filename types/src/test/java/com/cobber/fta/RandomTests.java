@@ -2223,6 +2223,74 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void defaultMaxShapes() throws IOException, FTAException {
+		TextAnalyzer analysis = new TextAnalyzer("setMaxShapes");
+
+		// We should be able to track shapes up to the MAX_SHAPES_DEFAULT
+		for (int i = 0; i < analysis.getMaxShapes(); i++)
+			analysis.train(Integer.toBinaryString(i).replace('1', 'A'));
+
+		TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getShapeCount(), AnalysisConfig.MAX_SHAPES_DEFAULT);
+
+		analysis = new TextAnalyzer("setMaxShapes");
+
+		// We supply one more than MAX_SHAPES_DEFAULT - so now we will fail to track (and return 0)
+		for (int i = 0; i <= analysis.getMaxShapes(); i++)
+			analysis.train(Integer.toBinaryString(i).replace('1', 'A'));
+
+		result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getShapeCount(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void adjustMaxShapes() throws IOException, FTAException {
+		TextAnalyzer analysis = new TextAnalyzer("setMaxShapes");
+		final int MAX_SHAPES = 200;
+		analysis.setMaxShapes(MAX_SHAPES);
+
+		// We should be able to track shpaes up to the MAX_SHAPES_DEFAULT
+		for (int i = 0; i < MAX_SHAPES; i++)
+			analysis.train(Integer.toBinaryString(i).replace('1', 'A'));
+
+		TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getShapeCount(), MAX_SHAPES);
+
+		analysis = new TextAnalyzer("setMaxShapes");
+		analysis.setMaxShapes(MAX_SHAPES);
+
+		// We supply one more than MAX_SHAPES_DEFAULT - so now we will fail to track (and return 0)
+		for (int i = 0; i <= MAX_SHAPES; i++)
+			analysis.train(Integer.toBinaryString(i).replace('1', 'A'));
+
+		result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getShapeCount(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void adjustMaxShapesTooLate() throws IOException, FTAException {
+		TextAnalyzer analysis = new TextAnalyzer("setMaxShapes");
+		analysis.train("Hello, World");
+
+		try {
+			analysis.setMaxShapes(200);
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(e.getMessage(), "Cannot change maximum shapes once training has started");
+			return;
+		}
+		fail("Exception should have been thrown");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void totalTestSet() throws IOException, FTAException {
 		final int ENTIRE_SET = 1000;
 		final int SAMPLES = 100;

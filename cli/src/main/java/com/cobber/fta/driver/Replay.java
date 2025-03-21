@@ -98,6 +98,7 @@ public class Replay {
 			analyzer.setMaxCardinality(analysisConfig.getMaxCardinality());
 			analyzer.setMaxInputLength(analysisConfig.getMaxInputLength());
 			analyzer.setMaxOutliers(analysisConfig.getMaxOutliers());
+			analyzer.setMaxShapes(analysisConfig.getMaxShapes());
 			analyzer.setPluginThreshold(analysisConfig.getThreshold());
 			analyzer.setDetectWindow(analysisConfig.getDetectWindow());
 			if (analysisConfig.getLocaleTag() != null)

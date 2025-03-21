@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 16.1.0
+ - ENH: Add ability to set the maximum number of shapes tracked (Issue #127)
+ - INT: Bump guava to 33.4.5-jre
+
 ### 16.0.7
  - ENH: Add new Semantic Type - IDENTITY.SIN_CA (Canadian - Social Insurance Number)
  - ENH: Support --faker with inline specification (also fix incorrect example in README)

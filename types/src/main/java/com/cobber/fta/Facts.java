@@ -166,7 +166,7 @@ public class Facts {
 	public Double mean = 0.0;
 	/** The variance of the observed values (Numeric types only). */
 	public Double variance;
-	/** The top 10  values. */
+	/** The top 10 values. */
 	public Set<String> topK;
 	/** The bottom 10  values. */
 	public Set<String> bottomK;
