@@ -41,7 +41,7 @@ public class TestTopBottomK {
 		final Set<String> bottomK = new HashSet<>(Arrays.asList(
 				 "01770", "01772", "01773", "02027", "02030", "02170", "02379", "02657", "02861", "03216" ));
 
-		final TopBottomK<String, String> t = new TopBottomK<>();
+		final TopBottomK<String, String> t = new TopBottomK<>(10);
 
 		for (final String s : candidatesZips) {
 			t.observe(s);
@@ -56,7 +56,7 @@ public class TestTopBottomK {
 
 	@Test(groups = { TestGroups.ALL })
 	public void basicIntegers0() throws IOException {
-		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
+		final TopBottomK<Integer, Integer> t = new TopBottomK<>(10);
 		final Set<Integer> topK = new HashSet<>();
 		final Set<Integer> bottomK = new HashSet<>();
 
@@ -67,7 +67,7 @@ public class TestTopBottomK {
 	@Test(groups = { TestGroups.ALL })
 	public void basicIntegers9() throws IOException {
 		final int SIZE = 9;
-		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
+		final TopBottomK<Integer, Integer> t = new TopBottomK<>(10);
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
 
@@ -91,7 +91,7 @@ public class TestTopBottomK {
 	@Test(groups = { TestGroups.ALL })
 	public void basicIntegers10() throws IOException {
 		final int SIZE = 10;
-		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
+		final TopBottomK<Integer, Integer> t = new TopBottomK<>(10);
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
@@ -115,7 +115,7 @@ public class TestTopBottomK {
 	@Test(groups = { TestGroups.ALL })
 	public void basicIntegers11() throws IOException {
 		final int SIZE = 11;
-		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
+		final TopBottomK<Integer, Integer> t = new TopBottomK<>(10);
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
@@ -139,7 +139,7 @@ public class TestTopBottomK {
 	@Test(groups = { TestGroups.ALL })
 	public void basicIntegers19() throws IOException {
 		final int SIZE = 19;
-		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
+		final TopBottomK<Integer, Integer> t = new TopBottomK<>(10);
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(9, 10, 11, 12, 13, 14, 15, 16, 17, 18));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
@@ -163,7 +163,7 @@ public class TestTopBottomK {
 	@Test(groups = { TestGroups.ALL })
 	public void basicIntegers20() throws IOException {
 		final int SIZE = 20;
-		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
+		final TopBottomK<Integer, Integer> t = new TopBottomK<>(10);
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(10, 11, 12, 13, 14, 15, 16, 17, 18, 19));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
@@ -187,7 +187,7 @@ public class TestTopBottomK {
 	@Test(groups = { TestGroups.ALL })
 	public void basicBug() throws IOException {
 		final int SIZE = 20;
-		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
+		final TopBottomK<Integer, Integer> t = new TopBottomK<>(10);
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
@@ -232,7 +232,7 @@ public class TestTopBottomK {
 	@Test(groups = { TestGroups.ALL })
 	public void basicIntegers21() throws IOException {
 		final int SIZE = 21;
-		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
+		final TopBottomK<Integer, Integer> t = new TopBottomK<>(10);
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
@@ -256,7 +256,7 @@ public class TestTopBottomK {
 	@Test(groups = { TestGroups.ALL })
 	public void basicIntegers100() throws IOException {
 		final int SIZE = 100;
-		final TopBottomK<Integer, Integer> t = new TopBottomK<>();
+		final TopBottomK<Integer, Integer> t = new TopBottomK<>(10);
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(99, 98, 97, 96, 95, 94, 93, 92, 91, 90));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
@@ -303,7 +303,7 @@ public class TestTopBottomK {
 
 	@Test(groups = { TestGroups.ALL })
 	public void basicLongs100() throws IOException {
-		final TopBottomK<Long, Long> t = new TopBottomK<>();
+		final TopBottomK<Long, Long> t = new TopBottomK<>(10);
 		final Set<Long> topK = new HashSet<>(Arrays.asList(99L, 98L, 97L, 96L, 95L, 94L, 93L, 92L, 91L, 90L));
 		final Set<Long> bottomK = new HashSet<>(Arrays.asList(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L));
 
@@ -326,7 +326,7 @@ public class TestTopBottomK {
 
 	@Test(groups = { TestGroups.ALL })
 	public void basicDoubles100() throws IOException {
-		final TopBottomK<Double, Double> t = new TopBottomK<>();
+		final TopBottomK<Double, Double> t = new TopBottomK<>(10);
 		final Set<Double> topK = new HashSet<>(Arrays.asList(99.0, 98.0, 97.0, 96.0, 95.0, 94.0, 93.0, 92.0, 91.0, 90.0));
 		final Set<Double> bottomK = new HashSet<>(Arrays.asList(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0));
 
@@ -349,7 +349,7 @@ public class TestTopBottomK {
 
 	@Test(groups = { TestGroups.ALL })
 	public void basicFirstNames() throws IOException, FTAPluginException {
-		final TopBottomK<String, String> t = new TopBottomK<>();
+		final TopBottomK<String, String> t = new TopBottomK<>(10);
 		final Set<String> bottomK = new HashSet<>(Arrays.asList(
 				"AALIYAH", "AARON", "AARYA", "AARÓN", "ABBEY", "ABBIE", "ABBY", "ABDALLAH", "ABDUL", "ABDULLAH" ));
 		final Set<String> topK = new HashSet<>(Arrays.asList(

@@ -55,6 +55,7 @@ public class DriverOptions {
 	protected int maxInputLength = -1;
 	protected int maxOutlierCardinality = -1;
 	protected int maxShapes = -1;
+	protected int topBottomK = -1;
 	protected int pluginThreshold = -1;
 	protected boolean pretty = true;
 	protected boolean pluginDefinition;
@@ -102,6 +103,7 @@ public class DriverOptions {
 		this.maxInputLength = other.maxInputLength;
 		this.maxOutlierCardinality = other.maxOutlierCardinality;
 		this.maxShapes = other.maxShapes;
+		this.topBottomK = other.topBottomK;
 		this.pluginThreshold = other.pluginThreshold;
 		this.pretty = other.pretty;
 		this.pluginDefinition = other.pluginDefinition;
@@ -136,6 +138,8 @@ public class DriverOptions {
 			analyzer.setMaxOutliers(this.maxOutlierCardinality);
 		if (this.maxShapes != -1)
 			analyzer.setMaxShapes(this.maxShapes);
+		if (this.topBottomK != -1)
+			analyzer.setTopBottomK(this.topBottomK);
 		if (this.pluginThreshold != -1)
 			analyzer.setPluginThreshold(this.pluginThreshold);
 		if (this.locale != null)
@@ -267,6 +271,8 @@ public class DriverOptions {
 					maxOutlierCardinality = nextIntegerArg(args, idx++);
 				else if ("--maxShapes".equals(args[idx]))
 					maxShapes = nextIntegerArg(args, idx++);
+				else if ("--topBottomK".equals(args[idx]))
+					topBottomK = nextIntegerArg(args, idx++);
 				else if ("--noAnalysis".equals(args[idx]))
 					noAnalysis = true;
 				else if ("--noPretty".equals(args[idx]))

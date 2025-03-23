@@ -296,7 +296,7 @@ public class TextAnalysisResult {
 
 	/**
 	 * Get the topK values.
-	 * @return The top K values (default: 10).
+	 * @return The top K values.
 	 */
 	public Set<String> getTopK() {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
@@ -306,7 +306,7 @@ public class TextAnalysisResult {
 
 	/**
 	 * Get the bottomK values.
-	 * @return The bottom K values (default: 10).
+	 * @return The bottom K values.
 	 */
 	public Set<String> getBottomK() {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))

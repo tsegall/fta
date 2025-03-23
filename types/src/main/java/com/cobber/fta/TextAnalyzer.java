@@ -612,6 +612,34 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Get the number of top/bottom values tracked. See
+	 * {@link #setTopBottomK(int) setTopBottomK()} method.
+	 *
+	 * @return The number of top/bottom values tracked.
+	 */
+	public int getTopBottomK() {
+		return analysisConfig.getTopBottomK();
+	}
+
+	/**
+	 * Set the number of top/bottom values tracked.
+	 * Default is {@link AnalysisConfig#TOP_BOTTOM_K}.
+	 * <p>Note: It is not possible to change this value once training has started.
+	 *
+	 * @param newTopBottomK
+	 *            The number of top/bottom values tracked
+	 * @return The previous value of this parameter.
+	 */
+	public int setTopBottomK(final int newTopBottomK) {
+		if (trainingStarted)
+			throw new IllegalArgumentException("Cannot change the number of top/bottom values tracked once training has started");
+		if (newTopBottomK < 0)
+			throw new IllegalArgumentException("Invalid value for the number of top/bottom values tracked " + newTopBottomK);
+
+		return analysisConfig.setTopBottomK(newTopBottomK);
+	}
+
+	/**
 	 * Get the maximum number of invalid entries that will be tracked. See
 	 * {@link #setMaxInvalids(int) setMaxInvalids()} method.
 	 *
@@ -1240,6 +1268,8 @@ public class TextAnalyzer {
 
 	private void initialize(final AnalysisConfig.TrainingMode trainingMode) throws FTAPluginException, FTAUnsupportedLocaleException {
 		memoryDebug("initialize.entry");
+
+		facts.initialize(getTopBottomK());
 
 		analysisConfig.setTrainingMode(trainingMode);
 		mapper.registerModule(new JavaTimeModule());
@@ -3654,8 +3684,8 @@ public class TextAnalyzer {
 
 			ret.facts = wrapper.facts;
 			ret.facts.setConfig(wrapper.analysisConfig);
-			ret.facts.hydrate();
 			ret.initialize(wrapper.analysisConfig.getTrainingMode());
+			ret.facts.hydrate();
 
 			return ret;
 		} catch (JsonProcessingException e) {

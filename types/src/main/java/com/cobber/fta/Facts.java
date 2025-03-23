@@ -80,36 +80,36 @@ public class Facts {
 	private long minLong = Long.MAX_VALUE;
 	private long minLongNonZero = Long.MAX_VALUE;
 	private long maxLong = Long.MIN_VALUE;
-	public final TopBottomK<Long, Long> tbLong = new TopBottomK<>();
+	public TopBottomK<Long, Long> tbLong;
 
 	public double minDouble = Double.MAX_VALUE;
 	public double maxDouble = -Double.MAX_VALUE;
 	public double minDoubleNonZero = Double.MAX_VALUE;
-	public final TopBottomK<Double, Double> tbDouble = new TopBottomK<>();
+	public TopBottomK<Double, Double> tbDouble;
 
 	private String minString;
 	private String maxString;
-	public final TopBottomK<String, String> tbString = new TopBottomK<>();
+	public TopBottomK<String, String> tbString;
 
 	public LocalDate minLocalDate;
 	public LocalDate maxLocalDate;
-	public final TopBottomK<LocalDate, ChronoLocalDate> tbLocalDate = new TopBottomK<>();
+	public TopBottomK<LocalDate, ChronoLocalDate> tbLocalDate;
 
 	public LocalTime minLocalTime;
 	public LocalTime maxLocalTime;
-	public final TopBottomK<LocalTime, LocalTime> tbLocalTime = new TopBottomK<>();
+	public TopBottomK<LocalTime, LocalTime> tbLocalTime;
 
 	public LocalDateTime minLocalDateTime;
 	public LocalDateTime maxLocalDateTime;
-	public final TopBottomK<LocalDateTime, ChronoLocalDateTime<?>> tbLocalDateTime = new TopBottomK<>();
+	public TopBottomK<LocalDateTime, ChronoLocalDateTime<?>> tbLocalDateTime;
 
 	public OffsetDateTime minOffsetDateTime;
 	public OffsetDateTime maxOffsetDateTime;
-	public final TopBottomK<OffsetDateTime, OffsetDateTime> tbOffsetDateTime = new TopBottomK<>();
+	public TopBottomK<OffsetDateTime, OffsetDateTime> tbOffsetDateTime;
 
 	public ZonedDateTime minZonedDateTime;
 	public ZonedDateTime maxZonedDateTime;
-	public final TopBottomK<ZonedDateTime, ChronoZonedDateTime<?>> tbZonedDateTime = new TopBottomK<>();
+	public TopBottomK<ZonedDateTime, ChronoZonedDateTime<?>> tbZonedDateTime;
 
 	public boolean monotonicIncreasing = true;
 	public boolean monotonicDecreasing = true;
@@ -166,10 +166,21 @@ public class Facts {
 	public Double mean = 0.0;
 	/** The variance of the observed values (Numeric types only). */
 	public Double variance;
-	/** The top 10 values. */
+	/** The top K values. */
 	public Set<String> topK;
-	/** The bottom 10  values. */
+	/** The bottom K values. */
 	public Set<String> bottomK;
+
+	public void initialize(final int trackCount) {
+		tbLong = new TopBottomK<>(trackCount);
+		tbDouble = new TopBottomK<>(trackCount);
+		tbString = new TopBottomK<>(trackCount);
+		tbLocalDate = new TopBottomK<>(trackCount);
+		tbLocalTime = new TopBottomK<>(trackCount);
+		tbLocalDateTime = new TopBottomK<>(trackCount);
+		tbOffsetDateTime = new TopBottomK<>(trackCount);
+		tbZonedDateTime = new TopBottomK<>(trackCount);
+	}
 
 	public class ExternalFacts {
 		public ExternalFacts() {

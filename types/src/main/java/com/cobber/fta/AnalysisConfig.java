@@ -44,6 +44,9 @@ public class AnalysisConfig {
 	/** The default value for the maximum number of shapes tracked. */
 	public static final int MAX_SHAPES_DEFAULT = 400;
 
+	/** The default value for the number of top/bottom values tracked. */
+	public static final int TOP_BOTTOM_K = 10;
+
 	/** The default value for the detection threshold. */
 	public static final int DETECTION_THRESHOLD_DEFAULT = 95;
 
@@ -73,6 +76,9 @@ public class AnalysisConfig {
 
 	/** The maximum number of shapes tracked. */
 	private int maxShapes = MAX_SHAPES_DEFAULT;
+
+	/** The number of top/bottom values tracked. */
+	private int topBottomK = TOP_BOTTOM_K;
 
 	private int threshold = DETECTION_THRESHOLD_DEFAULT;
 
@@ -145,6 +151,7 @@ public class AnalysisConfig {
 		this.quantileRelativeAccuracy = other.quantileRelativeAccuracy;
 		this.maxOutliers = other.maxOutliers;
 		this.maxShapes = other.maxShapes;
+		this.topBottomK = other.topBottomK;
 		this.threshold = other.threshold;
 		this.detectWindow = other.detectWindow;
 		this.maxInputLength = other.maxInputLength;
@@ -349,6 +356,16 @@ public class AnalysisConfig {
 		return ret;
 	}
 
+	public int getTopBottomK() {
+		return topBottomK;
+	}
+
+	public int setTopBottomK(final int topBottomK) {
+		final int ret = this.topBottomK;
+		this.topBottomK = topBottomK;
+		return ret;
+	}
+
 	public String getTraceOptions() {
 		return traceOptions;
 	}
@@ -406,6 +423,6 @@ public class AnalysisConfig {
 				Objects.equals(localeTag, other.localeTag) &&
 				maxCardinality == other.maxCardinality && this.quantileRelativeAccuracy == other.quantileRelativeAccuracy &&
 				maxInputLength == other.maxInputLength && maxOutliers == other.maxOutliers &&
-				maxShapes == other.maxShapes && threshold == other.threshold && numericWidening == other.numericWidening;
+				maxShapes == other.maxShapes && topBottomK == other.topBottomK && threshold == other.threshold && numericWidening == other.numericWidening;
 	}
 }

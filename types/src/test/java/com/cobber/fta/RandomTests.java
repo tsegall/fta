@@ -2291,6 +2291,66 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void defaultTopBottomK() throws IOException, FTAException {
+		TextAnalyzer analysis = new TextAnalyzer("TopBottomK");
+
+		for (int i = 0; i < 100; i++)
+			analysis.train(String.valueOf(i));
+
+		TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTopK().size(), AnalysisConfig.TOP_BOTTOM_K);
+		assertEquals(analysis.getTopBottomK(), AnalysisConfig.TOP_BOTTOM_K);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void adjustTopBottomK() throws IOException, FTAException {
+		TextAnalyzer analysis = new TextAnalyzer("TopBottomK");
+		final int TRACKING = 20;
+		analysis.setTopBottomK(TRACKING);
+
+		for (int i = 0; i < 100; i++)
+			analysis.train(String.valueOf(i));
+
+		TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTopK().size(), TRACKING);
+		assertEquals(analysis.getTopBottomK(), TRACKING);
+
+
+		analysis = new TextAnalyzer("TopBottomK");
+		analysis.setTopBottomK(1);
+
+		for (int i = 0; i < 100; i++)
+			analysis.train(String.valueOf(i));
+
+		result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getTopK().size(), 1);
+		assertEquals(analysis.getTopBottomK(), 1);
+
+
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void adjustTopBottomKTooLate() throws IOException, FTAException {
+		TextAnalyzer analysis = new TextAnalyzer("setTopBottomK");
+		analysis.train("Hello, World");
+
+		try {
+			analysis.setTopBottomK(20);
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(e.getMessage(), "Cannot change the number of top/bottom values tracked once training has started");
+			return;
+		}
+		fail("Exception should have been thrown");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void totalTestSet() throws IOException, FTAException {
 		final int ENTIRE_SET = 1000;
 		final int SAMPLES = 100;

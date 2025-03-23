@@ -28,7 +28,6 @@ import java.util.TreeSet;
  * @param <C> The Class of a comparator used to compare objects of this type.
  */
 public class TopBottomK<T extends Comparable<? super T>, C> {
-	private static final int DEFAULT_SIZE = 10;
 	private int size;
 	private NavigableSet<T> starter;
 	private NavigableSet<T> top;
@@ -36,7 +35,6 @@ public class TopBottomK<T extends Comparable<? super T>, C> {
 	private boolean split;
 
 	TopBottomK() {
-		this(DEFAULT_SIZE);
 	}
 
 	TopBottomK(final int size) {

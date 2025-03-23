@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 16.2.0
+ - ENH: Add ability to set the the number of top/bottom values tracked (Issue #127)
+
 ### 16.1.0
  - ENH: Add ability to set the maximum number of shapes tracked (Issue #127)
  - INT: Bump guava to 33.4.5-jre
