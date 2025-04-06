@@ -427,6 +427,10 @@ public class Facts {
 		return sketch != null;
 	}
 
+	public long getSampleCount() {
+		return sampleCount;
+	}
+
 	@JsonIgnore
 	public NavigableMap<String, Long> getCardinalitySorted() {
 		if (!cardinality.isSorted())

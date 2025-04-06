@@ -66,7 +66,7 @@ public class DriverOptions {
 	protected boolean signature;
 	protected int skip;
 	protected int threshold = -1;
-	protected boolean testmerge;
+	protected int testmerge;
 	protected String trace;
 	protected int trailer;
 	protected int validate;
@@ -271,8 +271,6 @@ public class DriverOptions {
 					maxOutlierCardinality = nextIntegerArg(args, idx++);
 				else if ("--maxShapes".equals(args[idx]))
 					maxShapes = nextIntegerArg(args, idx++);
-				else if ("--topBottomK".equals(args[idx]))
-					topBottomK = nextIntegerArg(args, idx++);
 				else if ("--noAnalysis".equals(args[idx]))
 					noAnalysis = true;
 				else if ("--noPretty".equals(args[idx]))
@@ -329,9 +327,11 @@ public class DriverOptions {
 				else if ("--skip".equals(args[idx]))
 					skip = nextIntegerArg(args, idx++);
 				else if ("--testMerge".equals(args[idx]))
-					testmerge = true;
+					testmerge = nextIntegerArg(args, idx++);
 				else if ("--threshold".equals(args[idx]))
 					threshold = nextIntegerArg(args, idx++);
+				else if ("--topBottomK".equals(args[idx]))
+					topBottomK = nextIntegerArg(args, idx++);
 				else if ("--trace".equals(args[idx]))
 					trace = nextStringArg(args, idx++);
 				else if ("--trailer".equals(args[idx]))

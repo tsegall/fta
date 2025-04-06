@@ -1,6 +1,14 @@
 
 ## Changes ##
 
+### 16.2.1
+ - INT: Bump org.springframework.boot to 3.4.4, guava to 33.4.5-jre, google phonenumber to 9.0.2
+ - BUG: Add missing doco for IDENTITY.SIN_CA
+ - BUG: Fix two issues in TextAnalyzer.merge() - need to emptyCache() and fix issue if second argument had outliers/invalids not present in first
+ - CLI: Option description for --topBottomK was wrong (--maxTopBottomK)
+ - CLI: --testMerge now requires a numerical option to control how frequently to attempt merge
+
+
 ### 16.2.0
  - ENH: Add ability to set the the number of top/bottom values tracked (Issue #127)
 

@@ -3705,6 +3705,8 @@ public class TextAnalyzer {
 	 * @throws FTAPluginException Thrown when a registered plugin has detected an issue
 	 */
 	public static TextAnalyzer merge(final TextAnalyzer first, final TextAnalyzer second) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException  {
+		first.emptyCache();
+		second.emptyCache();
 		final TextAnalyzer ret = new TextAnalyzer(first.context);
 
 		if (!first.analysisConfig.equals(second.analysisConfig))
@@ -3733,7 +3735,7 @@ public class TextAnalyzer {
 		// Merge in the second set
 		final Facts secondFacts = second.facts.calculateFacts();
 		for (final Map.Entry<String, Long>entry : secondFacts.cardinality.entrySet()) {
-			final Long seen = firstFacts.cardinality.get(entry.getKey());
+			final Long seen = merged.get(entry.getKey());
 			if (seen == null) {
 				merged.put(entry.getKey(), entry.getValue());
 			}
@@ -3741,7 +3743,7 @@ public class TextAnalyzer {
 				merged.put(entry.getKey(), seen + entry.getValue());
 		}
 		for (final Map.Entry<String, Long>entry : secondFacts.outliers.entrySet()) {
-			final Long seen = firstFacts.outliers.get(entry.getKey());
+			final Long seen = merged.get(entry.getKey());
 			if (seen == null) {
 				merged.put(entry.getKey(), entry.getValue());
 			}
@@ -3749,7 +3751,7 @@ public class TextAnalyzer {
 				merged.put(entry.getKey(), seen + entry.getValue());
 		}
 		for (final Map.Entry<String, Long>entry : secondFacts.invalid.entrySet()) {
-			final Long seen = firstFacts.invalid.get(entry.getKey());
+			final Long seen = merged.get(entry.getKey());
 			if (seen == null) {
 				merged.put(entry.getKey(), entry.getValue());
 			}

@@ -66,6 +66,7 @@
 |IDENTITY.NI_UK|National Insurance Number (UK)|https://en.wikipedia.org/wiki/National_Insurance_number|en-GB,en-UK|
 |IDENTITY.NPI_US|National Provider Identifier (US)|https://en.wikipedia.org/wiki/National_Provider_Identifier|en-US|
 |IDENTITY.PERSONNUMMER_SE|Personal identity number (Sweden)|https://en.wikipedia.org/wiki/Personal_identity_number_(Sweden)|sv-SE|
+|IDENTITY.SIN_CA|Social Insurance Number|https://en.wikipedia.org/wiki/Social_insurance_number|en-CA|
 |IDENTITY.SSN_CH|AVH Number / SSN (Switzerland)|https://en.wikipedia.org/wiki/National_identification_number#Switzerland|de-CH,fr-CH,it-CH|
 |IDENTITY.SSN_FR|Social Security Number (France)|https://www.wikidata.org/wiki/Property:P374, https://en.wikipedia.org/wiki/INSEE_code|fr-FR|
 |IDENTITY.VAT_&lt;COUNTRY&gt;|VAT|https://www.wikidata.org/wiki/Property:P3608, https://en.wikipedia.org/wiki/Value-added_tax|en-GB,en-UK, it-IT, es-ES,ca-ES, en-NL,nl-NL, pl-PL, de-AT, fr-FR|

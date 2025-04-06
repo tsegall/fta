@@ -91,7 +91,6 @@ public class Driver {
 					error.println(" --maxInputLength <n> - Set the Maximum Input length supported");
 					error.println(" --maxOutlierCardinality <n> - Set the size of the Maximum Outlier Cardinality set supported");
 					error.println(" --maxShapes <n> - Set the size of the Maximum number of Shapes tracked");
-					error.println(" --maxTopBottomK <n> - Set the number of top/bottom values tracked");
 					error.println(" --noAnalysis - Do not do analysis");
 					error.println(" --noPretty - Do not pretty print analysis");
 					error.println(" --noQuantiles - Do not track quantiles");
@@ -111,6 +110,7 @@ public class Driver {
 					error.println(" --skip <n> - Skip the initial <n> rows of the input");
 					error.println(" --testMerge - exercise merging");
 					error.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
+					error.println(" --topBottomK <n> - Set the number of top/bottom values tracked");
 					error.println(" --trace <trace_options> - Set trace options");
 					error.println(" --trailer <n> - Skip the final <n> rows of the input");
 					error.println(" --validate <n> - Set the validations level to <n>, 1 == counts, 2 == regExp");

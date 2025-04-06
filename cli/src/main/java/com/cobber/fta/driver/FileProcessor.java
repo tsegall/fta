@@ -257,7 +257,7 @@ class FileProcessor {
 			}
 
 			processor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
-			if (options.testmerge)
+			if (options.testmerge != 0)
 				altProcessor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
 			initializedTime = System.currentTimeMillis();
 
@@ -285,11 +285,16 @@ class FileProcessor {
 				row = buffer.get();
 				processedRecords++;
 
-				if (options.testmerge) {
+				if (options.testmerge != 0) {
 					if (processedRecords % 2 == 0)
 						processor.consume(row);
 					else
 						altProcessor.consume(row);
+
+					if (processedRecords % options.testmerge == 0) {
+						processor = Processor.merge(processor, altProcessor);
+						altProcessor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
+					}
 				}
 				else
 					processor.consume(row);
@@ -308,7 +313,7 @@ class FileProcessor {
 			throw new FTAProcessingException(filename, "Univocity exception", e);
 		}
 
-		if (options.testmerge)
+		if (options.testmerge != 0)
 			processor = Processor.merge(processor, altProcessor);
 
 		if (!errors.isEmpty()) {
