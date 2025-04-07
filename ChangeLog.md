@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 16.2.2
+ - INT: Add test to check out bugs in TextAnalyzer.merge() (issues fixed in 16.2.1)
+
 ### 16.2.1
  - INT: Bump org.springframework.boot to 3.4.4, guava to 33.4.5-jre, google phonenumber to 9.0.2
  - BUG: Add missing doco for IDENTITY.SIN_CA

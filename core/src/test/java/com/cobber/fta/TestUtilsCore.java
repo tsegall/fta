@@ -39,7 +39,7 @@ import com.cobber.fta.core.WordOffset;
 import com.cobber.fta.core.WordProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class TestUtils {
+public class TestUtilsCore {
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Test(groups = { TestGroups.ALL })

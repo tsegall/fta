@@ -31,7 +31,7 @@ import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.dates.DateTimeParserResult;
 
-public class TestMerge {
+public class TestMergeCore {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void changeMind() {
 		final DateTimeParser dtp = new DateTimeParser().withDateResolutionMode(DateResolutionMode.None);

@@ -1410,6 +1410,28 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void booleanMergeBugs() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 1000;
+
+		final TextAnalyzer shardOne = new TextAnalyzer("One");
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			shardOne.train("true");
+		shardOne.train(null);
+		shardOne.train("One");
+
+		final TextAnalyzer shardTwo = new TextAnalyzer("Two");
+		shardTwo.train("true");
+		shardTwo.train("true");
+		shardTwo.train("true");
+		shardTwo.train(null);
+		shardTwo.train("One");
+
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
+		assertEquals(mergedResult.getSampleCount(), SAMPLE_COUNT + 2 + 5);
+		assertEquals(mergedResult.getType(), FTAType.BOOLEAN);
+	}
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void simpleInvalidMerge() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 
