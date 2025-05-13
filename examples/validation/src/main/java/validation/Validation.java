@@ -58,6 +58,8 @@ public abstract class Validation {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("Country");
+		// The Semantic Type 'COUNTRY.TEXT_EN' is recognized in any locale!!
+		analysis.setLocale(Locale.FRANCE);
 		analysis.setTrace("enabled=true");
 
 		// Train the input

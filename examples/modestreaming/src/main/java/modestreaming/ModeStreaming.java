@@ -33,6 +33,7 @@ public abstract class ModeStreaming {
 
 		// Use simple constructor - for improved detection provide an AnalyzerContext (see Contextual example).
 		final TextAnalyzer analysis = new TextAnalyzer("Famous");
+		analysis.setLocale(Locale.US);
 
 		for (final String input : inputs)
 			analysis.train(input);

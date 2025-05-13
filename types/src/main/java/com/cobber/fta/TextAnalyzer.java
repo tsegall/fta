@@ -1063,7 +1063,7 @@ public class TextAnalyzer {
 				else
 					d = Double.parseDouble(input);
 				converted = true;
-			} catch (NumberFormatException e) {
+			} catch (NumberFormatException | StringIndexOutOfBoundsException e) {
 				// IGNORE - note converted will be false
 			}
 
@@ -3937,6 +3937,7 @@ public class TextAnalyzer {
 		if (extremes == null)
 			return;
 
+		Map<Object, String> missing = new HashMap<>();
 		for (final String e : extremes) {
 			if (e == null)
 				return;
@@ -3946,17 +3947,20 @@ public class TextAnalyzer {
 			final Object extreme = analyzer.facts.getStringConverter().getValue(e);
 			if (extreme == null)
 				continue;
-			boolean found = false;
+			missing.put(extreme, e);
+		}
+
+		// If we failed to find any of the extreme values then do a single pass through the existing set to see if any
+		// are present in their normalized form, if so remove them, if not then add them to the set.
+		if (missing.size() != 0) {
 			for (final String m : merged.keySet()) {
 				// Check for equality of value not of format - e.g. "00" will equal "0" once both are converted to Longs
 				final Object mValue = analyzer.facts.getStringConverter().getValue(m);
-				if (mValue != null && mValue.equals(extreme)) {
-					found = true;
-					break;
-				}
+				if (mValue != null && missing.keySet().contains(mValue))
+					missing.remove(mValue);
 			}
-			if (!found)
-				merged.put(e, 1L);
+			for (final String missed : missing.values())
+				merged.put(missed, 1L);
 		}
 	}
 

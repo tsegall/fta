@@ -15,8 +15,7 @@
  */
 package serialize;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
 import java.util.Random;
 
 import com.cobber.fta.LogicalType;
@@ -28,7 +27,8 @@ public abstract class Serialize {
 	public static void main(final String[] args) throws FTAException {
 
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
-		final Map<String, Long> basic = new HashMap<>();
+		analysis.setLocale(Locale.US);
+
 		final String[] options = { "Male", "Female", "Unknown" };
 		final Random r = new Random();
 
@@ -55,6 +55,6 @@ public abstract class Serialize {
 		System.err.printf("Sample: %s%n", semanticType.nextRandom());
 
 		// Use the plugin to validate a value
-		System.err.printf("IsValid: %s%n", semanticType.isValid("BLUE"));
+		System.err.println("Is 'BLUE' valid? " + semanticType.isValid("BLUE"));
 	}
 }

@@ -15,6 +15,8 @@
  */
 package performance;
 
+import java.util.Locale;
+
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
@@ -24,6 +26,7 @@ public abstract class Performance {
 	public static void main(final String[] args) throws FTAException {
 
 		final TextAnalyzer analysis = new TextAnalyzer("DateOfBirth");
+		analysis.setLocale(Locale.US);
 
 		// To maximize performance - disable default semantic types and Statistics
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);

@@ -29,10 +29,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -41,9 +49,11 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.Utils;
+import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.Gender;
 
 public class TestMerge {
+	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 	private static final SecureRandom random = new SecureRandom();
 
 	private final List<String> samplesBLANK = new ArrayList<>();
@@ -1560,6 +1570,103 @@ public class TestMerge {
 		assertEquals(mergedResult.getMinValue(), String.valueOf(-SAMPLES+1));
 		assertEquals(mergedResult.getMaxValue(), String.valueOf(SAMPLES-1));
 		assertEquals(mergedResult.getType(), FTAType.LONG);
+	}
+
+	class AnalysisThread implements Callable<RecordAnalyzer> {
+		private final String id;
+		private final int[] structure;
+		private final int records;
+		private final RecordAnalyzer analysis;
+
+		AnalysisThread(final String id, final TextAnalyzer template, final int[] structure, int records) throws IOException, FTAException {
+			this.id = id;
+			this.structure = structure;
+			this.records = records;
+			analysis = new RecordAnalyzer(template);
+		}
+
+		@Override
+		public RecordAnalyzer call() {
+			long start = System.currentTimeMillis();
+			try {
+				for (int i = 0; i < records; i++)
+					analysis.train(TestUtils.generateTestRecord(structure));
+			} catch (FTAException e) {
+				e.printStackTrace();
+			}
+			logger.debug("Thread {}: duration: {}ms.", this.id, System.currentTimeMillis() - start);
+
+			return analysis;
+		}
+
+		public RecordAnalyzer getAnalysis() {
+			return analysis;
+		}
+	}
+
+// SLOWpwd	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testThreading() throws IOException, FTAException, FTAException, InterruptedException, ExecutionException {
+		final int THREADS = 15;
+		final int PARTITIONS = 100;
+		final int COLS = 20;
+		final int RECORDS = 100000;
+
+		ExecutorService executor = Executors.newFixedThreadPool(THREADS);
+		List<Future<RecordAnalyzer>> list = new ArrayList<Future<RecordAnalyzer>>();
+
+		final String[] header = new String[COLS];
+		final int[] structure = new int[COLS];
+		for (int c = 0; c < COLS; c++) {
+			int i = random.nextInt(TestUtils.testCaseOptions.length);
+			header[c] = String.valueOf(i) + "__" + TestUtils.testCaseOptions[i];
+			structure[c] = i;
+		}
+
+		final Locale locale = Locale.forLanguageTag("en-US");
+		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", header);
+		final TextAnalyzer template = new TextAnalyzer(context);
+		template.setLocale(locale);
+
+		long totalStart = System.currentTimeMillis();
+		int partition = 0;
+		while (partition < 2 * THREADS) {
+			Future<RecordAnalyzer> future = executor.submit(new AnalysisThread(String.valueOf(partition), template, structure, RECORDS));
+            list.add(future);
+            partition++;
+		}
+
+		RecordAnalyzer aggregator = new RecordAnalyzer(template);
+		long mergeMS = 0;
+		int mergeCount = 0;
+		int completed = 0;
+		while (completed < PARTITIONS) {
+			ListIterator<Future<RecordAnalyzer>> iter = list.listIterator();
+			while (iter.hasNext()) {
+				Future<RecordAnalyzer> future = iter.next();
+				if (future.isDone()) {
+					long mergeStart = System.currentTimeMillis();
+					aggregator = RecordAnalyzer.merge(aggregator, future.get());
+					mergeMS += System.currentTimeMillis() - mergeStart;
+					mergeCount++;
+					iter.remove();
+					if (partition < PARTITIONS) {
+						Future<RecordAnalyzer> newOne = executor.submit(new AnalysisThread(String.valueOf(partition), template, structure, RECORDS));
+						iter.add(newOne);
+						partition++;
+					}
+					completed++;
+					if (completed % 10 == 0)
+						System.err.print(".");
+				}
+			}
+			System.err.print("L");
+			Thread.sleep(100);
+		}
+
+		System.err.printf("\nPartitions %d,  Threads: %d, Cols: %d, Records: %d, Total Time(ms): %d\n",
+				PARTITIONS, THREADS, COLS, RECORDS, System.currentTimeMillis() - totalStart);
+		System.err.printf("\nMerges %d,  Time(ms): %d, Record Average(ms): %d, Field Average(ms): %d\n",
+				mergeCount, mergeMS, mergeMS/mergeCount, mergeMS/(mergeCount*COLS));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })

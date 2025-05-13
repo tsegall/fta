@@ -28,7 +28,6 @@ import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -2944,71 +2943,6 @@ public class RandomTests {
 		}
 	}
 
-	public String[] decoder = {
-			"Integer", "Boolean", "Long", "Double", "Date",
-			"ISO-3166-3", "ISO-3166-2", "ZIP", "US_STATE", "CA_PROVINCE",
-			"US_STREET"
-	};
-
-	public String[] generateTestData(final int type, final int length) {
-		final String[] result = new String[length];
-		final String[] candidatesISO3166_3 = TestUtils.valid3166_3.split("\\|");
-		final String[] candidatesISO3166_2 = TestUtils.valid3166_2.split("\\|");
-		final String[] candidatesZips = TestUtils.validZips.split("\\|");
-		final String[] candidatesUSStates = TestUtils.validUSStates.split("\\|");
-		final String[] candidatesCAProvinces = TestUtils.validCAProvinces.split("\\|");
-
-		for (int i = 0; i < length; i++)
-			switch (type) {
-			case 0:
-				// Integer
-				result[i] = String.valueOf(random.nextInt());
-				break;
-			case 1:
-				// Boolean
-				result[i] = String.valueOf(random.nextBoolean());
-				break;
-			case 2:
-				// Long
-				result[i] = String.valueOf(random.nextLong());
-				break;
-			case 3:
-				// Double
-				result[i] = String.valueOf(random.nextDouble());
-				break;
-			case 4:
-				// Date
-				result[i] = new Date(random.nextLong()).toString();
-				break;
-			case 5:
-				// ISO 3166-3
-				result[i] = candidatesISO3166_3[random.nextInt(candidatesISO3166_3.length)];
-				break;
-			case 6:
-				// ISO 3166-2
-				result[i] = candidatesISO3166_2[random.nextInt(candidatesISO3166_2.length)];
-				break;
-			case 7:
-				// Zip Cpde
-				result[i] = candidatesZips[random.nextInt(candidatesZips.length)];
-				break;
-			case 8:
-				// US State
-				result[i] = candidatesUSStates[random.nextInt(candidatesUSStates.length)];
-				break;
-			case 9:
-				// CA Provinces
-				result[i] = candidatesCAProvinces[random.nextInt(candidatesCAProvinces.length)];
-				break;
-			case 10:
-				// US Street
-				result[i] = TestUtils.validUSStreets[random.nextInt(TestUtils.validUSStreets.length)];
-				break;
-			}
-
-		return result;
-	}
-
 	class AnalysisThread implements Runnable {
 		private final String id;
 		private final int streamType;
@@ -3136,9 +3070,9 @@ public class RandomTests {
 		final Thread[] threads = new Thread[THREADS];
 
 		for (int t = 0; t < THREADS; t++) {
-			final int type = random.nextInt(decoder.length);
+			final int type = random.nextInt(TestUtils.testCaseOptions.length);
 			final int length = 30 + random.nextInt(10000);
-			final String[] stream = generateTestData(type, length);
+			final String[] stream = TestUtils.generateTestStream(type, length);
 
 			final TextAnalyzer analysis = new TextAnalyzer("testThreading");
 			for (final String input : stream)
@@ -3175,9 +3109,9 @@ public class RandomTests {
 
 				final TextAnalyzer analysis = new TextAnalyzer("testThreading");
 				for (int i = 0; i < samples; i++) {
-					final int type = random.nextInt(decoder.length);
+					final int type = random.nextInt(TestUtils.testCaseOptions.length);
 					final int length = 30 + random.nextInt(10000);
-					analysis.train(generateTestData(type, 1)[0]);
+					analysis.train(TestUtils.generateTestStream(type, 1)[0]);
 				}
 
 				final TextAnalysisResult result = analysis.getResult();

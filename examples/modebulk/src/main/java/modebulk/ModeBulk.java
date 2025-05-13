@@ -16,6 +16,7 @@
 package modebulk;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.LogicalType;
@@ -27,6 +28,8 @@ public abstract class ModeBulk {
 	public static void main(final String[] args) throws FTAException {
 
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		analysis.setLocale(Locale.US);
+
 		final Map<String, Long> basic = new HashMap<>();
 
 		basic.put("Male", 2_000_000L);
@@ -50,6 +53,6 @@ public abstract class ModeBulk {
 		System.err.printf("Sample: %s%n", semanticType.nextRandom());
 
 		// Use the plugin to validate a value
-		System.err.printf("IsValid: %s%n", semanticType.isValid("BLUE"));
+		System.err.println("Is 'BLUE' valid? " + semanticType.isValid("BLUE"));
 	}
 }

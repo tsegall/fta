@@ -110,7 +110,7 @@ public class Numeric {
 				// parseInt cannot cope with UTF-8 minus sign, which is used in some locales, so
 				// just skip sign
 				char ch = trimmed.charAt(ret.possibleExponentSeen + 1);
-				if (ch == ni.minusSign || ch == '-' || ch == '+') {
+				if ((ch == ni.minusSign || ch == '-' || ch == '+') && offset + 1 < stopLooking) {
 					offset++;
 					ch = trimmed.charAt(offset);
 				}

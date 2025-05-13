@@ -26,8 +26,10 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Random;
 import java.util.Set;
 
 import org.testng.annotations.Test;
@@ -36,10 +38,11 @@ import com.cobber.fta.core.CircularBuffer;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
-import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.PatternFG;
+import com.cobber.fta.core.RegExpGenerator;
 
 public class TestUtils {
+	private static final Random random = new Random(314159);
 	public final static double EPSILON = 0.00000001;
 
 	protected final static String validZips = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
@@ -134,6 +137,77 @@ public class TestUtils {
 			"32 NW. Rocky River Ave.",
 			"324 North Lancaster Dr."
 	};
+
+	static String[] testCaseOptions = {
+			"Integer", "Boolean", "Long", "Double", "Date",
+			"ISO-3166-3", "ISO-3166-2", "ZIP", "US_STATE", "CA_PROVINCE",
+			"US_STREET"
+	};
+
+	final static String[] candidatesISO3166_3 = TestUtils.valid3166_3.split("\\|");
+	final static String[] candidatesISO3166_2 = TestUtils.valid3166_2.split("\\|");
+	final static String[] candidatesZips = TestUtils.validZips.split("\\|");
+	final static String[] candidatesUSStates = TestUtils.validUSStates.split("\\|");
+	final static String[] candidatesCAProvinces = TestUtils.validCAProvinces.split("\\|");
+
+	static String generateTestStreamValue(final int type) {
+
+		switch (type) {
+		case 0:
+			// Integer
+			return String.valueOf(random.nextInt());
+		case 1:
+			// Boolean
+			return String.valueOf(random.nextBoolean());
+		case 2:
+			// Long
+			return String.valueOf(random.nextLong());
+		case 3:
+			// Double
+			return String.valueOf(random.nextDouble());
+		case 4:
+			// Date
+			return new Date(random.nextLong()).toString();
+		case 5:
+			// ISO 3166-3
+			return candidatesISO3166_3[random.nextInt(candidatesISO3166_3.length)];
+		case 6:
+			// ISO 3166-2
+			return candidatesISO3166_2[random.nextInt(candidatesISO3166_2.length)];
+		case 7:
+			// Zip Cpde
+			return candidatesZips[random.nextInt(candidatesZips.length)];
+		case 8:
+			// US State
+			return candidatesUSStates[random.nextInt(candidatesUSStates.length)];
+		case 9:
+			// CA Provinces
+			return candidatesCAProvinces[random.nextInt(candidatesCAProvinces.length)];
+		case 10:
+			// US Street
+			return TestUtils.validUSStreets[random.nextInt(TestUtils.validUSStreets.length)];
+		default:
+			return "";
+		}
+	}
+
+	static String[] generateTestStream(final int type, final int length) {
+		final String[] result = new String[length];
+
+		for (int i = 0; i < length; i++)
+			result[i] = generateTestStreamValue(type);
+
+		return result;
+	}
+
+	static String[] generateTestRecord(final int[] structure) {
+		final String[] result = new String[structure.length];
+
+		for (int i = 0; i < structure.length; i++)
+			result[i] = generateTestStreamValue(structure[i]);
+
+		return result;
+	}
 
 	static String
 	getNegativePrefix(final Locale locale) {

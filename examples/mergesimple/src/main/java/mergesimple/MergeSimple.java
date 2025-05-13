@@ -70,7 +70,7 @@ public abstract class MergeSimple {
 		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOneAnalyzer.serialize());
 		// Note we must set the totalCount on the analyzer pre-merge
 		final TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
-		hydratedOne.setTotalCount(SAMPLE_COUNT);
+		hydratedOne.setTotalCount(SAMPLE_COUNT + 2);
 		hydratedOne.setTotalNullCount(hydratedOneResult.getNullCount());
 
 		final TextAnalyzer shardTwoAnalyzer = new TextAnalyzer("issue124");
@@ -92,7 +92,11 @@ public abstract class MergeSimple {
 		final long totalNullCount = mergedResult.getTotalNullCount();
 
 		System.err.printf("Merged - Type: %s (samples: %d, total: %d, nulls: %d, total nulls: %d)%n", mergedResult.getType(), sampleCount, totalCount, nullCount, totalNullCount);
-		if (sampleCount != 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 4 * 10 + 2 || totalCount != 2 * SAMPLE_COUNT + 2)
-			System.err.printf("ERROR - in sampleCount or totalCount");
+		if (sampleCount != 2 * AnalysisConfig.MAX_CARDINALITY_DEFAULT + 4 * 10 + 2)
+			System.err.printf("ERROR - in sampleCount (%d)\n", sampleCount);
+
+		// ShardOne has SAMPLE_COUNT + 2 nulls, ShardTwo has SAMPLE_COUNT
+		if (totalCount != 2 * SAMPLE_COUNT + 2)
+			System.err.printf("ERROR - in totalCount (%d)\n", totalCount);
 	}
 }

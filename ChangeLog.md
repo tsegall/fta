@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 16.2.3
+ - ENH: Improve performance of TextAnalyzer.merge()
+ - BUG: Fix NPE if we see something that looks like '0.9320E-'
+ - INT: Add some setLocale() calls so that the examples run happily in any locale
+ - INT: Bump guava to 33.4.8-jre, google phonenumber to 9.0.5, commons-text to 1.13.1, jackson to 2.19.0, gradle to 8.14
+
 ### 16.2.2
  - INT: Add test to check out bugs in TextAnalyzer.merge() (issues fixed in 16.2.1)
 

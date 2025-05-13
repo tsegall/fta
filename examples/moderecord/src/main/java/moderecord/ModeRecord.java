@@ -15,6 +15,8 @@
  */
 package moderecord;
 
+import java.util.Locale;
+
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.RecordAnalysisResult;
 import com.cobber.fta.RecordAnalyzer;
@@ -38,6 +40,7 @@ public abstract class ModeRecord {
 
 		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", headers );
 		final TextAnalyzer template = new TextAnalyzer(context);
+		template.setLocale(Locale.US);
 
 		final RecordAnalyzer analysis = new RecordAnalyzer(template);
 		for (final String [] name : names)
