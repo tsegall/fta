@@ -76,14 +76,12 @@ public class HistogramSPDT {
 		this.stringConverter = toCopy.stringConverter;
 		this.maxBins = toCopy.maxBins;
 		this.observed = toCopy.observed;
-		this.random = new Random(3141592);
 	}
 
 	HistogramSPDT(final StringConverter stringConverter, final int maxBins) {
 		this.bins = new ArrayList<>();
 		this.stringConverter = stringConverter;
 		this.maxBins = maxBins;
-		this.random = new Random(3141592);
 	}
 
 	/**
@@ -158,6 +156,9 @@ public class HistogramSPDT {
 	 * hence only removing one entry but also used post merge to collapse two sets of bins into one.
 	 */
 	private void trim() {
+		if (random == null)
+			random = new Random(3141592);
+
 		while (bins.size() > maxBins) {
 			double delta = Double.MAX_VALUE;
 			int index = -1;

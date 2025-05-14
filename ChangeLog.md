@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 16.2.4
+ - BUG: Fix NPE when HistogramSPDT is serialized/deserialized (Issue #131)
+
 ### 16.2.3
  - ENH: Improve performance of TextAnalyzer.merge()
  - BUG: Fix NPE if we see something that looks like '0.9320E-'
