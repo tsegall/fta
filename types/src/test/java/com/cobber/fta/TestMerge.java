@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2024 Tim Segall
+ * Copyright 2017-2025 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1604,9 +1604,9 @@ public class TestMerge {
 		}
 	}
 
-// SLOWpwd	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+//	SLOW@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testThreading() throws IOException, FTAException, FTAException, InterruptedException, ExecutionException {
-		final int THREADS = 15;
+		final int THREADS = 18;
 		final int PARTITIONS = 100;
 		final int COLS = 20;
 		final int RECORDS = 100000;

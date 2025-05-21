@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2024 Tim Segall
+ * Copyright 2017-2025 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.AnalysisConfig.TrainingMode;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
@@ -73,8 +74,10 @@ public class Replay {
 	static void replay(final String replayFile, final DriverOptions options) {
 		final ObjectMapper mapper = new ObjectMapper();
 		try (InputStream in = new FileInputStream(replayFile); JsonParser parser = new JsonFactory().createParser(in)) {
+			// Read the AnalysisConfig from the trace file
 			final AnalysisConfigWrapper configWrapper = mapper.readValue(parser, AnalysisConfigWrapper.class);
 			final AnalysisConfig analysisConfig = configWrapper.analysisConfig;
+			// Read the AnalyzerContext from the trace file
 			final AnalyzerContextWrapper contextWrapper = mapper.readValue(parser, AnalyzerContextWrapper.class);
 			final AnalyzerContext analyzerContext = contextWrapper.analyzerContext;
 
@@ -86,7 +89,8 @@ public class Replay {
 				System.err.printf("NO samples present in input file (%s).%n", replayFile);
 				System.exit(1);
 			}
-			final boolean bulkMode = samplesWrapper.samplesBulk != null;
+
+			final TrainingMode trainingMode = analysisConfig.getTrainingMode();
 
 			// Create a TextAnalyzer using the Context retrieved from the Trace file
 			final TextAnalyzer analyzer = new TextAnalyzer(analyzerContext);
@@ -107,9 +111,26 @@ public class Replay {
 
 			analyzer.setDebug(options.debug);
 
-			final TextAnalysisResult result = bulkMode ?
-				processBulk(analyzer, samplesWrapper.samplesBulk, options) :
-				process(analyzer, samplesWrapper.samples, options);
+			// Even in Bulk Mode there are a set of samples used to initially train
+			process(analyzer, samplesWrapper.samples, options);
+
+			// If we trained in Bulk Mode then there should be an additional set of Bulk samples
+			if (trainingMode == TrainingMode.BULK) {
+				try {
+					samplesWrapper = mapper.readValue(parser, SamplesWrapper.class);
+				} catch (IOException e) {
+					System.err.printf("NO bulk samples present in input file (%s).%n", replayFile);
+					System.exit(1);
+				}
+				processBulk(analyzer, samplesWrapper.samplesBulk, options);
+			}
+
+			TextAnalysisResult result = null;
+			try {
+				result = analyzer.getResult();
+			} catch (FTAPluginException | FTAUnsupportedLocaleException e) {
+				e.printStackTrace();
+			}
 
 			if (result != null)
 				System.err.printf("Field '%s' - %s%n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
@@ -122,28 +143,24 @@ public class Replay {
 		}
 	}
 
-	static TextAnalysisResult processBulk(final TextAnalyzer analyzer, final BulkEntry[] samples, final DriverOptions options) {
+	private static void processBulk(final TextAnalyzer analyzer, final BulkEntry[] samples, final DriverOptions options) {
 		final Map<String, Long> observed = new HashMap<>();
 		for (final BulkEntry sample : samples)
 			observed.put(sample.value, sample.count);
 
 		try {
 			analyzer.trainBulk(observed);
-			return analyzer.getResult();
 		} catch (FTAPluginException | FTAUnsupportedLocaleException e) {
 			e.printStackTrace();
-			return null;
 		}
 	}
 
-	static TextAnalysisResult process(final TextAnalyzer analyzer, final String[] samples, final DriverOptions options) {
+	private static void process(final TextAnalyzer analyzer, final String[] samples, final DriverOptions options) {
 		try {
 			for (final String sample : samples)
 				analyzer.train(sample);
-			return analyzer.getResult();
 		} catch (FTAPluginException | FTAUnsupportedLocaleException e) {
 			e.printStackTrace();
-			return null;
 		}
 	}
 }

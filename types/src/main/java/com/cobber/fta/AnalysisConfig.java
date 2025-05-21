@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2024 Tim Segall
+ * Copyright 2017-2025 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,9 +127,9 @@ public class AnalysisConfig {
 	private boolean nullTextAsNull = true;
 
 	public enum TrainingMode {
-		/** Training is doing via train() - i.e. one sample at a time. */
+		/** Training is being done via train() - i.e. one sample at a time. */
 		SIMPLE,
-		/** Training is doing via trainBulk() - i.e. a set of samples and an associated count. */
+		/** Training is being done via trainBulk() - i.e. a set of samples and an associated count. */
 		BULK,
 		/** Training mode is initially unset and will be set on the first call to train() or trainBulk(). */
 		UNSET

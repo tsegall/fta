@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2024 Tim Segall
+ * Copyright 2017-2025 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1432,9 +1432,6 @@ public class TextAnalyzer {
 		// Sort so we have the most frequent first
 		final Map<String, Long> observed = Utils.sortByValue(input);
 
-		if (traceConfig != null)
-			traceConfig.recordBulk(observed);
-
 		// Strip out the uninteresting entries (i.e. nulls and blanks)
 		final Map<String, Long> uninteresting = new HashMap<>();
 		final Iterator<Entry<String, Long>> it = observed.entrySet().iterator();
@@ -1477,11 +1474,20 @@ public class TextAnalyzer {
 			}
 		}
 
+		final Map<String, Long> bulkObservations = new HashMap<>();
+
 		// Now send in the balance of the interesting samples in bulk
 		for (final Observation fact : facts) {
 			final long remaining = fact.count - fact.used;
+			bulkObservations.put(fact.observed, remaining);
 			if (remaining != 0)
 				trainBulkCore(fact.observed, remaining);
+		}
+
+		// We need to close out the random samples we sent in above and record the bulk observations
+		if (traceConfig != null) {
+			traceConfig.persistSamples();
+			traceConfig.recordBulk(bulkObservations);
 		}
 
 		// Now send in the uninteresting elements
@@ -1543,7 +1549,7 @@ public class TextAnalyzer {
 				invalid.put(key, entry.getValue());
 		}
 
-		// Now process the invalid entres
+		// Now process the invalid entries
 		for (Map.Entry<String, Long> entry : invalid.entrySet())
 			trainBulkCore(entry.getKey(), entry.getValue());
 
@@ -3708,6 +3714,12 @@ public class TextAnalyzer {
 		first.emptyCache();
 		second.emptyCache();
 		final TextAnalyzer ret = new TextAnalyzer(first.context);
+
+		// We are merging two analyzers (assume they will not be used again - so persist the samples)
+		if (first.traceConfig != null)
+			first.traceConfig.persistSamples();
+		if (second.traceConfig != null)
+			second.traceConfig.persistSamples();
 
 		if (!first.analysisConfig.equals(second.analysisConfig))
 			throw new FTAMergeException("The AnalysisConfig for both TextAnalyzers must be identical.");

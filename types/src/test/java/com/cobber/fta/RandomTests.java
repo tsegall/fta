@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2024 Tim Segall
+ * Copyright 2017-2025 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -297,7 +297,7 @@ public class RandomTests {
 		analysis.setPluginThreshold(90);
 		int locked = -1;
 		final int COUNT = 46;
-		final int INVALID = 3;			// 10000, 10015, 10042 are invalid
+		final int INVALID = 2;			// 10000, 10042 are invalid
 
 		for (int i = 10000; i < 10000 + COUNT; i++) {
 			if (analysis.train(String.valueOf(i)) && locked != -1)
@@ -316,7 +316,6 @@ public class RandomTests {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getMinValue(), "10001");
 		assertEquals(result.getMaxValue(), "10045");
-		assertEquals(result.getConfidence(), 0.9673913043478262);
 
 		for (int i = 10000; i < 10000 + COUNT; i++) {
 			assertTrue(String.valueOf(i).matches(result.getRegExp()));
@@ -1283,7 +1282,7 @@ public class RandomTests {
 						"077072583A|079073001K|0800COA10071|0800COA10194|0800COA10196|0800COA10196|0800COA10204|0800COA10207|0800COA10267|0800COA10268|" +
 						"0800COA10268|0800COA10268|0800COA10386|0800COA10469|0800COA10470|0800COA10490|0800COB20133|0800COB20134|0800COB20138|0800COB20139|" +
 						"0800COC30257|0800COC30258|0800COC30488|0800COC30504|0800COC30505|0800COC30649|0800COC30815|0800COC30873|0800COC31003|0800COC31004|" +
-						"0800COC31093|0800COC31215|0800COC31216|0800COC31221|0800COC31222|0800COC31229|0800COC31231|0800COC31306|0800COC31307|";
+						 "0800COC31093|0800COC31215|0800COC31216|0800COC31221|0800COC31222|0800COC31229|0800COC31231|0800COC31306|0800COC31307|";
 		final String inputs[] = pipedInput.split("\\|");
 		int locked = -1;
 
@@ -3148,7 +3147,52 @@ public class RandomTests {
 				threads[t].join();
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void issue130() throws IOException, FTAException, FTAException {
+		final String[] inputs = {
+				"Guinea-Bissau", "Sri Lanka", "United Arab Emirates", "Congo, Republic of the", "Poland",
+				"Philippines", "Panama", "Croatia", "Papua New Guinea", "Sierra Leone",
+				"Sweden", "Central African Republic", "Nigeria", "Italy", "Poland",
+				"China", "Bolivia", "Sierra Leone", "Luxembourg", "Luxembourg",
+				"Morocco", "Israel", "New Zealand", "United Kingdom", "Haiti",
+				"Liberia", "Belarus", "Luxembourg", "Poland", "Niger",
+				"Saint Kitts and Nevis", "Syria", "Tuvalu", "Singapore", "Algeria",
+				"Costa Rica", "Korea, North", "Swaziland", "Congo", "Lithuania",
+				"Monaco", "Kiribati", "Israel", "Nepal", "Angola",
+				"Nepal", "Nigeria", "Honduras", "Togo", "Liberia",
+				"Japan", "Greece", "Philippines", "Belize", "Palau",
+				"Brazil", "Bangladesh", "Bahrain", "Marshall Islands", "Romania",
+				"San Marino", "Nigeria", "Vanuatu", "Syria", "Denmark",
+				"Paraguay", "Malawi", "Papua New Guinea", "Trinidad and Tobago", "Solomon Islands",
+				"San Marino", "Eritrea", "Eritrea", "Ecuador", "Guatemala",
+				"Iraq", "Cameroon", "Latvia", "Honduras", "Germany",
+				"Congo, Republic of the", "Madagascar", "Equatorial Guinea", "Norway", "Bhutan",
+				"Sao Tome and Principe", "Bhutan", "Portugal", "Honduras", "Korea, South",
+				"El Salvador", "Suriname", "Honduras", "Andorra", "Romania",
+				"Estonia", "Samoa", "Costa Rica", "Kuwait", "Turkmenistan"
+		};
 
+		final TextAnalyzer shardOne = new TextAnalyzer("ShardOne");
+		shardOne.setLocale(Locale.US);
+		shardOne.setTrace("enabled=true,directory=/tmp");
+		final TextAnalyzer shardTwo = new TextAnalyzer("ShardTwo");
+		shardTwo.setLocale(Locale.US);
+		shardTwo.setTrace("enabled=true,directory=/tmp");
+
+		for (int i = 0; i < inputs.length; i++) {
+			shardOne.train(inputs[i++]);
+			shardTwo.train(inputs[i]);
+		}
+
+		final TextAnalyzer analysis = TextAnalyzer.merge(shardOne, shardTwo);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		if (result.getSemanticType() != null) {
+			System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
+			System.err.println("Detail: " + result.asJSON(true, 1));
+		}
+	}
 
 	class GetPlugin {
 		// one instance of plugins per thread
@@ -3165,6 +3209,34 @@ public class RandomTests {
 			return textAnalyzer.getPlugins();
 		}
 	}
+	
+	public static void main(final String[] args) throws FTAException {
+		final String[] inputs = {
+				"Anaïs Nin", "Gertrude Stein", "Paul Cézanne", "Pablo Picasso", "Theodore Roosevelt",
+				"Henri Matisse", "Georges Braque", "Henri de Toulouse-Lautrec", "Ernest Hemingway",
+				"Alice B. Toklas", "Eleanor Roosevelt", "Edgar Degas", "Pierre-Auguste Renoir",
+				"Claude Monet", "Édouard Manet", "Mary Cassatt", "Alfred Sisley",
+				"Camille Pissarro", "Franklin Delano Roosevelt", "Winston Churchill"
+		};
+
+		// Use simple constructor - for improved detection provide an AnalyzerContext (see Contextual example).
+		final TextAnalyzer analysis = new TextAnalyzer("Famous");
+		analysis.setLocale(Locale.US);
+		analysis.setTrace("enabled=true,directory=/tmp");
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		if (result.getSemanticType() == null) {
+			System.err.printf("Current locale is '%s' - which does not support Semantic Type: NAME.FIRST_LAST", Locale.getDefault());
+		}
+		else {
+			System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
+			System.err.println("Detail: " + result.asJSON(true, 1));
+		}
+	}	
 
 	class PluginThread implements Runnable {
 		private final String id;

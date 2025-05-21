@@ -2,6 +2,11 @@
 ## Changes ##
 
 ### 16.2.4
+ - ENH: Refresh US postal codes
+ - BUG: Trace files are not correct when Merging (Issue #130)
+ - INT: Update Copyright
+
+### 16.2.4
  - BUG: Fix NPE when HistogramSPDT is serialized/deserialized (Issue #131)
 
 ### 16.2.3

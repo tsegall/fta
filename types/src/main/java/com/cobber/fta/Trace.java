@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2024 Tim Segall
+ * Copyright 2017-2025 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.UUID;
 
 import com.cobber.fta.core.TraceException;
 import com.fasterxml.jackson.core.io.JsonStringEncoder;
@@ -82,7 +83,7 @@ public class Trace {
 			traceDirectory = System.getProperty("java.io.tmpdir");
 
 		try {
-			String filename = "";
+			String filename = UUID.randomUUID().toString() + "_";
 			if (context.getCompositeName() != null)
 				filename += context.getCompositeName() + "_";
 			// Constrain it to the first 1000 characters just in case the stream name is really silly!
@@ -171,6 +172,19 @@ public class Trace {
 			traceWriter.write("\n]\n}\n");
 		} catch (IOException e) {
 			throw new TraceException("Cannot write bulk samples to trace file", e);
+		}
+	}
+
+	public void persistSamples() {
+		// Close out the Samples seen to date
+		try {
+			if (batchCount != 0) {
+				traceWriter.write(" ]\n}\n");
+				batchCount = 0;
+			}
+			traceWriter.flush();
+		} catch (IOException e) {
+			throw new TraceException("Cannot write analysis result to trace file", e);
 		}
 	}
 
