@@ -188,6 +188,16 @@ public class Trace {
 		}
 	}
 
+	public void tag(final String tag, long sampleCount) {
+		try {
+			String output = String.format("{\"tag\": { \"name\": \"%s\", \"sampleCount\": %d, \"time\": %d } }\n", tag, sampleCount, System.currentTimeMillis());
+			traceWriter.write(output);
+			traceWriter.flush();
+		} catch (IOException e) {
+			throw new TraceException("Cannot write analysis result to trace file", e);
+		}
+	}
+
 	/**
 	 * Record the result of the analysis.
 	 * @param result The TextAnalysisResult that captures the analysis.

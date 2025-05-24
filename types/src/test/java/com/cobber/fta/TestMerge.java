@@ -45,6 +45,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
+import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
@@ -1604,12 +1605,71 @@ public class TestMerge {
 		}
 	}
 
-//	SLOW@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testSampleCountBelowCardinalityOverlapping() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+		final int SAMPLES = 100;
+
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		for (int i = 0; i < SAMPLES; i++)
+			shardOne.train(String.valueOf(i));
+
+		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		for (int i = 0; i < SAMPLES; i++)
+			shardTwo.train(String.valueOf(i));
+
+		final TextAnalyzer aggregator = new TextAnalyzer("aggregator");
+		final TextAnalyzer intermediate = TextAnalyzer.merge(aggregator, shardOne);
+		final TextAnalyzer merged = TextAnalyzer.merge(intermediate, shardTwo);
+		final TextAnalysisResult result = merged.getResult();
+
+		assertEquals(result.getSampleCount(), SAMPLES * 2);
+	}
+
+//BUG	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testDoubleMerge() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+		final double d = 0.0013345770133702528;
+
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		shardOne.train(String.valueOf(d));
+
+		final TextAnalyzer aggregator = new TextAnalyzer("aggregator");
+		final TextAnalyzer merged = TextAnalyzer.merge(aggregator, shardOne);
+		final TextAnalysisResult result = merged.getResult();
+
+		assertEquals(result.getSampleCount(), 1);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testSampleCountBelowCardinalityNonOverlapping() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+		final int SAMPLES = 100;
+
+		final TextAnalyzer otherNodeOne = new TextAnalyzer("otherNodeOne");
+		otherNodeOne.setTrace("enabled=true,directory=/tmp");
+		for (int i = 0; i < SAMPLES; i++)
+			otherNodeOne.train(String.valueOf(i));
+		final TextAnalyzer shardOne = TextAnalyzer.deserialize(otherNodeOne.serialize());
+
+		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+		shardTwo.setTrace("enabled=true,directory=/tmp");
+		for (int i = SAMPLES; i < SAMPLES * 2; i++)
+			shardTwo.train(String.valueOf(i));
+
+		TextAnalyzer aggregator = new TextAnalyzer("aggregator");
+		aggregator.setTrace("enabled=true,directory=/tmp");
+		aggregator = TextAnalyzer.merge(aggregator, shardOne);
+		aggregator = TextAnalyzer.merge(aggregator, shardTwo);
+
+		final TextAnalysisResult result = aggregator.getResult();
+
+		assertEquals(result.getSampleCount(), SAMPLES * 2);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testThreading() throws IOException, FTAException, FTAException, InterruptedException, ExecutionException {
 		final int THREADS = 18;
 		final int PARTITIONS = 100;
-		final int COLS = 20;
-		final int RECORDS = 100000;
+		final int COLS = 1;
+		final int RECORDS = 10;
 
 		ExecutorService executor = Executors.newFixedThreadPool(THREADS);
 		List<Future<RecordAnalyzer>> list = new ArrayList<Future<RecordAnalyzer>>();
@@ -1617,7 +1677,7 @@ public class TestMerge {
 		final String[] header = new String[COLS];
 		final int[] structure = new int[COLS];
 		for (int c = 0; c < COLS; c++) {
-			int i = random.nextInt(TestUtils.testCaseOptions.length);
+			int i = c == 0 ? 3 : random.nextInt(TestUtils.testCaseOptions.length);
 			header[c] = String.valueOf(i) + "__" + TestUtils.testCaseOptions[i];
 			structure[c] = i;
 		}
@@ -1626,6 +1686,7 @@ public class TestMerge {
 		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", header);
 		final TextAnalyzer template = new TextAnalyzer(context);
 		template.setLocale(locale);
+		template.setTrace("enabled=true,directory=/tmp");
 
 		long totalStart = System.currentTimeMillis();
 		int partition = 0;
@@ -1645,7 +1706,11 @@ public class TestMerge {
 				Future<RecordAnalyzer> future = iter.next();
 				if (future.isDone()) {
 					long mergeStart = System.currentTimeMillis();
-					aggregator = RecordAnalyzer.merge(aggregator, future.get());
+					final RecordAnalyzer processed = future.get();
+					System.err.printf("Processed: %d, aggregator: %d\n",
+							processed.getAnalyzer(0).getFacts().getSampleCount(),
+							aggregator.getAnalyzer(0).getFacts().getSampleCount());
+					aggregator = RecordAnalyzer.merge(aggregator, processed);
 					mergeMS += System.currentTimeMillis() - mergeStart;
 					mergeCount++;
 					iter.remove();
@@ -1661,6 +1726,12 @@ public class TestMerge {
 			}
 			System.err.print("L");
 			Thread.sleep(100);
+		}
+
+		final TextAnalyzer[] analyzers = aggregator.getAnalyzers();
+		for (int i = 0; i < analyzers.length; i++) {
+			TextAnalysisResult result = analyzers[i].getResult();
+			System.err.printf("result = %s\n", result.asJSON(true, 0));
 		}
 
 		System.err.printf("\nPartitions %d,  Threads: %d, Cols: %d, Records: %d, Total Time(ms): %d\n",

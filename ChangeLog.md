@@ -1,7 +1,12 @@
 
 ## Changes ##
 
-### 16.2.4
+### 16.2.6
+ - BUG: Not really an issue but don't add 0 entries to bulk map for recording
+ - INT: Improve trace logging
+ - INT: Bump springframework.boot to 3.5.0, gradle to 8.14.1
+
+### 16.2.5
  - ENH: Refresh US postal codes
  - BUG: Trace files are not correct when Merging (Issue #130)
  - INT: Update Copyright

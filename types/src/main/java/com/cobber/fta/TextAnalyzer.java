@@ -1479,9 +1479,10 @@ public class TextAnalyzer {
 		// Now send in the balance of the interesting samples in bulk
 		for (final Observation fact : facts) {
 			final long remaining = fact.count - fact.used;
-			bulkObservations.put(fact.observed, remaining);
-			if (remaining != 0)
+			if (remaining != 0) {
+				bulkObservations.put(fact.observed, remaining);
 				trainBulkCore(fact.observed, remaining);
+			}
 		}
 
 		// We need to close out the random samples we sent in above and record the bulk observations
@@ -3284,8 +3285,10 @@ public class TextAnalyzer {
 		if (result == null)
 			result = new TextAnalysisResult(context.getStreamName(), facts.calculateFacts(), context.getDateResolutionMode(), analysisConfig, tokenStreams);
 
-		if (traceConfig != null)
+		if (traceConfig != null) {
 			traceConfig.recordResult(result, internalErrors);
+			traceConfig.tag("getResult", getFacts().getSampleCount());
+		}
 
 		return result;
 	}
@@ -3664,6 +3667,12 @@ public class TextAnalyzer {
 
 		final TextAnalyzerWrapper wrapper = new TextAnalyzerWrapper(analysisConfig, context, facts.calculateFacts());
 
+		// We are serializing the analyzer (assume it will not be used again - so persist the samples)
+		if (traceConfig != null) {
+			traceConfig.persistSamples();
+			traceConfig.tag("serialize", facts.sampleCount);
+		}
+
 		try {
 			return serializationMapper.writeValueAsString(serializationMapper.convertValue(wrapper, JsonNode.class));
 		} catch (IOException e) {
@@ -3693,6 +3702,9 @@ public class TextAnalyzer {
 			ret.initialize(wrapper.analysisConfig.getTrainingMode());
 			ret.facts.hydrate();
 
+			if (ret.traceConfig != null)
+				ret.traceConfig.tag("deserialize", ret.facts.sampleCount);
+
 			return ret;
 		} catch (JsonProcessingException e) {
 			throw new FTAMergeException("Issue deserializing supplied JSON.", e);
@@ -3716,10 +3728,14 @@ public class TextAnalyzer {
 		final TextAnalyzer ret = new TextAnalyzer(first.context);
 
 		// We are merging two analyzers (assume they will not be used again - so persist the samples)
-		if (first.traceConfig != null)
+		if (first.traceConfig != null) {
 			first.traceConfig.persistSamples();
-		if (second.traceConfig != null)
+			first.traceConfig.tag("merge.left", first.getFacts().getSampleCount());
+		}
+		if (second.traceConfig != null) {
 			second.traceConfig.persistSamples();
+			second.traceConfig.tag("merge.right", first.getFacts().getSampleCount());
+		}
 
 		if (!first.analysisConfig.equals(second.analysisConfig))
 			throw new FTAMergeException("The AnalysisConfig for both TextAnalyzers must be identical.");
