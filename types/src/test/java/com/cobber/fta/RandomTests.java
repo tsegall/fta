@@ -3179,24 +3179,20 @@ public class RandomTests {
 			RHS.train(input);
 		String jsonRHS = RHS.serialize();
 		final TextAnalyzer hydratedRHS = TextAnalyzer.deserialize(jsonRHS);
-// THIS LINE CAUSES THE ISSUE		final TextAnalysisResult resultRHS_WHY = hydratedRHS.getResult();
-//		final TextAnalysisResult resultRHS_WHY_WHY = hydratedRHS.getResult();
-//		final TextAnalysisResult resultRHS_WHY_WHY_WHY = hydratedRHS.getResult();
+		final TextAnalysisResult resultRHS_WHY = hydratedRHS.getResult();
+		final TextAnalysisResult resultRHS_WHY_WHY = hydratedRHS.getResult();
+		final TextAnalysisResult resultRHS_WHY_WHY_WHY = hydratedRHS.getResult();
 
 		final TextAnalyzer LHS = new TextAnalyzer("Left");
 		LHS.setLocale(Locale.forLanguageTag("en_IN"));
 		LHS.setTrace("enabled=true,directory=/tmp");
-//		final TextAnalysisResult resultLHS_WHY = LHS.getResult();
+		final TextAnalysisResult resultLHS_WHY = LHS.getResult();
 
 		final TextAnalyzer merged = TextAnalyzer.merge(LHS, hydratedRHS);
 
 		final TextAnalysisResult result = merged.getResult();
 
-		if (result.getSemanticType() != null) {
-			System.err.println("Detail: " + result.asJSON(true, 1));
-			System.err.printf("Semantic Type: %s (%s), count = %d, %n",
-					result.getSemanticType(), result.getType(), result.getSampleCount());
-		}
+		assertEquals(result.getSampleCount(), inputs.length);
 	}
 
 	class GetPlugin {

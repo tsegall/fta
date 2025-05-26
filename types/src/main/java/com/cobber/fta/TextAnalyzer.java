@@ -3766,8 +3766,10 @@ public class TextAnalyzer {
 		merged.putAll(firstFacts.outliers);
 		merged.putAll(firstFacts.invalid);
 		// Preserve the top and bottom values - even if they were not captured in the cardinality set
-		addToMap(merged, firstFacts.topK, first);
-		addToMap(merged, firstFacts.bottomK, first);
+		if (firstFacts.cardinality.size() >= first.getMaxCardinality()) {
+			addToMap(merged, firstFacts.topK, first);
+			addToMap(merged, firstFacts.bottomK, first);
+		}
 
 		// Merge in the second set
 		final Facts secondFacts = second.facts.calculateFacts();
@@ -3796,8 +3798,10 @@ public class TextAnalyzer {
 				merged.put(entry.getKey(), seen + entry.getValue());
 		}
 		// Preserve the top and bottom values - even if they were not captured in the cardinality set
-		addToMap(merged, secondFacts.topK, second);
-		addToMap(merged, secondFacts.bottomK, second);
+		if (secondFacts.cardinality.size() >= second.getMaxCardinality()) {
+			addToMap(merged, secondFacts.topK, second);
+			addToMap(merged, secondFacts.bottomK, second);
+		}
 		ret.trainBulk(merged);
 
 		ret.facts.nullCount = firstFacts.nullCount + secondFacts.nullCount;
@@ -3979,7 +3983,7 @@ public class TextAnalyzer {
 			if (e == null)
 				return;
 			// If we already have it in the merged set then we are done
-			if (merged.get(e) != null)
+			if (merged.get(e.toUpperCase(analyzer.getConfig().getLocale())) != null)
 				continue;
 			final Object extreme = analyzer.facts.getStringConverter().getValue(e);
 			if (extreme == null)
