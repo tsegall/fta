@@ -582,6 +582,10 @@ All tests and coverage
 
 `$ ./gradlew test jacocoTestReport`
 
+All the examples
+
+`$ ./gradlew examples.clean examples.build examples.run`
+
 Just the dates tests
 
 `$ ./gradlew test -Dgroups=dates`

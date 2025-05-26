@@ -1625,6 +1625,17 @@ public class TestMerge {
 		assertEquals(result.getSampleCount(), SAMPLES * 2);
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void testTrace_1() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+		shardOne.setTrace("enabled=true,directory=/tmp");
+		final TextAnalyzer hydrated = TextAnalyzer.deserialize(shardOne.serialize());
+		final TextAnalyzer rehydrated = TextAnalyzer.deserialize(hydrated.serialize());
+
+		final TextAnalysisResult result = rehydrated.getResult();
+		assertEquals(result.getSampleCount(), 0);
+	}
+
 //BUG	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testDoubleMerge() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
 		final double d = 0.0013345770133702528;

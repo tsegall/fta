@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 16.2.7
+ - INT: Improve trace logging (save information during serialize even if no training has occurred)
+ - INT: Bump google phonenumber to 9.0.6
+
 ### 16.2.6
  - BUG: Not really an issue but don't add 0 entries to bulk map for recording
  - INT: Improve trace logging

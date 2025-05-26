@@ -3172,25 +3172,30 @@ public class RandomTests {
 				"Estonia", "Samoa", "Costa Rica", "Kuwait", "Turkmenistan"
 		};
 
-		final TextAnalyzer shardOne = new TextAnalyzer("ShardOne");
-		shardOne.setLocale(Locale.US);
-		shardOne.setTrace("enabled=true,directory=/tmp");
-		final TextAnalyzer shardTwo = new TextAnalyzer("ShardTwo");
-		shardTwo.setLocale(Locale.US);
-		shardTwo.setTrace("enabled=true,directory=/tmp");
+		final TextAnalyzer RHS = new TextAnalyzer("Right");
+		RHS.setLocale(Locale.forLanguageTag("en_IN"));
+		RHS.setTrace("enabled=true,directory=/tmp");
+		for (final String input : inputs)
+			RHS.train(input);
+		String jsonRHS = RHS.serialize();
+		final TextAnalyzer hydratedRHS = TextAnalyzer.deserialize(jsonRHS);
+// THIS LINE CAUSES THE ISSUE		final TextAnalysisResult resultRHS_WHY = hydratedRHS.getResult();
+//		final TextAnalysisResult resultRHS_WHY_WHY = hydratedRHS.getResult();
+//		final TextAnalysisResult resultRHS_WHY_WHY_WHY = hydratedRHS.getResult();
 
-		for (int i = 0; i < inputs.length; i++) {
-			shardOne.train(inputs[i++]);
-			shardTwo.train(inputs[i]);
-		}
+		final TextAnalyzer LHS = new TextAnalyzer("Left");
+		LHS.setLocale(Locale.forLanguageTag("en_IN"));
+		LHS.setTrace("enabled=true,directory=/tmp");
+//		final TextAnalysisResult resultLHS_WHY = LHS.getResult();
 
-		final TextAnalyzer analysis = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalyzer merged = TextAnalyzer.merge(LHS, hydratedRHS);
 
-		final TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = merged.getResult();
 
 		if (result.getSemanticType() != null) {
-			System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
 			System.err.println("Detail: " + result.asJSON(true, 1));
+			System.err.printf("Semantic Type: %s (%s), count = %d, %n",
+					result.getSemanticType(), result.getType(), result.getSampleCount());
 		}
 	}
 

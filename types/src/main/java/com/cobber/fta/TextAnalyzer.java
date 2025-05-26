@@ -1349,16 +1349,6 @@ public class TextAnalyzer {
 				.withNoAbbreviationPunctuation(analysisConfig.isEnabled(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION))
 				.withEnglishAMPM(analysisConfig.isEnabled(TextAnalyzer.Feature.ALLOW_ENGLISH_AMPM));
 
-		// If no trace options already set then pick them up from the environment (if set)
-		if (analysisConfig.getTraceOptions() == null) {
-			final String ftaTrace = System.getenv("FTA_TRACE");
-			if (ftaTrace != null && !ftaTrace.isEmpty())
-				analysisConfig.setTraceOptions(ftaTrace);
-		}
-
-		if (analysisConfig.getTraceOptions() != null)
-			traceConfig = new Trace(analysisConfig.getTraceOptions(), context,  analysisConfig);
-
 		// Now that we have initialized these facts cannot change, so set them on the Facts object
 		this.facts.setConfig(analysisConfig);
 
@@ -1371,8 +1361,19 @@ public class TextAnalyzer {
 		memoryDebug("initialize.exit");
 	}
 
-	private void
-	updateNumericPattern(final Escalation escalation, final SignStatus signStatus, final int numericDecimalSeparators, final int possibleExponentSeen, final boolean nonLocalizedDouble) {
+	private void initializeTrace() {
+		// If no trace options already set then pick them up from the environment (if set)
+		if (analysisConfig.getTraceOptions() == null) {
+			final String ftaTrace = System.getenv("FTA_TRACE");
+			if (ftaTrace != null && !ftaTrace.isEmpty())
+				analysisConfig.setTraceOptions(ftaTrace);
+		}
+
+		if (analysisConfig.getTraceOptions() != null)
+			traceConfig = new Trace(analysisConfig.getTraceOptions(), context,  analysisConfig);
+	}
+
+	private void updateNumericPattern(final Escalation escalation, final SignStatus signStatus, final int numericDecimalSeparators, final int possibleExponentSeen, final boolean nonLocalizedDouble) {
 		if (signStatus == SignStatus.TRAILING_MINUS)
 			escalation.typeInfo = knownTypes.getByID(numericDecimalSeparators == 1  ? KnownTypes.ID.ID_SIGNED_DOUBLE_TRAILING : KnownTypes.ID.ID_SIGNED_LONG_TRAILING);
 		else {
@@ -1425,6 +1426,7 @@ public class TextAnalyzer {
 	public void trainBulk(final Map<String, Long> input) throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Initialize if we have not already done so
 		if (!initialized) {
+			initializeTrace();
 			initialize(AnalysisConfig.TrainingMode.BULK);
 			trainingStarted = true;
 		}
@@ -1569,6 +1571,7 @@ public class TextAnalyzer {
 	public boolean train(final String rawInput) throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Initialize if we have not already done so
 		if (!initialized) {
+			initializeTrace();
 			initialize(AnalysisConfig.TrainingMode.SIMPLE);
 			handleForce();
 			trainingStarted = true;
@@ -2857,8 +2860,10 @@ public class TextAnalyzer {
 	public TextAnalysisResult getResult() throws FTAPluginException, FTAUnsupportedLocaleException {
 		memoryDebug("getResult.entry");
 		// Normally we will initialize as a consequence of the first call to train() but just in case no training happens!
-		if (!initialized)
+		if (!initialized) {
+			initializeTrace();
 			initialize(AnalysisConfig.TrainingMode.UNSET);
+		}
 
 		emptyCache();
 
@@ -3659,6 +3664,9 @@ public class TextAnalyzer {
 	 * @throws FTAUnsupportedLocaleException Thrown when a requested locale is not supported
 	 */
 	public String serialize() throws FTAPluginException, FTAUnsupportedLocaleException {
+		if (analysisConfig.getTraceOptions() != null && traceConfig == null)
+			initializeTrace();
+
 		emptyCache();
 
 		// If we have not already determined the type - we need to force the issue
@@ -3699,6 +3707,7 @@ public class TextAnalyzer {
 
 			ret.facts = wrapper.facts;
 			ret.facts.setConfig(wrapper.analysisConfig);
+			ret.initializeTrace();
 			ret.initialize(wrapper.analysisConfig.getTrainingMode());
 			ret.facts.hydrate();
 
