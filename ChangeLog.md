@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 16.2.9
+ - BUG: Fix issues with sampleCount being incorrect - typically when doing a subsequent pass (Issue #134)
+
 ### 16.2.8
  - BUG: Address issue where top and bottom are added to the cardinality set on merge, even if they match in a case insensitive fashion (Issue #130)
 

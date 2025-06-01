@@ -1266,12 +1266,11 @@ public class TextAnalyzer {
 		}
 	}
 
-	private void initialize(final AnalysisConfig.TrainingMode trainingMode) throws FTAPluginException, FTAUnsupportedLocaleException {
+	private void initialize() throws FTAPluginException, FTAUnsupportedLocaleException {
 		memoryDebug("initialize.entry");
 
 		facts.initialize(getTopBottomK());
 
-		analysisConfig.setTrainingMode(trainingMode);
 		mapper.registerModule(new JavaTimeModule());
 		mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 
@@ -1426,8 +1425,9 @@ public class TextAnalyzer {
 	public void trainBulk(final Map<String, Long> input) throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Initialize if we have not already done so
 		if (!initialized) {
+			analysisConfig.setTrainingMode(AnalysisConfig.TrainingMode.BULK);
 			initializeTrace();
-			initialize(AnalysisConfig.TrainingMode.BULK);
+			initialize();
 			trainingStarted = true;
 		}
 
@@ -1571,8 +1571,9 @@ public class TextAnalyzer {
 	public boolean train(final String rawInput) throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Initialize if we have not already done so
 		if (!initialized) {
+			analysisConfig.setTrainingMode(AnalysisConfig.TrainingMode.SIMPLE);
 			initializeTrace();
-			initialize(AnalysisConfig.TrainingMode.SIMPLE);
+			initialize();
 			handleForce();
 			trainingStarted = true;
 		}
@@ -2862,7 +2863,7 @@ public class TextAnalyzer {
 		// Normally we will initialize as a consequence of the first call to train() but just in case no training happens!
 		if (!initialized) {
 			initializeTrace();
-			initialize(AnalysisConfig.TrainingMode.UNSET);
+			initialize();
 		}
 
 		emptyCache();
@@ -3163,6 +3164,10 @@ public class TextAnalyzer {
 						final TextAnalysisResult newResult = reAnalyze(details);
 						if (newResult.isSemanticType() && newResult.getSemanticType().equals(logical.getSemanticType())) {
 							newResult.getFacts().invalid.put(worstEntry.getKey(), worstEntry.getValue());
+							if (!getFacts().outliers.isEmpty()) {
+								newResult.getFacts().invalid.putAll(getFacts().outliers);
+								newResult.getFacts().sampleCount += getFacts().outliers.values().stream().mapToLong(l-> l).sum();;
+							}
 							newResult.getFacts().sampleCount += worstEntry.getValue();
 							newResult.getFacts().confidence -= 0.05;
 							newResult.getFacts().getMatchTypeInfo().setBaseType(FTAType.STRING);
@@ -3210,8 +3215,13 @@ public class TextAnalyzer {
 				final FTAType newType = newResult.getFacts().getMatchTypeInfo().getBaseType();
 
 				if (newResult.isSemanticType() || newType.isDateOrTimeType()) {
-					newResult.getFacts().outliers.putAll(outliers);
+					// We found a new Semantic Type so add the old invalids & outliers to the current invalids and update the sample count
+					for (final Map.Entry<String, Long> entry : outliers.entrySet())
+						newResult.getFacts().outliers.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
 					newResult.getFacts().sampleCount += outliers.values().stream().mapToLong(l-> l).sum();
+					for (final Map.Entry<String, Long> entry : getFacts().invalid.entrySet())
+						newResult.getFacts().invalid.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
+					newResult.getFacts().sampleCount += getFacts().invalid.values().stream().mapToLong(l-> l).sum();
 					newResult.getFacts().confidence -= 0.05;
 					result = newResult;
 					ctxdebug("Type determination", "was LONG, post outlier analyis, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
@@ -3282,6 +3292,11 @@ public class TextAnalyzer {
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType() && analysisConfig.getTrainingMode() == AnalysisConfig.TrainingMode.SIMPLE && pluginThreshold != 100) {
 			final TextAnalysisResult bulkResult = reAnalyze(facts.synthesizeBulk());
 			if (bulkResult.isSemanticType() || bulkResult.getType() != facts.getMatchTypeInfo().getBaseType()) {
+				if (!getFacts().outliers.isEmpty()) {
+					bulkResult.getFacts().invalid.putAll(getFacts().outliers);
+					bulkResult.getFacts().sampleCount += getFacts().outliers.values().stream().mapToLong(l-> l).sum();;
+				}
+				bulkResult.getFacts().confidence -= 0.05;
 				result = bulkResult;
 				ctxdebug("Type determination", "was STRING, post Bulk analyis, matchTypeInfo - {}", bulkResult.getFacts().getMatchTypeInfo());
 			}
@@ -3708,7 +3723,7 @@ public class TextAnalyzer {
 			ret.facts = wrapper.facts;
 			ret.facts.setConfig(wrapper.analysisConfig);
 			ret.initializeTrace();
-			ret.initialize(wrapper.analysisConfig.getTrainingMode());
+			ret.initialize();
 			ret.facts.hydrate();
 
 			if (ret.traceConfig != null)

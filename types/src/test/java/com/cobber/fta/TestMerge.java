@@ -1636,7 +1636,7 @@ public class TestMerge {
 		assertEquals(result.getSampleCount(), 0);
 	}
 
-//BUG	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	//BUG @Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testDoubleMerge() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
 		final double d = 0.0013345770133702528;
 
@@ -1646,6 +1646,10 @@ public class TestMerge {
 		final TextAnalyzer aggregator = new TextAnalyzer("aggregator");
 		final TextAnalyzer merged = TextAnalyzer.merge(aggregator, shardOne);
 		final TextAnalysisResult result = merged.getResult();
+
+		for (final String b : result.getBottomK()) {
+			System.err.println(b);
+		}
 
 		assertEquals(result.getSampleCount(), 1);
 	}

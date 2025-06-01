@@ -231,6 +231,7 @@ class FileProcessor {
 		long rawRecordIndex = 0;
 		final Map<Integer, RowCount> errors = new HashMap<>();
 
+		int processedRecords = 0;
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
 
 			// Skip the first <n> lines if requested
@@ -264,7 +265,6 @@ class FileProcessor {
 			final CircularBuffer buffer = new CircularBuffer(options.trailer + 1);
 
 			String[] row;
-			int processedRecords = 0;
 
 			while ((row = parser.parseNext()) != null) {
 				rawRecordIndex++;
@@ -492,7 +492,11 @@ class FileProcessor {
 
 				// Check the counts if we are validating
 				if (options.validate >= 1) {
-					final String ret = result.checkCounts();
+					String ret = result.checkCounts();
+
+					if (ret == null && result.getSampleCount() != processedRecords)
+						ret = "Samples != # of records processed";
+
 					if (ret != null)
 						throw new FTAProcessingException(filename,
 								MessageFormat.format("Composite: {0}, field: {1} ({2}), failed count validation - {3}",

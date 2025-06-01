@@ -15,6 +15,9 @@
  */
 package com.cobber.fta;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
@@ -152,11 +155,29 @@ public class RecordAnalyzer {
 		return new RecordAnalysisResult(results);
 	}
 
+	private static void updateCounts(final TextAnalysisResult result, final FiniteMap outliers, final FiniteMap invalids) {
+		// We found a new Semantic Type so add the old invalids & outliers to the current invalids and update the sample count
+		for (final Map.Entry<String, Long> entry : outliers.entrySet())
+			result.getFacts().outliers.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
+		result.getFacts().sampleCount += outliers.values().stream().mapToLong(l-> l).sum();
+		for (final Map.Entry<String, Long> entry : invalids.entrySet())
+			result.getFacts().invalid.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
+		result.getFacts().sampleCount += invalids.values().stream().mapToLong(l-> l).sum();
+	}
+
 	private TextAnalysisResult reAnalyze(final TextAnalyzer analyzer, final TextAnalysisResult result) throws FTAPluginException, FTAUnsupportedLocaleException {
 		// Now do the analysis using the bulk data with the addition of the Semantic Type information
 		final TextAnalysisResult newResult = analyzer.reAnalyze((result.getFacts().synthesizeBulk()));
 
-		return newResult.isSemanticType() ? newResult : result;
+		if (!newResult.isSemanticType())
+			return result;
+
+		updateCounts(newResult, result.getFacts().outliers, result.getFacts().invalid);
+
+		analyzer.ctxdebug("Type determination", "post semantic analyis, matchTypeInfo {} -> {} ",
+				analyzer.getFacts().matchTypeInfo, newResult.getFacts().getMatchTypeInfo());
+
+		return newResult;
 	}
 
 	public static RecordAnalyzer merge(final RecordAnalyzer first, final RecordAnalyzer second) throws FTAMergeException, FTAPluginException, FTAUnsupportedLocaleException {
