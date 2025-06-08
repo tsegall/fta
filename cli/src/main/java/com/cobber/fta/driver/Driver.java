@@ -154,8 +154,8 @@ public class Driver {
 		// Are we generating synthetic data?
 		if (cmdLineOptions.faker != null) {
 			final Faker faker = new Faker(cmdLineOptions, output, error);
-			final boolean sucess = faker.fake();
-			System.exit(sucess ? 0 : 1);
+			final boolean success = faker.fake();
+			System.exit(success ? 0 : 1);
 		}
 
 		// Are we generating all samples?
