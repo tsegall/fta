@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 16.2.10
+ - INT: Fix SpotBugs issues
+ - INT: Bump google phonenumber to 9.0.7m gradle to 8.14.2
+
 ### 16.2.9
  - BUG: Fix issues with sampleCount being incorrect - typically when doing a subsequent pass (Issue #134)
 

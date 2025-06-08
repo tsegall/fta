@@ -1403,14 +1403,14 @@ public class DetermineDateTimeFormatTests {
 		for (int i = 0; i < ITERATIONS; i++)
 			s = dtp.serialize();
 		final long serializeTime = System.currentTimeMillis() - start;
-		System.err.printf("Serialization: %dms (%dμs per)\n", serializeTime, (serializeTime * 1000) / ITERATIONS);
+		System.err.printf("Serialization: %dms (%dμs per)%n", serializeTime, (serializeTime * 1000) / ITERATIONS);
 
 		start = System.currentTimeMillis();
 		DateTimeParser hydrated = DateTimeParser.deserialize(s);
 		for (int i = 0; i < ITERATIONS; i++)
 			hydrated = DateTimeParser.deserialize(s);
 		final long deserializeTime = System.currentTimeMillis() - start;
-		System.err.printf("Deserialization: %dms (%dμs per)\n", deserializeTime, (deserializeTime * 1000) / ITERATIONS);
+		System.err.printf("Deserialization: %dms (%dμs per)%n", deserializeTime, (deserializeTime * 1000) / ITERATIONS);
 
 		final DateTimeParserResult result = hydrated.getResult();
 
@@ -2576,7 +2576,7 @@ public class DetermineDateTimeFormatTests {
 		assertTrue(input.matches(regExp), "input: '" + input + "', RE: '" + regExp + "'");
 	}
 
-	//@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+//	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void fuzz() {
 		final Map<String, Integer> formatStrings = new HashMap<>();
 		final Map<String, Integer> types = new HashMap<>();
@@ -2684,13 +2684,13 @@ public class DetermineDateTimeFormatTests {
 							OffsetDateTime.parse(trimmed, formatter);
 					}
 					catch (DateTimeParseException exc) {
-						logger.error("Java: Struggled with input of the form: '%s'", input);
+						logger.error("Java: Struggled with input of the form: '{}'", input);
 					}
 
 				}
 			}
-			catch (Exception e) {
-				logger.error("Struggled with input of the form: '%s'", input);
+			catch (Throwable e) {
+				logger.error("Struggled with input of the form: '{}'", input);
 			}
 		}
 
@@ -2960,11 +2960,9 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParser det = new DateTimeParser().withLocale(Locale.forLanguageTag("en-US"));
 		long millis = System.currentTimeMillis();
 		Date d = new Date();
-		final Set<String> samples = new HashSet<>();
 
 		for (int i = 0; i < 100; i++) {
 			d = new Date(millis);
-			samples.add(d.toString());
 			det.train(d.toString());
 			millis -= 186400000;
 		}
@@ -3166,6 +3164,8 @@ public class DetermineDateTimeFormatTests {
 			final ZonedDateTime zdt = ZonedDateTime.parse(testInput, dtf);
 			formatted = zdt.format(dtf);
 			break;
+		default:
+			fail("Unexpected type");
 		}
 
 		// Check the result by parsing the original string and printing it

@@ -130,7 +130,7 @@ public class SimpleDateMatcher {
 		matchers.add(new SimpleFacts("EEE MMM d{2} d{2}:d{2}:d{2} OOOO d{4}", "EEE MMM dd HH:mm:ss OOOO yyyy", FTAType.OFFSETDATETIME));
 		matchers.add(new SimpleFacts("EEE d{2} MMM d{4} d{2}:d{2}:d{2} +d{4}", "EEE dd MMM yyyy HH:mm:ss x", FTAType.OFFSETDATETIME));
 
-		final Map<String, SimpleFacts> knownFacts = new HashMap<>();
+		knownFacts = new HashMap<>();
 		for (final SimpleFacts sdm : matchers) {
 			knownFacts.put(sdm.getMatcher(), sdm);
 			knownFacts.put(sdm.getFormat(), sdm);
@@ -141,10 +141,8 @@ public class SimpleDateMatcher {
 
 	public static FTAType getType(final String pattern) {
 		final Map<String, SimpleFacts> sfMap = getSimpleDataFacts();
-		if (sfMap == null)
-			return null;
-
 		final SimpleFacts sf = sfMap.get(pattern);
+
 		if (sf == null)
 			return null;
 

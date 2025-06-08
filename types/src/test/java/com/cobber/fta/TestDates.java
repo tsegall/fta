@@ -25,6 +25,7 @@ import static org.testng.Assert.fail;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -58,6 +59,7 @@ import com.cobber.fta.dates.SimpleDateMatcher;
 
 public class TestDates {
 	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
+	private final SecureRandom rand = new SecureRandom();
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void dateOutlier() throws IOException, FTAException {
@@ -3324,7 +3326,7 @@ public class TestDates {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void localeDateTest() throws IOException, FTAException {
-		final int testSet = new SecureRandom().nextInt(10);
+		final int testSet = rand.nextInt(10);
 		final Locale[] locales = DateFormat.getAvailableLocales();
 //		Locale[] locales = new Locale[] {Locale.forLanguageTag("zh-SG")};
 
@@ -4721,7 +4723,7 @@ public class TestDates {
 		final String[] samples = new String[10000];
 
 		if (saveOutput)
-			bw = new BufferedWriter(new FileWriter("/tmp/dateTimePerf.csv"));
+			bw = new BufferedWriter(new FileWriter("/tmp/dateTimePerf.csv", StandardCharsets.UTF_8));
 
 		LocalDateTime localDateTime = LocalDateTime.now();
 

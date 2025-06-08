@@ -19,6 +19,7 @@ package com.cobber.fta.driver;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -53,6 +54,7 @@ public class Driver {
 
 		cmdLineOptions = new DriverOptions();
 		final String[] unprocessed = cmdLineOptions.addFromStringArray(args);
+
 		int idx = 0;
 		if (unprocessed != null) {
 			while (idx < unprocessed.length && unprocessed[idx].charAt(0) == '-') {
@@ -136,8 +138,8 @@ public class Driver {
 
 		// Are we are replaying a trace file?
 		if (replayFile != null) {
-			Replay.replay(replayFile, cmdLineOptions);
-			System.exit(0);
+			final boolean success = Replay.replay(replayFile, cmdLineOptions);
+			System.exit(success ? 0 : 1);
 		}
 
 		// Are we generating a signature?
@@ -152,8 +154,8 @@ public class Driver {
 		// Are we generating synthetic data?
 		if (cmdLineOptions.faker != null) {
 			final Faker faker = new Faker(cmdLineOptions, output, error);
-			faker.fake();
-			System.exit(0);
+			final boolean sucess = faker.fake();
+			System.exit(sucess ? 0 : 1);
 		}
 
 		// Are we generating all samples?
@@ -163,7 +165,7 @@ public class Driver {
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 
 			for (final LogicalType logical : registered) {
-				try (PrintStream results = new PrintStream(logical.getSemanticType() + ".csv")) {
+				try (PrintStream results = new PrintStream(logical.getSemanticType() + ".csv", StandardCharsets.UTF_8)) {
 					if (logical instanceof LogicalTypeRegExp && !((LogicalTypeRegExp)logical).isRegExpComplete())
 						error.printf("ERROR: Semantic Type (%s) does implement LTRandom interface - however samples may not be useful.%n", logical.getSemanticType());
 

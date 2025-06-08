@@ -261,7 +261,7 @@ public class TestLongs {
 		assertEquals(result.getMaxValue(), "47.0");
 		assertEquals(result.getCardinality(), 5);
 		for (final Map.Entry<String, Long> entry : result.getCardinalityDetails().entrySet()) {
-			System.err.printf("Key: %s, Count: %s\n", entry.getKey(), entry.getValue());
+			System.err.printf("Key: %s, Count: %s%n", entry.getKey(), entry.getValue());
 		}
 		assertEquals(result.getValueAtQuantile(.5), "47");
 		assertNull(result.checkCounts());

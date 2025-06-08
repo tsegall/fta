@@ -54,7 +54,7 @@ public class TestIssues {
 	}
 
 	@Test
-	public void issue48() throws Exception {
+	public void issue48() throws FTAPluginException, FTAUnsupportedLocaleException {
 		final String[] fieldnames = { "AddressLine2" };
 		final String[][] values = {
 				{ "MIDDLEBURY, CT 06762" }, { "DANVERS, MA 01923-3782" },

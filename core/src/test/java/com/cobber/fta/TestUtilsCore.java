@@ -349,7 +349,7 @@ public class TestUtilsCore {
 	}
 
 	@Test(groups = { TestGroups.ALL })
-	public void ExponentNL() {
+	public void exponentNL() {
 		// NL Must be E not e and no +
 		final NumberFormat nf = NumberFormat.getInstance(Locale.forLanguageTag("nl-NL"));
 		nf.setParseIntegerOnly(false);

@@ -1,9 +1,10 @@
 plugins {
 	id "com.github.ben-manes.versions"
+	id "com.github.spotbugs" version "6.1.13" apply false
 }
 
 wrapper {
-	gradleVersion = '8.14.1'
+	gradleVersion = '8.14.2'
 }
 
 tasks.register('examples.clean') {
@@ -151,4 +152,19 @@ subprojects {
 		useInMemoryPgpKeys(signingKey, signingPassword)
 		sign publishing.publications.mavenJava
 	}
+
+	apply plugin: "com.github.spotbugs"
+
+	spotbugs {
+		toolVersion = "4.9.3"
+		effort = "max"
+		reportLevel = "low"
+	}
+
+	tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
+		reports {
+		xml.required = false
+		html.required = true
+        }
+    }
 }

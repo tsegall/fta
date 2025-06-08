@@ -42,7 +42,7 @@ public class Processor {
 		this.options = options;
 		this.streamCount = fieldNames.length;
 
-		if (options.pluginName != null && options.pluginMode != null && logicalType == null) {
+		if (options.pluginName != null && options.pluginMode != null) {
 			final PluginDefinition pluginDefinition = PluginDefinition.findByName(options.pluginName);
 			if (pluginDefinition == null) {
 				logger.printf("ERROR: Failed to locate plugin named '%s', use --help%n", options.pluginName);

@@ -138,7 +138,7 @@ public class TestUtils {
 			"324 North Lancaster Dr."
 	};
 
-	static String[] testCaseOptions = {
+	protected final static String[] testCaseOptions = {
 			"Integer", "Boolean", "Long", "Double", "Date",
 			"ISO-3166-3", "ISO-3166-2", "ZIP", "US_STATE", "CA_PROVINCE",
 			"US_STREET"
@@ -355,7 +355,7 @@ public class TestUtils {
 		assertEquals(retrieve.length, 1);
 		assertEquals(retrieve[0], "2");
 
-		assertNull(buffer.get());
+		assert(buffer.get().length == 0);
 
 		assertTrue(buffer.add(new String[] {"0"}));
 		for (int i = 1; i < 100; i++) {

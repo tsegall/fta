@@ -54,7 +54,7 @@ public abstract class LogicalTypeFactory {
 		else if ("regex".equals(plugin.pluginType))
 			logical = new LogicalTypeRegExp(plugin);
 
-		if (!(logical instanceof LogicalType))
+		if (logical == null)
 			throw new FTAPluginException("Semantic type: '" + plugin.semanticType + "' unknown type.");
 
 		logical.initialize(analysisConfig);

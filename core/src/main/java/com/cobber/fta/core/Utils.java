@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -314,7 +315,7 @@ public final class Utils {
 					});
 					db.parse(new InputSource(new StringReader(sample)));
 					fmtXML++;
-				} catch (Exception e) {
+				} catch (ParserConfigurationException | SAXException | IOException e) {
 					// Ignore
 				}
 				continue;

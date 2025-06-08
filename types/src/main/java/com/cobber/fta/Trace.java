@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -94,7 +95,7 @@ public class Trace {
 			// There are a lot of characters that Windows does not like in filenames ...
 			filename = filename.replaceAll("[<>:\"/\\\\|\\?\\*]", "_");
 			traceFile = new File(traceDirectory, filename);
-			traceWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(traceFile)));
+			traceWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(traceFile), StandardCharsets.UTF_8));
 		} catch (FileNotFoundException e) {
 			throw new TraceException("Cannot create file to write", e);
 		}
@@ -190,7 +191,7 @@ public class Trace {
 
 	public void tag(final String tag, long sampleCount) {
 		try {
-			String output = String.format("{\"tag\": { \"name\": \"%s\", \"sampleCount\": %d, \"time\": %d } }\n", tag, sampleCount, System.currentTimeMillis());
+			String output = String.format("{\"tag\": { \"name\": \"%s\", \"sampleCount\": %d, \"time\": %d } }%n", tag, sampleCount, System.currentTimeMillis());
 			traceWriter.write(output);
 			traceWriter.flush();
 		} catch (IOException e) {

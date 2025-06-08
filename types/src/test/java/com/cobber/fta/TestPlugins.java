@@ -531,7 +531,7 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(result.getSampleCount(), inputs.length * 10);
+		assertEquals(result.getSampleCount(), inputs.length * 10L);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getSemanticType(), "COLOR.TEXT_EN");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("COLOR.TEXT_EN").signature);
@@ -2689,9 +2689,9 @@ public class TestPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getSemanticType(), "STATE_PROVINCE.STATE_AU");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("STATE_PROVINCE.STATE_AU").signature);
-		assertEquals(result.getSampleCount(), inputs.length * 10);
+		assertEquals(result.getSampleCount(), inputs.length * 10L);
 		assertEquals(result.getOutlierCount(), 0);
-		assertEquals(result.getMatchCount(), inputs.length * 10);
+		assertEquals(result.getMatchCount(), inputs.length * 10L);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), "(?i)(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)");
 		assertEquals(result.getConfidence(), 1.0);
@@ -2787,7 +2787,7 @@ public class TestPlugins {
 		final DateFormatSymbols dfs = new DateFormatSymbols(german);
 		final String[] m = dfs.getShortMonths();
 		final GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance(german);
-		final int actualMonths = cal.getActualMaximum(Calendar.MONTH);
+		final long actualMonths = cal.getActualMaximum(Calendar.MONTH);
 
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbrGerman");
 		analysis.setLocale(german);
@@ -3048,7 +3048,7 @@ public class TestPlugins {
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String input = "MA|MI|ME|MO|MS|";
 		final String inputs[] = input.split("\\|");
-		final int iters = 20;
+		final long iters = 20;
 
 		int locked = -1;
 
@@ -3799,7 +3799,7 @@ public class TestPlugins {
 		TestUtils.simpleCore(Sample.allValid(newSamples), "quarter", Locale.US, "PERIOD.QUARTER", FTAType.STRING, 1.0);
 
 		for (int i = 0; i < samples.length; i++)
-			newSamples[i] = samples[i] + ordinals[Integer.valueOf(samples[i]) - 1];
+			newSamples[i] = samples[i] + ordinals[Integer.parseInt(samples[i]) - 1];
 
 		TestUtils.simpleCore(Sample.allValid(newSamples), "quarter", Locale.US, "PERIOD.QUARTER", FTAType.STRING, 1.0);
 	}

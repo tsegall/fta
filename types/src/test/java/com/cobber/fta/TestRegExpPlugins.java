@@ -300,9 +300,9 @@ public class TestRegExpPlugins {
 
 		for (final String sample : samples) {
 			if (!sample.matches(result.getRegExp()))
-				System.err.printf("Match failed: %s\n", sample);
+				System.err.printf("Match failed: %s%n", sample);
 			if (!logical.isValid(sample))
-				System.err.printf("isValid failed: %s\n", sample);
+				System.err.printf("isValid failed: %s%n", sample);
 			assertTrue(sample.matches(result.getRegExp()), sample);
 		}
 		assertEquals(result.getConfidence(), 1.0);

@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
@@ -66,7 +67,7 @@ class FileProcessor {
 			options.addFromFile(filename + ".options");
 		}
 
-		output = options.output ? new PrintStream(filename + ".out") : System.out;
+		output = options.output ? new PrintStream(filename + ".out", StandardCharsets.UTF_8) : System.out;
 
 		final CsvParserSettings settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(true);
@@ -257,9 +258,10 @@ class FileProcessor {
 					System.out.println(header[i]);
 			}
 
-			processor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
+			final String compositeName = com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString());
+			processor = new Processor(compositeName, header, options);
 			if (options.testmerge != 0)
-				altProcessor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
+				altProcessor = new Processor(compositeName, header, options);
 			initializedTime = System.currentTimeMillis();
 
 			final CircularBuffer buffer = new CircularBuffer(options.trailer + 1);
@@ -293,7 +295,7 @@ class FileProcessor {
 
 					if (processedRecords % options.testmerge == 0) {
 						processor = Processor.merge(processor, altProcessor);
-						altProcessor = new Processor(com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString()), header, options);
+						altProcessor = new Processor(compositeName, header, options);
 					}
 				}
 				else
