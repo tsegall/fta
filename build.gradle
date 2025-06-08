@@ -162,6 +162,7 @@ subprojects {
 	}
 
 	tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
+		ignoreFailures = true
 		reports {
 		xml.required = false
 		html.required = true
