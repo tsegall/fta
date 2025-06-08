@@ -67,17 +67,19 @@ public class FakerStringLT extends FakerLT {
 			return values[random.nextInt(values.length)];
 
 		if (format.startsWith(".{")) {
-			String text = freeText.nextRandom();
-			while (text.length() < minLength) {
-				text += " " + freeText.nextRandom();
-			}
-			if (text.length() > maxLength) {
+			StringBuffer buf = new StringBuffer(freeText.nextRandom());
+			while (buf.length() < minLength)
+				buf.append(" ").append(freeText.nextRandom());
+
+			if (buf.length() > maxLength) {
 				int offset = maxLength;
-				while (text.charAt(offset) != ' ' && offset != 0)
+				while (buf.charAt(offset) != ' ' && offset != 0)
 					offset--;
 				if (offset != 0)
-					return text.substring(0, offset);
+					return buf.substring(0, offset);
 			}
+
+			return buf.toString();
 		}
 
 		return generator.generate();

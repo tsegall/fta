@@ -34,8 +34,8 @@ import com.cobber.fta.token.TokenStreams;
  *
  */
 public class Identifier extends LogicalTypeInfinite {
-	private final int THRESHOLD_MONOTONIC = 50;
-	private final int THRESHOLD_UNIQUENESS_TEST = 50;
+	private static final int THRESHOLD_MONOTONIC = 50;
+	private static final int THRESHOLD_UNIQUENESS_TEST = 50;
 
 	/** The Regular Expression for this Semantic type. */
 	private static final String REGEXP = ".+";

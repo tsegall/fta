@@ -102,7 +102,7 @@ public class LocaleInfo {
 		return localeInfoConfig.getLocale();
 	}
 
-	class LengthComparator implements Comparator<String> {
+	private static class LengthComparator implements Comparator<String> {
 		@Override
 		public int compare(final String str1, final String str2) {
 			final int ret = str2.length() - str1.length();

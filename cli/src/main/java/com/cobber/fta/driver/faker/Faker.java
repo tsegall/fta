@@ -45,18 +45,18 @@ public class Faker {
 	}
 
 	public boolean fake() {
-		final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
+		final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.getLocale());
 		final Random random = new Random(31415926);
-		final long outputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
+		final long outputRecords = options.getRecordsToProcess() == -1 ? 20 : options.getRecordsToProcess();
 		final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 
 		// Read in the faker specification ...
 		List<FakerParameters> params = null;
 		try {
-			if (options.faker.charAt(0) == '[')
-				params = mapper.readValue(options.faker, new TypeReference<List<FakerParameters>>() {});
+			if (options.getFaker().charAt(0) == '[')
+				params = mapper.readValue(options.getFaker(), new TypeReference<List<FakerParameters>>() {});
 			else
-				params = mapper.readValue(new File(options.faker), new TypeReference<List<FakerParameters>>() {});
+				params = mapper.readValue(new File(options.getFaker()), new TypeReference<List<FakerParameters>>() {});
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -84,7 +84,7 @@ public class Faker {
 					error.printf("ERROR: Unknown type '%s', use --help%n", baseType);
 					return false;
 				}
-				final PluginDefinition plugin = new PluginDefinition(parameters[i].type, parameters[i].clazz);
+				final PluginDefinition plugin = new PluginDefinition(parameters[i].type, parameters[i].getClazz());
 				try {
 					logicals[i] = LogicalTypeFactory.newInstance(plugin, analyzer.getConfig());
 					((FakerLT)logicals[i]).setControl(parameters[i]);

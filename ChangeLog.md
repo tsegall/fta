@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 16.2.11
+ - INT: Fix SpotBugs issues
+
 ### 16.2.10
  - INT: Fix SpotBugs issues
  - INT: Bump google phonenumber to 9.0.7m gradle to 8.14.2

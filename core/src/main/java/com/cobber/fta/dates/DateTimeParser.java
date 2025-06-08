@@ -1009,7 +1009,7 @@ public class DateTimeParser {
 		return simpleFacts.getFormat();
 	}
 
-	private class Tracker {
+	private static class Tracker {
 		int digits;
 		int value;
 		int padding;
@@ -1815,7 +1815,7 @@ public class DateTimeParser {
 			final boolean possiblePatternCharacter = Character.isLetter(ch);
 			if (possiblePatternCharacter &&
 					ch != 'E' && ch != 'H' && ch != 'M' && ch != 'S' &&
-					ch != 'a' && ch != 'd' && ch != 'h' && ch != 'm' && ch != 'p' && ch != 's' & ch != 'x' && ch != 'y' && ch != 'z' &&
+					ch != 'a' && ch != 'd' && ch != 'h' && ch != 'm' && ch != 'p' && ch != 's' && ch != 'x' && ch != 'y' && ch != 'z' &&
 					// Chinese/Japanese dates embed characters for year/month/day/hour/minute/second in the date/time
 					ch != '年' &&  ch != '月' && ch != '日' && ch !=  '号' && ch != '時' && ch != '分' && ch !='秒' &&
 					// Bulgarian years are commonly written with a trailing 'г.' after the year
