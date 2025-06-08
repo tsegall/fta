@@ -107,7 +107,7 @@ class FileProcessor {
 		}
 	}
 
-	class RowCount {
+	static class RowCount {
 		int numFields;
 		long firstRow;
 		long count;
@@ -301,7 +301,7 @@ class FileProcessor {
 				else
 					processor.consume(row);
 
-				if (processedRecords == options.recordsToProcess) {
+				if (processedRecords == options.getRecordsToProcess()) {
 					parser.stopParsing();
 					break;
 				}
@@ -309,7 +309,7 @@ class FileProcessor {
 			consumedTime = System.currentTimeMillis();
 		}
 		catch (FileNotFoundException e) {
-			throw new FTAProcessingException(filename, "File not found", e);
+			throw new FTAProcessingException(filename, e.getMessage(), e);
 		}
 		catch (TextParsingException|ArrayIndexOutOfBoundsException e) {
 			throw new FTAProcessingException(filename, "Univocity exception", e);
@@ -375,7 +375,7 @@ class FileProcessor {
 								failures.add(value);
 						}
 					}
-					if (rawRecordIndex == options.recordsToProcess) {
+					if (rawRecordIndex == options.getRecordsToProcess()) {
 						parser.stopParsing();
 						break;
 					}
@@ -399,7 +399,7 @@ class FileProcessor {
 		for (int i = 0; i < numFields; i++) {
 			if (options.col == -1 || options.col == i) {
 				final TextAnalyzer analyzer = processor.getAnalyzer(i);
-				if (rawRecordIndex != options.recordsToProcess)
+				if (rawRecordIndex != options.getRecordsToProcess())
 					analyzer.setTotalCount(rawRecordIndex);
 
 				result = results[i];

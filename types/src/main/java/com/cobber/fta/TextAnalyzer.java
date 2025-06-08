@@ -1250,7 +1250,7 @@ public class TextAnalyzer {
 	 * Note: The Locale (on the configuration)  will impact both the set of plugins registered as well as the behavior of the individual plugins
 	 */
 	public void registerDefaultPlugins(final AnalysisConfig analysisConfig) {
-		synchronized (this) {
+		synchronized (pluginDefinitions) {
 			if (pluginDefinitions.isEmpty()) {
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
 					pluginDefinitions = mapper.readValue(reader, new TypeReference<List<PluginDefinition>>(){});
@@ -1528,7 +1528,7 @@ public class TextAnalyzer {
 		}
 	}
 
-	final int CACHE_SIZE = 10;
+	final static int CACHE_SIZE = 10;
 	FiniteMap cache = new FiniteMap(CACHE_SIZE);
 
 	private void emptyCache() {

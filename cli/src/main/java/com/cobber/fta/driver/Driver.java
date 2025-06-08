@@ -51,9 +51,16 @@ public class Driver {
 		final PrintStream error = System.err;
 		boolean helpRequested = false;
 		String replayFile = null;
+		String[] unprocessed = null;
 
 		cmdLineOptions = new DriverOptions();
-		final String[] unprocessed = cmdLineOptions.addFromStringArray(args);
+		try {
+			unprocessed = cmdLineOptions.addFromStringArray(args);
+		}
+		catch (IllegalArgumentException e) {
+			System.err.printf("ERROR: %s%n", e.getMessage());
+			System.exit(1);
+		}
 
 		int idx = 0;
 		if (unprocessed != null) {
@@ -144,7 +151,7 @@ public class Driver {
 
 		// Are we generating a signature?
 		if (cmdLineOptions.signature) {
-			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.locale);
+			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.getLocale());
 
 			final LogicalType logical = DriverUtils.getLogicalType(analyzer, cmdLineOptions.pluginName);
 			error.println(logical.getSignature());
@@ -152,7 +159,7 @@ public class Driver {
 		}
 
 		// Are we generating synthetic data?
-		if (cmdLineOptions.faker != null) {
+		if (cmdLineOptions.getFaker() != null) {
 			final Faker faker = new Faker(cmdLineOptions, output, error);
 			final boolean success = faker.fake();
 			System.exit(success ? 0 : 1);
@@ -160,8 +167,8 @@ public class Driver {
 
 		// Are we generating all samples?
 		if (cmdLineOptions.samples) {
-			final long ouputRecords = cmdLineOptions.recordsToProcess == -1 ? 20 : cmdLineOptions.recordsToProcess;
-			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.locale);
+			final long ouputRecords = cmdLineOptions.getRecordsToProcess() == -1 ? 20 : cmdLineOptions.getRecordsToProcess();
+			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.getLocale());
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 
 			for (final LogicalType logical : registered) {
@@ -181,7 +188,7 @@ public class Driver {
 		if (helpRequested) {
 			if (cmdLineOptions.verbose == 0)
 				System.exit(0);
-			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.locale);
+			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.getLocale());
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 			final Set<String> names = new TreeSet<>();
 
@@ -215,7 +222,7 @@ public class Driver {
 				}
 			}
 
-			final Locale locale = cmdLineOptions.locale == null ? Locale.getDefault() : cmdLineOptions.locale;
+			final Locale locale = cmdLineOptions.getLocale() == null ? Locale.getDefault() : cmdLineOptions.getLocale();
 			final DateFormatSymbols dfs = DateFormatSymbols.getInstance(locale);
 			final GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance(locale);
 
@@ -272,7 +279,7 @@ public class Driver {
 				error.printf("ERROR: Plugin Exception: %s%n", e.getMessage());
 				System.exit(1);
 			} catch (FTAUnsupportedLocaleException e) {
-				final Locale activeLocale = cmdLineOptions.locale != null ? cmdLineOptions.locale : Locale.getDefault();
+				final Locale activeLocale = cmdLineOptions.getLocale() != null ? cmdLineOptions.getLocale() : Locale.getDefault();
 				error.printf("ERROR: Unsupported Locale: %s, error: %s%n", activeLocale.toLanguageTag(), e.getMessage());
 				System.exit(1);
 			} catch (FTAProcessingException e) {

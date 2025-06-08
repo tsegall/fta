@@ -49,7 +49,7 @@ public class Processor {
 				System.exit(1);
 			}
 
-			logicalType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(options.locale));
+			logicalType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(options.getLocale()));
 		}
 
 		if (options.col == -1) {

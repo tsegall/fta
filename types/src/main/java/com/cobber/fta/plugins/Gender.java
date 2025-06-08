@@ -46,7 +46,7 @@ public class Gender extends LogicalTypeFinite {
 	private GenderData genderData;
 	private Set<String> languageMembers;
 
-	class GenderPair {
+	private static class GenderPair {
 		String feminine;
 		String masculine;
 
@@ -56,7 +56,7 @@ public class Gender extends LogicalTypeFinite {
 		}
 	}
 
-	class GenderData {
+	private static class GenderData {
 		private final GenderPair[] words;
 		private final GenderPair[] abbreviations;
 		private final GenderPair[] all;

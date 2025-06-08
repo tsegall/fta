@@ -39,7 +39,7 @@ abstract class PersonName extends LogicalTypeFiniteSimple {
 	private static final int ITERS = 5;
 	private Dodge[] iterators;
 
-	private class Dodge {
+	private static class Dodge {
 		Iterator<String> iter;
 	}
 

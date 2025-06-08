@@ -27,7 +27,7 @@ public class FakerParameters {
 	public double nullPercent = 0.0;
 	public double blankPercent = 0.0;
 	public int blankLength = -1;
-	public String clazz;
+	private String clazz;
 	public String distribution;
 	public String[] values;
 
@@ -53,5 +53,9 @@ public class FakerParameters {
 			clazz = "com.cobber.fta.driver.faker.FakerEnumLT";
 		else if ("STRING".equals(type))
 			clazz = "com.cobber.fta.driver.faker.FakerStringLT";
+	}
+
+	public String getClazz() {
+		return clazz;
 	}
 }

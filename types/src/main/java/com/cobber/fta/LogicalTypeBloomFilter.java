@@ -65,7 +65,7 @@ public abstract class LogicalTypeBloomFilter extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		if (examples == null) {
-			synchronized (this) {
+			synchronized (LogicalTypeBloomFilter.class) {
 				if (examples == null) {
 					examples = new ArrayList<>();
 					final String samplesName = defn.content.reference + "_s.csv";
