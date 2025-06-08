@@ -2689,7 +2689,7 @@ public class DetermineDateTimeFormatTests {
 
 				}
 			}
-			catch (Throwable e) {
+			catch (Exception e) {
 				logger.error("Struggled with input of the form: '{}'", input);
 			}
 		}
