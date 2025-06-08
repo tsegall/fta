@@ -71,7 +71,7 @@ public class Replay {
 	 * @param replayFile The name of the FTA trace file.
 	 * @param options The command line options (e.g. --verbose, --debug, ...)
 	 */
-	static void replay(final String replayFile, final DriverOptions options) {
+	static boolean replay(final String replayFile, final DriverOptions options) {
 		final ObjectMapper mapper = new ObjectMapper();
 		try (InputStream in = new FileInputStream(replayFile); JsonParser parser = new JsonFactory().createParser(in)) {
 			// Read the AnalysisConfig from the trace file
@@ -87,7 +87,7 @@ public class Replay {
 				samplesWrapper = mapper.readValue(parser, SamplesWrapper.class);
 			} catch (IOException e) {
 				System.err.printf("NO samples present in input file (%s).%n", replayFile);
-				System.exit(1);
+				return false;
 			}
 
 			final TrainingMode trainingMode = analysisConfig.getTrainingMode();
@@ -120,7 +120,7 @@ public class Replay {
 					samplesWrapper = mapper.readValue(parser, SamplesWrapper.class);
 				} catch (IOException e) {
 					System.err.printf("NO bulk samples present in input file (%s).%n", replayFile);
-					System.exit(1);
+					return false;
 				}
 				processBulk(analyzer, samplesWrapper.samplesBulk, options);
 			}
@@ -136,11 +136,13 @@ public class Replay {
 				System.err.printf("Field '%s' - %s%n", analyzer.getStreamName(), result.asJSON(options.pretty, options.verbose));
 		} catch (FileNotFoundException e) {
 			System.err.printf("ERROR: File '%s' - Not found.%n", replayFile);
-			System.exit(1);
+			return false;
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(1);
+			return false;
 		}
+
+		return true;
 	}
 
 	private static void processBulk(final TextAnalyzer analyzer, final BulkEntry[] samples, final DriverOptions options) {

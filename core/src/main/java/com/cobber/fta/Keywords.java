@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -69,7 +70,7 @@ public class Keywords {
 	private Keywords initialize(final Locale locale) {
 		try (BufferedReader JSON = new BufferedReader(new InputStreamReader(Keywords.class.getResourceAsStream("/reference/keywords.json"), StandardCharsets.UTF_8))) {
 			keywords = new ObjectMapper().readValue(JSON, new TypeReference<List<Keywords>>(){});
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new InternalErrorException("Issues with reference keywords file", e);
 		}
 

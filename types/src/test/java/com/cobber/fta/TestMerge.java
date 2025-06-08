@@ -393,7 +393,6 @@ public class TestMerge {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String[] options = { "Male", "Female", "Unknown" };
-		final Random r = new Random();
 		final int ITERATIONS = 10000;
 
 		String serialized = analysis.serialize();
@@ -404,7 +403,7 @@ public class TestMerge {
 		final long testStart = System.currentTimeMillis();
 		for (int i = 0; i < ITERATIONS; i++) {
 			final long start = System.currentTimeMillis();
-			t.train(options[r.nextInt(options.length)]);
+			t.train(options[random.nextInt(options.length)]);
 			final long postTrain = System.currentTimeMillis();
 			serialized = t.serialize();
 			final long postSerialize = System.currentTimeMillis();
@@ -417,7 +416,7 @@ public class TestMerge {
 		}
 
 		System.err.printf(
-				"Test duration: %dms, total training: %dms (%dμs per), total serialization: %dms (%dμs per), deserialization: %dms (%dμs per)\n",
+				"Test duration: %dms, total training: %dms (%dμs per), total serialization: %dms (%dμs per), deserialization: %dms (%dμs per)%n",
 				System.currentTimeMillis() - testStart, trainTime, (trainTime * 1000) / ITERATIONS, serializeTime,
 				(serializeTime * 1000) / ITERATIONS, deserializeTime, (deserializeTime * 1000) / ITERATIONS);
 		final TextAnalysisResult result = t.getResult();
@@ -1442,6 +1441,7 @@ public class TestMerge {
 		assertEquals(mergedResult.getSampleCount(), SAMPLE_COUNT + 2 + 5);
 		assertEquals(mergedResult.getType(), FTAType.BOOLEAN);
 	}
+
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void simpleInvalidMerge() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
@@ -1464,22 +1464,22 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void NullNullStringTest() throws IOException, FTAException {
+	public void nullNullStringTest() throws IOException, FTAException {
 		checkTextAnalyzerMerge(samplesNULL, samplesNULL, "NULL_NULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void NullBlankStringTest() throws IOException, FTAException {
+	public void nullBlankStringTest() throws IOException, FTAException {
 		checkTextAnalyzerMerge(samplesNULL, samplesBLANK, "NULL_BLANK", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void NullBlankOrNullStringTest() throws IOException, FTAException {
+	public void nullBlankOrNullStringTest() throws IOException, FTAException {
 		checkTextAnalyzerMerge(samplesNULL, samplesBLANKORNULL, "NULL_BLANKORNULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void NullAlphaDataStringTest() throws IOException, FTAException {
+	public void nullAlphaDataStringTest() throws IOException, FTAException {
 		checkTextAnalyzerMerge(samplesNULL, samplesBLANKORNULL, "NULL_BLANKORNULL", null, true);
 	}
 
@@ -1524,22 +1524,22 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void AlphaDataNullStringTest() throws IOException, FTAException {
+	public void alphaDataNullStringTest() throws IOException, FTAException {
 		checkTextAnalyzerMerge(samplesAlphaData, samplesNULL, "ALPHADATA_NULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void AlphaDataBlankStringTest() throws IOException, FTAException {
+	public void alphaDataBlankStringTest() throws IOException, FTAException {
 		checkTextAnalyzerMerge(samplesAlphaData, samplesBLANK, "ALPHADATA_BLANK", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void AlphaDataBlankOrNullStringTest() throws IOException, FTAException {
+	public void alphaDataBlankOrNullStringTest() throws IOException, FTAException {
 		checkTextAnalyzerMerge(samplesAlphaData, samplesBLANKORNULL, "ALPHADATA_BLANKORNULL", null, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void AlphaDataAlphaDataStringTest() throws IOException, FTAException {
+	public void alphaDataAlphaDataStringTest() throws IOException, FTAException {
 		checkTextAnalyzerMerge(samplesAlphaData, samplesAlphaData, "ALPHADATA_ALPHADATA", null, true);
 	}
 
@@ -1722,7 +1722,7 @@ public class TestMerge {
 				if (future.isDone()) {
 					long mergeStart = System.currentTimeMillis();
 					final RecordAnalyzer processed = future.get();
-					System.err.printf("Processed: %d, aggregator: %d\n",
+					System.err.printf("Processed: %d, aggregator: %d%n",
 							processed.getAnalyzer(0).getFacts().getSampleCount(),
 							aggregator.getAnalyzer(0).getFacts().getSampleCount());
 					aggregator = RecordAnalyzer.merge(aggregator, processed);
@@ -1746,12 +1746,12 @@ public class TestMerge {
 		final TextAnalyzer[] analyzers = aggregator.getAnalyzers();
 		for (int i = 0; i < analyzers.length; i++) {
 			TextAnalysisResult result = analyzers[i].getResult();
-			System.err.printf("result = %s\n", result.asJSON(true, 0));
+			System.err.printf("result = %s%n", result.asJSON(true, 0));
 		}
 
-		System.err.printf("\nPartitions %d,  Threads: %d, Cols: %d, Records: %d, Total Time(ms): %d\n",
+		System.err.printf("%nPartitions %d,  Threads: %d, Cols: %d, Records: %d, Total Time(ms): %d%n",
 				PARTITIONS, THREADS, COLS, RECORDS, System.currentTimeMillis() - totalStart);
-		System.err.printf("\nMerges %d,  Time(ms): %d, Record Average(ms): %d, Field Average(ms): %d\n",
+		System.err.printf("%nMerges %d,  Time(ms): %d, Record Average(ms): %d, Field Average(ms): %d%n",
 				mergeCount, mergeMS, mergeMS/mergeCount, mergeMS/(mergeCount*COLS));
 	}
 

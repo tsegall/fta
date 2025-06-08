@@ -1095,7 +1095,7 @@ public class TestDoubles {
 		}
 
 		final String variant = locale.getDisplayVariant();
-		if (variant != null && !variant.isEmpty()) {
+		if (!variant.isEmpty()) {
 //			logger.debug("Skipping locale '{}' as it has a Variant: '{}'.", locale, variant);
 			return true;
 		}

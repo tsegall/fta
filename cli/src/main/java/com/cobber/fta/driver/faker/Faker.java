@@ -44,7 +44,7 @@ public class Faker {
 		this.error = error;
 	}
 
-	public void fake() {
+	public boolean fake() {
 		final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(options.locale);
 		final Random random = new Random(31415926);
 		final long outputRecords = options.recordsToProcess == -1 ? 20 : options.recordsToProcess;
@@ -59,6 +59,7 @@ public class Faker {
 				params = mapper.readValue(new File(options.faker), new TypeReference<List<FakerParameters>>() {});
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
 		final FakerParameters[] parameters = new FakerParameters[params.size()];
 		final LogicalType[] logicals = new LogicalType[params.size()];
@@ -81,7 +82,7 @@ public class Faker {
 						!"LOCALDATE".equals(baseType) && !"LOCALTIME".equals(baseType) && !"LOCALDATETIME".equals(baseType) && !"OFFSETDATETIME".equals(baseType)
 						) {
 					error.printf("ERROR: Unknown type '%s', use --help%n", baseType);
-					System.exit(1);
+					return false;
 				}
 				final PluginDefinition plugin = new PluginDefinition(parameters[i].type, parameters[i].clazz);
 				try {
@@ -89,7 +90,7 @@ public class Faker {
 					((FakerLT)logicals[i]).setControl(parameters[i]);
 				} catch (FTAPluginException e) {
 					error.printf("ERROR: Failed to locate plugin named '%s', use --help%n", parameters[i].fieldName);
-					System.exit(1);
+					return false;
 				}
 			}
 		}
@@ -128,6 +129,8 @@ public class Faker {
 			}
 			output.println(line);
 		}
+
+		return true;
 	}
 
 	private String quoteIfNeeded(final String input) {

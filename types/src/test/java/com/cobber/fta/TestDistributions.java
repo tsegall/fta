@@ -22,6 +22,7 @@ import static org.testng.Assert.fail;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -438,9 +439,9 @@ public class TestDistributions {
 			assertEquals(q1_0, dtf.format(start));
 		}
 		else {
-			System.err.printf("0 - actual %s, expected %s\n", q0_0, dtf.format(ldt));
-			System.err.printf("0 - actual %s, expected %s\n", q0_5, dtf.format(mid));
-			System.err.printf("0 - actual %s, expected %s\n", q1_0, dtf.format(start));
+			System.err.printf("0 - actual %s, expected %s%n", q0_0, dtf.format(ldt));
+			System.err.printf("0 - actual %s, expected %s%n", q0_5, dtf.format(mid));
+			System.err.printf("0 - actual %s, expected %s%n", q1_0, dtf.format(start));
 		}
 	}
 
@@ -674,9 +675,9 @@ public class TestDistributions {
 			assertEquals(q1_0, dtf.format(lt));
 		}
 		else {
-			System.err.printf("0 - actual %s, expected %s\n", q0_0, dtf.format(start));
-			System.err.printf("0 - actual %s, expected %s\n", q0_5, dtf.format(mid));
-			System.err.printf("0 - actual %s, expected %s\n", q1_0, dtf.format(lt));
+			System.err.printf("0 - actual %s, expected %s%n", q0_0, dtf.format(start));
+			System.err.printf("0 - actual %s, expected %s%n", q0_5, dtf.format(mid));
+			System.err.printf("0 - actual %s, expected %s%n", q1_0, dtf.format(lt));
 		}
 	}
 
@@ -771,7 +772,6 @@ public class TestDistributions {
 		for (int iter = 0; iter < ITERATIONS; iter++) {
 			final TextAnalyzer analysis = new TextAnalyzer("normalCurve");
 			analysis.setLocale(Locale.forLanguageTag("en-US"));
-			final SecureRandom random = new SecureRandom();
 			final int SIZE = 100000;
 
 			for (int i = 0; i < SIZE; i++)
@@ -884,12 +884,11 @@ public class TestDistributions {
 			histogramCount += entry.getCount();
 
 		if (histogramCount  != shardOneResult.getMatchCount()) {
-			final FileWriter myWriter = new FileWriter("/tmp/bug.csv");
-			for (final String sample : samples)
-				myWriter.write(sample + "\n");
-			myWriter.close();
-			System.err.println("PROBLEM!!!!!!!!!!");
-			System.exit(1);
+			try (final FileWriter myWriter = new FileWriter("/tmp/bug.csv", StandardCharsets.UTF_8)) {
+				for (final String sample : samples)
+					myWriter.write(sample + "\n");
+			}
+			fail("PROBLEM!!!!!!!!!!");
 		}
 
 		assertEquals(histogramCount, shardOneResult.getMatchCount());
@@ -935,7 +934,6 @@ public class TestDistributions {
 	public void biModalSerialized() throws IOException, FTAException {
 		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
 		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
-		final SecureRandom random = new SecureRandom();
 		final int SIZE = 100000;
 
 		for (int i = 0; i < SIZE; i++)
@@ -1022,11 +1020,11 @@ public class TestDistributions {
 		final String q0_5 = result.getValueAtQuantile(.5);
 		final String q1_0 = result.getValueAtQuantile(1.0);
 
-		assertEquals(Long.valueOf(q0_0), 0);
-		assertEquals(Long.valueOf(q1_0), 200000.0, 200000 * RELATIVE_ACCURACY);
+		assertEquals(Long.parseLong(q0_0), 0);
+		assertEquals(Long.parseLong(q1_0), 200000.0, 200000 * RELATIVE_ACCURACY);
 
 		// Median should be seriously close to 0
-		assertEquals(Long.valueOf(q0_5), 100000.0, 100000 * RELATIVE_ACCURACY);
+		assertEquals(Long.parseLong(q0_5), 100000.0, 100000 * RELATIVE_ACCURACY);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DISTRIBUTION })

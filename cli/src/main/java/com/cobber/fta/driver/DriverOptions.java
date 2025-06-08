@@ -19,6 +19,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -172,7 +173,7 @@ public class DriverOptions {
 						System.err.println("ERROR: Failed to read Semantic Types file: " + this.semanticTypes);
 						System.exit(1);
 					}
-					try (FileReader logicalTypes = new FileReader(this.semanticTypes)) {
+					try (FileReader logicalTypes = new FileReader(this.semanticTypes, StandardCharsets.UTF_8)) {
 						analyzer.getPlugins().registerPlugins(logicalTypes, analyzer.getStreamName(), analyzer.getConfig());
 					}
 				}
@@ -256,10 +257,8 @@ public class DriverOptions {
 				else if ("--locale".equals(args[idx])) {
 					final String tag = nextStringArg(args, idx++);
 					locale = Locale.forLanguageTag(tag);
-					if (!locale.toLanguageTag().equals(tag)) {
-						System.err.printf("ERROR: Language tag '%s' not known - using '%s'?%n", tag, locale.toLanguageTag());
-						System.exit(1);
-					}
+					if (!locale.toLanguageTag().equals(tag))
+						throw new IllegalArgumentException(String.format("Language tag '%s' not known - using '%s'?", tag, locale.toLanguageTag()));
 				}
 				else if ("--format".equals(args[idx]))
 					outputFormat = args[++idx];
@@ -313,10 +312,8 @@ public class DriverOptions {
 						resolutionMode = DateResolutionMode.Auto;
 					else if ("None".equals(mode))
 						resolutionMode = DateResolutionMode.None;
-					else {
-						System.err.printf("ERROR: Unrecognized argument: '%s', expected Dayfirst or MonthFirst or Auto or None%n", mode);
-						System.exit(1);
-					}
+					else
+						throw new IllegalArgumentException(String.format("Unrecognized argument: '%s', expected Dayfirst or MonthFirst or Auto or None", mode));
 				}
 				else if ("--samples".equals(args[idx]))
 					samples = true;
@@ -349,8 +346,7 @@ public class DriverOptions {
 					xMaxColumns = nextIntegerArg(args, idx++);
 				else {
 					unprocessed.add(args[idx]);
-					System.err.printf("ERROR: Unrecognized option: '%s', use --help%n", args[idx]);
-					System.exit(1);
+					throw new IllegalArgumentException(String.format("Unrecognized option: '%s', use --help", args[idx]));
 				}
 				idx++;
 			}

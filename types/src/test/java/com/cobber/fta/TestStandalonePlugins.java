@@ -18,6 +18,7 @@ package com.cobber.fta;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -193,7 +194,7 @@ public class TestStandalonePlugins {
 			}
 			catch (IllegalArgumentException e) {
 				logger.error("ERROR: Failed to register plugins for locale: {}, error: {}", locale.toLanguageTag(), e.getMessage());
-				System.exit(1);
+				fail();
 			}
 			final Collection<LogicalType> registered = analyzer.getPlugins().getRegisteredSemanticTypes();
 

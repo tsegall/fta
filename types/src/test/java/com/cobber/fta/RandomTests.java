@@ -1120,7 +1120,7 @@ public class RandomTests {
 			if (len != 0) {
 				if (len > maxTrimmedLength)
 					maxTrimmedLength = len;
-				if (len != 0 && len < minTrimmedLength)
+				if (len < minTrimmedLength)
 					minTrimmedLength = len;
 				len = input.length();
 				if (len > maxLength)
@@ -2929,7 +2929,7 @@ public class RandomTests {
 
 		final TextAnalysisResult result = analysis.getResult();
 
-		assertEquals(result.getSampleCount(), samples.length * 100);
+		assertEquals(result.getSampleCount(), samples.length * 100L);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
@@ -3129,18 +3129,18 @@ public class RandomTests {
 		final Thread[] threads = new Thread[THREADS];
 		final AllocationTracker tracker = new AllocationTracker();
 
-		System.err.printf("Initialization - Allocated: %,d, Free memory: %,d\n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
+		System.err.printf("Initialization - Allocated: %,d, Free memory: %,d%n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
 
 		for (int t = 0; t < THREADS; t++) {
 			threads[t] = new Thread(new MemThread(String.valueOf(t), 100000));
-			System.err.printf("Thread creation - Allocated: %,d, Free memory: %,d\n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
+			System.err.printf("Thread creation - Allocated: %,d, Free memory: %,d%n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
 		}
 
 		for (int t = 0; t < THREADS; t++) {
 			threads[t].start();
-			System.err.printf("Thread start - Allocated: %,d, Free memory: %,d\n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
+			System.err.printf("Thread start - Allocated: %,d, Free memory: %,d%n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
 		}
-		System.err.printf("Thread all running - Allocated: %,d, Free memory: %,d\n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
+		System.err.printf("Thread all running - Allocated: %,d, Free memory: %,d%n", tracker.getAllocated(), Runtime.getRuntime().freeMemory());
 
 		for (int t = 0; t < THREADS; t++)
 			if (threads[t].isAlive())

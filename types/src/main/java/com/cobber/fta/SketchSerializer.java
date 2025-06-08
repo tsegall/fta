@@ -17,6 +17,7 @@ package com.cobber.fta;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import com.datadoghq.sketch.ddsketch.encoding.Output;
@@ -54,7 +55,7 @@ public class SketchSerializer extends JsonSerializer<Sketch> {
 		value.getDdSketch().encode(output, false);
 
 		final byte[] encoded = Base64.getEncoder().encode(output.buffer.toByteArray());
-		generator.writeStringField("ddSketch", new String(encoded));
+		generator.writeStringField("ddSketch", new String(encoded, StandardCharsets.UTF_8));
 		generator.writeEndObject();
 	}
 }

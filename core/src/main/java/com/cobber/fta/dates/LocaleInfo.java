@@ -73,18 +73,14 @@ public class LocaleInfo {
 		if (cache.get(cacheKey) != null)
 			return cache.get(cacheKey);
 
-		synchronized (cache) {
-			if (cache.get(cacheKey) != null)
-				return cache.get(cacheKey);
+		final LocaleInfo ret = new LocaleInfo(localeInfoConfig);
 
-			final LocaleInfo ret = new LocaleInfo(localeInfoConfig);
+		ret.initialize(localeInfoConfig.getLocale());
 
-			ret.initialize(localeInfoConfig.getLocale());
+		final LocaleInfo oldValue = cache.putIfAbsent(cacheKey, ret);
 
-			cache.put(cacheKey, ret);
+		return oldValue == null ? ret : oldValue;
 
-			return ret;
-		}
 	}
 
 	/**

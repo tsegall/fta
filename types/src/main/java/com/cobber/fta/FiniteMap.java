@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -163,8 +164,19 @@ public class FiniteMap implements Map<String, Long> {
 	}
 
 	@Override
-	public boolean equals(final Object o) {
-		final FiniteMap other = (FiniteMap)o;
-		return o != null && impl.equals(other.impl) && maxCapacity == other.maxCapacity;
+	public int hashCode() {
+		return Objects.hash(impl, maxCapacity, sorted);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FiniteMap other = (FiniteMap) obj;
+		return Objects.equals(impl, other.impl) && maxCapacity == other.maxCapacity && sorted == other.sorted;
 	}
 }

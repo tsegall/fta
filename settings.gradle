@@ -40,7 +40,7 @@ includeBuild 'examples/core/speed'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '16.2.9')
+			version('fta', '16.2.10')
 			version('jacoco', '0.8.12')
 
 // https://mvnrepository.com/artifact/com.univocity/univocity-parsers
@@ -58,7 +58,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
 			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0')
 // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:9.0.6')
+			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:9.0.7')
 // https://mvnrepository.com/artifact/org.apache.commons/commons-text
 			library('commonsText', 'org.apache.commons:commons-text:1.13.1')
 // https://mvnrepository.com/artifact/com.github.krraghavan/xeger

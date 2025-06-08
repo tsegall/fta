@@ -24,6 +24,7 @@ import static org.testng.Assert.assertTrue;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -306,7 +307,7 @@ public class TestStrings {
 			final TextAnalyzer analysis = new TextAnalyzer("variableLengthStringSimpleVsBulk_1");
 			final String[] inputs = "HelloWorld|Hello|H|Z|A|Do|Not|Ask|What|You|Can|Do".split("\\|");
 
-			final int ITERATIONS = 100;
+			final long ITERATIONS = 100;
 
 			int locked = -1;
 
@@ -473,7 +474,7 @@ public class TestStrings {
 				"2F36413D34422845573D202020202020", "28324328344323465825202020202020", "3D465924305725305928202020202020",
 				"2546572545443F3044A1202020202020", "2546573D335925464123202020202020", "3D34592F344329324224202020202020"
 				};
-		final int iterations = 10;
+		final long iterations = 10;
 
 		for (int i = 0; i < iterations; i++) {
 			for (final String sample : inputs)
@@ -545,7 +546,7 @@ public class TestStrings {
 		final TextAnalyzer analysis = new TextAnalyzer("niceEnum");
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String[] inputs = { "Corrective", "Discretionary", "Marketing/Retention", "Reactivation(FS Only)", "Undefined" };
-		final int iterations = 10;
+		final long iterations = 10;
 
 		for (int i = 0; i < iterations; i++) {
 			for (final String sample : inputs)
@@ -576,7 +577,7 @@ public class TestStrings {
 				"Skipping locale 'th_TH_TH_#u-nu-thai' as it does not use Arabic numerals.",
 				"Skipping locale 'ja_JP_JP_#u-ca-japanese' as it does not use the Gregorian calendar.",
 				"Skipping locale 'mk_MK' as it has trailing neg suffix." };
-		final int iterations = 10;
+		final long iterations = 10;
 
 		for (int i = 0; i < iterations; i++) {
 			for (final String sample : inputs)
@@ -608,7 +609,7 @@ public class TestStrings {
 				"Would like to be a Fighter",
 				"Hates Fighting",
 				"Fighter; WANNABE"};
-		final int iterations = 10;
+		final long iterations = 10;
 
 		for (int i = 0; i < iterations; i++) {
 			for (final String sample : inputs)
@@ -639,7 +640,7 @@ public class TestStrings {
 				"$411.00", "$420.00", "$407.00", "$80.00", "$453.00", "$401.00", "$490.00", "$430.00", "$4.00", "$40.00",
 				"$830.00", "$411.00", "$420.00", "$407.00", "$80.00", "$453.00", "$401.00", "$490.00", "$430.00", "$4.00"
 		};
-		final int iterations = 10;
+		final long iterations = 10;
 
 		for (int i = 0; i < iterations; i++) {
 			for (final String sample : inputs)
@@ -669,7 +670,7 @@ public class TestStrings {
 		final String[] inputs = {
 				"£41.99", "£51.99", "£28.56", "£7.82", "£9.78", ""
 		};
-		final int iterations = 1;
+		final long iterations = 1;
 
 		for (int i = 0; i < iterations; i++) {
 			for (final String sample : inputs)
@@ -822,7 +823,7 @@ public class TestStrings {
 				"-69.97345,12.51678", "66.00845,33.83627", "17.53646,12.29118",
 				"-63.06082,18.22560", "20.05399,41.14258", "20.03715,60.20733"
 		};
-		final int iterations = 3;
+		final long iterations = 3;
 
 		for (int i = 0; i < iterations; i++) {
 			for (final String sample : inputs)
@@ -863,7 +864,7 @@ public class TestStrings {
 				"40.754,-79.8101", "56.1,34.1",
 				"-20.0637,30.8277"
 		};
-		final int iterations = 3;
+		final long iterations = 3;
 
 		for (int i = 0; i < iterations; i++) {
 			for (final String sample : inputs)
@@ -1288,7 +1289,7 @@ public class TestStrings {
 				if (tracking && i % 10000 == 0) {
 					System.gc();
 					preMergeAllocation = tracker.getAllocated();
-					System.err.printf("Allocated (%d pre-merge): %,d, Free memory: %,d\n", i, preMergeAllocation, Runtime.getRuntime().freeMemory());
+					System.err.printf("Allocated (%d pre-merge): %,d, Free memory: %,d%n", i, preMergeAllocation, Runtime.getRuntime().freeMemory());
 				}
 				final String accumulatorSerialized = accumulator.serialize();
 				final String analysisSerialized = analysis.serialize();
@@ -1296,7 +1297,7 @@ public class TestStrings {
 				analysis = new TextAnalyzer("Analysis");
 				if (tracking && i % 10000 == 0) {
 					System.gc();
-					System.err.printf("Allocated (%d post-merge): +%,d, Free memory: %,d, Serialized length: %d\n",
+					System.err.printf("Allocated (%d post-merge): +%,d, Free memory: %,d, Serialized length: %d%n",
 							i, tracker.getAllocated() - preMergeAllocation, Runtime.getRuntime().freeMemory(), accumulatorSerialized.length());
 				}
 			}
@@ -1304,7 +1305,7 @@ public class TestStrings {
 		final TextAnalysisResult accumulatorResult = accumulator.getResult();
 		System.err.println(accumulatorResult.asJSON(true, 0));
 
-		System.err.printf("Duration: %,dms\n", System.currentTimeMillis() - startTime);
+		System.err.printf("Duration: %,dms%n", System.currentTimeMillis() - startTime);
 
 		final TextAnalysisResult result = accumulator.getResult();
 
@@ -1353,7 +1354,7 @@ public class TestStrings {
 		final String[] samples = new String[10000];
 
 		if (saveOutput)
-			bw = new BufferedWriter(new FileWriter("/tmp/stringPerf.csv"));
+			bw = new BufferedWriter(new FileWriter("/tmp/stringPerf.csv", StandardCharsets.UTF_8));
 
 		final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		final StringBuilder b = new StringBuilder(alphabet.length());

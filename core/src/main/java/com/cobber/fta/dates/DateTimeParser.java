@@ -1164,10 +1164,11 @@ public class DateTimeParser {
 
 				// If we think we have padding on hours but we also have two digits then it must be extra space not padding (e.g. "2023-02-03  09:56:22")
 				if (timeTracker.lastSet() == -1 && tracker.digits == 2 && tracker.padding > 0) {
-					while (tracker.padding > 0) {
+					do {
 						timeDateElements.add(TimeDateElement.WhiteSpace);
 						tracker.padding--;
 					}
+					while (tracker.padding > 0);
 				}
 
 				if (!timeTracker.setComponent(tracker.value, tracker.digits, tracker.padding))

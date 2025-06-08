@@ -70,7 +70,7 @@ public class TypeInfo {
 	public String format;
 	public String typeModifier;
 	public int typeModifierFlags;
-	public boolean isSemanticType;
+	private boolean isSemanticType;
 	private String semanticType;
 	private boolean isForce;
 
