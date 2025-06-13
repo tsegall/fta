@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 16.2.12
+ - ENH: Improve sampleplugin example - to also demonstrate an RE plugin
+
 ### 16.2.11
  - INT: Fix SpotBugs issues
 
