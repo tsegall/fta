@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 16.2.13
+ - ENH: Improve sampleplugin example - to demonstrate loading from a file
+ - INT: Bump jackson to 2.19.1, spotbugs to 6.2.0
+
 ### 16.2.12
  - ENH: Improve sampleplugin example - to also demonstrate an RE plugin
 

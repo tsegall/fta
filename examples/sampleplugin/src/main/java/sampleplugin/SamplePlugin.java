@@ -15,9 +15,12 @@
  */
 package sampleplugin;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import com.cobber.fta.TextAnalysisResult;
@@ -74,14 +77,40 @@ public abstract class SamplePlugin {
 				"4573:LF", "3574:SS", "8122:GK", "4523:EW", "7128:RT", "2548:RF", "6873:HH", "4837:NR", "2358:EE", "3731:HY"
 			};
 
-		final TextAnalyzer analyzerRE = new TextAnalyzer("analyzerRE");
-		analyzerRE.setLocale(Locale.US);
-		addPluginRE(analyzerRE);
+		final String[] indianStates = {
+			"AP", "AR", "AS", "BR", "CG", "GA", "GJ", "HR", "HP", "JK",
+			"KA", "KL", "MP", "MH", "MN", "ML", "MZ", "NL", "OR", "PB",
+			"RJ", "SK", "TN", "TS", "TR", "UP", "UK", "WB", "AN", "AP",
+			"AR", "AS", "BR", "CG", "CH", "DD", "DH", "DL", "GA", "GJ",
+			"HP", "HR", "JH", "JK", "KA", "KL", "LD", "MH", "ML", "MN",
+			"MP", "MZ", "NL", "OR", "PB", "PY", "RJ", "SK", "TN", "TR",
+			"KA", "KL", "MP", "MH", "MN", "ML", "MZ", "NL", "OR", "PB",
+			"HP", "HR", "JH", "JK", "KA", "KL", "LD", "MH", "ML", "MN",
+			"RJ", "SK", "TN", "TS", "TR", "UP", "UK", "WB", "AN", "AP",
+			"AR", "AS", "BR", "CG", "CH", "GA", "GJ", "HR", "HP", "JK",
+			"UK", "UP", "WB"
+		};
+
+		// Load our new plugins from a file and test the new Regular Expression Semantic Type
+		TextAnalyzer analyzerAugmented = new TextAnalyzer("ID");
+		analyzerAugmented.setLocale(Locale.forLanguageTag("en-IN"));
+		addPlugins(analyzerAugmented);
 
 		for (final String input : inputsRE)
-			analyzerRE.train(input);
+			analyzerAugmented.train(input);
 
-		result = analyzerRE.getResult();
+		result = analyzerAugmented.getResult();
+
+		System.err.printf("Result: %s, Semantic Type: %s, Regular Expression: %s, Max: %s, Min: %s.%n", result.getType(), result.getSemanticType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
+
+		// Load our new plugins from a file and test the new List-based Semantic Type
+		analyzerAugmented = new TextAnalyzer("State");
+		analyzerAugmented.setLocale(Locale.forLanguageTag("en-IN"));
+		addPlugins(analyzerAugmented);
+		for (final String input : indianStates)
+			analyzerAugmented.train(input);
+
+		result = analyzerAugmented.getResult();
 
 		System.err.printf("Result: %s, Semantic Type: %s, Regular Expression: %s, Max: %s, Min: %s.%n", result.getType(), result.getSemanticType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
 	}
@@ -101,18 +130,9 @@ public abstract class SamplePlugin {
 		}
     }
 
-    static void addPluginRE(final TextAnalyzer analysis) {
-		// Register our new RE plugin
-		final String pluginRE = "[ { \"semanticType\": \"CUSTOM.DIGIT_ALPHA_ID\", \"description\": \"Digit Alpha ID\", \"pluginType\": \"regex\",\n"
-				+ "                \"validLocales\": [ {\n"
-				+ "                                \"localeTag\": \"en\", \n"
-				+ "                                \"matchEntries\": [ { \"regExpReturned\": \"\\\\d{4}:\\\\p{IsAlphabetic}{2}\" } ]\n"
-				+ "                        } ],\n"
-				+ "                \"threshold\": 95,\n"
-				+ "                \"baseType\": \"STRING\"\n"
-				+ "        } ]";
-		try {
-			analysis.getPlugins().registerPlugins(new StringReader(pluginRE), "RE", analysis.getConfig());
+    static void addPlugins(final TextAnalyzer analysis) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/CustomPlugins.json"), StandardCharsets.UTF_8))) {
+			analysis.getPlugins().registerPlugins(reader, "RE", analysis.getConfig());
 		} catch (InvocationTargetException | ClassNotFoundException | NoSuchMethodException | InstantiationException |
 				IllegalAccessException | IOException | FTAException e) {
 			if (e.getCause() != null)

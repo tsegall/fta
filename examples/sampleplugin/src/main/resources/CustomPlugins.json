@@ -1,0 +1,32 @@
+[
+{
+	"semanticType": "CUSTOM.DIGIT_ALPHA_ID",
+	"description": "Digit Alpha ID",
+	"pluginType": "regex",
+	"validLocales": [
+		{
+			"localeTag": "en", 
+			"matchEntries": [ { "regExpReturned": "\\d{4}:\\p{IsAlphabetic}{2}" } ]
+		} ],
+	"threshold": 95,
+	"baseType": "STRING"
+},
+{
+	"semanticType": "STATE_PROVINCE.STATE_IN",
+	"description": "India State Code",
+	"pluginType": "list",
+	"validLocales": [ {
+		"localeTag": "en-IN,hi-IN"
+	} ],
+	"threshold": 95,
+	"content": {
+		"type": "resource",
+		"reference": "/in_states.csv"
+	},
+	"documentation": [
+		{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_and_union_territories_of_India" },
+		{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-2:IN" }
+	],
+	"backout": "\\\\p{IsAlphabetic}{2}"
+}
+]
