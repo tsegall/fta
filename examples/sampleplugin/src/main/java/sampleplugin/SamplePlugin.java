@@ -94,7 +94,7 @@ public abstract class SamplePlugin {
 		// Load our new plugins from a file and test the new Regular Expression Semantic Type
 		TextAnalyzer analyzerAugmented = new TextAnalyzer("ID");
 		analyzerAugmented.setLocale(Locale.forLanguageTag("en-IN"));
-		addPlugins(analyzerAugmented);
+		addPlugins(analyzerAugmented, "ID");
 
 		for (final String input : inputsRE)
 			analyzerAugmented.train(input);
@@ -106,7 +106,7 @@ public abstract class SamplePlugin {
 		// Load our new plugins from a file and test the new List-based Semantic Type
 		analyzerAugmented = new TextAnalyzer("State");
 		analyzerAugmented.setLocale(Locale.forLanguageTag("en-IN"));
-		addPlugins(analyzerAugmented);
+		addPlugins(analyzerAugmented, "State");
 		for (final String input : indianStates)
 			analyzerAugmented.train(input);
 
@@ -130,9 +130,9 @@ public abstract class SamplePlugin {
 		}
     }
 
-    static void addPlugins(final TextAnalyzer analysis) {
+    static void addPlugins(final TextAnalyzer analysis, final String dataStreamName) {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/CustomPlugins.json"), StandardCharsets.UTF_8))) {
-			analysis.getPlugins().registerPlugins(reader, "RE", analysis.getConfig());
+			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig());
 		} catch (InvocationTargetException | ClassNotFoundException | NoSuchMethodException | InstantiationException |
 				IllegalAccessException | IOException | FTAException e) {
 			if (e.getCause() != null)
