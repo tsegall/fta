@@ -33,8 +33,10 @@ import org.testng.annotations.Test;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
+
+import de.siegmar.fastcsv.reader.CloseableIterator;
+import de.siegmar.fastcsv.reader.CsvReader;
+import de.siegmar.fastcsv.reader.NamedCsvRecord;
 
 /**
  */
@@ -128,26 +130,25 @@ public class TestPerformance {
 	@Test(groups = { TestGroups.ALL, TestGroups.PERFORMANCE })
 	public void wideRecord() throws IOException, FTAException {
 		final int iterations = 5;
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.setHeaderExtractionEnabled(true);
+		int headerLength = 0;
 
 		for (int i = 0; i < iterations; i++) {
 			final long start = System.currentTimeMillis();
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/enriched.csv"), StandardCharsets.UTF_8))) {
-
-				final CsvParser parser = new CsvParser(settings);
-				parser.beginParsing(in);
-
-				final String[] header = parser.getRecordMetadata().headers();
-
-				final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "profile", header);
-				final TextAnalyzer textAnalyzer = new TextAnalyzer(context);
-				textAnalyzer.setLocale(Locale.getDefault());
-				final RecordAnalyzer analyzer = new RecordAnalyzer(textAnalyzer);
-
-				String[] row;
+				final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
+				RecordAnalyzer analyzer = null;
 				int rows = 0;
-				while ((row = parser.parseNext()) != null) {
+				for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+					final NamedCsvRecord rowRaw = iter.next();
+					final String[] row = rowRaw.getFields().toArray(new String[0]);
+					if (rows == 0) {
+						final String[] header = rowRaw.getHeader().toArray(new String[0]);
+						headerLength = header.length;
+						final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "profile", header);
+						final TextAnalyzer textAnalyzer = new TextAnalyzer(context);
+						textAnalyzer.setLocale(Locale.getDefault());
+						analyzer = new RecordAnalyzer(textAnalyzer);
+					}
 					analyzer.train(row);
 					rows++;
 				}
@@ -155,7 +156,7 @@ public class TestPerformance {
 				RecordAnalysisResult result = analyzer.getResult();
 
 				System.out.printf("durations: %d ms, columns: %d, rows: %d%n",
-						System.currentTimeMillis() - start, header.length, rows);
+						System.currentTimeMillis() - start, headerLength, rows);
 			}
 		}
 	}

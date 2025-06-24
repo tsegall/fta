@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 17.0.0
+ - **ENH:** registerPlugins signature changed now only throws IOException and FTAPluginException
+ - ENH: Add new Semantic Type - STATE_PROVINCE.STATE_UNION_NAME_IN (Indian State/Union name) and STATE_PROVINCE.STATE_IN (Indian State Code) (Issue #140)
+ - ENH: Add --withBOM to options to assert that a test file has a BOM
+ - INT: Replace univocity parsers with fastcsv. (Issue #137)
+
 ### 16.2.13
  - ENH: Improve sampleplugin example - to demonstrate loading from a file
  - INT: Bump jackson to 2.19.1, spotbugs to 6.2.0

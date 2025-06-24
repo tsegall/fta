@@ -64,4 +64,8 @@ public class PreSortedSet extends LinkedHashSet<String> implements SortedSet<Str
 	public SortedSet<String> tailSet(final String fromElement) {
 		throw new UnsupportedOperationException();
 	}
+
+	public SortedSet<String> reversed() {
+		throw new UnsupportedOperationException();
+	}
 }

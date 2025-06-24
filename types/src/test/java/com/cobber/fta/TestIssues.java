@@ -39,8 +39,10 @@ import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
+
+import de.siegmar.fastcsv.reader.CloseableIterator;
+import de.siegmar.fastcsv.reader.CsvReader;
+import de.siegmar.fastcsv.reader.NamedCsvRecord;
 
 public class TestIssues {
 
@@ -118,26 +120,24 @@ public class TestIssues {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void issue25() throws IOException, FTAException {
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.setHeaderExtractionEnabled(true);
-		RecordAnalyzer analyzer;
+		RecordAnalyzer analyzer = null;
 		int rows = 0;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/addresses.csv"), StandardCharsets.UTF_8))) {
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
 
-			final CsvParser parser = new CsvParser(settings);
-			parser.beginParsing(in);
-
-			final String[] header = parser.getRecordMetadata().headers();
-			final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "pickup", header);
-			final TextAnalyzer template = new TextAnalyzer(context);
-			template.setLocale(Locale.forLanguageTag("en-US"));
-			analyzer = new RecordAnalyzer(template);
-
-			String[] row;
-			while ((row = parser.parseNext()) != null) {
-					analyzer.train(row);
-					rows++;
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				final NamedCsvRecord rowRaw = iter.next();
+				final String[] row = rowRaw.getFields().toArray(new String[0]);
+				if (rows == 0) {
+					final String[] header = rowRaw.getHeader().toArray(new String[0]);
+					final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "profile", header);
+					final TextAnalyzer template = new TextAnalyzer(context);
+					template.setLocale(Locale.forLanguageTag("en-US"));
+					analyzer = new RecordAnalyzer(template);
+				}
+				analyzer.train(row);
+				rows++;
 			}
 		}
 
@@ -285,26 +285,24 @@ public class TestIssues {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void pickup() throws IOException, FTAException {
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.setHeaderExtractionEnabled(true);
-		RecordAnalyzer analyzer;
+		RecordAnalyzer analyzer = null;
 		int rows = 0;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/pickup.csv"), StandardCharsets.UTF_8))) {
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
 
-			final CsvParser parser = new CsvParser(settings);
-			parser.beginParsing(in);
-
-			final String[] header = parser.getRecordMetadata().headers();
-			final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "pickup", header);
-			final TextAnalyzer template = new TextAnalyzer(context);
-			template.setLocale(Locale.forLanguageTag("en-US"));
-			analyzer = new RecordAnalyzer(template);
-
-			String[] row;
-			while ((row = parser.parseNext()) != null) {
-					analyzer.train(row);
-					rows++;
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				final NamedCsvRecord rowRaw = iter.next();
+				final String[] row = rowRaw.getFields().toArray(new String[0]);
+				if (rows == 0) {
+					final String[] header = rowRaw.getHeader().toArray(new String[0]);
+					final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "profile", header);
+					final TextAnalyzer template = new TextAnalyzer(context);
+					template.setLocale(Locale.forLanguageTag("en-US"));
+					analyzer = new RecordAnalyzer(template);
+				}
+				analyzer.train(row);
+				rows++;
 			}
 		}
 

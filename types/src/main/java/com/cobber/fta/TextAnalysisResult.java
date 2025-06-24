@@ -331,7 +331,7 @@ public class TextAnalysisResult {
 	 * @return The Regular Expression reflecting the non-white space data.
 	 */
 	public String getDataRegExp() {
-		return facts.getMatchTypeInfo().regexp;
+		return facts.getMatchTypeInfo().getRegExp();
 	}
 
 	/**

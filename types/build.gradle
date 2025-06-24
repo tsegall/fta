@@ -8,7 +8,6 @@ tasks.distTar.enabled = false
 dependencies {
 	api project(':core')
 
-	implementation libs.univocity
 	implementation libs.javaxMailAPI
 	implementation libs.commonsValidator
 	implementation libs.jacksonDataCore
@@ -24,6 +23,6 @@ dependencies {
 	implementation libs.sketches
 
 	testImplementation libs.logbackClassic
-
+	testImplementation libs.fastcsv
 	testImplementation testLibs.testng
 }

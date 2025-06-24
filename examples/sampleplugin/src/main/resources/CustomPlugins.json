@@ -12,21 +12,20 @@
 	"baseType": "STRING"
 },
 {
-	"semanticType": "STATE_PROVINCE.STATE_IN",
-	"description": "India State Code",
+	"semanticType": "CUSTOM.ELEMENTS",
+	"description": "Periodic Table Elements",
 	"pluginType": "list",
 	"validLocales": [ {
-		"localeTag": "en-IN,hi-IN"
+		"localeTag": "en"
 	} ],
 	"threshold": 95,
 	"content": {
 		"type": "resource",
-		"reference": "/in_states.csv"
+		"reference": "/elements.csv"
 	},
 	"documentation": [
-		{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_and_union_territories_of_India" },
-		{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-2:IN" }
+		{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Periodic_table" }
 	],
-	"backout": "\\\\p{IsAlphabetic}{2}"
+	"backout": "\\\\p{IsAlphabetic}{1,2}"
 }
 ]

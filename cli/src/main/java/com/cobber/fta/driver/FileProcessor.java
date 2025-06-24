@@ -22,8 +22,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -44,10 +46,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.univocity.parsers.common.TextParsingException;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
-import com.univocity.parsers.csv.UnescapedQuoteHandling;
+
+import de.siegmar.fastcsv.reader.CloseableIterator;
+import de.siegmar.fastcsv.reader.CsvReader;
+import de.siegmar.fastcsv.reader.NamedCsvRecord;
 
 class FileProcessor {
 	private final DriverOptions options;
@@ -62,37 +64,29 @@ class FileProcessor {
 		this.options = new DriverOptions(cmdLineOptions);
 	}
 
+	static class ParserSettings {
+		char delimiter;
+		char quoteCharacter;
+		boolean withBOM;
+	}
+
 	protected void process() throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException, FTAMergeException {
-		if (Files.exists(Paths.get(filename + ".options"))) {
+		if (Files.exists(Paths.get(filename + ".options")))
 			options.addFromFile(filename + ".options");
-		}
 
 		output = options.output ? new PrintStream(filename + ".out", StandardCharsets.UTF_8) : System.out;
 
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.setHeaderExtractionEnabled(true);
-		settings.detectFormatAutomatically();
-		settings.setLineSeparatorDetectionEnabled(true);
-		settings.setIgnoreLeadingWhitespaces(false);
-		settings.setIgnoreTrailingWhitespaces(false);
-		settings.setUnescapedQuoteHandling(UnescapedQuoteHandling.STOP_AT_DELIMITER);
-//		settings.setNullValue("");
-		settings.setEmptyValue("");
-		settings.setSkipEmptyLines(false);
+		final ParserSettings settings = new ParserSettings();
 		if (options.delimiter != null) {
-			settings.getFormat().setDelimiter(options.delimiter.charAt(0));
-			settings.setDelimiterDetectionEnabled(false);
+			settings.delimiter = "\\t".equals(options.delimiter) ? '\t' : options.delimiter.charAt(0);
 		}
 		else
-			settings.setDelimiterDetectionEnabled(true, ',', '\t', '|', ';');
-		if (options.quoteChar != null) {
-			settings.getFormat().setQuote(options.quoteChar.charAt(0));
-			settings.setQuoteDetectionEnabled(false);
-		}
-		if (options.xMaxCharsPerColumn != -1)
-			settings.setMaxCharsPerColumn(options.xMaxCharsPerColumn);
-
-		settings.setMaxColumns(options.xMaxColumns);
+			settings.delimiter = ',';
+		if (options.quoteChar != null)
+			settings.quoteCharacter = options.quoteChar.charAt(0);
+		else
+			settings.quoteCharacter = '"';
+		settings.withBOM = options.withBOM;
 
 		try {
 			if (options.bulk)
@@ -124,9 +118,8 @@ class FileProcessor {
 		}
 	}
 
-	private void processBulk(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException {
-		String[] header;
-		int numFields;
+	private void processBulk(final ParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException {
+		final int FIELD_COUNT = 4;
 		TextAnalyzer analyzer;
 		TextAnalysisResult result;
         String previousKey = null;
@@ -136,37 +129,33 @@ class FileProcessor {
 		final Map<String, Long> bulkMap = new HashMap<>();
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
-			final CsvParser parser = new CsvParser(settings);
-			parser.beginParsing(in);
-
-			header = parser.getRecordMetadata().headers();
-
-			if (header.length != 4)
-				throw new FTAProcessingException(filename,
-						MessageFormat.format("Expected input with four columns (key,fieldName,fieldValue,fieldCount). {0} field(s) in input",
-								 header.length));
-
-			numFields = header.length;
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
 
 			long thisRecord = 0;
 			long totalCount = 0;
-			String[] row;
+			NamedCsvRecord row;
 			final Map<Integer, RowCount> errors = new HashMap<>();
 
-			while ((row = parser.parseNext()) != null) {
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				row = iter.next();
+				if (thisRecord == 0 && row.getHeader().size() != FIELD_COUNT)
+					throw new FTAProcessingException(filename,
+							MessageFormat.format("Expected input with four columns (key,fieldName,fieldValue,fieldCount). {0} field(s) in input",
+									row.getHeader().size()));
 				thisRecord++;
-				if (row.length != numFields) {
-					final RowCount existing = errors.get(row.length);
+				final int rowLength = row.getFieldCount();
+				if (rowLength != FIELD_COUNT) {
+					final RowCount existing = errors.get(rowLength);
 					if (existing == null)
-						errors.put(row.length, new RowCount(row.length, thisRecord));
+						errors.put(rowLength, new RowCount(rowLength, thisRecord));
 					else
-						errors.put(row.length, existing.inc());
+						errors.put(rowLength, existing.inc());
 					continue;
 				}
-				key = row[0];
-				name = row[1];
-				final String fieldValue = row[2];
-				final Long fieldCount = Long.valueOf(row[3].trim());
+				key = row.getField(0);
+				name = row.getField(1);
+				final String fieldValue = row.getField(2);
+				final Long fieldCount = Long.valueOf(row.getField(3).trim());
 				totalCount += fieldCount;
 				if (previousKey == null || !key.equals(previousKey)) {
 					if (!bulkMap.isEmpty()) {
@@ -188,7 +177,7 @@ class FileProcessor {
 			if (!errors.isEmpty()) {
 				for (final RowCount recordError : errors.values())
 					error.printf("ERROR: File: '%s', %d records skipped with %d fields, first occurrence %d, expected %d%n",
-							filename, recordError.count, recordError.numFields, recordError.firstRow, numFields);
+							filename, recordError.count, recordError.numFields, recordError.firstRow, FIELD_COUNT);
 			}
 
 			if (!bulkMap.isEmpty()) {
@@ -220,7 +209,7 @@ class FileProcessor {
 		return b.toString();
 	}
 
-	private void processAllFields(final CsvParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException, FTAMergeException {
+	private void processAllFields(final ParserSettings settings) throws IOException, FTAPluginException, FTAUnsupportedLocaleException, FTAProcessingException, FTAMergeException {
 		final long startTime = System.currentTimeMillis();
 		long initializedTime = -1;
 		long consumedTime = -1;
@@ -233,52 +222,64 @@ class FileProcessor {
 		final Map<Integer, RowCount> errors = new HashMap<>();
 
 		int processedRecords = 0;
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
+		try {
+			CsvReader<NamedCsvRecord> csv;
+
+			if (settings.withBOM)
+				csv = CsvReader.builder()
+					.fieldSeparator(settings.delimiter)
+					.quoteCharacter(settings.quoteCharacter)
+					.detectBomHeader(true)
+					.skipEmptyLines(false)
+					.ofNamedCsvRecord(Files.newInputStream(Path.of(filename)), Charset.forName(options.charset));
+			else
+				csv = CsvReader.builder()
+						.fieldSeparator(settings.delimiter)
+						.quoteCharacter(settings.quoteCharacter)
+						.skipEmptyLines(false)
+						.ofNamedCsvRecord(new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset)));
 
 			// Skip the first <n> lines if requested
 			if (options.skip != 0) {
-				for (int i = 0; i < options.skip; i++)
-					in.readLine();
+				csv.skipLines(options.skip);
 				rawRecordIndex += options.skip;
 			}
 
-			final CsvParser parser = new CsvParser(settings);
-			parser.beginParsing(in);
-
-			header = parser.getRecordMetadata().headers();
-			if (header == null)
-				throw new FTAProcessingException(filename, "Cannot parse header");
-
-			numFields = header.length;
-			if (options.col > numFields)
-				throw new FTAProcessingException(filename, MessageFormat.format("Column {0} does not exist.  Only {1} field(s) in input.", options.col, numFields));
-
-			for (int i = 0; i < numFields; i++) {
-				if ((options.col == -1 || options.col == i) && options.verbose != 0 && options.noAnalysis)
-					System.out.println(header[i]);
-			}
-
 			final String compositeName = com.cobber.fta.core.Utils.getBaseName(Paths.get(filename).getFileName().toString());
-			processor = new Processor(compositeName, header, options);
-			if (options.testmerge != 0)
-				altProcessor = new Processor(compositeName, header, options);
-			initializedTime = System.currentTimeMillis();
-
 			final CircularBuffer buffer = new CircularBuffer(options.trailer + 1);
 
-			String[] row;
+			int rowLength;
 
-			while ((row = parser.parseNext()) != null) {
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				final NamedCsvRecord rowRaw = iter.next();
+				String[] row = rowRaw.getFields().toArray(new String[0]);
+				rowLength = rowRaw.getFieldCount();
+				// Are we looking at the header row?
+				if (rawRecordIndex == options.skip) {
+					numFields = rowRaw.getHeader().size();
+					if (options.col > numFields)
+						throw new FTAProcessingException(filename, MessageFormat.format("Column {0} does not exist.  Only {1} field(s) in input.", options.col, numFields));
+
+					header = rowRaw.getHeader().toArray(new String[0]);
+					for (int i = 0; i < numFields; i++) {
+						if ((options.col == -1 || options.col == i) && options.verbose != 0 && options.noAnalysis)
+							System.out.println(header[i]);
+					}
+					processor = new Processor(compositeName, header, options);
+					if (options.testmerge != 0)
+						altProcessor = new Processor(compositeName, header, options);
+					initializedTime = System.currentTimeMillis();
+				}
 				rawRecordIndex++;
 				// Skip blank lines
 				if (row.length == 1 && row[0] == null)
 					continue;
-				if (row.length != numFields) {
-					final RowCount existing = errors.get(row.length);
+				if (rowLength != numFields) {
+					final RowCount existing = errors.get(rowLength);
 					if (existing == null)
-						errors.put(row.length, new RowCount(row.length, rawRecordIndex));
+						errors.put(rowLength, new RowCount(rowLength, rawRecordIndex));
 					else
-						errors.put(row.length, existing.inc());
+						errors.put(rowLength, existing.inc());
 					continue;
 				}
 				buffer.add(row);
@@ -302,7 +303,6 @@ class FileProcessor {
 					processor.consume(row);
 
 				if (processedRecords == options.getRecordsToProcess()) {
-					parser.stopParsing();
 					break;
 				}
 			}
@@ -310,9 +310,6 @@ class FileProcessor {
 		}
 		catch (FileNotFoundException e) {
 			throw new FTAProcessingException(filename, e.getMessage(), e);
-		}
-		catch (TextParsingException|ArrayIndexOutOfBoundsException e) {
-			throw new FTAProcessingException(filename, "Univocity exception", e);
 		}
 
 		if (options.testmerge != 0)
@@ -342,22 +339,29 @@ class FileProcessor {
 		// Check the RegExp at level 2 validation
 		if (options.validate == 2) {
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
-
-				final CsvParser parser = new CsvParser(settings);
-				parser.beginParsing(in);
-				numFields = parser.getRecordMetadata().headers().length;
-
-				final TextAnalysisResult[] results = processor.getResult();
-				final Pattern[] patterns = new Pattern[numFields];
-
-				for (int i = 0; i < numFields; i++)
-					if (options.col == -1 || options.col == i)
-						patterns[i] = Pattern.compile(results[i].getRegExp());
-
+				final CsvReader<NamedCsvRecord> csv = CsvReader.builder()
+						.fieldSeparator(settings.delimiter)
+						.quoteCharacter(settings.quoteCharacter)
+						.detectBomHeader(settings.withBOM)
+						.skipEmptyLines(false)
+						.ofNamedCsvRecord(in);
+				Pattern[] patterns = null;
 				rawRecordIndex = 0;
-				String[] row;
 
-				while ((row = parser.parseNext()) != null) {
+				for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+					final NamedCsvRecord rowRaw = iter.next();
+					final String[] row = rowRaw.getFields().toArray(new String[0]);
+					// Are we looking at the header row?
+					if (rawRecordIndex == 0) {
+						numFields = rowRaw.getFieldCount();
+						final TextAnalysisResult[] results = processor.getResult();
+						patterns = new Pattern[numFields];
+
+						for (int i = 0; i < numFields; i++)
+							if (options.col == -1 || options.col == i)
+								patterns[i] = Pattern.compile(results[i].getRegExp());
+					}
+
 					rawRecordIndex++;
 					if (row.length != numFields)
 						continue;
@@ -376,7 +380,6 @@ class FileProcessor {
 						}
 					}
 					if (rawRecordIndex == options.getRecordsToProcess()) {
-						parser.stopParsing();
 						break;
 					}
 				}

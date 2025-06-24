@@ -732,16 +732,16 @@ public class Facts {
 	@JsonIgnore
 	public String getRegExp() {
 		if (matchTypeInfo.isSemanticType() || (!leadingWhiteSpace && !trailingWhiteSpace))
-			return matchTypeInfo.regexp;
+			return matchTypeInfo.getRegExp();
 
 		// We need to add whitespace to the pattern but if there is alternation in the RE we need to be careful
 		final StringBuilder answer = new StringBuilder();
 		if (leadingWhiteSpace)
 			answer.append(KnownTypes.PATTERN_WHITESPACE);
-		final boolean optional = matchTypeInfo.regexp.indexOf('|') != -1;
+		final boolean optional = matchTypeInfo.getRegExp().indexOf('|') != -1;
 		if (optional)
 			answer.append('(');
-		answer.append(matchTypeInfo.regexp);
+		answer.append(matchTypeInfo.getRegExp());
 		if (optional)
 			answer.append(')');
 		if (trailingWhiteSpace)

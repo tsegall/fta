@@ -49,7 +49,7 @@ public class Plugins {
 	 * @param dataStreamName The name of the datastream.
 	 * @param analysisConfig The Analysis configuration used for this analysis.
 	 */
-	public void registerPlugins(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+	public void registerPlugins(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, FTAPluginException {
 		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, false);
 	}
 
@@ -60,15 +60,15 @@ public class Plugins {
 	 * @param dataStreamName The name of the datastream.
 	 * @param analysisConfig The Analysis configuration used for this analysis.
 	 */
-	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws FTAPluginException {
 		registerPluginListCore(plugins, dataStreamName, analysisConfig, false);
 	}
 
-	protected void registerPluginsInternal(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+	protected void registerPluginsInternal(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws FTAPluginException {
 		registerPluginListCore(plugins, dataStreamName, analysisConfig, true);
 	}
 
-	protected void registerPluginListCore(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig, final boolean internal) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+	protected void registerPluginListCore(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig, final boolean internal) throws FTAPluginException {
 		// Only register plugins that are valid for this locale
 		for (final PluginDefinition plugin : plugins) {
 			if (!internal)
@@ -121,14 +121,18 @@ public class Plugins {
 	 * @throws InstantiationException
 	 * @throws FTAPluginException
 	 */
-	private void registerLogicalTypeClass(final PluginDefinition plugin, final AnalysisConfig analysisConfig) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, FTAPluginException {
+	private void registerLogicalTypeClass(final PluginDefinition plugin, final AnalysisConfig analysisConfig) throws FTAPluginException {
 		Class<?> newLogicalType;
 		Constructor<?> ctor;
 		Object logical;
 
-		newLogicalType = Class.forName(plugin.clazz);
-		ctor = newLogicalType.getConstructor(PluginDefinition.class);
-		logical = ctor.newInstance(plugin);
+		try {
+			newLogicalType = Class.forName(plugin.clazz);
+			ctor = newLogicalType.getConstructor(PluginDefinition.class);
+			logical = ctor.newInstance(plugin);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | ClassNotFoundException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			throw new FTAPluginException("Semantic type: " + plugin.clazz + " failure to instantiate/contstruct.", e);
+		}
 
 		if (!(logical instanceof LogicalType))
 			throw new FTAPluginException("Semantic type: " + plugin.clazz + " does not appear to be a Semantic Type.");

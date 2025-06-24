@@ -35,8 +35,10 @@ import org.testng.annotations.Test;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
+
+import de.siegmar.fastcsv.reader.CloseableIterator;
+import de.siegmar.fastcsv.reader.CsvReader;
+import de.siegmar.fastcsv.reader.NamedCsvRecord;
 
 public class TestRegExpPlugins {
 	private static final SecureRandom random = new SecureRandom();
@@ -177,23 +179,23 @@ public class TestRegExpPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.ALL })
 	public void shapeCacheOverflow() throws IOException, FTAException {
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.setHeaderExtractionEnabled(true);
-		String[] header;
-		String[] row;
-		TextAnalyzer[] analysis;
+		TextAnalyzer[] analysis = null;
+		int rows = 0;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/MAC.csv"), StandardCharsets.UTF_8))) {
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
 
-			final CsvParser parser = new CsvParser(settings);
-			parser.beginParsing(in);
-
-			header = parser.getRecordMetadata().headers();
-			analysis = new TextAnalyzer[header.length];
-			for (int i = 0; i < header.length; i++) {
-				analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "Mac.csv", header));
-			}
-			while ((row = parser.parseNext()) != null) {
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				final NamedCsvRecord rowRaw = iter.next();
+				final String[] row = rowRaw.getFields().toArray(new String[0]);
+				if (rows == 0) {
+					final String[] header = rowRaw.getHeader().toArray(new String[0]);
+					analysis = new TextAnalyzer[header.length];
+					for (int i = 0; i < header.length; i++) {
+						analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "Mac.csv", header));
+					}
+				}
+				rows++;
 				for (int i = 0; i < row.length; i++) {
 					analysis[i].train(row[i]);
 				}
@@ -219,23 +221,23 @@ public class TestRegExpPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.ALL })
 	public void cardinalityCacheOverflow() throws IOException, FTAException {
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.setHeaderExtractionEnabled(true);
-		String[] header;
-		String[] row;
-		TextAnalyzer[] analysis;
+		TextAnalyzer[] analysis = null;
+		int rows = 0;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/color.csv"), StandardCharsets.UTF_8))) {
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
 
-			final CsvParser parser = new CsvParser(settings);
-			parser.beginParsing(in);
-
-			header = parser.getRecordMetadata().headers();
-			analysis = new TextAnalyzer[header.length];
-			for (int i = 0; i < header.length; i++) {
-				analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "color.csv", header));
-			}
-			while ((row = parser.parseNext()) != null) {
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				final NamedCsvRecord rowRaw = iter.next();
+				final String[] row = rowRaw.getFields().toArray(new String[0]);
+				if (rows == 0) {
+					final String[] header = rowRaw.getHeader().toArray(new String[0]);
+					analysis = new TextAnalyzer[header.length];
+					for (int i = 0; i < header.length; i++) {
+						analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "color.csv", header));
+					}
+				}
+				rows++;
 				for (int i = 0; i < row.length; i++) {
 					analysis[i].train(row[i]);
 				}

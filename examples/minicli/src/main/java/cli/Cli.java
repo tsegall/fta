@@ -12,8 +12,10 @@ import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
+
+import de.siegmar.fastcsv.reader.CloseableIterator;
+import de.siegmar.fastcsv.reader.CsvReader;
+import de.siegmar.fastcsv.reader.NamedCsvRecord;
 
 public abstract class Cli {
 	public static void main(final String[] args) throws FTAException, IOException {
@@ -60,28 +62,29 @@ public abstract class Cli {
 		final String source = args[idx];
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(source), "UTF-8"))) {
-			final CsvParserSettings settings = new CsvParserSettings();
-			settings.setHeaderExtractionEnabled(true);
-			settings.detectFormatAutomatically();
-			settings.setLineSeparatorDetectionEnabled(true);
-			settings.setIgnoreLeadingWhitespaces(false);
-			settings.setIgnoreTrailingWhitespaces(false);
-			settings.setEmptyValue("");
-			final CsvParser parser = new CsvParser(settings);
-			parser.beginParsing(in);
-			final String[] header = parser.getRecordMetadata().headers();
-			final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, source, header);
-			final TextAnalyzer template = new TextAnalyzer(context);
-			if (locale != null)
-				template.setLocale(locale);
-			if (memory)
-				template.setDebug(3);
-			final RecordAnalyzer recordAnalyzer = new RecordAnalyzer(template);
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder()
+					.skipEmptyLines(false)
+					.ofNamedCsvRecord(in);
 
+			String[] header = null;
 			String[] row;
 			int thisRecord = 0;
+			RecordAnalyzer recordAnalyzer = null;
 
-			while ((row = parser.parseNext()) != null) {
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				NamedCsvRecord rowRaw = iter.next();
+				row = rowRaw.getFields().toArray(new String[0]);
+				// Are we looking at the header row?
+				if (thisRecord == 0) {
+					header = rowRaw.getHeader().toArray(new String[0]);
+					final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, source, header);
+					final TextAnalyzer template = new TextAnalyzer(context);
+					if (locale != null)
+						template.setLocale(locale);
+					if (memory)
+						template.setDebug(3);
+					recordAnalyzer = new RecordAnalyzer(template);
+				}
 				thisRecord++;
 				if (row.length != header.length) {
 					System.err.printf("ERROR: Record %d has %d fields, expected %d, skipping%n",

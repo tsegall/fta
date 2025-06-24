@@ -384,7 +384,7 @@ public class KnownTypes {
 
 	protected String numericPromotion(final String leftPattern, final String rightPattern) {
 		final TypeInfo result = promotion.get(leftPattern + "---" + rightPattern);
-		return result == null ? null : result.regexp;
+		return result == null ? null : result.getRegExp();
 	}
 
 	protected TypeInfo negation(final String pattern) {
@@ -392,7 +392,7 @@ public class KnownTypes {
 	}
 
 	protected TypeInfo grouping(final ID id) {
-		return grouping.get(knownIDs.get(id).regexp);
+		return grouping.get(knownIDs.get(id).getRegExp());
 	}
 
 	protected TypeInfo grouping(final String pattern) {

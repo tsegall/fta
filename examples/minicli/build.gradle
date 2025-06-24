@@ -24,7 +24,7 @@ project.tasks.named("installDist") {
 
 dependencies {
 	implementation group: 'com.cobber.fta', name: 'fta', version: '16.+'
-	implementation 'com.univocity:univocity-parsers:2.9.1'
+	implementation group: 'de.siegmar', name: 'fastcsv', version: '3.7.0'
 	implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.17'
 }
 

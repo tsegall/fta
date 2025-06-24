@@ -102,7 +102,7 @@ public class DOB extends LogicalTypeInfinite {
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams,
 			final AnalysisConfig analysisConfig) {
 		// Set the regExp based on the Date Format we detected
-		regExp = facts.getMatchTypeInfo().regexp;
+		regExp = facts.getMatchTypeInfo().getRegExp();
 
 		dtpResult = DateTimeParserResult.asResult(facts.getMatchTypeInfo().format, context.getDateResolutionMode(), new DateTimeParserConfig());
 

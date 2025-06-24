@@ -11,7 +11,8 @@ repositories {
 }
 
 dependencies {
-	implementation group: 'com.cobber.fta', name: 'fta', version: '16.+'
+	implementation fileTree(dir: '/Users/tsegall/src/fta/cli/build/install/fta/lib', include: '*.jar')
+	// implementation group: 'com.cobber.fta', name: 'fta', version: '16.+'
 }
 
 application {

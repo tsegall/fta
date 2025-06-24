@@ -19,13 +19,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
+import com.cobber.fta.core.FTAPluginException;
 
 public abstract class SamplePlugin {
 
@@ -77,18 +77,11 @@ public abstract class SamplePlugin {
 				"4573:LF", "3574:SS", "8122:GK", "4523:EW", "7128:RT", "2548:RF", "6873:HH", "4837:NR", "2358:EE", "3731:HY"
 			};
 
-		final String[] indianStates = {
-			"AP", "AR", "AS", "BR", "CG", "GA", "GJ", "HR", "HP", "JK",
-			"KA", "KL", "MP", "MH", "MN", "ML", "MZ", "NL", "OR", "PB",
-			"RJ", "SK", "TN", "TS", "TR", "UP", "UK", "WB", "AN", "AP",
-			"AR", "AS", "BR", "CG", "CH", "DD", "DH", "DL", "GA", "GJ",
-			"HP", "HR", "JH", "JK", "KA", "KL", "LD", "MH", "ML", "MN",
-			"MP", "MZ", "NL", "OR", "PB", "PY", "RJ", "SK", "TN", "TR",
-			"KA", "KL", "MP", "MH", "MN", "ML", "MZ", "NL", "OR", "PB",
-			"HP", "HR", "JH", "JK", "KA", "KL", "LD", "MH", "ML", "MN",
-			"RJ", "SK", "TN", "TS", "TR", "UP", "UK", "WB", "AN", "AP",
-			"AR", "AS", "BR", "CG", "CH", "GA", "GJ", "HR", "HP", "JK",
-			"UK", "UP", "WB"
+		final String[] inputList = {
+				"AL", "AT", "BI", "CA", "CN", "CU", "DY", "ER", "ES", "EU",
+				"F", "FE", "FL", "FM", "FR", "GA", "HE", "HS", "LA", "LV",
+				"MT", "ND", "NI", "NO", "NP", "O", "OG", "OS", "P", "PA",
+				"PB", "PD", "PT", "RE", "S", "SG", "TB", "TI", "W", "ZN",
 		};
 
 		// Load our new plugins from a file and test the new Regular Expression Semantic Type
@@ -104,10 +97,10 @@ public abstract class SamplePlugin {
 		System.err.printf("Result: %s, Semantic Type: %s, Regular Expression: %s, Max: %s, Min: %s.%n", result.getType(), result.getSemanticType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
 
 		// Load our new plugins from a file and test the new List-based Semantic Type
-		analyzerAugmented = new TextAnalyzer("State");
-		analyzerAugmented.setLocale(Locale.forLanguageTag("en-IN"));
-		addPlugins(analyzerAugmented, "State");
-		for (final String input : indianStates)
+		analyzerAugmented = new TextAnalyzer("Element");
+		analyzerAugmented.setLocale(Locale.US);
+		addPlugins(analyzerAugmented, "Element");
+		for (final String input : inputList)
 			analyzerAugmented.train(input);
 
 		result = analyzerAugmented.getResult();
@@ -120,26 +113,20 @@ public abstract class SamplePlugin {
 		final String colorPlugin = "[ { \"semanticType\": \"CUSTOM_COLOR.TEXT_<LANG>\", \"pluginType\": \"java\", \"clazz\": \"sampleplugin.PluginColor\", \"validLocales\": [ { \"localeTag\": \"en,fr-FR\" } ] } ]";
 		try {
 			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", analysis.getConfig());
-		} catch (InvocationTargetException | ClassNotFoundException | NoSuchMethodException | InstantiationException |
-				IllegalAccessException | IOException | FTAException e) {
-			if (e.getCause() != null)
-				System.err.println("ERROR: Failed to register plugin: " + e.getCause().getMessage());
-			else
-				System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
-			System.exit(1);
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getCause().getMessage());
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
 		}
     }
 
     static void addPlugins(final TextAnalyzer analysis, final String dataStreamName) {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/CustomPlugins.json"), StandardCharsets.UTF_8))) {
 			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig());
-		} catch (InvocationTargetException | ClassNotFoundException | NoSuchMethodException | InstantiationException |
-				IllegalAccessException | IOException | FTAException e) {
-			if (e.getCause() != null)
-				System.err.println("ERROR: Failed to register plugin: " + e.getCause().getMessage());
-			else
-				System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
-			System.exit(1);
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getCause().getMessage());
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
 		}
     }
 }

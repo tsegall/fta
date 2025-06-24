@@ -60,8 +60,10 @@ import com.cobber.fta.plugins.IPV4Address;
 import com.cobber.fta.plugins.PhoneNumberLT;
 import com.cobber.fta.plugins.URLLT;
 import com.cobber.fta.plugins.address.USZip5;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
+
+import de.siegmar.fastcsv.reader.CloseableIterator;
+import de.siegmar.fastcsv.reader.CsvReader;
+import de.siegmar.fastcsv.reader.NamedCsvRecord;
 
 public class TestPlugins {
 	private static final SecureRandom random = new SecureRandom();
@@ -461,24 +463,24 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void VAT_ES() throws IOException, FTAException {
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.setHeaderExtractionEnabled(true);
-		String[] header;
-		String[] row;
-		TextAnalyzer[] analysis;
+		TextAnalyzer[] analysis = null;
+		int rows = 0;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/VAT_ES.csv"), StandardCharsets.UTF_8))) {
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
 
-			final CsvParser parser = new CsvParser(settings);
-			parser.beginParsing(in);
-
-			header = parser.getRecordMetadata().headers();
-			analysis = new TextAnalyzer[header.length];
-			for (int i = 0; i < header.length; i++) {
-				analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "VAT_ES.csv", header));
-				analysis[i].setLocale(Locale.forLanguageTag("es-ES"));
-			}
-			while ((row = parser.parseNext()) != null) {
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				final NamedCsvRecord rowRaw = csv.iterator().next();
+				final String[] row = rowRaw.getFields().toArray(new String[0]);
+				if (rows == 0) {
+					final String[] header = rowRaw.getHeader().toArray(new String[0]);
+					analysis = new TextAnalyzer[header.length];
+					for (int i = 0; i < header.length; i++) {
+						analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "VAT_ES.csv", header));
+						analysis[i].setLocale(Locale.forLanguageTag("es-ES"));
+					}
+				}
+				rows++;
 				for (int i = 0; i < row.length; i++) {
 					analysis[i].train(row[i]);
 				}
@@ -3291,7 +3293,6 @@ public class TestPlugins {
 			analysis.getPlugins().registerPluginList(plugins, "Ignore", analysis.getConfig());
 		} catch (FTAPluginException e) {
 			pluginExceptionThrown = true;
-		} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
 		}
 
 		assertTrue(pluginExceptionThrown);
@@ -3413,24 +3414,24 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testNames() throws IOException, FTAException {
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.setHeaderExtractionEnabled(true);
-		String[] header;
-		String[] row;
-		TextAnalyzer[] analysis;
+		TextAnalyzer[] analysis = null;
+		int rows = 0;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/Names.txt"), StandardCharsets.UTF_8))) {
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
 
-			final CsvParser parser = new CsvParser(settings);
-			parser.beginParsing(in);
-
-			header = parser.getRecordMetadata().headers();
-			analysis = new TextAnalyzer[header.length];
-			for (int i = 0; i < header.length; i++) {
-				analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "Names.txt", header));
-				analysis[i].setLocale(Locale.forLanguageTag("en-US"));
-			}
-			while ((row = parser.parseNext()) != null) {
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				final NamedCsvRecord rowRaw = csv.iterator().next();
+				final String[] row = rowRaw.getFields().toArray(new String[0]);
+				if (rows == 0) {
+					final String[] header = rowRaw.getHeader().toArray(new String[0]);
+					analysis = new TextAnalyzer[header.length];
+					for (int i = 0; i < header.length; i++) {
+						analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "Names.txt", header));
+						analysis[i].setLocale(Locale.forLanguageTag("en-US"));
+					}
+				}
+				rows++;
 				for (int i = 0; i < row.length; i++) {
 					analysis[i].train(row[i]);
 				}
@@ -3459,24 +3460,25 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testNamesSecond() throws IOException, FTAException {
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.setHeaderExtractionEnabled(true);
-		String[] header;
-		String[] row;
-		TextAnalyzer[] analysis;
+		TextAnalyzer[] analysis = null;
+		int rows = 0;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/NamesSecond.txt"), StandardCharsets.UTF_8))) {
 
-			final CsvParser parser = new CsvParser(settings);
-			parser.beginParsing(in);
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
 
-			header = parser.getRecordMetadata().headers();
-			analysis = new TextAnalyzer[header.length];
-			for (int i = 0; i < header.length; i++) {
-				analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "NamesSecond.txt", header));
-				analysis[i].setLocale(Locale.forLanguageTag("es-CO"));
-			}
-			while ((row = parser.parseNext()) != null) {
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				final NamedCsvRecord rowRaw = csv.iterator().next();
+				final String[] row = rowRaw.getFields().toArray(new String[0]);
+				if (rows == 0) {
+					final String[] header = rowRaw.getHeader().toArray(new String[0]);
+					analysis = new TextAnalyzer[header.length];
+					for (int i = 0; i < header.length; i++) {
+						analysis[i] = new TextAnalyzer(new AnalyzerContext(header[i], DateResolutionMode.Auto, "NamesSecond.txt", header));
+						analysis[i].setLocale(Locale.forLanguageTag("es-CO"));
+					}
+				}
+				rows++;
 				for (int i = 0; i < row.length; i++) {
 					analysis[i].train(row[i]);
 				}
@@ -3610,25 +3612,27 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testRecordAnalyzer() throws IOException, FTAException {
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.setHeaderExtractionEnabled(true);
-		String[] row;
-		RecordAnalyzer recordAnalyzer;
+		RecordAnalyzer recordAnalyzer = null;
+		int rows = 0;
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/PersonData.txt"), StandardCharsets.UTF_8))) {
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
 
-			final CsvParser parser = new CsvParser(settings);
-			parser.beginParsing(in);
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				final NamedCsvRecord rowRaw = iter.next();
+				final String[] row = rowRaw.getFields().toArray(new String[0]);
+				if (rows == 0) {
+					final String[] header = rowRaw.getHeader().toArray(new String[0]);
+					final AnalyzerContext context = new AnalyzerContext(null, null, "PersonData", header);
+					final TextAnalyzer template = new TextAnalyzer(context);
+					template.setLocale(Locale.US);
+					template.setDebug(2);
 
-			final AnalyzerContext context = new AnalyzerContext(null, null, "PersonData", parser.getRecordMetadata().headers());
-			final TextAnalyzer template = new TextAnalyzer(context);
-			template.setLocale(Locale.US);
-			template.setDebug(2);
-
-			recordAnalyzer = new RecordAnalyzer(template);
-
-			while ((row = parser.parseNext()) != null)
+					recordAnalyzer = new RecordAnalyzer(template);
+				}
+				rows++;
 				recordAnalyzer.train(row);
+			}
 		}
 
 		final RecordAnalysisResult result = recordAnalyzer.getResult();

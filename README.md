@@ -381,7 +381,7 @@ The baseType is defined by the implementation for all Code Plugins, STRING for a
 
 The 'validLocales' array is used to constrain the plugin to a set of languages or locales.  This is the set of locales where the plugin should be enabled.
 For example, a localeTag of "en-US,en-CA" indicates that the plugin should be enabled in both the US and Canada, a localeTag "en" indicates that the plugin should be enabled in
-any locale that uses the English language. In addition the 'headerRegExps' tag is an ordered list of Regular Expression (and the associated confidence) used to match against the Stream Name (if present)'.
+any locale that uses the English language. In addition the 'headerRegExps' tag is an ordered list of Regular Expression (and the associated confidence) used to match against the Stream Name (if present)'.  The headerRegExps is optional and is used to bias the detection.  It is possible to insist that a header is always present, this can be useful if misdetection based on the data is likely.  For example, the Semantic Type MONTH.DIGITS requires a header as the probability of an error without insisting on a reasonable header present is high. Note: a confidence of -100 means that the supplied value must NOT be present in the header.
 
 The optional 'isRegExpComplete' tag indicates if the returned Regular Expression is a definitive representation of the Logical Type. For example, \\d{5} is not for US ZIP codes as 00000 is not a valid Zip but does match the Regular Expression.
 

@@ -40,11 +40,11 @@ includeBuild 'examples/core/speed'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '16.2.13')
+			version('fta', '17.0.0')
 			version('jacoco', '0.8.12')
 
-// https://mvnrepository.com/artifact/com.univocity/univocity-parsers
-			library('univocity', 'com.univocity:univocity-parsers:2.9.1')
+// https://mvnrepository.com/artifact/de.siegmar/fastcsv
+			library('fastcsv', 'de.siegmar:fastcsv:3.7.0')
 // https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail
 			library('javaxMailAPI', 'com.sun.mail:jakarta.mail:2.0.1')
 // https://mvnrepository.com/artifact/commons-validator/commons-validator
@@ -66,7 +66,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/dk.brics.automaton/automaton
 			library('automaton', 'dk.brics:automaton:1.12-4')
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-			library('slf4jAPI', 'org.slf4j:slf4j-api:2.0.16')
+			library('slf4jAPI', 'org.slf4j:slf4j-api:2.0.17')
 // https://mvnrepository.com/artifact/com.google.guava/guava
 			library('guava', 'com.google.guava:guava:33.4.8-jre')
 // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic

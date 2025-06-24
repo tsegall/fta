@@ -631,10 +631,10 @@ public class TestUtilsCore {
 	public void testKnownTypesUS() {
 		final KnownTypes knownTypes = new KnownTypes();
 		knownTypes.initialize(Locale.US);
-		assertEquals(knownTypes.PATTERN_LONG, knownTypes.getByID(KnownTypes.ID.ID_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_LONG, knownTypes.getByID(KnownTypes.ID.ID_LONG).getRegExp());
 		assertEquals(knownTypes.PATTERN_LONG_GROUPING, "[\\d,]+");
-		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).regexp);
-		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.grouping(KnownTypes.ID.ID_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).getRegExp());
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.grouping(KnownTypes.ID.ID_LONG).getRegExp());
 		assertEquals(knownTypes.PATTERN_DOUBLE, "\\d*\\.?\\d+");
 		assertEquals(KnownTypes.PATTERN_ALPHA, "\\p{IsAlphabetic}");
 	}
@@ -643,16 +643,16 @@ public class TestUtilsCore {
 	public void testKnownTypesDE() {
 		final KnownTypes knownTypes = new KnownTypes();
 		knownTypes.initialize(Locale.GERMAN);
-		assertEquals(knownTypes.PATTERN_LONG, knownTypes.getByID(KnownTypes.ID.ID_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_LONG, knownTypes.getByID(KnownTypes.ID.ID_LONG).getRegExp());
 		assertEquals(knownTypes.PATTERN_LONG_GROUPING, "[\\d\\.]+");
-		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).regexp);
-		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.grouping(KnownTypes.ID.ID_LONG).regexp);
-		assertEquals(knownTypes.PATTERN_SIGNED_LONG, knownTypes.negation(knownTypes.PATTERN_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).getRegExp());
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.grouping(KnownTypes.ID.ID_LONG).getRegExp());
+		assertEquals(knownTypes.PATTERN_SIGNED_LONG, knownTypes.negation(knownTypes.PATTERN_LONG).getRegExp());
 		assertEquals(knownTypes.PATTERN_DOUBLE, "\\d*,?\\d+");
 		assertEquals(KnownTypes.PATTERN_ALPHA, "\\p{IsAlphabetic}");
 
 		final TypeInfo typeInfoNL = knownTypes.getByID(KnownTypes.ID.ID_DOUBLE_NL);
-		assertEquals(knownTypes.PATTERN_DOUBLE_NL, typeInfoNL.regexp);
+		assertEquals(knownTypes.PATTERN_DOUBLE_NL, typeInfoNL.getRegExp());
 		assertTrue(typeInfoNL.isNonLocalized());
 	}
 
@@ -660,11 +660,11 @@ public class TestUtilsCore {
 	public void testKnownTypesSV() {
 		final KnownTypes knownTypes = new KnownTypes();
 		knownTypes.initialize(Locale.forLanguageTag("se-SV"));
-		assertEquals(knownTypes.PATTERN_LONG, knownTypes.getByID(KnownTypes.ID.ID_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_LONG, knownTypes.getByID(KnownTypes.ID.ID_LONG).getRegExp());
 		assertEquals(knownTypes.PATTERN_LONG_GROUPING, "[\\d ]+");
-		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).regexp);
-		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.grouping(KnownTypes.ID.ID_LONG).regexp);
-		assertEquals(knownTypes.PATTERN_SIGNED_LONG, knownTypes.negation(knownTypes.PATTERN_LONG).regexp);
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING).getRegExp());
+		assertEquals(knownTypes.PATTERN_LONG_GROUPING, knownTypes.grouping(KnownTypes.ID.ID_LONG).getRegExp());
+		assertEquals(knownTypes.PATTERN_SIGNED_LONG, knownTypes.negation(knownTypes.PATTERN_LONG).getRegExp());
 		assertEquals(knownTypes.PATTERN_DOUBLE, "\\d*,?\\d+");
 		assertEquals(KnownTypes.PATTERN_ALPHA, "\\p{IsAlphabetic}");
 	}

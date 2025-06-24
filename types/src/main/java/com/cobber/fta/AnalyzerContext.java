@@ -227,7 +227,7 @@ public class AnalyzerContext {
 	}
 
 	/**
-	 * setNested() is invoked when we are doing a reAnalyze() to indicated that we are doing a nested analysis.
+	 * setNested() is invoked when we are doing a reAnalyze() to indicate that we are doing a nested analysis.
 	 */
 	public void setNested() {
 		this.nested = true;

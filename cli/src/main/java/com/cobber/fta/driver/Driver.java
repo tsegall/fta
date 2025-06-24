@@ -124,8 +124,7 @@ public class Driver {
 					error.println(" --trailer <n> - Skip the final <n> rows of the input");
 					error.println(" --validate <n> - Set the validations level to <n>, 1 == counts, 2 == regExp");
 					error.println(" --verbose - Output each record as it is processed");
-					error.println(" --xMaxCharsPerColumn <n> - Set the maximum column width (CSV parsing option)");
-					error.println(" --xMaxColumns <n> - Set the maximum number of columns (CSV parsing option - default 1024)");
+					error.println(" --withBOM - Input file has a BOM");
 					helpRequested = true;
 
 				}

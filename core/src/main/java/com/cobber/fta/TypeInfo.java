@@ -66,7 +66,7 @@ public class TypeInfo {
 	private FTAType baseType;
 
 	public KnownTypes.ID id;
-	public String regexp;
+	private String regexp;
 	public String format;
 	public String typeModifier;
 	public int typeModifierFlags;
@@ -261,6 +261,14 @@ public class TypeInfo {
 	 */
 	public void setForce(final boolean isForce) {
 		this.isForce = isForce;
+	}
+
+	public String getRegExp() {
+		return regexp;
+	}
+
+	public void setRegExp(String regexp) {
+		this.regexp = regexp;
 	}
 
 	@JsonIgnore

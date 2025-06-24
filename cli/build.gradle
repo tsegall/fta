@@ -25,7 +25,7 @@ dependencies {
 	implementation project(':core')
 	implementation project(':types')
 
-	implementation libs.univocity
+	implementation libs.fastcsv
 	implementation libs.jacksonDataCore
 	implementation libs.jacksonDataBind
 	implementation libs.jacksonAnnotations

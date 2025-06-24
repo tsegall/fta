@@ -1210,6 +1210,25 @@
 		"priority": 128
 	},
 	{
+		"semanticType": "STATE_PROVINCE.STATE_IN",
+		"description": "Indian State Code",
+		"pluginType": "list",
+		"signature": "8xmRakQTai6HK8NA8qcnM5sKO9g=",
+		"validLocales": [
+			{ "localeTag": "en-IN", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] }
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/in_states.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_and_union_territories_of_India" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-2:IN" }
+		],
+		"backout": "\\\\p{IsAlphabetic}{2}",
+		"priority": 128
+	},
+	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_CA",
 		"description": "Canadian Province Name",
 		"pluginType": "list",
@@ -2010,6 +2029,25 @@
 		"baseType": "LONG",
 		"backout": "\\d{7}",
 		"priority": 167
+	},
+	{
+		"semanticType": "STATE_PROVINCE.STATE_UNION_NAME_IN",
+		"description": "Indian State/Union name",
+		"pluginType": "list",
+		"signature": "LFIzw8neflnNdgkI6I7cdIH36W0=",
+		"validLocales": [
+			{ "localeTag": "en-IN", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 95 } ] }
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/in_states_full.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/States_and_union_territories_of_India" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/ISO_3166-2:IN" }
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 168
 	},
 	{
 		"semanticType": "CURRENCY_CODE.ISO-4217",

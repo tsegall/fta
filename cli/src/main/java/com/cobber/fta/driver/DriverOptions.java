@@ -18,7 +18,6 @@ package com.cobber.fta.driver;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -72,8 +71,7 @@ public class DriverOptions {
 	protected int trailer;
 	protected int validate;
 	protected int verbose;
-	protected int xMaxCharsPerColumn = -1;
-	protected int xMaxColumns = 1024;
+	protected boolean withBOM;
 	protected String delimiter;
 	protected String quoteChar;
 
@@ -120,8 +118,7 @@ public class DriverOptions {
 		this.trailer = other.trailer;
 		this.validate = other.validate;
 		this.verbose = other.verbose;
-		this.xMaxCharsPerColumn = other.xMaxCharsPerColumn;
-		this.xMaxColumns = other.xMaxColumns;
+		this.withBOM = other.withBOM;
 		this.delimiter = other.delimiter;
 		this.quoteChar = other.quoteChar;
 	}
@@ -177,8 +174,7 @@ public class DriverOptions {
 						analyzer.getPlugins().registerPlugins(logicalTypes, analyzer.getStreamName(), analyzer.getConfig());
 					}
 				}
-			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-					| IllegalAccessException | IllegalArgumentException | InvocationTargetException | FTAPluginException e) {
+			} catch (SecurityException | FTAPluginException e) {
 				System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
 				System.exit(1);
 			}
@@ -336,13 +332,10 @@ public class DriverOptions {
 				validate = nextIntegerArg(args, idx++);
 			else if ("--verbose".equals(args[idx]))
 				verbose++;
-			else if ("--version".equals(args[idx])) {
+			else if ("--version".equals(args[idx]))
 				unprocessed.add(args[idx]);
-			}
-			else if ("--xMaxCharsPerColumn".equals(args[idx]))
-				xMaxCharsPerColumn = nextIntegerArg(args, idx++);
-			else if ("--xMaxColumns".equals(args[idx]))
-				xMaxColumns = nextIntegerArg(args, idx++);
+			else if ("--withBOM".equals(args[idx]))
+				withBOM = true;
 			else {
 				unprocessed.add(args[idx]);
 				throw new IllegalArgumentException(String.format("Unrecognized option: '%s', use --help", args[idx]));
