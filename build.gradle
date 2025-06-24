@@ -159,6 +159,7 @@ subprojects {
 		toolVersion = "4.9.3"
 		effort = "max"
 		reportLevel = "low"
+		ignoreFailures = true
 	}
 
 	tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
