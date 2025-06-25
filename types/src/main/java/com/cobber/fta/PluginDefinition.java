@@ -89,7 +89,7 @@ public class PluginDefinition {
 	/** Need to see both the minimum and maximum values to declare success. */
 	public boolean minMaxPresent;
 
-	private Map<String, String> options = null;
+	private volatile Map<String, String> options = null;
 
 	public PluginDefinition() {
 	}
@@ -209,7 +209,7 @@ public class PluginDefinition {
 
 	public Map<String, String> getOptions() {
 		if (options == null) {
-			synchronized(this){
+			synchronized(this) {
 				if (options == null) {
 					options = new HashMap<>();
 					if (pluginOptions != null) {

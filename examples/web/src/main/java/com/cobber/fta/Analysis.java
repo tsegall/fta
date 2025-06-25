@@ -14,6 +14,10 @@ import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
+import de.siegmar.fastcsv.reader.CloseableIterator;
+import de.siegmar.fastcsv.reader.CsvReader;
+import de.siegmar.fastcsv.reader.NamedCsvRecord;
+
 public class Analysis {
 
 	public class FTAInfo {
@@ -95,33 +99,28 @@ public class Analysis {
 			this.file = file;
 
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-				final CsvParserSettings settings = new CsvParserSettings();
-				settings.setHeaderExtractionEnabled(true);
-				settings.detectFormatAutomatically();
-				settings.setLineSeparatorDetectionEnabled(true);
-				settings.setIgnoreLeadingWhitespaces(false);
-				settings.setIgnoreTrailingWhitespaces(false);
-				settings.setEmptyValue("");
-				final CsvParser parser = new CsvParser(settings);
-				parser.beginParsing(in);
-				final String[] header = parser.getRecordMetadata().headers();
-				final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, file.getOriginalFilename(), header);
-				final TextAnalyzer template = new TextAnalyzer(context);
-				if (locale != null)
-					template.setLocale(Locale.forLanguageTag(locale));
-				final RecordAnalyzer recordAnalyzer = new RecordAnalyzer(template);
-
-				String[] row;
+				final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
+				RecordAnalyzer recordAnalyzer = null;
+				String[] header = null;
 				int thisRecord = 0;
 
-				while ((row = parser.parseNext()) != null && thisRecord < recordCount) {
+				for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); thisRecord < recordCount && iter.hasNext();) {
+					final NamedCsvRecord rowRaw = iter.next();
+					if (thisRecord == 0) {
+						header = rowRaw.getHeader().toArray(new String[0]);
+						final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, file.getOriginalFilename(), header);
+						final TextAnalyzer template = new TextAnalyzer(context);
+						if (locale != null)
+							template.setLocale(Locale.forLanguageTag(locale));
+						recordAnalyzer = new RecordAnalyzer(template);
+					}
 					thisRecord++;
-					if (row.length != header.length) {
+					if (rowRaw.getFieldCount() != header.length) {
 						System.err.printf("ERROR: Record %d has %d fields, expected %d, skipping%n",
-								thisRecord, row.length, header.length);
+								thisRecord, rowRaw.getFieldCount(), header.length);
 						continue;
 					}
-					recordAnalyzer.train(row);
+					recordAnalyzer.train(rowRaw.getFields().toArray(new String[0]));
 				}
 
 				final TextAnalysisResult[] results = recordAnalyzer.getResult().getStreamResults();

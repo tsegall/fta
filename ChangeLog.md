@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 17.0.1
+ - INT: Point examples to 17.+
+ - INT: Fix web example to use new CSV processor
+ - INT: Bump spotbugs to 6.2.1
+
 ### 17.0.0
  - **ENH:** registerPlugins signature changed now only throws IOException and FTAPluginException
  - ENH: Add new Semantic Type - STATE_PROVINCE.STATE_UNION_NAME_IN (Indian State/Union name) and STATE_PROVINCE.STATE_IN (Indian State Code) (Issue #140)

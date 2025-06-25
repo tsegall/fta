@@ -33,7 +33,8 @@ bootWar {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation group: 'com.cobber.fta', name: 'fta', version: '16.+'
+	implementation group: 'de.siegmar', name: 'fastcsv', version: '3.7.0'
+	implementation group: 'com.cobber.fta', name: 'fta', version: '17.+'
 	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
