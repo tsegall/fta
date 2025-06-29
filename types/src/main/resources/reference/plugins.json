@@ -422,6 +422,30 @@
 		"priority": 75
 	},
 	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_IN",
+		"description": "Postal Code (IN)",
+		"pluginType": "regex",
+		"signature": "zsDFiKwv4eZww8S1z65M4baht5c=",
+		"validLocales": [
+			{
+				"localeTag": "en-IN,hi-IN",
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(pincode).*", "confidence": 95, "mandatory": true } ],
+				"matchEntries": [ {
+					"regExpsToMatch": [ "\\d{6}" ],
+					"regExpReturned": "[1-9]\\d{5}"
+				} ]
+			}
+		],
+		"documentation": [
+			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P281" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Postal_Index_Number" },
+			{ "source": "schema", "reference": "https://schema.org/postalCode" }
+		],
+		"baseType": "LONG",
+		"threshold": 98,
+		"priority": 76
+	},
+	{
 		"semanticType": "FULL_ADDRESS_EN",
 		"description": "Full Address (English Language)",
 		"pluginType": "java",
@@ -1210,10 +1234,10 @@
 		"priority": 128
 	},
 	{
-		"semanticType": "STATE_PROVINCE.STATE_IN",
-		"description": "Indian State Code",
+		"semanticType": "STATE_PROVINCE.STATE_UNION_IN",
+		"description": "Indian State/Union Code",
 		"pluginType": "list",
-		"signature": "8xmRakQTai6HK8NA8qcnM5sKO9g=",
+		"signature": "MFtaTm+3sIcaOhqEkJr+R86A8HI=",
 		"validLocales": [
 			{ "localeTag": "en-IN", "headerRegExps": [ { "regExp": ".*(?i)(state).*", "confidence": 90 } ] }
 		],
@@ -2048,6 +2072,24 @@
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 168
+	},
+	{
+		"semanticType": "STATE_PROVINCE.DISTRICT_NAME_IN",
+		"description": "Indian District name",
+		"pluginType": "list",
+		"signature": "b8HvLj1VKByItZogeBVG0bF/9Pw=",
+		"validLocales": [
+			{ "localeTag": "en-IN, hi-IN", "headerRegExps": [ { "regExp": ".*(?i)(district).*", "confidence": 95 } ] }
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/in_districts.csv"
+		},
+		"documentation": [
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_districts_in_India" }
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 169
 	},
 	{
 		"semanticType": "CURRENCY_CODE.ISO-4217",
