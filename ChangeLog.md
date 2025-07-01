@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 17.1.1
+ - ENH: Improve Indian District and State detection
+ - INT: Migrate to the Central Publishing Portal (OSSRH Service is EOL)
+
 ### 17.1.0
  - ENH: Add new Semantic Type - POSTAL_CODE.POSTAL_CODE_IN (Indian Postal Code) and STATE_PROVINCE.DISTRICT_NAME_IN (Indian District name)
  - BUG: Fix name of STATE_PROVINCE.STATE_UNION_IN (was STATE_PROVINCE.STATE_IN)

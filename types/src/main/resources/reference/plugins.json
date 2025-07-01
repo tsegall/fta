@@ -2089,6 +2089,7 @@
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/List_of_districts_in_India" }
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
+		"threshold": 92,
 		"priority": 169
 	},
 	{
