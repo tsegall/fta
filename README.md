@@ -17,7 +17,7 @@ Design objectives:
 * Sufficiently fast to be used inline.   See Speed notes below.
 * Minimal false positives for Semantic type detection. See Performance notes below.
 * Usable in either Streaming, Bulk or Record  mode.
-* Broad country/language support - including US, Canada, Mexico, Brazil, UK, Australia, much of Europe, Japan and China.
+* Broad country/language support - including US, Canada, Mexico, Brazil, UK, Australia, India, much of Europe, Japan and China.
 * Support for sharded analysis (i.e. Analysis results can be merged)
 * Once stream is profiled then subsequent samples can be validated and/or new samples can be generated
 
@@ -124,7 +124,7 @@ Semantic Type: ***NAME.MIDDLE*** (String)
 
 ### Additional Examples
 
-Are in the [example](examples) directory.
+Are in the [examples](examples) directory.
 
 ## Date Format determination ##
 

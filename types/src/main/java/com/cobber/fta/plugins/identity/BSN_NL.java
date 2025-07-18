@@ -52,7 +52,7 @@ public class BSN_NL extends LogicalTypeInfinite {
 			final char ch = trimmed.charAt(i);
 			if (ch == ' ')
 				continue;
-			if (!Utils.isSimpleNumeric(ch))
+			if (!Utils.isSimpleDigit(ch))
 				return false;
 		}
 
@@ -96,7 +96,7 @@ public class BSN_NL extends LogicalTypeInfinite {
 			final char ch = input.charAt(i);
 			if (ch == ' ')
 				continue;
-			if (!Utils.isSimpleNumeric(ch))
+			if (!Utils.isSimpleDigit(ch))
 				return false;
 			b.append(ch);
 		}
@@ -113,7 +113,7 @@ public class BSN_NL extends LogicalTypeInfinite {
 		if (cardinality.size() < 20 || (double)matchCount/realSamples < getThreshold()/100.0)
 			return new PluginAnalysis(BACKOUT_REGEXP);
 
-		regExp = tokenStreams.getRegExp(false);
+		regExp = tokenStreams.getRegExp(false, matchCount);
 
 		return PluginAnalysis.OK;
 	}

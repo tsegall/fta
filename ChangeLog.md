@@ -1,6 +1,26 @@
 
 ## Changes ##
 
+### 17.1.2
+ - ENH: Add support for \\p{Digit} as a synonym for \d in RegExp plugins (Issue #142)
+ - ENH: Validate the input file associated with a user-defined list plugin to check for lower case characters (Issue #143)
+ - BUG: RegExp for FREE_TEXT incorrect if newlines present
+ - BUG: RegExp for SPATIAL.WKT incorrect - missing '.'
+ - BUG: RegExp for STREET_ADDRESS_EN, FULL_ADDRESS_EN incorrect if newlines present
+ - BUG: RegExp incorrect if backing out from PhoneNumber misdetection and newlines present
+ - BUG: RegExp incorrect if Unicode alphabetic character present and outputting a set of values
+ - BUG: RegExp incorrect if returning a alphabetic character class with lower case e.g expected '(?i)[A-D]' for a, b, c, d not '[A-D]'
+ - BUG: RegExp incorrect if merging a simple numeric with a qualified numeric e.g. '\d' & '\d{2}\p{IsAlphabetic}{4}'
+ - BUG: RegExp for NAME.MIDDLE should allow periods
+ - BUG: RegExp for POSTAL_CODE.ZIP5_PLUS4_US incorrect if any Zips with fewer than 5 digits present
+ - BUG: VIN's outside the US do not have a check digit hence format is to easy to misinterpret so insist on a valid header
+ - BUG: Were not recognizing '?' as a special character for Regular Expression - hence they were not being sloshed
+ - BUG: RegExp for URLs not allowing parens
+ - BUG: If we change out mind and make it a Regular Expression semantic type then any outliers are actually invalids
+ - INT: Fix a couple of warnings
+ - INT: Add missing Indian Semantic Types to documentation
+ - INT: Bump google phonenumber to 9.0.10, gradle to 8.14.3, commons-validator to 1.10 (fixes dependency on vulnerable commons-beanutils), spotbugs to 6.2.2
+
 ### 17.1.1
  - ENH: Improve Indian District and State detection
  - INT: Migrate to the Central Publishing Portal (OSSRH Service is EOL)
@@ -32,7 +52,7 @@
 
 ### 16.2.10
  - INT: Fix SpotBugs issues
- - INT: Bump google phonenumber to 9.0.7m gradle to 8.14.2
+ - INT: Bump google phonenumber to 9.0.7, gradle to 8.14.2
 
 ### 16.2.9
  - BUG: Fix issues with sampleCount being incorrect - typically when doing a subsequent pass (Issue #134)

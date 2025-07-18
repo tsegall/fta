@@ -114,7 +114,7 @@ public abstract class SamplePlugin {
 		try {
 			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", analysis.getConfig());
 		} catch (FTAPluginException e) {
-			System.err.println("ERROR: Failed to register plugin: " + e.getCause().getMessage());
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
 		} catch (IOException e) {
 			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
 		}
@@ -124,7 +124,7 @@ public abstract class SamplePlugin {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/CustomPlugins.json"), StandardCharsets.UTF_8))) {
 			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig());
 		} catch (FTAPluginException e) {
-			System.err.println("ERROR: Failed to register plugin: " + e.getCause().getMessage());
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
 		} catch (IOException e) {
 			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
 		}

@@ -100,6 +100,16 @@ public class TokenStreams {
 	 * @return The 'best' Regular Expression we can based on the set of TokenStreams, or null if nothing clever can be discerned.
 	 */
 	public String getRegExp(final boolean fitted) {
+		return getRegExp(fitted, Long.MAX_VALUE);
+	}
+
+	/**
+	 * Get the 'best' Regular Expression we can based on the set of TokenStreams.
+	 * @param fitted If true the Regular Expression should be a 'more closely fitted' Regular Expression.
+	 * @param minCoverage The minimum coverage required for a single TokenStream to be considered.
+	 * @return The 'best' Regular Expression we can based on the set of TokenStreams, or null if nothing clever can be discerned.
+	 */
+	public String getRegExp(final boolean fitted, final long minCoverage) {
 		if (tokenStreams.isEmpty())
 			return null;
 
@@ -173,6 +183,12 @@ public class TokenStreams {
 			else
 				pattern += "+";
 			return pattern;
+		}
+
+		// So if one of the individual tokenStreams is enough to cover our matchcount then it is good enough
+		for (final TokenStream tokenStream : tokenStreams.values()) {
+			if (tokenStream.getOccurrences() >= minCoverage)
+				return tokenStream.getRegExp(fitted);
 		}
 
 		return null;

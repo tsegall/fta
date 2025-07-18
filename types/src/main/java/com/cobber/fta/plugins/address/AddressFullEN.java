@@ -103,7 +103,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 			}
 			else if ("CA".equals(country)) {
 				if (word.length() == 6 && logicalPostCode.isValid(word, true, -1) ||
-						(word.length() == 3 && Utils.isSimpleAlpha(word.charAt(0)) && Utils.isSimpleNumeric(word.charAt(1)) && Utils.isSimpleAlpha(word.charAt(2)) &&
+						(word.length() == 3 && Utils.isSimpleAlpha(word.charAt(0)) && Utils.isSimpleDigit(word.charAt(1)) && Utils.isSimpleAlpha(word.charAt(2)) &&
 						i + 1 < words.size() && logicalPostCode.isValid(word + " " + words.get(i + 1).word, true, -1)))
 					ret = i;
 			}
@@ -271,22 +271,25 @@ public class AddressFullEN extends LogicalTypeInfinite {
 		if (stateIndex == -1 && postCodeIndex == -1)
 			return false;
 
-		if (score >= 4)
+		if (score >= 4) {
+			if (!multiline)
+				multiline = input.indexOf('\n') != -1;
 			return true;
+		}
 
 		if (score >= 2) {
 			// Do we have a PO BOX and a State?
-			if (poBoxFound && stateIndex != -1)
+			if ((poBoxFound && stateIndex != -1) ||
+				// Are the State and Zip  next to each other?
+				(postCodeIndex != -1 && Math.abs(stateIndex - postCodeIndex) == 1) ||
+				// Is the State after the addressMarker?
+				(addressMarkerIndex != -1 && stateIndex != -1 && (stateIndex > addressMarkerIndex || stateIndex == wordCount - 1)) ||
+				// Is the ZIP after the addressMarker?
+				(addressMarkerIndex != -1 && postCodeIndex != -1 && postCodeIndex > addressMarkerIndex)) {
+				if (!multiline)
+					multiline = input.indexOf('\n') != -1;
 				return true;
-			// Are the State and Zip are next to each other?
-			if (postCodeIndex != -1 && Math.abs(stateIndex - postCodeIndex) == 1)
-				return true;
-			// Is the State after the addressMarker?
-			if (addressMarkerIndex != -1 && stateIndex != -1 && (stateIndex > addressMarkerIndex || stateIndex == wordCount - 1))
-				return true;
-			// Is the ZIP after the addressMarker?
-			if (addressMarkerIndex != -1 && postCodeIndex != -1 && postCodeIndex > addressMarkerIndex)
-				return true;
+			}
 		}
 
 		return false;

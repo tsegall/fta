@@ -106,7 +106,29 @@ public class TestRegExpSupport {
 		gen.train("B");
 		gen.train("C");
 		gen.train("D");
-		assertEquals(gen.getResult(), "[A-D]");
+		gen.train("E");
+		assertEquals(gen.getResult(), "(?i)[A-E]");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void rangeTestAlphaMixed() throws IOException {
+		final RegExpGenerator gen = new RegExpGenerator(30, Locale.getDefault());
+
+		gen.train("A");
+		gen.train("b");
+		gen.train("C");
+		gen.train("d");
+		gen.train("E");
+		assertEquals(gen.getResult(), "(?i)[A-E]");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void rangeTestAlphaMUnicode() throws IOException {
+		final RegExpGenerator gen = new RegExpGenerator(30, Locale.getDefault());
+
+		gen.train("e");
+		gen.train("é");
+		assertEquals(gen.getResult(), "(?i)(?u)(E|É)");
 	}
 
 	@Test(groups = { TestGroups.ALL })

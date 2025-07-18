@@ -141,7 +141,7 @@ public class FreeText extends LogicalTypeInfinite {
 			return new PluginAnalysis(REGEXP);
 
 		if (facts != null)
-			regExp = KnownTypes.PATTERN_ANY + RegExpSplitter.qualify(facts.minRawLength, facts.maxRawLength);
+			regExp = (facts.multiline ? "(?s)" : "") +  KnownTypes.PATTERN_ANY + RegExpSplitter.qualify(facts.minRawLength, facts.maxRawLength);
 
 		return PluginAnalysis.OK;
 	}

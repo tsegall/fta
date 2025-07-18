@@ -36,7 +36,7 @@ import com.cobber.fta.token.TokenStreams;
  */
 public class SpatialWKT extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
-	public static final String REGEXP = "[-+\\p{IsAlphabetic}\\d (),]+";
+	public static final String REGEXP = "[-+\\p{IsAlphabetic}\\d (),\\.]+";
 
 	private static final String[] keywords = {
 			"POINT",

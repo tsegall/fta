@@ -48,6 +48,9 @@ public class Plugins {
 	 * @param JSON The definition of the plugin.
 	 * @param dataStreamName The name of the datastream.
 	 * @param analysisConfig The Analysis configuration used for this analysis.
+	 *
+	 * @throws IOException if the JSON cannot be parsed.
+	 * @throws FTAPluginException if the plugin definition is invalid or if a plugin with the same semantic type is already registered.
 	 */
 	public void registerPlugins(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, FTAPluginException {
 		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, false);
@@ -59,6 +62,8 @@ public class Plugins {
 	 * @param plugins The list of PluginDefinitions.
 	 * @param dataStreamName The name of the datastream.
 	 * @param analysisConfig The Analysis configuration used for this analysis.
+	 *
+	 * @throws FTAPluginException if the plugin definitions are invalid or if a plugin with the same semantic type is already registered.
 	 */
 	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws FTAPluginException {
 		registerPluginListCore(plugins, dataStreamName, analysisConfig, false);

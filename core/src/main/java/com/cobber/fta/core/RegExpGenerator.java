@@ -53,6 +53,7 @@ public class RegExpGenerator {
 	private boolean isUnderscore;
 	private boolean isMinus;
 	private boolean isOther;
+	private boolean isUnicode;
 	private int maxClasses;
 	private int maxSetSize = -1;
 	private Locale locale;
@@ -76,7 +77,7 @@ public class RegExpGenerator {
 	 * @return True if the character is reserved.
 	 */
 	public static boolean isSpecial(final char ch) {
-		return ch == '.' ||  ch == '+' || ch == '*' || ch == '^' || ch == '$' ||
+		return ch == '.' ||  ch == '+' || ch == '*' || ch == '^' || ch == '$' || ch == '?' ||
 				ch == '[' || ch == ']' || ch == '(' || ch == ')' || ch == '{' || ch == '}' || ch == '|';
 
 	}
@@ -94,8 +95,13 @@ public class RegExpGenerator {
 	 * @return The merged expression.
 	 */
 	public static String merge(String firstRE, String secondRE) {
+		if (firstRE.equals(secondRE))
+			return firstRE;
+
+		String simpleAnswer = firstRE.compareTo(secondRE) < 0 ? firstRE + '|' + secondRE : secondRE + '|' + firstRE;
+
 		if (!firstRE.contains(secondRE) && !secondRE.contains(firstRE))
-			return firstRE.compareTo(secondRE) < 0 ? firstRE + '|' + secondRE : secondRE + '|' + firstRE;
+			return simpleAnswer;
 
 		// Switch it so that the firstRE contains the second
 		if (secondRE.contains(firstRE)) {
@@ -104,9 +110,14 @@ public class RegExpGenerator {
 			secondRE = save;
 		}
 
-		// Case 1: first starts with second
-		if (firstRE.startsWith(secondRE))
+		// Case 1: first starts with second (e.g. "\d{2}" and "\d{2}-\d{2}") should return "\d{2}(-\d{2})?")
+		if (firstRE.startsWith(secondRE)) {
+			String optionalTail = firstRE.substring(secondRE.length());
+			// We need to not merge if we have something like "\d{2}" and "\d-\d{2}" as we would NOT want to return "\d({2}-\d{2})?"
+			if (optionalTail.charAt(0) == '{')
+				return simpleAnswer;
 			return secondRE + '(' + firstRE.substring(secondRE.length()) + ")?";
+		}
 
 		// Case 2: first ends with second
 		if (firstRE.endsWith(secondRE))
@@ -173,10 +184,16 @@ public class RegExpGenerator {
 
 		for (int i = 0; i < len; i++) {
 			final char ch = input.charAt(i);
-			if (Character.isLetter(ch))
+			if (Character.isLetter(ch)) {
 				isLetter = true;
-			else if (Character.isDigit(ch))
+				if (!isUnicode && !Utils.isSimpleAlpha(ch))
+					isUnicode = true;
+			}
+			else if (Character.isDigit(ch)) {
+				if (!isUnicode && !Utils.isSimpleDigit(ch))
+					isUnicode = true;
 				isDigit = true;
+			}
 			else if (ch == '.')
 				isPeriod = true;
 			else if (ch == ' ')
@@ -221,7 +238,7 @@ public class RegExpGenerator {
 			final boolean constantLength = shortest == longest;
 
 			// Generate a Character class if possible - we would rather see [A-G] than A|B|C|D|E|F|G
-			if (memory.size() >= 3 && shortest == 1 && constantLength) {
+			if (memory.size() >= 3 && shortest == 1 && constantLength && !isUnicode) {
 				char first = 0;
 				char last = 0;
 				char current;
@@ -238,6 +255,8 @@ public class RegExpGenerator {
 					last = current;
 				}
 				if (collapsible) {
+					if (isLetter)
+						result.append("(?i)");
 					result.append('[').append(first).append('-').append(last).append(']');
 					return result.toString();
 				}
@@ -247,6 +266,8 @@ public class RegExpGenerator {
 			if (memory.size() <= maxSetSize && !(constantLength && !isSpace && !isOther && !isUnderscore && shortest >= 12)) {
 				if (isLetter)
 					result.append("(?i)");
+				if (isUnicode)
+					result.append("(?u)");
 				if (memory.size() != 1)
 					result.append('(');
 				for (final String element : memory) {
@@ -302,14 +323,20 @@ public class RegExpGenerator {
 		toSimplifyFull.put("[\\p{IsAlphabetic}\\d]", "(<L>|<Nd>)");
 		toSimplifyFull.put("\\p{XDigit}", "[0-9A-Fa-f]");
 		toSimplifyFull.put("\\p{IsAlphabetic}", "<L>");
+		toSimplifyFull.put("\\p{Alpha}", "<L>");
+		toSimplifyFull.put("\\p{Alnum}", "(<L>|<Nd>)");
 		toSimplifyFull.put("\\d", "<Nd>");
+		toSimplifyFull.put("\\p{Digit}", "<Nd>");
 		toSimplifyFull.put("#", "\\#");
 		toSimplifyFull.put("(?i)", "");
 
 		toSimplifyASCII.put("[\\p{IsAlphabetic}\\d]", "[A-Za-z0-9]");
 		toSimplifyASCII.put("\\p{XDigit}", "[0-9A-Fa-f]");
 		toSimplifyASCII.put("\\p{IsAlphabetic}", "[A-Za-z]");
+		toSimplifyASCII.put("\\p{Alpha}", "[A-Za-z]");
+		toSimplifyASCII.put("\\p{Alnum}", "[A-Za-z0-9]");
 		toSimplifyASCII.put("\\d", "[0-9]");
+		toSimplifyASCII.put("\\p{Digit}", "[0-9]");
 		toSimplifyASCII.put("#", "\\#");
 		toSimplifyASCII.put("(?i)", "");
 	}

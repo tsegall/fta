@@ -114,9 +114,9 @@ public class PostalCodeCA extends LogicalTypeInfinite {
 		//  - Supposed to have a space separating the third and fourth characters (often does not)
 		//  - Does not include the letters D, F, I, O, Q or U.
 		//  - Initial position does not allow  W or Z.
-		if (!validLetter(first) || !Utils.isSimpleNumeric(merged.charAt(1)) ||
-				!validLetter(merged.charAt(2)) || !Utils.isSimpleNumeric(merged.charAt(3)) ||
-				!validLetter(merged.charAt(4)) || !Utils.isSimpleNumeric(merged.charAt(5)))
+		if (!validLetter(first) || !Utils.isSimpleDigit(merged.charAt(1)) ||
+				!validLetter(merged.charAt(2)) || !Utils.isSimpleDigit(merged.charAt(3)) ||
+				!validLetter(merged.charAt(4)) || !Utils.isSimpleDigit(merged.charAt(5)))
 			return false;
 
 		if (first == 'W' || first == 'Z')

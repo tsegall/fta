@@ -95,7 +95,9 @@
 		"pluginType": "java",
 		"signature": "JLD6IQMMMoQZTZH7OyHsGRuSoTQ=",
 		"clazz": "com.cobber.fta.plugins.VIN",
-		"validLocales": [ { "localeTag": "*" } ],
+		"validLocales": [ { "localeTag": "*",
+			"headerRegExps": [ { "regExp": "^(?i).*(vin).*", "confidence": 99, "mandatory": true } ] }
+		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P6322" },
 			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Vehicle_identification_number" }
@@ -3655,7 +3657,7 @@
 				"localeTag": "en",
 				"headerRegExps": [ { "regExp": ".*(?i)(middle.?name).*|(?i)(mi|middle)", "confidence": 99, "mandatory": true } ],
 				"matchEntries": [ {
-					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}]*"
+					"regExpReturned": "\\p{IsAlphabetic}[- \\p{IsAlphabetic}\\.]*"
 				} ]
 			}
 		],

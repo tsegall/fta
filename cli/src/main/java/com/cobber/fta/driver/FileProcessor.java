@@ -336,6 +336,8 @@ class FileProcessor {
 		final int[] blanks = new int[numFields];
 		final Set<String> failures = new HashSet<>();
 
+		final TextAnalysisResult[] results = processor.getResult();
+
 		// Check the RegExp at level 2 validation
 		if (options.validate == 2) {
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset))) {
@@ -348,13 +350,15 @@ class FileProcessor {
 				Pattern[] patterns = null;
 				rawRecordIndex = 0;
 
+				TextAnalyzer[] analyzers = null;
 				for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
 					final NamedCsvRecord rowRaw = iter.next();
 					final String[] row = rowRaw.getFields().toArray(new String[0]);
+
 					// Are we looking at the header row?
 					if (rawRecordIndex == 0) {
 						numFields = rowRaw.getFieldCount();
-						final TextAnalysisResult[] results = processor.getResult();
+						analyzers = processor.getAnalyzers();
 						patterns = new Pattern[numFields];
 
 						for (int i = 0; i < numFields; i++)
@@ -369,11 +373,11 @@ class FileProcessor {
 					for (int i = 0; i < numFields; i++) {
 						if (options.col == -1 || options.col == i) {
 							final String value = row[i];
-							if (value == null)
+							if (analyzers[i].isNullEquivalent(value))
 								nulls[i]++;
 							else if (value.trim().isEmpty())
 								blanks[i]++;
-							else if (patterns[i].matcher(value).matches())
+							else if (patterns[i].matcher(value.trim()).matches())
 								matched[i]++;
 							else if (options.verbose != 0)
 								failures.add(value);
@@ -396,7 +400,6 @@ class FileProcessor {
 		if (outputJSON)
 			output.printf("[%n");
 
-		final TextAnalysisResult[] results = processor.getResult();
 		final ArrayNode fieldsArray = mapper.createArrayNode();
 
 		for (int i = 0; i < numFields; i++) {
@@ -510,13 +513,17 @@ class FileProcessor {
 				}
 
 				if (options.validate == 2 && matched[i] != result.getMatchCount()) {
-					if (result.isSemanticType())
-						if (matched[i] > result.getMatchCount())
-							error.printf("\t*** Warning: Match Count via RegExp (%d) > LogicalType match analysis (%d) ***%n", matched[i], result.getMatchCount());
-						else
-							error.printf("\t*** Error: Match Count via RegExp (%d) < LogicalType match analysis (%d) ***%n", matched[i], result.getMatchCount());
+					String logicalType = result.isSemanticType() ? "Logical Type " : "";
+
+					if (matched[i] > result.getMatchCount())
+						error.printf("\t*** NOTE: Composite: %s, field: %s (%d), match Count via RegExp (%d) > %smatch analysis (%d) ***%n",
+								analyzer.getContext().getCompositeName(), analyzer.getContext().getStreamName(),
+								analyzer.getContext().getStreamIndex(), matched[i], logicalType, result.getMatchCount());
 					else
-						error.printf("\t*** Error: Match Count via RegExp (%d) does not match analysis (%d) ***%n", matched[i], result.getMatchCount());
+						error.printf("\t*** ERROR: Composite: %s, field: %s (%d), match Count via RegExp (%d) < %smatch analysis (%d) ***%n",
+								analyzer.getContext().getCompositeName(), analyzer.getContext().getStreamName(),
+								analyzer.getContext().getStreamIndex(), matched[i], logicalType, result.getMatchCount());
+
 					if (options.verbose != 0) {
 						error.println("Failed to match:");
 						for (final String failure : failures)

@@ -63,7 +63,7 @@ public class Personnummer_SE extends LogicalTypeInfinite {
 
 	private boolean validate(final String trimmed) {
 		final int len = trimmed.length();
-		if (len != LENGTH_NO_CC & len != LENGTH_CC)
+		if (len != LENGTH_NO_CC && len != LENGTH_CC)
 			return false;
 
 		// Check all the characters look plausible
@@ -75,7 +75,7 @@ public class Personnummer_SE extends LogicalTypeInfinite {
 				continue;
 			}
 
-			if (!Utils.isSimpleNumeric(ch))
+			if (!Utils.isSimpleDigit(ch))
 				return false;
 		}
 

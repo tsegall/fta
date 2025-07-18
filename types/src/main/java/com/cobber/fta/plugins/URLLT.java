@@ -37,7 +37,7 @@ import com.cobber.fta.token.TokenStreams;
  */
 public class URLLT extends LogicalTypeInfinite {
 	public static final String REGEXP_PROTOCOL = "(https?|ftp|file)";
-	public static final String REGEXP_RESOURCE = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+	public static final String REGEXP_RESOURCE = "[-a-zA-Z0-9()+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9()+&@#/%=~_|]";
 	private static final int MAX_AUTHORITY_LENGTH = 255;
 	private static final int MAX_URL_LENGTH = 2000;
 	private static UrlValidator validator;

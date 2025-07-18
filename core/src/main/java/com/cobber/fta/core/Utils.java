@@ -162,11 +162,23 @@ public final class Utils {
 	}
 
 	/**
+	 * Test if the supplied input is all simple alphas.
+	 * @param input String to test.
+	 * @return True if the string is all simple alphas.
+	 */
+	public static boolean isSimpleAlphas(final String input) {
+		if (input == null || input.isEmpty())
+			return false;
+
+		return input.chars().allMatch(c -> isSimpleAlpha((char) c));
+	}
+
+	/**
 	 * Test if the supplied character is numeric [0-9].
 	 * @param ch Character to test.
 	 * @return True if the character is in the range [0-9].
 	 */
-	public static boolean isSimpleNumeric(final char ch) {
+	public static boolean isSimpleDigit(final char ch) {
 		return ch >= '0' && ch <= '9';
 	}
 

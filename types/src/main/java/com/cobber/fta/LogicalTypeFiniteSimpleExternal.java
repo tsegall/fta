@@ -15,9 +15,23 @@
  */
 package com.cobber.fta;
 
+import com.cobber.fta.core.FTAPluginException;
+
 public class LogicalTypeFiniteSimpleExternal extends LogicalTypeFiniteSimple {
 	public LogicalTypeFiniteSimpleExternal(final PluginDefinition plugin) {
 		super(plugin, plugin.backout, plugin.threshold);
 		setContent(plugin.content);
+	}
+
+	@Override
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		// Worth a quick check to see if a user is trying to register a file with lower case characters.  Unfortunately, this is restricted to English as some languages e.g. German
+		// have lower case characters 'ß' which effectively masquerades as upper case.  Although an upper case version was added in 2008.
+		if ("en".equals(analysisConfig.getLocale().getLanguage()) && !getMembers().isEmpty())
+			for (final String member : getMembers())
+				if (member.chars().anyMatch(Character::isLowerCase))
+					throw new FTAPluginException("Logical Type: " + defn.semanticType + " (" + defn.content + ") contains lower case characters: '" + member + "'");
+
+		return super.initialize(analysisConfig);
 	}
 }

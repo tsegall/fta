@@ -234,6 +234,7 @@ public class TestStrings {
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
 	public void employeeNumber() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("employeeNumber");
+		analysis.setDebug(2);
 		final String pipedInput = "||||||||||||||||||||" +
 				"||||||||||||48|72|242|242|242|335|354|355|355|" +
 				"397|460|567|616|616|70|70|865|1023|1023|1023|1023|1023|1023|1023|1023|1161|1161|1161|1161|1161|" +
@@ -387,7 +388,7 @@ public class TestStrings {
 
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "(?i)(AK|BC|CO\\. CORK|DF|ESSEX|ID|ISLE OF WIGHT|LARA|NM|NUEVA ESPARTA|OR|QUÉBEC|RJ|SP|TÁCHIRA|WA|WY)");
+		assertEquals(result.getRegExp(), "(?i)(?u)(AK|BC|CO\\. CORK|DF|ESSEX|ID|ISLE OF WIGHT|LARA|NM|NUEVA ESPARTA|OR|QUÉBEC|RJ|SP|TÁCHIRA|WA|WY)");
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
@@ -397,10 +398,9 @@ public class TestStrings {
 		assertEquals(result.getMaxLength(), 13);
 		assertNull(result.checkCounts());
 
-// BUG/TODO
-//		for (int i = 0; i < inputs.length; i++) {
-//			assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
-//		}
+		for (int i = 0; i < inputs.length; i++) {
+			assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
+		}
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })

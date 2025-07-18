@@ -35,8 +35,8 @@ public class GUID extends LogicalTypeInfinite {
 	private static final String REGEXP_36 = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}";
 	private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
-	private Character left;
-	private Character right;
+	private Character left = null;
+	private Character right = null;
 	private int len38;
 	private int len36;
 	private int len32;

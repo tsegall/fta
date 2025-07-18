@@ -26,6 +26,7 @@ import java.util.Map;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
+import com.cobber.fta.core.Utils;
 
 /**
  * A set of predefined types, for simple numerics, strings and boolean values.
@@ -69,6 +70,8 @@ public class KnownTypes {
 
 	public static final String PATTERN_ANY = ".";
 	public static final String PATTERN_ANY_VARIABLE = ".+";
+	public static final String PATTERN_ANY_STRING = ".*";
+	public static final String PATTERN_ANY_STRING_DOTALL = "(?s).*";
 	public static final String PATTERN_ALPHA = "\\p{IsAlphabetic}";
 	public static final String PATTERN_NUMERIC = "\\d";
 	public static final String PATTERN_NUMERIC_VARIABLE = PATTERN_NUMERIC + "+";
@@ -203,7 +206,8 @@ public class KnownTypes {
 		final String localizedNo = keywords.get("NO");
 		if (localizedYes != null && localizedNo != null) {
 			if (!"yes".equals(localizedYes) || !"no".equals(localizedNo)) {
-				PATTERN_BOOLEAN_YES_NO_LOCALIZED = "(?i)(" + localizedNo + "|" + localizedYes + ")";
+				PATTERN_BOOLEAN_YES_NO_LOCALIZED = !Utils.isSimpleAlphas(localizedYes) || !Utils.isSimpleAlphas(localizedNo) ? "(?u)" : "";
+				PATTERN_BOOLEAN_YES_NO_LOCALIZED += "(?i)(" + localizedNo.toUpperCase(locale) + "|" + localizedYes.toUpperCase(locale) + ")";
 				knownTypes.put(PATTERN_BOOLEAN_YES_NO_LOCALIZED,
 						new TypeInfo(ID.ID_BOOLEAN_YES_NO_LOCALIZED, PATTERN_BOOLEAN_YES_NO_LOCALIZED, FTAType.BOOLEAN, "YES_NO", false, ""));
 			}

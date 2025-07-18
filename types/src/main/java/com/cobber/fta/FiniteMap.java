@@ -177,6 +177,6 @@ public class FiniteMap implements Map<String, Long> {
 		if (getClass() != obj.getClass())
 			return false;
 		FiniteMap other = (FiniteMap) obj;
-		return Objects.equals(impl, other.impl) && maxCapacity == other.maxCapacity && sorted == other.sorted;
+		return Objects.equals(impl, other.impl) && sorted == other.sorted;
 	}
 }

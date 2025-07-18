@@ -25,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.DateFormatSymbols;
@@ -57,7 +56,6 @@ import com.cobber.fta.plugins.CheckDigitSEDOL;
 import com.cobber.fta.plugins.EmailLT;
 import com.cobber.fta.plugins.Gender;
 import com.cobber.fta.plugins.IPV4Address;
-import com.cobber.fta.plugins.PhoneNumberLT;
 import com.cobber.fta.plugins.URLLT;
 import com.cobber.fta.plugins.address.USZip5;
 
@@ -615,7 +613,7 @@ public class TestPlugins {
 		assertEquals(result.getSemanticType(), "TELEPHONE");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("TELEPHONE").signature);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ANY_STRING);
 		assertEquals(result.getOutlierCount(), 0);
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		final long invalidCount = invalids.get("(014) 427-4427");
@@ -651,7 +649,7 @@ public class TestPlugins {
 		assertEquals(result.getSemanticType(), "TELEPHONE");
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("TELEPHONE").signature);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ANY_STRING);
 		assertEquals(result.getOutlierCount(), 0);
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		final long outlierCount = invalids.get("(014) 427-4427");
@@ -677,7 +675,7 @@ public class TestPlugins {
 		};
 
 		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "Phone", Locale.US, "TELEPHONE", FTAType.STRING, 1.0);
-		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ANY_STRING);
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
 
@@ -691,7 +689,7 @@ public class TestPlugins {
 		};
 
 		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "Phone", Locale.US, "TELEPHONE", FTAType.STRING, 1.0);
-		assertEquals(result.getRegExp(), PhoneNumberLT.REGEXP);
+		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ANY_STRING);
 		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getConfidence(), 1.0);
 	}

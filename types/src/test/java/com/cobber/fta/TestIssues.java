@@ -236,6 +236,7 @@ public class TestIssues {
 		final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "middleInitialCountMismatch",
 				new String[] { "middle_init" });
 		final TextAnalyzer template = new TextAnalyzer(context);
+		template.setDebug(2);
 		template.setLocale(Locale.forLanguageTag("en-US"));
 		final RecordAnalyzer analyzer = new RecordAnalyzer(template);
 

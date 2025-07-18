@@ -122,6 +122,9 @@ public class AddressEN extends LogicalTypeInfinite {
 		if (wordCount < 2 || (firstSpace = trimmedUpper.indexOf(' ')) == -1)
 			return false;
 
+		if (!multiline)
+			multiline = trimmedUpper.indexOf('\n') != -1;
+
 		String initialWord = words.get(0);
 
 		// Handle an initial Unit #

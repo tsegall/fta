@@ -1640,7 +1640,12 @@ public class TextAnalyzer {
 	}
 
 	private static PatternFG patternFG = null;
-	protected boolean isNullEquivalent(final String input) {
+	/**
+	 * Check if the input is equivalent to null based on the configuration, this includes the set of words which are considered null.
+	 * @param input Input string to check for null equivalency.
+	 * @return A boolean indicating if the input is equivalent to null.
+	 */
+	public boolean isNullEquivalent(final String input) {
 		if (input == null)
 			return true;
 
@@ -3341,29 +3346,30 @@ public class TextAnalyzer {
 					long newMatchCount = facts.matchCount;
 					final String re = entry.getRegExpReturned();
 					if (((newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0)) {
-						// Build the new Cardinality and Outlier maps - based on the RE
+						// Build the new Cardinality and Invalid maps - based on the RE
 						final FiniteMap newCardinality = new FiniteMap(facts.cardinality.getMaxCapacity());
-						final FiniteMap newOutliers = new FiniteMap(facts.outliers.getMaxCapacity());
+						final FiniteMap newInvalids = new FiniteMap(facts.outliers.getMaxCapacity());
 						for (final Map.Entry<String, Long> current : facts.cardinality.entrySet()) {
 							if (current.getKey().trim().matches(re))
 								newCardinality.put(current.getKey(), current.getValue());
 							else
-								newOutliers.put(current.getKey(), current.getValue());
+								newInvalids.put(current.getKey(), current.getValue());
 						}
 						for (final Map.Entry<String, Long> current : facts.outliers.entrySet()) {
 							if (current.getKey().trim().matches(re))
 								newCardinality.put(current.getKey(), current.getValue());
 							else
-								newOutliers.put(current.getKey(), current.getValue());
+								newInvalids.put(current.getKey(), current.getValue());
 						}
 
 						// Based on the new Cardinality/Outliers do we think this is a match?
-						if (logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), newCardinality, newOutliers, tokenStreams, analysisConfig).isValid()) {
+						if (logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), newCardinality, newInvalids, tokenStreams, analysisConfig).isValid()) {
 							logical.setMatchEntry(entry);
 							facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
 							facts.matchCount = newMatchCount;
 							facts.cardinality = newCardinality;
-							facts.outliers = newOutliers;
+							facts.invalid = newInvalids;
+							facts.outliers.clear();
 							ctxdebug("Type determination", "updated to Regular Expression Semantic type {}", facts.getMatchTypeInfo());
 							facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
 							return true;

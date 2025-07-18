@@ -229,7 +229,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 	/**
 	 * Given the data to date as embodied by the arguments return an analysis. If we think this is an instance
-	 * of this Semantic type then valid will be true , if invalid then valid will be false and a new Pattern will be returned.
+	 * of this Semantic type then valid will be true, if invalid then valid will be false and a new Pattern will be returned.
 	 *
 	 * @param context The context used to interpret the Data Stream (for example, stream name, date resolution mode, etc)
 	 * @param matchCount Number of samples that match so far (as determined by isValid()

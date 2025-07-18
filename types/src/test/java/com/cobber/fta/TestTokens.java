@@ -129,8 +129,8 @@ public class TestTokens {
 		final TokenStream ts = new TokenStream(input, 1);
 		assertEquals(ts.getKey(), "+-=?#$");
 		assertEquals(ts.getCompressedKey(), "+-=?#$");
-		assertEquals(ts.getRegExp(false), "\\+-=?#\\$");
-		assertEquals(ts.getRegExp(true), "\\+-=?#\\$");
+		assertEquals(ts.getRegExp(false), "\\+-=\\?#\\$");
+		assertEquals(ts.getRegExp(true), "\\+-=\\?#\\$");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.TOKENS })

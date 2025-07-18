@@ -109,6 +109,7 @@
 |POSTAL_CODE.POSTAL_CODE_DE|Postal Code (DE)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Germany, https://schema.org/postalCode|de-DE|
 |POSTAL_CODE.POSTAL_CODE_ES|Postal Code (ES)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Spain, https://schema.org/postalCode|es-ES|
 |POSTAL_CODE.POSTAL_CODE_FR|Postal Code (FR)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_France, https://schema.org/postalCode|fr-FR|
+|POSTAL_CODE.POSTAL_CODE_IN|Postal Code (IN)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_Index_Number, https://schema.org/postalCode|en-IN,hi-IN|
 |POSTAL_CODE.POSTAL_CODE_JA|Postal Code (JA)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Japan, https://schema.org/postalCode|ja|
 |POSTAL_CODE.POSTAL_CODE_MX|Postal Code (MX)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Mexico, https://schema.org/postalCode|es-MX|
 |POSTAL_CODE.POSTAL_CODE_NL|Postal Code (NL)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_the_Netherlands, https://schema.org/postalCode|en-NL,nl-NL|
@@ -131,6 +132,7 @@
 |STATE_PROVINCE.COUNTY_US|US County Name|https://en.wikipedia.org/wiki/County_(United_States)|en-US|
 |STATE_PROVINCE.DEPARTMENT_CO|Colombian Department|https://en.wikipedia.org/wiki/Departments_of_Colombia|es-CO|
 |STATE_PROVINCE.DEPARTMENT_NAME_FR|French Department||fr-FR|
+|STATE_PROVINCE.DISTRICT_NAME_IN|Indian District name|https://en.wikipedia.org/wiki/List_of_districts_in_India|en-IN, hi-IN|
 |STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|https://en.wikipedia.org/wiki/List_of_municipalities_of_Portugal|pt-PT|
 |STATE_PROVINCE.INSEE_CODE_FR|French Insee Code (5 digit)|https://en.wikipedia.org/wiki/INSEE_code|fr-FR|
 |STATE_PROVINCE.MUNICIPALITY_BR|Brazilian Municipality|https://en.wikipedia.org/wiki/Municipalities_of_Brazil|pt-BR|
@@ -166,6 +168,8 @@
 |STATE_PROVINCE.STATE_NAME_US|US State Name|https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States, https://schema.org/State|en-US,es-US,en-CA,fr-CA,en-MX|
 |STATE_PROVINCE.STATE_PROVINCE_NA|US State Code/Canadian Province Code/Mexican State Code|https://schema.org/State|en-US,en-CA,fr-CA,en-MX|
 |STATE_PROVINCE.STATE_PROVINCE_NAME_NA|US State Name/Canadian Province Name/Mexican State Name|https://schema.org/State|en-US,es-US,en-CA,fr-CA,en-MX|
+|STATE_PROVINCE.STATE_UNION_IN|Indian State/Union Code|https://en.wikipedia.org/wiki/States_and_union_territories_of_India, https://en.wikipedia.org/wiki/ISO_3166-2:IN|en-IN|
+|STATE_PROVINCE.STATE_UNION_NAME_IN|Indian State/Union name|https://en.wikipedia.org/wiki/States_and_union_territories_of_India, https://en.wikipedia.org/wiki/ISO_3166-2:IN|en-IN|
 |STATE_PROVINCE.STATE_US|US State Code|https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States, https://schema.org/State|en-US,en-Latn-US,en-CA,fr-CA,en-MX|
 |STATE_PROVINCE.SUBURB_AU|Australian Suburb|https://en.wikipedia.org/wiki/Suburbs_and_localities_(Australia)|en-AU|
 |STREET_ADDRESS2_EN|Street Address - Line 2 (English Language)||en|

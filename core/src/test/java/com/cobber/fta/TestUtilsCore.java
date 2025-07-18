@@ -502,13 +502,13 @@ public class TestUtilsCore {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testIsSimpleNumeric() {
-		assertTrue(Utils.isSimpleNumeric('0'));
-		assertTrue(Utils.isSimpleNumeric('9'));
-		assertFalse(Utils.isSimpleNumeric('０'));
-		assertFalse(Utils.isSimpleNumeric('a'));
-		assertFalse(Utils.isSimpleNumeric('z'));
-		assertFalse(Utils.isSimpleNumeric('A'));
-		assertFalse(Utils.isSimpleNumeric('Z'));
+		assertTrue(Utils.isSimpleDigit('0'));
+		assertTrue(Utils.isSimpleDigit('9'));
+		assertFalse(Utils.isSimpleDigit('０'));
+		assertFalse(Utils.isSimpleDigit('a'));
+		assertFalse(Utils.isSimpleDigit('z'));
+		assertFalse(Utils.isSimpleDigit('A'));
+		assertFalse(Utils.isSimpleDigit('Z'));
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -602,7 +602,17 @@ public class TestUtilsCore {
 			 generator.train("D");
 			 generator.train("E");
 		 }
-		 assertEquals(generator.getResult(), "[A-E]");
+		 assertEquals(generator.getResult(), "(?i)[A-E]");
+
+		 generator = new RegExpGenerator(20, Locale.getDefault());
+		 for (int i = 0; i < 100; i++) {
+			 generator.train("a");
+			 generator.train("b");
+			 generator.train("c");
+			 generator.train("d");
+			 generator.train("e");
+		 }
+		 assertEquals(generator.getResult(), "(?i)[A-E]");
 
 		 generator = new RegExpGenerator();
 		 for (int i = 0; i < 100; i++) {

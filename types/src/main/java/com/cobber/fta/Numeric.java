@@ -114,7 +114,7 @@ public class Numeric {
 					offset++;
 					ch = trimmed.charAt(offset);
 				}
-				if (!Utils.isSimpleNumeric(ch))
+				if (!Utils.isSimpleDigit(ch))
 					ret.couldBeNumeric = false;
 				else {
 					final int exponentSize = Integer.parseInt(trimmed.substring(offset, stopLooking));

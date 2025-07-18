@@ -103,7 +103,7 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 
 	@Override
 	public String getRegExp() {
-		if (minLength == 5)
+		if (minLength == 3 || minLength == 4 || minLength == 5)
 			return maxLength == 10 ? REGEXP_VARIABLE_HYPHEN : REGEXP_VARIABLE;
 
 		return minLength == 9 ? REGEXP_ZIP_PLUS4 : REGEXP_ZIP_PLUS4_HYPHEN;

@@ -116,6 +116,7 @@ public class TestIdentity {
 		}
 
 		final TextAnalyzer analysis = new TextAnalyzer("Primary SSN");
+		analysis.setDebug(2);
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final List<PluginDefinition> plugins = new ArrayList<>();

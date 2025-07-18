@@ -184,7 +184,7 @@ public class SSN_FR extends LogicalTypeInfinite {
 		if (cardinality.size() < 20 || (double)matchCount/realSamples < getThreshold()/100.0)
 			return new PluginAnalysis(BACKOUT_REGEXP);
 
-		regExp = tokenStreams.getRegExp(false);
+		regExp = tokenStreams.getRegExp(false, matchCount);
 
 		return PluginAnalysis.OK;
 	}

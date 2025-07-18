@@ -37,15 +37,13 @@ import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
  * Plugin to detect Phone Numbers.
  */
 public class PhoneNumberLT extends LogicalTypeInfinite  {
-	/** The Regular Expression for this Semantic type. */
-	public static final String REGEXP = ".*";
-
 	private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
 	private String country;
 	private boolean localNumbersValid;
 	private int nonLocal;
 	private boolean onlyDigits = true;
+	private boolean multiline;
 
 	private static final String initialValid = "0123456789(+";
 
@@ -107,7 +105,7 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 
 	@Override
 	public String getRegExp() {
-		return REGEXP;
+		return multiline ? KnownTypes.PATTERN_ANY_STRING_DOTALL : KnownTypes.PATTERN_ANY_STRING;
 	}
 
 	@Override
@@ -125,6 +123,9 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 			return false;
 
 		try {
+			if (!multiline && input.indexOf('\n') != -1)
+				multiline = true;
+
 			// The Google library is very permissive and generally strips punctuation, we want to be
 			// a little more discerning so that we don't treat ordinary numbers (or rubbish) as phone numbers
 			if (trimmed.indexOf(',') != -1 || trimmed.chars().filter(ch -> ch == '.').count() == 1 || initialValid.indexOf(trimmed.charAt(0)) == -1)
@@ -169,10 +170,10 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		// If we are allowing local-only numbers then insist on some signal from the header
 		if (localNumbersValid && nonLocal != 0 && getHeaderConfidence(context.getStreamName()) <= 0)
-			return new PluginAnalysis(onlyDigits ? KnownTypes.PATTERN_NUMERIC_VARIABLE : REGEXP);
+			return new PluginAnalysis(onlyDigits ? KnownTypes.PATTERN_NUMERIC_VARIABLE : getRegExp());
 
-		if (getHeaderConfidence(context.getStreamName()) == 0 && cardinality.size() <= 20 || getConfidence(matchCount, realSamples, context) < getThreshold()/100.0)
-			return new PluginAnalysis(onlyDigits ? KnownTypes.PATTERN_NUMERIC_VARIABLE : REGEXP);
+		if (getHeaderConfidence(context.getStreamName()) <= 0 && cardinality.size() <= 20 || getConfidence(matchCount, realSamples, context) < getThreshold()/100.0)
+			return new PluginAnalysis(onlyDigits ? KnownTypes.PATTERN_NUMERIC_VARIABLE : getRegExp());
 
 		return PluginAnalysis.OK;
 	}
