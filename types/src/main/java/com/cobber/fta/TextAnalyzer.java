@@ -3284,24 +3284,26 @@ public class TextAnalyzer {
 			}
 		}
 
-		final PluginDefinition pluginDefinition = PluginDefinition.findByName("IDENTIFIER");
-		final LogicalType identifier = LogicalTypeFactory.newInstance(pluginDefinition, analysisConfig);
+		if (analysisConfig.isEnabled(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES)) {
+			final PluginDefinition pluginDefinition = PluginDefinition.findByName("IDENTIFIER");
+			final LogicalType identifier = LogicalTypeFactory.newInstance(pluginDefinition, analysisConfig);
 
-		if (!facts.getMatchTypeInfo().isSemanticType() && !getContext().isNested() &&
-				((facts.external.keyConfidence != null && facts.external.keyConfidence == 1.0) ||
-				(facts.uniqueness == 1.0 && facts.matchCount >= 20 &&
-					identifier.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()))) {
-			facts.getMatchTypeInfo().setRegExp(facts.getRegExp());
-			facts.getMatchTypeInfo().setSemanticType(identifier.getSemanticType());
-			// If the keyConfidence was not set externally and we have concluded we have an IDENTIFIER set the keyConfidence to reflect this
-			if (facts.external.keyConfidence == null) {
-				facts.confidence = facts.external.totalCount == facts.sampleCount ? 1.0 : identifier.getConfidence(facts.matchCount, realSamples, context);
-				facts.keyConfidence = facts.confidence;
+			if (!facts.getMatchTypeInfo().isSemanticType() && !getContext().isNested() &&
+					((facts.external.keyConfidence != null && facts.external.keyConfidence == 1.0) ||
+					(facts.uniqueness == 1.0 && facts.matchCount >= 20 &&
+						identifier.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()))) {
+				facts.getMatchTypeInfo().setRegExp(facts.getRegExp());
+				facts.getMatchTypeInfo().setSemanticType(identifier.getSemanticType());
+				// If the keyConfidence was not set externally and we have concluded we have an IDENTIFIER set the keyConfidence to reflect this
+				if (facts.external.keyConfidence == null) {
+					facts.confidence = facts.external.totalCount == facts.sampleCount ? 1.0 : identifier.getConfidence(facts.matchCount, realSamples, context);
+					facts.keyConfidence = facts.confidence;
+				}
+				else
+					facts.confidence = 1.0;
+
+				ctxdebug("Type determination", "post Uniqueness analyis, matchTypeInfo - {}", facts.getMatchTypeInfo());
 			}
-			else
-				facts.confidence = 1.0;
-
-			ctxdebug("Type determination", "post Uniqueness analyis, matchTypeInfo - {}", facts.getMatchTypeInfo());
 		}
 
 		// If we are in SIMPLE mode (i.e. not Bulk) and we have not detected a Semantic Type - try replaying accumulated set in Bulk mode,

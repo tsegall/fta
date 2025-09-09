@@ -2029,6 +2029,31 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void keyFieldLongNoDefaultTypes() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("keyFieldLong");
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+		final int start = 10000;
+		final int end = start + AnalysisConfig.MAX_CARDINALITY_DEFAULT + 100;
+		int locked = -1;
+
+		for (int i = start; i < end; i++) {
+			if (analysis.train(String.valueOf(i)) && locked == -1)
+				locked = i - start;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
+		assertEquals(result.getSampleCount(), end - start);
+		assertEquals(result.getCardinality(), AnalysisConfig.MAX_CARDINALITY_DEFAULT);
+		assertEquals(result.getRegExp(), "\\d{5}");
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getSemanticType());
+		assertEquals(result.getKeyConfidence(), 0.90);
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void defaultMaxOutliers() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Alphabet");
 		final int start = 10000;

@@ -1777,7 +1777,7 @@ public class TestLongs {
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeModifier());
-		assertEquals(result.getSemanticType(), "IDENTIFIER");
+		assertNull(result.getSemanticType());
 		assertEquals(result.getSampleCount(), SAMPLE_SIZE - 1);
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE - 1);
 		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);

@@ -55,7 +55,11 @@ import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.dates.DateTimeParserConfig;
 import com.cobber.fta.dates.DateTimeParserResult;
+import com.cobber.fta.dates.DateTimeParserState;
 import com.cobber.fta.dates.SimpleDateMatcher;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DetermineDateTimeFormatTests {
 	private static final SecureRandom random = new SecureRandom();
@@ -3210,6 +3214,34 @@ public class DetermineDateTimeFormatTests {
 			assertFalse(result.isValid8("118:03:59"));
 			assertFalse(result.isValid8("118:3:59"));
 			assertFalse(result.isValid8("118:333:59"));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void SerializeDateTimeParserConfig() {
+		ObjectMapper mapper = new ObjectMapper();
+		DateTimeParserConfig cfg = new DateTimeParserConfig(Locale.US);
+		try {
+			String serialized = mapper.writeValueAsString(cfg);
+			mapper.readValue(serialized, DateTimeParserConfig.class);
+		}
+		catch (JsonProcessingException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void SerializeDateTimeParserStateConfig() {
+		ObjectMapper mapper = new ObjectMapper();
+		DateTimeParserState state = new DateTimeParserState();
+		state.results.put("hello", 1);
+		try {
+			String serialized = mapper.writeValueAsString(state);
+			DateTimeParserState post = mapper.readValue(serialized, DateTimeParserState.class);
+			assertEquals(post.results.size(), 1);
+		}
+		catch (JsonProcessingException e) {
+			fail(e.getMessage());
 		}
 	}
 

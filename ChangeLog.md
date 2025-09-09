@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 17.1.3
+ - INT: Bump google phonenumber to 9.0.13, gradle to 9.0.0, commons-text to 1.14.0, jackson to 2.20.0, jakarta.mail to 2.0.2
+ - BUG: IDENTIFIER semantic type is detected even if DEFAULT_SEMANTIC_TYPES is disabled (Issue #144)
+
 ### 17.1.2
  - ENH: Add support for \\p{Digit} as a synonym for \d in RegExp plugins (Issue #142)
  - ENH: Validate the input file associated with a user-defined list plugin to check for lower case characters (Issue #143)

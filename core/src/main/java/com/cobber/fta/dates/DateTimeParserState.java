@@ -28,7 +28,7 @@ public class DateTimeParserState {
 	public int invalidCount;
 	public final Map<String, Integer> results;
 
-	DateTimeParserState() {
+	public DateTimeParserState() {
 		results = new HashMap<>();
 	}
 
