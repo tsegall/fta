@@ -276,6 +276,7 @@ like phone numbers, but that are in fact invalid, will NOT be detected as the Se
 * Assuming the entire set of stream names is available, Semantic Type detection of a particular column may be impacted by other stream names, for example the Semantic Type PERSON.AGE is detected if we detect another field of type GENDER or NAME.FIRST.
 * When using Record mode for Semantic Type analysis - the detection of Semantic Types for a stream may be impacted by prior determination of the Semantic Type of another Stream (either via detection or provided with the Context)
 * By default analysis is performed on the initial 4096 characters of the field (adjustable via setMaxInputLength()).
+* If two Semantic Types have equal confidence then the Semantic Type with the highest priority will be selected.
 
 [Details of Semantic Types detected](SemanticTypes.md)
 
@@ -295,9 +296,9 @@ F1-Score == 2 * ((Precision * Recall) / (Precision + Recall))
 ### Additional user-defined Semantic Types ###
 
 Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
-* Code - captures any complex type (e.g. Even numbers, Credit Cards numbers).  Implemented via a Java Class.
-* Finite - captures any finite type (e.g. ISO-3166-2 (Country codes), US States, ...).  Implemented via a supplied list with the valid elements enumerated.
-* RegExp - captures any type that can be expressed via a Regular Expression (e.g. SSN).  Implemented via a set of Regular Expressions used to match against.
+* RegExp (regex) - captures any type that can be expressed via a Regular Expression (e.g. SSN).  Implemented via a set of Regular Expressions used to match against.
+* Finite (list) - captures any finite type (e.g. ISO-3166-2 (Country codes), US States, ...).  Implemented via a supplied list with the valid elements enumerated.
+* Code (java) - captures any complex type (e.g. Even numbers, Credit Cards numbers).  Implemented via a Java Class.
 
 Note: The Context (the current Stream Name and other field names) can be used to bias detection of the incoming data and/or solely determine the detection.
 
@@ -373,7 +374,7 @@ In all cases the plugin definition and locale are passed as arguments.
 
 The mandatory 'semanticType' tag is the name of this Semantic Type.
 
-The 'threshold' tag is the percentage of valid samples required by this plugin to establish the Stream Data as a a valid instance of this Semantic Type.
+The 'threshold' tag is the percentage confidence we require to establish the Stream Data as a valid instance of this Semantic Type.  In the simplest case this can be the percentage of samples detected as valid in the provided stream.  More commonly the confidence is determined by a combination of the header confidence and the observed data.
 The threshold will default to 95% if not specified.
 
 The 'baseType' tag constrains the plugin to streams that are of this Base Type (see discussion above on the valid Base Types).
@@ -399,12 +400,72 @@ The optional 'minSamples' tag indicates that in order for this Semantic Type to 
 
 The optional 'invalidList' tag is a list of invalid values for this Semantic Type, for example '[ "000-00-0000" ]' indicates that this is an invalid SSN, despite the fact that it matches the SSN regular expression.
 
+#### Example
+The following example is looking for an Indian Postal Code.  In this case the header is mandatory so we will insist on both detecting a regular expression of the form '\d{6}' and a case independent match for the header.  The plugin will return '[1-9]\\d{5}' as it is illegal to have a leading zero for an Indian Postal Code.
+
+```json
+	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_IN",
+		"description": "Postal Code (IN)",
+		"pluginType": "regex",
+		"validLocales": [
+			{
+				"localeTag": "en-IN,hi-IN",
+				"headerRegExps": [ { "regExp": ".*(?i)(?u)(pincode).*", "confidence": 95, "mandatory": true } ],
+				"matchEntries": [ {
+					"regExpsToMatch": [ "\\d{6}" ],
+					"regExpReturned": "[1-9]\\d{5}"
+				} ]
+			}
+		],
+		"threshold": 98
+	}
+```
+
 ### Finite plugins ###
 
 The mandatory 'content' element is required.
 
 The 'type' tag determines how the content is provided (possible values are 'inline', 'resource', or 'file').
 If the type is 'inline' then the tag 'members' is the array of possible values.  If the type is 'resource' or 'file' then the tag 'reference' is the file/resource that contains the list of values.  Note: the list of possible values is required to be upper case and encoded in UTF-8.
+
+#### Example
+```json
+{
+	"semanticType": "CUSTOM.ELEMENTS",
+	"description": "Periodic Table Elements",
+	"pluginType": "list",
+	"validLocales": [ {
+		"localeTag": "en"
+	} ],
+	"threshold": 95,
+	"content": {
+		"type": "resource",
+		"reference": "/elements.csv"
+	},
+	"documentation": [
+		{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Periodic_table" }
+	],
+	"backout": "\\\\p{IsAlphabetic}{1,2}"
+}
+```
+
+### Code plugins ###
+
+Code plugins are implemented via a Java class.  This class will typically either extend LogicalTypeInfinite for types with a large number of members, or extend LogicalTypeFinite for a type with a finite number of members.  For a simple example refer to the code to detect IPv4 addresses (IPV4Address.java) or the sample PluginColor.java.
+
+#### Key methods
+isCandidate() - Fast check to see if the input might be an instance of this Semantic type.
+
+isValid() - Is the supplied input an instance of this Semantic type?
+
+getRegExp()	- The Regular Expression that most closely matches this Semantic Type.
+
+getConfidence() - Will default to the number of valid samples / size of the sample set.  This is commonly overridden to bias the confidence based on the field name.
+
+nextRandom() - Will generate a random (secure) valid example of this Semantic Type.
+
+analyzeSet() - Given the data set analyzed determine if this set is likely an instance of this Semantic Type.
 
 ## Invalid Set ##
 
@@ -453,7 +514,7 @@ The DataSignature will be identical for AccountLocation and PrimaryCountry as th
 
 Additional attributes captured in JSON structure:
 - Included if statistics are enabled: min, max, mean, standardDeviation, topK, bottomK
-- Included if Base Type == Double: decimalSeparator
+- Included if Base Type is Double: decimalSeparator
 - Included if Base Type is Numeric: leadingZeroCount
 - Included if Base Type is Date: dateResolutionMode
 
@@ -536,11 +597,11 @@ Within the specification the type is required and can either be a Semantic Type 
  - format - the format for outputting this field (e.g. %03d for a LONG)
  - distribution - the distribution of the samples (gaussian, monotonic_increasing, monotonic_decreasing; the default is normal)
  - nullPercent - the percentage of nulls in this field
- - blankPerent - the percentage of blanks in this field
+ - blankPercent - the percentage of blanks in this field
  - values - for an STRING type, the possible set of values can be specified
 
 ## Merging Analyses ##
-FTA supports merging of analyses run on distinct data shards.  So for example, if part of the data to be profiled resides on one shard and the balance on a separate shard then FTA can be invoked on each shard separately and then merged.  To accomplish this individual analyses should be executed (with similar configurations), the resulting serialized forms should then be deserialized on a common node and merged. Refer to the Merge example for further details.
+FTA supports merging of analyses run on distinct data shards.  So for example, if part of the data to be profiled resides on one shard and the balance on a separate shard then FTA can be invoked on each shard separately and then merged.  To accomplish this, individual analyses should be executed (with similar configurations), the resulting serialized forms should then be deserialized on a common node and merged. Refer to the Merge example for further details.
 
 The accuracy of the merge is determined by the cardinality of the two individual shards, and falls into one of the the following three cases:
 - cardinality(one) + cardinality(two) < max cardinality
