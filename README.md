@@ -430,6 +430,8 @@ The 'type' tag determines how the content is provided (possible values are 'inli
 If the type is 'inline' then the tag 'members' is the array of possible values.  If the type is 'resource' or 'file' then the tag 'reference' is the file/resource that contains the list of values.  Note: the list of possible values is required to be upper case and encoded in UTF-8.
 
 #### Example
+The following example is looking for elements from the Periodic Table.  The list of valid entries is in a resource file named elements.csv.
+
 ```json
 {
 	"semanticType": "CUSTOM.ELEMENTS",
@@ -443,9 +445,6 @@ If the type is 'inline' then the tag 'members' is the array of possible values. 
 		"type": "resource",
 		"reference": "/elements.csv"
 	},
-	"documentation": [
-		{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Periodic_table" }
-	],
 	"backout": "\\\\p{IsAlphabetic}{1,2}"
 }
 ```
