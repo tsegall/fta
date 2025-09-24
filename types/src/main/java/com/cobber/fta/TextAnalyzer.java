@@ -2946,10 +2946,20 @@ public class TextAnalyzer {
 		// Check Date/Time types for a Semantic Type
 		// NOTE: finalizeLong() above may have switched a long to a date - hence this is not an else!
 		if (facts.getMatchTypeInfo().getBaseType().isDateOrTimeType() && !facts.getMatchTypeInfo().isSemanticType()) {
+			LogicalType best = null;
+			double bestScore = -1.0;
+
 			for (final LogicalTypeInfinite logical : infiniteTypes) {
 				if (logical.acceptsBaseType(facts.getMatchTypeInfo().getBaseType()) && logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-					facts.getMatchTypeInfo().setSemanticType(logical.getSemanticType());
-					ctxdebug("Type determination", "infinite type, matchTypeInfo - {}", facts.getMatchTypeInfo());
+					double dataConfidence = logical.getConfidence(facts.matchCount, realSamples, context);
+					// We take the best data confidence, if two have the same data confidence then tie-break based on header confidence
+					if (dataConfidence > bestScore ||
+							(best != null && dataConfidence == bestScore && logical.getHeaderConfidence(context.getStreamName()) > best.getHeaderConfidence(context.getStreamName()))) {
+						best = logical;
+						bestScore = logical.getConfidence(facts.matchCount, realSamples, context);
+						facts.getMatchTypeInfo().setSemanticType(logical.getSemanticType());
+						ctxdebug("Type determination", "infinite type, matchTypeInfo - {}", facts.getMatchTypeInfo());
+					}
 				}
 			}
 		}

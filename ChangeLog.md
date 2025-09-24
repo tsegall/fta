@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 17.1.4
+ - BUG: Semantic Date types were neither honoring priority nor considering header confidence (Issue #144)
+ - INT: Bump SpotBugs to 6.4.2, google phonenumber to 9.0.14, guava to 33.5.0-jre
+
 ### 17.1.3
  - INT: Bump google phonenumber to 9.0.13, gradle to 9.0.0, commons-text to 1.14.0, jackson to 2.20.0, jakarta.mail to 2.0.2
  - BUG: IDENTIFIER semantic type is detected even if DEFAULT_SEMANTIC_TYPES is disabled (Issue #144)

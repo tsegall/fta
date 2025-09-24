@@ -22,9 +22,11 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.DateFormat;
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.dates.DateTimeParser;
@@ -5109,6 +5112,146 @@ public class TestDates {
 		}
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void bug145_A() throws FTAException {
+		// No header match so should choose lowest priority match, i.e. CUSTOM.YEAR_OF_BIRTH
+		final String dataStreamName = "Zoomer";
+		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+		analysis.setLocale(locale);
+		final String[] inputs = {
+			"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
+			"2008-05-31Z", "2002-02-28Z", "2008-05-31Z", "2003-02-28Z", "1993-02-28Z",
+			"2001-02-28Z", "1993-02-28Z", "1995-02-28Z", "1996-02-29Z", "1995-02-28Z",
+			"1993-02-28Z", "1998-02-28Z", "2004-02-29Z", "2007-02-28Z", "1990-02-28Z",
+			"2008-05-31Z", "1996-02-29Z", "1990-02-28Z", "2006-02-28Z", "2010-12-31Z",
+			"2006-02-28Z", "1998-02-28Z", "2001-02-28Z", "1965-02-28Z", "1995-02-28Z",
+			"2006-02-28Z", "1990-02-28Z", "2007-10-31Z", "1969-12-31Z", "2009-12-31Z",
+			"1985-02-28Z", "1986-02-28Z", "1987-02-28Z", "1988-02-29Z", "2001-02-28Z",
+			"1988-02-29Z", "1965-02-28Z", "2001-02-28Z", "2003-02-28Z", "2009-02-28Z",
+			"1978-02-28Z", "2008-12-31Z", "1994-02-28Z", "1995-02-28Z", "1996-02-29Z"
+		};
+
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
+			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig());
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd'Z'");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}Z");
+		assertEquals(result.getConfidence(), 1.0);
+		System.err.println("Semantic Type = " + result.getSemanticType());
+		assertEquals(result.getSemanticType(), "CUSTOM.YEAR_OF_BIRTH");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void bug145_B() throws FTAException {
+		// Header match so should choose CUSTOM.YEAR_OF_DEATH
+		final String dataStreamName = "DeathDate";
+		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+		analysis.setLocale(locale);
+		final String[] inputs = {
+			"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
+			"2008-05-31Z", "2002-02-28Z", "2008-05-31Z", "2003-02-28Z", "1993-02-28Z",
+			"2001-02-28Z", "1993-02-28Z", "1995-02-28Z", "1996-02-29Z", "1995-02-28Z",
+			"1993-02-28Z", "1998-02-28Z", "2004-02-29Z", "2007-02-28Z", "1990-02-28Z",
+			"2008-05-31Z", "1996-02-29Z", "1990-02-28Z", "2006-02-28Z", "2010-12-31Z",
+			"2006-02-28Z", "1998-02-28Z", "2001-02-28Z", "1965-02-28Z", "1995-02-28Z",
+			"2006-02-28Z", "1990-02-28Z", "2007-10-31Z", "1969-12-31Z", "2009-12-31Z",
+			"1985-02-28Z", "1986-02-28Z", "1987-02-28Z", "1988-02-29Z", "2001-02-28Z",
+			"1988-02-29Z", "1965-02-28Z", "2001-02-28Z", "2003-02-28Z", "2009-02-28Z",
+			"1978-02-28Z", "2008-12-31Z", "1994-02-28Z", "1995-02-28Z", "1996-02-29Z"
+		};
+
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
+			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig());
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd'Z'");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}Z");
+		assertEquals(result.getConfidence(), 1.0);
+		System.err.println("Semantic Type = " + result.getSemanticType());
+		assertEquals(result.getSemanticType(), "CUSTOM.YEAR_OF_DEATH");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void bug145_C() throws FTAException {
+		// Header match so should choose CUSTOM.YEAR_OF_BIRTH
+		final String dataStreamName = "BirthDate";
+		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+		analysis.setLocale(locale);
+		final String[] inputs = {
+				"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
+				"2008-05-31Z", "2002-02-28Z", "2008-05-31Z", "2003-02-28Z", "1993-02-28Z",
+				"2001-02-28Z", "1993-02-28Z", "1995-02-28Z", "1996-02-29Z", "1995-02-28Z",
+				"1993-02-28Z", "1998-02-28Z", "2004-02-29Z", "2007-02-28Z", "1990-02-28Z",
+				"2008-05-31Z", "1996-02-29Z", "1990-02-28Z", "2006-02-28Z", "2010-12-31Z",
+				"2006-02-28Z", "1998-02-28Z", "2001-02-28Z", "1965-02-28Z", "1995-02-28Z",
+				"2006-02-28Z", "1990-02-28Z", "2007-10-31Z", "1969-12-31Z", "2009-12-31Z",
+				"1985-02-28Z", "1986-02-28Z", "1987-02-28Z", "1988-02-29Z", "2001-02-28Z",
+				"1988-02-29Z", "1965-02-28Z", "2001-02-28Z", "2003-02-28Z", "2009-02-28Z",
+				"1978-02-28Z", "2008-12-31Z", "1994-02-28Z", "1995-02-28Z", "1996-02-29Z"
+		};
+
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
+			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig());
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd'Z'");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}Z");
+		assertEquals(result.getConfidence(), 1.0);
+		System.err.println("Semantic Type = " + result.getSemanticType());
+		assertEquals(result.getSemanticType(), "CUSTOM.YEAR_OF_BIRTH");
+	}
 
 	protected static String checkParseable(final TextAnalysisResult result, final String input, final Locale locale) {
 		final String formatString = result.getTypeModifier();

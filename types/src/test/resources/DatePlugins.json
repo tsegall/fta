@@ -1,0 +1,30 @@
+[
+	{
+		"semanticType": "CUSTOM.YEAR_OF_BIRTH",
+		"description": "Person - Year of Birth",
+		"pluginType": "java",
+		"clazz": "com.cobber.fta.plugins.person.BirthYear",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(.*birth).*", "confidence": 99 } ]
+			}
+		],
+		"baseType": "LOCALDATE",
+		"priority": 2000
+	},
+	{
+		"semanticType": "CUSTOM.YEAR_OF_DEATH",
+		"description": "Person - Year of Death",
+		"pluginType": "java",
+		"clazz": "com.cobber.fta.plugins.person.BirthYear",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(death).*", "confidence": 99 } ]
+			}
+		],
+		"baseType": "LOCALDATE",
+		"priority": 3000
+	}
+]
