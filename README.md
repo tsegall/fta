@@ -202,7 +202,7 @@ There are a large number of metrics detected, which vary based on the type of th
  * blankCount - Number of blank samples
  * distinctCount - Number of distinct (valid) samples, typically -1 if maxCardinality exceeded. See Note 1.
  * regExp - A Regular Expression (Java) that matches the detected Type
- * confidence - The percentage confidence (0-1.0) in the determination of the Type
+ * confidence - The percentage confidence (0-1.0) in the determination of the Type. If no Semantic Type is detected then the confidence reflects the confidence in the Base Type, if a Semantic Type is detected then the confidence reflects the confidence in the Semantic Type.
  * type - The Base Type (one of Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
  * typeModifier - A modifier with respect to the Base Type. See Base Type discussion.
  * min - The minimum value observed
