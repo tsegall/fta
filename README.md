@@ -613,7 +613,7 @@ If either shard has a cardinality greater than the maximum cardinality then cert
 
 If the sum of the cardinality is greater than the maximum cardinality but neither individual shard has a cardinality greater than the maximum cardinality then the only attribute that will be indeterminate is the uniqueness of the merged set and clearly the cardinality of the resulting Analysis will be limited to the maximum cardinality.
 
-Note: The input presented to the merged analysis is the union of the data captured by the cardinality detail, outliers detail and the topK and bottomK from each shard, and hence the sampleCount on the merged analysis will reflect these numbers.
+Note: The input presented to the merged analysis is the union of the data captured by the cardinality detail, outliers detail and the topK and bottomK from each shard, and hence the sampleCount (and matchedCount) on the merged analysis will reflect these numbers.
 
 ## Frequently Asked Questions ##
 
