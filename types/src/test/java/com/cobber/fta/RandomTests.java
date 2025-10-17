@@ -3210,6 +3210,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void checkLengths_2() throws IOException, FTAException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("county");
+		analysis.setLocale(Locale.US);
 		final String[] samples = {
 			"Lane", "Lane", "Curry", "Lincoln", "Lane", "Hood River",
 			"Baker, Crook, Gilliam, Grant, Harney, Hood River, Lake, Malheur, Morrow, Sherman, Umatilla, Union, Wallowa, Wasco, Wheeler",
