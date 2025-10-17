@@ -28,6 +28,7 @@ import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -3173,6 +3174,105 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void checkLengths_1() throws IOException, FTAException, FTAException {
+		final TextAnalyzer model = new TextAnalyzer("vehicle_model_year");
+
+		for (int year = 1980; year <= 2024; year++) {
+			model.train(String.valueOf(year));
+			model.train(String.valueOf(year));
+		}
+
+		// Add an outlier
+		model.train("1196");
+
+		// Add an invalid entry
+		model.train("ABCD");
+
+		final TextAnalysisResult result = model.getResult();
+		assertEquals(result.getSampleCount(), 92L);
+		assertEquals(result.getMatchCount(), 90L);
+		assertEquals(result.getMinLength(), 4);
+		assertEquals(result.getMaxLength(), 4);
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getRegExp(), "\\d{4}");
+		assertEquals(result.getOutlierCount(), 1L);
+		assertEquals(result.getOutlierDetails().size(), 1);
+		assertTrue(result.getOutlierDetails().containsKey("1196"));
+		assertEquals(result.getInvalidCount(), 1L);
+		assertEquals(result.getInvalidDetails().size(), 1);
+		assertTrue(result.getInvalidDetails().containsKey("ABCD"));
+
+		long[] lengths = result.getLengthFrequencies();
+		assertEquals(lengths[4], 92L);
+		assertEquals(Arrays.stream(result.getLengthFrequencies()).sum(), result.getSampleCount());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void checkLengths_2() throws IOException, FTAException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("county");
+		final String[] samples = {
+			"Lane", "Lane", "Curry", "Lincoln", "Lane", "Hood River",
+			"Baker, Crook, Gilliam, Grant, Harney, Hood River, Lake, Malheur, Morrow, Sherman, Umatilla, Union, Wallowa, Wasco, Wheeler",
+			"Multnomah", "Linn; Benton", "Washington", "Lane", "Marion", "Douglas", "Harney", "Marion", "Lincoln", "Multnomah",
+			"multiple", "Multnomah", "Malheur", "Lane", "Marion", "Umatilla", "Coos", "Umatilla", "Malheur", "Multnomah",
+			"Multnomah", "Deschutes", "Multnomah", "Columbia", "Clatsop", "Umatilla", "Washington", "Malheur", "Polk", "Lincoln",
+			"Lane", "statewide", "statewide", "Jackson", "Lane", "Washington", "Coos", "Clackamas", "statewide", "Lane",
+			"Washington", "statewide", "statewide", "Washington", "Multnomah", "Washington", "Clackamas", "Curry", "Yamhill", "Polk",
+			"Multnomah", "Lane", "statewide", "Multnomah", "Multnomah", "Lane", "Linn", "multiple", "Multnomah", "Baker",
+			"Hood River", "multiple", "Josephine", "statewide", "Washington", "Benton", "Linn", "multiple", "Hood River", "multiple",
+			"Coos", "Clatsop", "Josephine", "Columbia", "Multnomah", "Lane", "Washington", "Josephine", "Multnomah", "Clackamas",
+			"multiple", "Clatsop", "Columbia", "Multnomah", "Benton", "Washington", "Lane", "Lane", "Lane", "Polk",
+			"Washington", "Multnomah", "Multnomah", "Marion", "Washington", "Clatsop", "Linn", "Columbia", "Multnomah", "Multnomah",
+			"statewide", "Washington", "Lane", "Polk", "statewide", "statewide", "Clackamas", "Lane", "Multnomah", "Marion",
+			"Washington", "Umatilla", "Clatsop", "Linn", "statewide", "Multnomah", "Multnomah", "Klamath", "statewide", "Multnomah",
+			"Jackson", "Lane", "Polk", "statewide", "Lane", "statewide", "multiple", "Deschutes", "Multnomah", "Multnomah",
+			"Washington", "Washington", "Hood River", "Clatsop", "Linn", "statewide", "Clatsop", "Lane", "Multnomah", "Multnomah",
+			"Multnomah", "Washington", "Washington"
+		};
+
+		for (final String sample : samples)
+			analysis.train(sample);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSampleCount(), 150L);
+		assertEquals(result.getNullCount(), 0L);
+		assertEquals(result.getMatchCount(), 126L);
+		assertEquals(result.getMinLength(), 4);
+		assertEquals(result.getMaxLength(), 122);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getSemanticType(), "STATE_PROVINCE.COUNTY_US");
+		assertEquals(result.getOutlierCount(), 0L);
+		assertEquals(result.getInvalidCount(), 4L);
+		assertEquals(Arrays.stream(result.getLengthFrequencies()).sum(), result.getSampleCount());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void checkLengths_3() throws IOException, FTAException, FTAException {
+		final TextAnalyzer model = new TextAnalyzer("Type");
+
+		for (int i = 1; i <= 100; i++) {
+			model.train("City");
+			model.train("Town");
+			if (i%10 == 0)
+				model.train("NULL");
+		}
+
+		final TextAnalysisResult result = model.getResult();
+		assertEquals(result.getSampleCount(), 210L);
+		assertEquals(result.getNullCount(), 10L);
+		assertEquals(result.getMatchCount(), 200L);
+		assertEquals(result.getMinLength(), 4);
+		assertEquals(result.getMaxLength(), 4);
+		assertEquals(result.getType(), FTAType.STRING);
+		assertEquals(result.getRegExp(), "(?i)(CITY|TOWN)");
+		assertEquals(result.getOutlierCount(), 0L);
+
+		long[] lengths = result.getLengthFrequencies();
+		assertEquals(lengths[4], 200L);
+		assertEquals(Arrays.stream(result.getLengthFrequencies()).sum(), result.getSampleCount() - result.getNullCount());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void issue130() throws IOException, FTAException, FTAException {
 		final String[] inputs = {
 				"Guinea-Bissau", "Sri Lanka", "United Arab Emirates", "Congo, Republic of the", "Poland",
@@ -3235,7 +3335,7 @@ public class RandomTests {
 			return textAnalyzer.getPlugins();
 		}
 	}
-	
+
 	public static void main(final String[] args) throws FTAException {
 		final String[] inputs = {
 				"Anaïs Nin", "Gertrude Stein", "Paul Cézanne", "Pablo Picasso", "Theodore Roosevelt",
@@ -3262,7 +3362,7 @@ public class RandomTests {
 			System.err.printf("Semantic Type: %s (%s)%n", result.getSemanticType(), result.getType());
 			System.err.println("Detail: " + result.asJSON(true, 1));
 		}
-	}	
+	}
 
 	class PluginThread implements Runnable {
 		private final String id;

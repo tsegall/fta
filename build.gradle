@@ -1,10 +1,10 @@
 plugins {
 	id "com.github.ben-manes.versions"
-	id "com.github.spotbugs" version "6.4.2" apply false
+	id "com.github.spotbugs" version "6.4.3" apply false
 }
 
 wrapper {
-	gradleVersion = '9.0.0'
+	gradleVersion = '9.1.0'
 }
 
 tasks.register('examples.clean') {
@@ -156,7 +156,7 @@ subprojects {
 	apply plugin: "com.github.spotbugs"
 
 	spotbugs {
-		toolVersion = "4.9.6"
+		toolVersion = "4.9.7"
 		effort = "max"
 		reportLevel = "low"
 		ignoreFailures = true

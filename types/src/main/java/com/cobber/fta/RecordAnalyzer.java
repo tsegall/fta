@@ -16,7 +16,6 @@
 package com.cobber.fta;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
@@ -156,13 +155,20 @@ public class RecordAnalyzer {
 	}
 
 	private static void updateCounts(final TextAnalysisResult result, final FiniteMap outliers, final FiniteMap invalids) {
+		final Facts facts = result.getFacts();
+
 		// We found a new Semantic Type so add the old invalids & outliers to the current invalids and update the sample count
-		for (final Map.Entry<String, Long> entry : outliers.entrySet())
-			result.getFacts().outliers.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
-		result.getFacts().sampleCount += outliers.values().stream().mapToLong(l-> l).sum();
-		for (final Map.Entry<String, Long> entry : invalids.entrySet())
-			result.getFacts().invalid.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
-		result.getFacts().sampleCount += invalids.values().stream().mapToLong(l-> l).sum();
+		for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
+			facts.outliers.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
+			facts.lengths[Math.min(entry.getKey().length(), facts.lengths.length - 1)] += entry.getValue();
+		}
+		facts.sampleCount += outliers.values().stream().mapToLong(l-> l).sum();
+
+		for (final Map.Entry<String, Long> entry : invalids.entrySet()) {
+			facts.invalid.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
+			facts.lengths[Math.min(entry.getKey().length(), facts.lengths.length - 1)] += entry.getValue();
+		}
+		facts.sampleCount += invalids.values().stream().mapToLong(l-> l).sum();
 	}
 
 	private TextAnalysisResult reAnalyze(final TextAnalyzer analyzer, final TextAnalysisResult result) throws FTAPluginException, FTAUnsupportedLocaleException {

@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 17.1.5
+ - INT: Bump google phonenumber to 9.0.16, logback-classic to 1.5.19, gradle to 9.1.0, SpotBugs to 6.4.3
+ - BUG: Fix a set of cases where the lengths frequencies did not correlate with the number of non-null samples seen.
+
 ### 17.1.4
  - BUG: Semantic Date types were neither honoring priority nor considering header confidence (Issue #144)
  - INT: Bump SpotBugs to 6.4.2, google phonenumber to 9.0.14, guava to 33.5.0-jre

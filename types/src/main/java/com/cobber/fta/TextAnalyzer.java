@@ -3193,11 +3193,14 @@ public class TextAnalyzer {
 							newResult.getFacts().invalid.put(worstEntry.getKey(), worstEntry.getValue());
 							if (!getFacts().outliers.isEmpty()) {
 								newResult.getFacts().invalid.putAll(getFacts().outliers);
-								newResult.getFacts().sampleCount += getFacts().outliers.values().stream().mapToLong(l-> l).sum();;
+								newResult.getFacts().sampleCount += getFacts().outliers.values().stream().mapToLong(l-> l).sum();
+								for (final Map.Entry<String, Long> entry : getFacts().outliers.entrySet())
+									newResult.getFacts().lengths[Math.min(entry.getKey().length(), facts.lengths.length - 1)] += entry.getValue();
 							}
 							newResult.getFacts().sampleCount += worstEntry.getValue();
 							newResult.getFacts().confidence -= 0.05;
 							newResult.getFacts().getMatchTypeInfo().setBaseType(FTAType.STRING);
+							newResult.getFacts().lengths[Math.min(worstEntry.getKey().length(), facts.lengths.length - 1)] += worstEntry.getValue();
 							result = newResult;
 							ctxdebug("Type determination", "was STRING, post exclusion analyis ({}, {}), matchTypeInfo {} -> {} ",
 									worstEntry.getKey(), worstEntry.getValue(), facts.matchTypeInfo, newResult.getFacts().getMatchTypeInfo());
@@ -3243,11 +3246,15 @@ public class TextAnalyzer {
 
 				if (newResult.isSemanticType() || newType.isDateOrTimeType()) {
 					// We found a new Semantic Type so add the old invalids & outliers to the current invalids and update the sample count
-					for (final Map.Entry<String, Long> entry : outliers.entrySet())
+					for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
 						newResult.getFacts().outliers.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
+						newResult.getFacts().lengths[Math.min(entry.getKey().length(), facts.lengths.length - 1)] += entry.getValue();
+					}
 					newResult.getFacts().sampleCount += outliers.values().stream().mapToLong(l-> l).sum();
-					for (final Map.Entry<String, Long> entry : getFacts().invalid.entrySet())
+					for (final Map.Entry<String, Long> entry : getFacts().invalid.entrySet()) {
 						newResult.getFacts().invalid.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
+						newResult.getFacts().lengths[Math.min(entry.getKey().length(), facts.lengths.length - 1)] += entry.getValue();
+					}
 					newResult.getFacts().sampleCount += getFacts().invalid.values().stream().mapToLong(l-> l).sum();
 					newResult.getFacts().confidence -= 0.05;
 					result = newResult;
