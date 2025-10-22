@@ -48,6 +48,7 @@ import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
+import com.cobber.fta.core.HeaderEntry;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.plugins.CheckDigitEAN13;
 import com.cobber.fta.plugins.CheckDigitISBN;
@@ -1962,34 +1963,37 @@ public class TestPlugins {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void pluginsEdit() throws FTAException {
-		PluginDefinition defn = PluginDefinition.findByName("NAME.FIRST");
-		for (PluginLocaleEntry localeEntry : defn.validLocales) {
-			System.err.printf("Found - '%s'\n", localeEntry.localeTag);
-			if ("en".equals(localeEntry.localeTag))
-				System.err.printf("Found - '%s'\n", localeEntry.headerRegExps[0]);
-		}
-		PluginDefinition newDefn = new PluginDefinition(defn);
-		System.err.printf("New - '%s'\n", newDefn.semanticType);
-		for (PluginLocaleEntry localeEntry : newDefn.validLocales) {
-			System.err.printf("Found - '%s'\n", localeEntry.localeTag);
-			if ("en".equals(localeEntry.localeTag)) {
-				System.err.printf("Found - '%s'\n", localeEntry.headerRegExps[0].regExp);
-				localeEntry.headerRegExps[0].regExp = localeEntry.headerRegExps[0].regExp.replace("fname", "fname|fn");
-				System.err.printf("Found - '%s'\n", localeEntry.headerRegExps[0].regExp);
-			}
-		}
-//		for (PluginDefinition defn : pluginDefinitions) {
-//			if ("NAME.FIRST".equals(defn.semanticType)) {
-//				System.err.printf("Found - '%s'\n", defn.semanticType);
-//				for (PluginLocaleEntry localeEntry : defn.validLocales) {
-//					System.err.printf("Found - '%s'\n", localeEntry.localeTag);
-//					if ("en".equals(localeEntry.localeTag))
-//						System.err.printf("Found - '%s'\n", localeEntry.headerRegExps[0]);
-//				}
-//			}
-//		}
-	}
+		final String inputs[] = {
+				"Anna", "Buffalo", "Peter", "David", "Janet", "Mary", "Joe", "Tim", "Jeremy", "Reginald",
+				"Roger", "Lois", "Janet", "Polaris", "Sean", "Shawn", "Shaun", "Regina", "Gail", "Max"
+		};
+		final TextAnalyzer analysisPre = new TextAnalyzer("fn");
+		analysisPre.setLocale(Locale.US);
+		for (final String input : inputs)
+			analysisPre.train(input);
+		final TextAnalysisResult resultPre = analysisPre.getResult();
+		assertNull(resultPre.getSemanticType());
 
+		// Edit the FIRST NAME plugin to add our header "fn"
+		PluginDefinition defn = analysisPre.findByName("NAME.FIRST");
+		for (PluginLocaleEntry localeEntry : defn.validLocales)
+		 if ("en".equals(localeEntry.localeTag)) {
+			 final int entries = localeEntry.headerRegExps.length;
+			 HeaderEntry[] newHeaders = new HeaderEntry[entries + 1];
+			 for (int i = 0; i < entries; i++)
+				 newHeaders[i] = new HeaderEntry(localeEntry.headerRegExps[i]);
+			 newHeaders[entries] = new HeaderEntry("(?i)fn", 100);
+			 localeEntry.headerRegExps = newHeaders;
+		 }
+
+		final TextAnalyzer analysisPost = new TextAnalyzer("fn");
+		analysisPost.setLocale(Locale.US);
+		for (final String input : inputs)
+			analysisPost.train(input);
+		final TextAnalysisResult resultPost = analysisPost.getResult();
+		assertEquals(resultPost.getSemanticType(), "NAME.FIRST");
+
+	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicISIN() throws IOException, FTAException {

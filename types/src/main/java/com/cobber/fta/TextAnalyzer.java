@@ -53,10 +53,6 @@ import java.util.Set;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.slf4j.LoggerFactory;
 
-import com.cobber.fta.TextAnalyzer.Escalation;
-import com.cobber.fta.TextAnalyzer.Observation;
-import com.cobber.fta.TextAnalyzer.OutlierAnalysis;
-import com.cobber.fta.TextAnalyzer.SignStatus;
 import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
@@ -1257,6 +1253,17 @@ public class TextAnalyzer {
 		return plugins;
 	}
 
+	private void loadPlugins() {
+                synchronized (pluginDefinitions) {
+                        if (pluginDefinitions.isEmpty())
+                                try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
+                                        pluginDefinitions = mapper.readValue(reader, new TypeReference<List<PluginDefinition>>(){});
+                                } catch (Exception e) {
+                                        throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
+                                }
+                }
+        }
+
 	/**
 	 * Register the default set of plugins for Semantic Type detection.
 	 *
@@ -1264,20 +1271,32 @@ public class TextAnalyzer {
 	 * Note: The Locale (on the configuration)  will impact both the set of plugins registered as well as the behavior of the individual plugins
 	 */
 	public void registerDefaultPlugins(final AnalysisConfig analysisConfig) {
-		synchronized (pluginDefinitions) {
-			if (pluginDefinitions.isEmpty()) {
-				try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
-					pluginDefinitions = mapper.readValue(reader, new TypeReference<List<PluginDefinition>>(){});
-				} catch (Exception e) {
-					throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
-				}
-			}
-			try {
-				plugins.registerPluginsInternal(pluginDefinitions, context.getStreamName(), analysisConfig);
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
-			}
+		loadPlugins();
+
+		try {
+			plugins.registerPluginsInternal(pluginDefinitions, context.getStreamName(), analysisConfig);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * Retrieve the Plugin Definition associated with this Semantic Type name.
+	 *
+	 * Note: Unlike the similar function in PluginDefinition this one accesses the current instance and any edits
+	 * will impact the current Analyzer.
+	 *
+	 * @param semanticTypeName The name for this Semantic Type
+	 * @return The Plugin Definition associated with the supplied name.
+	 */
+	public PluginDefinition findByName(final String semanticTypeName) {
+		loadPlugins();
+
+		for (final PluginDefinition pluginDefinition : pluginDefinitions)
+			if (pluginDefinition.semanticType.equalsIgnoreCase(semanticTypeName))
+				return pluginDefinition;
+
+		return null;
 	}
 
 	private void initialize() throws FTAPluginException, FTAUnsupportedLocaleException {

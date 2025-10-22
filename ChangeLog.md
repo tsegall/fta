@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 17.1.7
+ - ENH: Add ability to edit built-in plugins (Issue #149) - see TestPlugins.pluginsEdit() for an example.
+
 ### 17.1.6
  - ENH: Add support for registering Custom Plugins either higher than or lower than built-in plugins (Issue #148)
  - INT: Bump logback-classic to 1.5.20, SpotBugs to 6.4.4

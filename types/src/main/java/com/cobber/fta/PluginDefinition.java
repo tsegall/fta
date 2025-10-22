@@ -30,7 +30,6 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.HeaderEntry;
 import com.cobber.fta.core.InternalErrorException;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -191,6 +190,9 @@ public class PluginDefinition {
 
 	/**
 	 * Retrieve the Plugin Definition associated with this Semantic Type name.
+	 *
+	 * Note: Unlike the similar function in TextAnalyzer this one accesses the definition file and any edits
+	 * will not impact the current Analyzer.
 	 *
 	 * @param semanticTypeName The name for this Semantic Type
 	 * @return The Plugin Definition associated with the supplied name.
