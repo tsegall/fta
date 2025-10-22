@@ -1315,7 +1315,7 @@ public class DetermineDateTimeFormatTests {
 		try {
 			return DateTimeParser.deserialize(input.serialize());
 		} catch (FTAMergeException e) {
-			fail(e.getMessage());
+			fail(e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
 			return null;
 		}
 	}

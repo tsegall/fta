@@ -101,6 +101,28 @@ public class PluginLocaleEntry {
 	}
 
 	/**
+	 * Copy constructor - creates a new PluginLocaleEntry based on an existing one.
+	 * @param other The PluginLocaleEntry to copy from
+	 */
+	public PluginLocaleEntry(final PluginLocaleEntry other) {
+		this.localeTag = other.localeTag;
+
+		if (other.headerRegExps != null) {
+			this.headerRegExps = new HeaderEntry[other.headerRegExps.length];
+			for (int i = 0; i < other.headerRegExps.length; i++) {
+				this.headerRegExps[i] = new HeaderEntry(other.headerRegExps[i]);
+			}
+		}
+
+		if (other.matchEntries != null) {
+			this.matchEntries = new PluginMatchEntry[other.matchEntries.length];
+			for (int i = 0; i < other.matchEntries.length; i++) {
+				this.matchEntries[i] = new PluginMatchEntry(other.matchEntries[i]);
+			}
+		}
+	}
+
+	/**
 	 * @param localeTags Construct an array of simple Locale Entries based on a set of locale tags.
 	 * @return An array of Locale Entries with only the tag set - no header information.
 	 */

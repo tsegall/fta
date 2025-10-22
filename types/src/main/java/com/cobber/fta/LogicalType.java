@@ -37,14 +37,13 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	protected AnalysisConfig analysisConfig;
 	protected Locale locale;
 	protected LocaleInfo localeInfo;
-	protected int priority;
 	protected int threshold;
 	protected PluginLocaleEntry pluginLocaleEntry;
 
 
 	@Override
 	public int compareTo(final LogicalType other) {
-	  return Integer.compare(priority, other.priority);
+	  return Integer.compare(defn.getOrder(), other.defn.getOrder());
 	}
 
 	/**
@@ -53,7 +52,6 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 */
 	public LogicalType(final PluginDefinition plugin) {
 		this.defn = plugin;
-		this.priority = plugin.priority;
 		this.threshold = plugin.threshold;
 	}
 
@@ -110,7 +108,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	 *  @return The relative priority of this plugin.
 	 */
 	public int getPriority() {
-		return priority;
+		return defn.priority;
 	}
 
 	/**

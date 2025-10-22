@@ -30,6 +30,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.HeaderEntry;
 import com.cobber.fta.core.InternalErrorException;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,8 +42,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *  - RegExp - implementation is based on the detection of the supplied RegExp with a provided set of constraints.
  */
 public class PluginDefinition {
-	/** Externally registered plugins can have a priority no lower than this. */
-	public final static int PRIORITY_EXTERNAL = 2000;
+	/** Priority of plugins must be between 0 and PRIORITY_MAX. */
+	public final static int PRIORITY_MAX = 10000;
 
 	private static List<PluginDefinition> builtinPlugins;
 
@@ -64,7 +65,7 @@ public class PluginDefinition {
 	/** Is this plugin sensitive to the input locale? */
 	public boolean localeSensitive;
 	/** The relative priority of this plugin. */
-	public int priority = PRIORITY_EXTERNAL;
+	public int priority = 0;
 
 	/** Infinite/Finite plugins: this is the class used to implement. */
 	public String clazz;
@@ -91,7 +92,41 @@ public class PluginDefinition {
 
 	private volatile Map<String, String> options = null;
 
+	public enum Precedence {
+	    BUILTIN,
+	    PRE_BUILTIN,
+	    POST_BUILTIN
+	}
+	protected Precedence precedence = Precedence.BUILTIN;
+
 	public PluginDefinition() {
+	}
+
+	/*
+	 * Get the adjusted order value for this plugin.
+	 *
+	 * The order is based on a combination of the precedence and the priority:
+	 *	0 - PRIORITY_MAX : reserved for user-defined plugins (preBuiltins == true)
+	 *	PRIORITY_MAX+1 - 2*PRIORITY_MAX : reserved for built-in plugins
+	 *	> 2*PRIORITY_MAX : reserved for user-defined plugins (preBuiltins == false)
+	 *
+	 * @return The order for this plugin.
+	 */
+	public int getOrder() {
+		switch (precedence) {
+			case BUILTIN:
+				return priority + PluginDefinition.PRIORITY_MAX;
+			case PRE_BUILTIN:
+				return priority;
+			case POST_BUILTIN:
+				return priority + 2 * PluginDefinition.PRIORITY_MAX;
+			default:
+				return -1;
+		}
+	}
+
+	public void setPrecedence(final Precedence precedence) {
+		this.precedence = precedence;
 	}
 
 	// *** Only use this for internal testing - be warned only works in English language ***
@@ -119,6 +154,42 @@ public class PluginDefinition {
 	}
 
 	/**
+	 * Copy constructor - creates a new PluginDefinition based on an existing one.
+	 *
+	 * @param other The PluginDefinition to copy from
+	 */
+	public PluginDefinition(final PluginDefinition other) {
+		this.semanticType = other.semanticType;
+		this.description = other.description;
+		this.pluginType = other.pluginType;
+		this.pluginOptions = other.pluginOptions;
+		this.signature = other.signature;
+
+		// Deep copy validLocales array
+		if (other.validLocales != null) {
+			this.validLocales = new PluginLocaleEntry[other.validLocales.length];
+			for (int i = 0; i < other.validLocales.length; i++)
+				this.validLocales[i] = new PluginLocaleEntry(other.validLocales[i]);
+		}
+
+		this.documentation = other.documentation;
+		this.localeSensitive = other.localeSensitive;
+		this.priority = other.priority;
+		this.clazz = other.clazz;
+		this.invalidList = other.invalidList == null ? null : new HashSet<>(other.invalidList);
+		this.ignoreList = other.ignoreList == null ? null : new HashSet<>(other.ignoreList);
+		this.content = other.content;
+		this.backout = other.backout;
+		this.threshold = other.threshold;
+		this.baseType = other.baseType;
+		this.minimum = other.minimum;
+		this.maximum = other.maximum;
+		this.minSamples = other.minSamples;
+		this.minMaxPresent = other.minMaxPresent;
+		this.precedence = other.precedence;
+	}
+
+	/**
 	 * Retrieve the Plugin Definition associated with this Semantic Type name.
 	 *
 	 * @param semanticTypeName The name for this Semantic Type
@@ -126,13 +197,12 @@ public class PluginDefinition {
 	 */
 	public static PluginDefinition findByName(final String semanticTypeName) {
 		synchronized (PluginDefinition.class) {
-			if (builtinPlugins == null) {
+			if (builtinPlugins == null)
 				try (BufferedReader JSON = new BufferedReader(new InputStreamReader(PluginDefinition.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
 					builtinPlugins = new ObjectMapper().readValue(JSON, new TypeReference<List<PluginDefinition>>(){});
 				} catch (Exception e) {
 					throw new InternalErrorException("Issues with reference plugins file", e);
 				}
-			}
 		}
 
 		for (final PluginDefinition pluginDefinition : builtinPlugins)
@@ -159,6 +229,7 @@ public class PluginDefinition {
 		for (final HeaderEntry entry : localeEntry.headerRegExps) {
 			if (entry.mandatory)
 				mandatory = true;
+
 			if (entry.matches(streamName))
 				return entry.confidence < 0;
 		}
@@ -208,7 +279,7 @@ public class PluginDefinition {
 	}
 
 	public Map<String, String> getOptions() {
-		if (options == null) {
+		if (options == null)
 			synchronized(this) {
 				if (options == null) {
 					options = new HashMap<>();
@@ -221,7 +292,6 @@ public class PluginDefinition {
 					}
 				}
 			}
-		}
 
 		return options;
 	}

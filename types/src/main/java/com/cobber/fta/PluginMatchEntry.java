@@ -36,6 +36,16 @@ public class PluginMatchEntry {
 		this.regExpReturned = regExpReturned;
 	}
 
+	/**
+	 * Copy constructor - creates a new PluginMatchEntry based on an existing one.
+	 * @param other The PluginMatchEntry to copy from
+	 */
+	PluginMatchEntry(final PluginMatchEntry other) {
+		this.regExpsToMatch = other.regExpsToMatch == null ? null : other.regExpsToMatch.clone();
+		this.regExpReturned = other.regExpReturned;
+		this.isRegExpComplete = other.isRegExpComplete;
+	}
+
 	public String[] getRegExpsToMatch() {
 		// The optional 'regExpsToMatch' tag is an ordered list of Regular Expressions used to match against the Stream Data.
 		// If not set then the regExpReturned is used to match.

@@ -43,17 +43,49 @@ public class Plugins {
 	}
 
 	/**
-	 * Register a new Plugin by providing a JSON Plugin definition.
+	 * Register a new set of Plugins by providing JSON Plugin definitions.
 	 *
-	 * @param JSON The definition of the plugin.
+	 * @deprecated  Replaced by {@link registerPlugins(Reader, String, AnalysisConfig, boolean)}
+	 *
+	 * @param JSON The definition of the plugins.
 	 * @param dataStreamName The name of the datastream.
 	 * @param analysisConfig The Analysis configuration used for this analysis.
 	 *
 	 * @throws IOException if the JSON cannot be parsed.
 	 * @throws FTAPluginException if the plugin definition is invalid or if a plugin with the same semantic type is already registered.
 	 */
-	public void registerPlugins(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, FTAPluginException {
-		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, false);
+	 @Deprecated public void registerPlugins(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, FTAPluginException {
+		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, false, false);
+	}
+
+	/**
+	 * Register a new set of Plugins by providing JSON Plugin definitions.
+	 *
+	 * @param JSON The definition of the plugins.
+	 * @param dataStreamName The name of the datastream.
+	 * @param analysisConfig The Analysis configuration used for this analysis.
+	 * @param preBuiltins True if these are to be registered ahead of the pre-builtin plugins.
+	 *
+	 * @throws IOException if the JSON cannot be parsed.
+	 * @throws FTAPluginException if the plugin definition is invalid or if a plugin with the same semantic type is already registered.
+	 */
+	public void registerPlugins(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig, final boolean preBuiltins) throws IOException, FTAPluginException {
+		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), dataStreamName, analysisConfig, false, preBuiltins);
+	}
+
+	/**
+	 * Register a set of Plugins by providing a list of Plugin definitions.
+	 *
+	 * @deprecated  Replaced by {@link registerPluginList(List<PluginDefinition>, String, AnalysisConfig, boolean)}
+	 *
+	 * @param plugins The list of PluginDefinitions.
+	 * @param dataStreamName The name of the datastream.
+	 * @param analysisConfig The Analysis configuration used for this analysis.
+	 *
+	 * @throws FTAPluginException if the plugin definitions are invalid or if a plugin with the same semantic type is already registered.
+	 */
+	@Deprecated public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws FTAPluginException {
+		registerPluginListCore(plugins, dataStreamName, analysisConfig, false, false);
 	}
 
 	/**
@@ -62,23 +94,31 @@ public class Plugins {
 	 * @param plugins The list of PluginDefinitions.
 	 * @param dataStreamName The name of the datastream.
 	 * @param analysisConfig The Analysis configuration used for this analysis.
+	 * @param preBuiltins True if these are to be registered ahead of the pre-builtin plugins.
 	 *
 	 * @throws FTAPluginException if the plugin definitions are invalid or if a plugin with the same semantic type is already registered.
 	 */
-	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws FTAPluginException {
-		registerPluginListCore(plugins, dataStreamName, analysisConfig, false);
+	public void registerPluginList(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig, final boolean preBuiltins) throws FTAPluginException {
+		registerPluginListCore(plugins, dataStreamName, analysisConfig, false, preBuiltins);
 	}
 
 	protected void registerPluginsInternal(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws FTAPluginException {
-		registerPluginListCore(plugins, dataStreamName, analysisConfig, true);
+		registerPluginListCore(plugins, dataStreamName, analysisConfig, true, false);
 	}
 
-	protected void registerPluginListCore(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig, final boolean internal) throws FTAPluginException {
+	protected void registerPluginListCore(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig, final boolean internal, final boolean preBuiltins) throws FTAPluginException {
 		// Only register plugins that are valid for this locale
 		for (final PluginDefinition plugin : plugins) {
-			if (!internal)
-				if (plugin.priority < PluginDefinition.PRIORITY_EXTERNAL)
-					throw new FTAPluginException("Semantic type: '" + plugin.semanticType + "' has invalid priority, priority must be >= " + PluginDefinition.PRIORITY_EXTERNAL);
+			if (plugin.priority > PluginDefinition.PRIORITY_MAX)
+				throw new FTAPluginException("Semantic type: '" + plugin.semanticType + "' has invalid priority, priority must be <= " + PluginDefinition.PRIORITY_MAX);
+
+			if (internal)
+				plugin.setPrecedence(PluginDefinition.Precedence.BUILTIN);
+			else
+				if (preBuiltins)
+					plugin.setPrecedence(PluginDefinition.Precedence.PRE_BUILTIN);
+				else
+					plugin.setPrecedence(PluginDefinition.Precedence.POST_BUILTIN);
 
 			boolean register = plugin.isLocaleSupported(analysisConfig.getLocale());
 

@@ -267,7 +267,7 @@ Associated with each Base Type is a typeModifier. The value of the typeModifier 
 
 ## Semantic Type detection ##
 
-In addition to detecting a set of Base types FTA will also, when enabled (default on - setDefaultLogicalTypes(false) to disable) infer Semantic type information along with the Base types.
+In addition to detecting a set of Base types FTA will also, when enabled (default on - analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false) to disable) infer Semantic type information along with the Base types.
 
 * Semantic Type detection is typically predicated on plausible input data, for example, a field that contains data that looks
 like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
@@ -295,7 +295,9 @@ F1-Score == 2 * ((Precision * Recall) / (Precision + Recall))
 
 ### Additional user-defined Semantic Types ###
 
-Additional Semantic types can be detected by registering additional plugins (see registerPlugins). There are three basic types of plugins:
+Additional Semantic types can be detected by registering additional plugins (see registerPlugins).
+The plugins can either be registered ahead of or after the built-in plugins.
+There are three basic types of plugins:
 * RegExp (regex) - captures any type that can be expressed via a Regular Expression (e.g. SSN).  Implemented via a set of Regular Expressions used to match against.
 * Finite (list) - captures any finite type (e.g. ISO-3166-2 (Country codes), US States, ...).  Implemented via a supplied list with the valid elements enumerated.
 * Code (java) - captures any complex type (e.g. Even numbers, Credit Cards numbers).  Implemented via a Java Class.

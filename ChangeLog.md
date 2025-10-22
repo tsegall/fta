@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 17.1.6
+ - ENH: Add support for registering Custom Plugins either higher than or lower than built-in plugins (Issue #148)
+ - INT: Bump logback-classic to 1.5.20, SpotBugs to 6.4.4
+
 ### 17.1.5
  - INT: Bump google phonenumber to 9.0.16, logback-classic to 1.5.19, gradle to 9.1.0, SpotBugs to 6.4.3
  - BUG: Fix a set of cases where the lengths frequencies did not correlate with the number of non-null samples seen.

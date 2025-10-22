@@ -890,7 +890,7 @@ public class TestPlugins {
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		final PluginDefinition plugin = new PluginDefinition("CUSIP", "com.cobber.fta.PluginCUSIP");
-		plugin.priority = PluginDefinition.PRIORITY_EXTERNAL;
+		plugin.priority = 0;
 		final String CUSIP_REGEXP = "[\\p{IsAlphabetic}\\p{IsDigit}]{9}";
 		plugin.validLocales = new PluginLocaleEntry[] { new PluginLocaleEntry("en", ".*(?i)(cusip).*", 90, CUSIP_REGEXP) };
 		plugins.add(plugin);
@@ -917,7 +917,8 @@ public class TestPlugins {
 
 		// Retrieve the PluginDefinition associated with the detected Semantic Type and make sure it is the one we registered
 		final PluginDefinition defn = template.getPlugins().getRegistered("CUSIP").defn;
-		assertEquals(defn.priority, PluginDefinition.PRIORITY_EXTERNAL);
+
+		assertEquals(defn.semanticType, "CUSIP");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -1691,6 +1692,304 @@ public class TestPlugins {
 
 		assertNull(result.checkCounts());
 	}
+
+	final String[] employeeIDs = {
+			"A0456703402", "A0489000003", "A0456704001", "A0456890009", "A0456790001", "A8906700001", "A0456700004",
+			"A0403451099", "A0456700023", "A0456703451", "A0456702201", "A0456733001", "A0456722331", "A0345100001",
+			"A0454440022", "A0456700400", "A0454444006", "A0456700909", "A0450356091", "A0456700901", "A0356700888",
+			"A0456700000", "A0023981401", "A0456703301", "A0496700201", "A0156700009", "A0416744001", "A0451707701",
+			"A0457707734", "A0456722001", "A0456700009", "A0456704404", "A0433700005", "A0456700040", "A0456700003",
+			"A0489000004", "A0456700002", "A0456890008", "A0456709033", "A8906705555", "A2456700004", "A1403451099",
+			"A3456700023", "A4456703451", "A5456702201", "A0456708889", "A0456722101", "A0345100221", "A0451440022",
+			"A0458700400", "A0454444306", "A0456700039", "A0450336091", "A0456707901", "A0356700878", "A0456700033",
+			"A1023981401", "A1456703301", "A2496700201", "A0156704409", "A4416744001", "A0451777701", "A0456107734",
+			"A0456732001", "A0456703009", "A0456700304", "A0433700035", "A0456700043",
+	};
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	private void empID() throws FTAException {
+		final String dataStreamName = "EmployeeID";
+		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
+
+		for (final String input : employeeIDs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeModifier());
+		assertEquals(result.getSampleCount(), employeeIDs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), employeeIDs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\d{10}");
+		assertEquals(result.getConfidence(), 0.95);
+		assertEquals(result.getSemanticType(), "IDENTIFIER");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	private void empID_noDefaults() throws FTAException {
+		final String dataStreamName = "EmployeeID";
+		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+
+		for (final String input : employeeIDs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeModifier());
+		assertEquals(result.getSampleCount(), employeeIDs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), employeeIDs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\d{10}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertNull(result.getSemanticType());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	private void empID_registerPre() throws FTAException {
+		final String dataStreamName = "EmployeeID";
+		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
+		addEmpPlugin(analysis, dataStreamName, true);
+
+		for (final String input : employeeIDs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeModifier());
+		assertEquals(result.getSampleCount(), employeeIDs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), employeeIDs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\d{10}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSemanticType(), "CUSTOM.EMP_ID");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	private void empID_registerPost() throws FTAException {
+		final String dataStreamName = "EmployeeID";
+		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
+		addEmpPlugin(analysis, dataStreamName, false);
+
+		for (final String input : employeeIDs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.STRING);
+		assertNull(result.getTypeModifier());
+		assertEquals(result.getSampleCount(), employeeIDs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), employeeIDs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\p{IsAlphabetic}\\d{10}");
+		assertEquals(result.getConfidence(), 1.0);
+		// IDENTIFIER is a built-in semantic type so our custom would not generally be chosen here, however IDENTIFER is special
+		// in that it is a Semantic type of last resort so our custom type is still chosen
+		assertEquals(result.getSemanticType(), "CUSTOM.EMP_ID");
+	}
+
+	static void addEmpPlugin(final TextAnalyzer analysis, final String dataStreamName, final boolean preBuiltins) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/emp_id.json"), StandardCharsets.UTF_8))) {
+			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig(), preBuiltins);
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+	}
+
+	final String[] employeeIDsLUHN = {
+		"00673580221", "02400290223", "02209460225", "02018300224", "00106510225",
+		"02271060226", "02167060223", "00227460227", "01867580225", "01981650227",
+		"02046850224", "02459690224", "02141050225", "00051370229", "00983840224",
+		"01989590227", "00075750224", "00337140222", "01855780225", "02099830222",
+		"00142960228", "01384990220", "02345010223", "01720000221", "01947280226",
+		"00166280222", "01889730220", "02046780223", "00921280244", "01648950226",
+		"01856020225", "00828140228", "02030200220", "00814060224", "00971660220",
+		"00401660220", "02304350222", "02787520168", "01718290222", "01731500227",
+		"02331550224", "01743260224", "01887120226", "01226750220", "01323250223",
+		"01813150222", "01783350224", "01273520229", "01594610220", "01611170224"
+	};
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	private void empID_LUHN() throws FTAException {
+		final String dataStreamName = "EmployeeID";
+		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
+
+		for (final String input : employeeIDsLUHN)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeModifier());
+		assertEquals(result.getSampleCount(), employeeIDsLUHN.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), employeeIDsLUHN.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{11}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSemanticType(), "CHECKDIGIT.LUHN");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	private void empID_LUHN_noDefaults() throws FTAException {
+		final String dataStreamName = "EmployeeID";
+		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
+		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+
+		for (final String input : employeeIDsLUHN)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeModifier());
+		assertEquals(result.getSampleCount(), employeeIDsLUHN.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), employeeIDsLUHN.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{11}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertNull(result.getSemanticType());
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	private void empID_LUHN_pre() throws FTAException {
+		final String dataStreamName = "EmployeeID";
+		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
+		analysis.setDebug(2);
+		addEmpPlugin(analysis, dataStreamName, true);
+
+		for (final String input : employeeIDsLUHN)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeModifier());
+		assertEquals(result.getSampleCount(), employeeIDsLUHN.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), employeeIDsLUHN.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{11}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSemanticType(), "CUSTOM.EMP_ID_DIGITS");
+	}
+
+	private void pluginsOrder(boolean preBuiltins, String expectedSemanticType) throws FTAException {
+		final String dataStreamName = "BirthDate";
+		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
+		final Locale locale = Locale.forLanguageTag("en-US");
+		analysis.setLocale(locale);
+		final String[] inputs = {
+				"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
+				"2008-05-31Z", "2002-02-28Z", "2008-05-31Z", "2003-02-28Z", "1993-02-28Z",
+				"2001-02-28Z", "1993-02-28Z", "1995-02-28Z", "1996-02-29Z", "1995-02-28Z",
+				"1993-02-28Z", "1998-02-28Z", "2004-02-29Z", "2007-02-28Z", "1990-02-28Z",
+				"2008-05-31Z", "1996-02-29Z", "1990-02-28Z", "2006-02-28Z", "2010-12-31Z",
+				"2006-02-28Z", "1998-02-28Z", "2001-02-28Z", "1965-02-28Z", "1995-02-28Z",
+				"2006-02-28Z", "1990-02-28Z", "2007-10-31Z", "1969-12-31Z", "2009-12-31Z",
+				"1985-02-28Z", "1986-02-28Z", "1987-02-28Z", "1988-02-29Z", "2001-02-28Z",
+				"1988-02-29Z", "1965-02-28Z", "2001-02-28Z", "2003-02-28Z", "2009-02-28Z",
+				"1978-02-28Z", "2008-12-31Z", "1994-02-28Z", "1995-02-28Z", "1996-02-29Z"
+		};
+
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
+			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig(), preBuiltins);
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd'Z'");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}Z");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSemanticType(), expectedSemanticType);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void pluginsPre() throws FTAException {
+		// Register our plugin ahead of the pre-defined types - so we should return CUSTOM.YEAR_OF_BIRTH
+		pluginsOrder(true, "CUSTOM.YEAR_OF_BIRTH");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void pluginsPost() throws FTAException {
+		// Register our plugin after the pre-defined types - so we should return the built-in PERSON.DATE_OF_BIRTH
+		pluginsOrder(false, "PERSON.DATE_OF_BIRTH");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void pluginsEdit() throws FTAException {
+		PluginDefinition defn = PluginDefinition.findByName("NAME.FIRST");
+		for (PluginLocaleEntry localeEntry : defn.validLocales) {
+			System.err.printf("Found - '%s'\n", localeEntry.localeTag);
+			if ("en".equals(localeEntry.localeTag))
+				System.err.printf("Found - '%s'\n", localeEntry.headerRegExps[0]);
+		}
+		PluginDefinition newDefn = new PluginDefinition(defn);
+		System.err.printf("New - '%s'\n", newDefn.semanticType);
+		for (PluginLocaleEntry localeEntry : newDefn.validLocales) {
+			System.err.printf("Found - '%s'\n", localeEntry.localeTag);
+			if ("en".equals(localeEntry.localeTag)) {
+				System.err.printf("Found - '%s'\n", localeEntry.headerRegExps[0].regExp);
+				localeEntry.headerRegExps[0].regExp = localeEntry.headerRegExps[0].regExp.replace("fname", "fname|fn");
+				System.err.printf("Found - '%s'\n", localeEntry.headerRegExps[0].regExp);
+			}
+		}
+//		for (PluginDefinition defn : pluginDefinitions) {
+//			if ("NAME.FIRST".equals(defn.semanticType)) {
+//				System.err.printf("Found - '%s'\n", defn.semanticType);
+//				for (PluginLocaleEntry localeEntry : defn.validLocales) {
+//					System.err.printf("Found - '%s'\n", localeEntry.localeTag);
+//					if ("en".equals(localeEntry.localeTag))
+//						System.err.printf("Found - '%s'\n", localeEntry.headerRegExps[0]);
+//				}
+//			}
+//		}
+	}
+
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicISIN() throws IOException, FTAException {

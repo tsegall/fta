@@ -46,6 +46,17 @@ public class HeaderEntry {
 		pattern = Pattern.compile(regExp);
 	}
 
+	/**
+	 * Copy constructor - creates a new HeaderEntry based on an existing one.
+	 * @param other The HeaderEntry to copy from
+	 */
+	public HeaderEntry(final HeaderEntry other) {
+		this.regExp = other.regExp;
+		this.confidence = other.confidence;
+		this.mandatory = other.mandatory;
+		// pattern will be lazily initialized when needed
+	}
+
 	@Override
 	public String toString() {
 		return (new StringBuilder()).append('[').append(regExp).append(':').append(confidence).append(':').append(mandatory).append(']').toString();

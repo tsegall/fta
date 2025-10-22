@@ -2804,7 +2804,7 @@ public class TextAnalyzer {
 				// We prefer finite matches to infinite matches only if header or priority is better
 				if (bestResult == null && priorLogical != null && result.score <= bestScore &&
 						logical.getHeaderConfidence(context.getStreamName()) <= priorLogical.getHeaderConfidence(context.getStreamName()) &&
-						logical.getPluginDefinition().priority <= priorLogical.getPluginDefinition().priority)
+						logical.getPluginDefinition().getOrder() <= priorLogical.getPluginDefinition().getOrder())
 					continue;
 
 				// Choose the best score
@@ -2815,7 +2815,7 @@ public class TextAnalyzer {
 						logical.getHeaderConfidence(context.getStreamName()) > bestResult.logical.getHeaderConfidence(context.getStreamName()) ||
 						// If two scores the same then prefer the logical with the highest priority
 						(logical.getHeaderConfidence(context.getStreamName()) == bestResult.logical.getHeaderConfidence(context.getStreamName()) &&
-						logical.getPriority() < bestResult.logical.getPriority())) {
+						logical.getPluginDefinition().getOrder() < bestResult.logical.getPluginDefinition().getOrder())) {
 					bestResult = result;
 					bestScore = result.score;
 				}
