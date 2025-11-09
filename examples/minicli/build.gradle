@@ -3,7 +3,7 @@ plugins {
 }
 
 wrapper {
-	gradleVersion = '9.1.0'
+	gradleVersion = '9.2.0'
 }
 
 repositories {
@@ -23,9 +23,9 @@ project.tasks.named("installDist") {
 }
 
 dependencies {
-	implementation group: 'com.cobber.fta', name: 'fta', version: '17.+'
-	implementation group: 'de.siegmar', name: 'fastcsv', version: '3.7.0'
-	implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.17'
+	implementation "com.cobber.fta:fta:17.+"
+	implementation "de.siegmar:fastcsv:3.7.0"
+	implementation "ch.qos.logback:logback-classic:1.5.17"
 }
 
 application {

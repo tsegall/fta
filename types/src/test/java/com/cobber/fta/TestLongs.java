@@ -80,7 +80,7 @@ public class TestLongs {
 		}
 		assertEquals(result.getMinLength(), 1);
 		assertEquals(result.getMaxLength(), 7);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -128,7 +128,7 @@ public class TestLongs {
 			assertEquals(result.getMinValue(), "-100000");
 			assertEquals(result.getMaxValue(), "10000");
 		}
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -169,7 +169,7 @@ public class TestLongs {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getMinValue(), "116789");
 		assertEquals(result.getMaxValue(), "456789");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -200,7 +200,7 @@ public class TestLongs {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getMinValue(), "-2903");
 		assertEquals(result.getMaxValue(), "5234");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -231,7 +231,7 @@ public class TestLongs {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getMinValue(), "-2903");
 		assertEquals(result.getMaxValue(), "5234");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -264,7 +264,7 @@ public class TestLongs {
 			System.err.printf("Key: %s, Count: %s%n", entry.getKey(), entry.getValue());
 		}
 		assertEquals(result.getValueAtQuantile(.5), "47");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -351,7 +351,7 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 60);
 		assertEquals(result.getRegExp(), "\\d{9}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -381,7 +381,7 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{1,2}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -408,7 +408,7 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getRegExp(), "\\d{2}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -436,7 +436,7 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 0.99);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -469,7 +469,7 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getUniqueness(), -1.0);
 		assertEquals(result.getDistinctCount(), -1);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -500,7 +500,7 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), SAMPLE_COUNT);
 		assertEquals(result.getRegExp(), "\\d{1,2}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -529,7 +529,7 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), -1);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -557,7 +557,7 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), 2 * tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 0.99);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -585,7 +585,7 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), 2 * tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 0.99);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -615,7 +615,7 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), tooBig);
 		assertEquals(result.getRegExp(), "\\d{1,5}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -647,7 +647,7 @@ public class TestLongs {
 		assertEquals(result.getDistinctCount(), 2 * tooBig + 1);
 		assertEquals(result.getRegExp(), "[+-]?\\d{1,5}");
 		assertEquals(result.getConfidence(), 0.99);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.dumpRaw(result.getHistogram(10));
 		TestSupport.checkHistogram(result, 10, true);
@@ -702,7 +702,7 @@ public class TestLongs {
 		regExp += "}";
 		assertEquals(result.getRegExp(), regExp);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -770,7 +770,7 @@ public class TestLongs {
 			regExp += RegExpSplitter.qualify(minLength, maxValue.length());
 			assertEquals(result.getRegExp(), regExp);
 			assertEquals(result.getConfidence(), 1.0);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 
 			TestSupport.checkHistogram(result, 10, true);
 			TestSupport.checkQuantiles(result);
@@ -810,7 +810,7 @@ public class TestLongs {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "22.039");
 		assertEquals(result.getMaxValue(), "84.369.774");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -848,7 +848,7 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "-1.234.567.890.123");
 		assertEquals(result.getMaxValue(), "1.234.567.890.123");
 		assertEquals(result.getCardinality(), 6);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -892,7 +892,7 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1009,7 +1009,7 @@ public class TestLongs {
 			assertEquals(result.getMinValue(), nf.format(min));
 			assertEquals(result.getMaxValue(), nf.format(max));
 			assertEquals(result.getLeadingZeroCount(), 0);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 
 			String regExp = "";
 			if (!negPrefix.isEmpty())
@@ -1072,7 +1072,7 @@ public class TestLongs {
 		pattern += "}";
 		assertEquals(result.getRegExp(), pattern);
 		assertEquals(result.getConfidence(), 1 - (double)bad/result.getSampleCount());
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1108,7 +1108,7 @@ public class TestLongs {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getRegExp(), "\\d{10}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1140,7 +1140,7 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1172,7 +1172,7 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), samples.length);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1214,7 +1214,7 @@ public class TestLongs {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMinValue(), "985491000");
 		assertEquals(result.getMaxValue(), "9452921001");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1248,7 +1248,7 @@ public class TestLongs {
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), "29");
 		assertEquals(result.getRegExp(), KnownTypes.PATTERN_WHITESPACE + "\\d{1,2}");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1281,7 +1281,7 @@ public class TestLongs {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getConfidence(), 0.9166666666666666);
 		assertEquals(result.getMatchCount(), inputs.length - 2);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1314,7 +1314,7 @@ public class TestLongs {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMatchCount(), inputs.length);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1353,7 +1353,7 @@ public class TestLongs {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getMaxValue(), String.valueOf(iterations - 1));
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1399,7 +1399,7 @@ public class TestLongs {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "200");
 		assertEquals(result.getMaxValue(), "13,000");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1468,7 +1468,7 @@ public class TestLongs {
 		regExp += "}";
 		assertEquals(result.getRegExp(), regExp);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1496,7 +1496,7 @@ public class TestLongs {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getRegExp(), "\\d+");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1519,7 +1519,7 @@ public class TestLongs {
 		assertEquals(result.getSampleCount(), iterations);
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1549,7 +1549,7 @@ public class TestLongs {
 		assertEquals(result.getNullCount(), nullIterations);
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1574,7 +1574,7 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE + 1);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1611,7 +1611,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "[\\d\\.]{5,9}");
 		assertEquals(result.getMinValue(), "1.234");
 		assertEquals(result.getMaxValue(), "1.201.685");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1658,7 +1658,7 @@ public class TestLongs {
 		assertEquals(result.getRegExp(), "\\d*,?\\d+");
 //BUG		assertEquals(result.getMinValue(), "1,525");
 		assertEquals(result.getMaxValue(), "542,742");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1689,7 +1689,7 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getMean(), 2.4, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1719,7 +1719,7 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getMean(), 2.4, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1754,7 +1754,7 @@ public class TestLongs {
 		assertEquals(result.getLeadingZeroCount(), 0);
 		assertEquals(result.getMean(), 2.4, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 1.019803903, TestUtils.EPSILON);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 		dump(result);
 
 		TestSupport.checkHistogram(result, 10, true);
@@ -1782,7 +1782,7 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE - 1);
 		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1812,7 +1812,7 @@ public class TestLongs {
 		assertEquals(result.getMatchCount(), SAMPLE_SIZE - 1);
 		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1863,7 +1863,7 @@ public class TestLongs {
 		assertEquals(result.getMean(), 50.0, TestUtils.EPSILON);
 		assertEquals(result.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
 		assertEquals(referenceResult.getStandardDeviation(), 28.57738033, TestUtils.EPSILON);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, false);
 		TestSupport.checkQuantiles(result);
@@ -1958,7 +1958,7 @@ public class TestLongs {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeModifier());
 		assertNull(result.getSemanticType());
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -2009,7 +2009,7 @@ public class TestLongs {
 		assertEquals(result.getType(), FTAType.LONG);
 		assertNull(result.getTypeModifier());
 		assertNull(result.getSemanticType());
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 		logger.info("Count {}, duration: {}ms, ~{} per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes

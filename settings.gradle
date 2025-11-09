@@ -40,7 +40,7 @@ includeBuild 'examples/core/speed'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '17.1.7')
+			version('fta', '17.1.8')
 			version('jacoco', '0.8.12')
 
 // https://mvnrepository.com/artifact/de.siegmar/fastcsv
@@ -50,15 +50,15 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/commons-validator/commons-validator
 			library('commonsValidator', 'commons-validator:commons-validator:1.10.0')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-			library('jacksonDataCore', 'com.fasterxml.jackson.core:jackson-core:2.20.0')
+			library('jacksonDataCore', 'com.fasterxml.jackson.core:jackson-core:2.20.1')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-			library('jacksonDataBind', 'com.fasterxml.jackson.core:jackson-databind:2.20.0')
+			library('jacksonDataBind', 'com.fasterxml.jackson.core:jackson-databind:2.20.1')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
 			library('jacksonAnnotations', 'com.fasterxml.jackson.core:jackson-annotations:2.19.2')
 // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
-			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0')
+			library('jacksonDataType', 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1')
 // https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber
-			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:9.0.16')
+			library('googlePhoneNumber', 'com.googlecode.libphonenumber:libphonenumber:9.0.18')
 // https://mvnrepository.com/artifact/org.apache.commons/commons-text
 			library('commonsText', 'org.apache.commons:commons-text:1.14.0')
 // https://mvnrepository.com/artifact/com.github.krraghavan/xeger

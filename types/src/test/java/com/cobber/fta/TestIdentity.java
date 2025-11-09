@@ -78,7 +78,7 @@ public class TestIdentity {
 		assertTrue(result.isSemanticType());
 		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("SSN").signature);
 		assertEquals(result.getConfidence(), 0.998);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (int l = 0; l < samples.length; l++) {
 			if (l != 100 && l != 200)
@@ -149,7 +149,7 @@ public class TestIdentity {
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 1);
 		assertEquals(invalids.get("032--45-0981"), 1L);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));

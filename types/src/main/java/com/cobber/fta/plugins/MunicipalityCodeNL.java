@@ -64,7 +64,7 @@ public class MunicipalityCodeNL extends LogicalTypeInfinite {
 			ret = trimmed.charAt(0) == 'G' && trimmed.charAt(1) == 'M' && digits == 4;
 		else if (len == 5)
 			ret = trimmed.charAt(0) == 'G' && digits == 4;
-		else
+		else if (len != 0 && len != 1)
 			ret = len == digits;
 
 		if (!ret)

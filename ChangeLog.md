@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 17.1.8
+ - BUG: RegExp for list types incorrect if option 'words=[any|all|first' used
+ - BUG: RegExp returned for MunicipalityCodes in the Netherlands was wrong if empty strings supplied
+ - INT: Bump google phonenumber to 9.0.18, gradle to 9.2.0, jackson to 2.20.1
+ - INT: Some build.gradles changes to ready for gradle 10.0.0
+
 ### 17.1.7
  - ENH: Add ability to edit built-in plugins (Issue #149) - see TestPlugins.pluginsEdit() for an example.
 

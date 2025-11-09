@@ -406,7 +406,7 @@ class FileProcessor {
 			if (options.col == -1 || options.col == i) {
 				final TextAnalyzer analyzer = processor.getAnalyzer(i);
 				if (rawRecordIndex != options.getRecordsToProcess())
-					analyzer.setTotalCount(rawRecordIndex);
+					analyzer.setTotalCount(processedRecords);
 
 				result = results[i];
 				if (outputJSON) {
@@ -500,9 +500,9 @@ class FileProcessor {
 
 				// Check the counts if we are validating
 				if (options.validate >= 1) {
-					String ret = result.checkCounts();
+					String ret = result.checkCounts(options.testmerge != 0);
 
-					if (ret == null && result.getSampleCount() != processedRecords)
+					if (ret == null && options.testmerge == 0 && result.getSampleCount() != processedRecords)
 						ret = "Samples != # of records processed";
 
 					if (ret != null)

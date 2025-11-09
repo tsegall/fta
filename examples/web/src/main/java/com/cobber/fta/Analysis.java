@@ -96,6 +96,10 @@ public class Analysis {
 
 	public void setFile(final MultipartFile file) {
 		try {
+			if (file == null || file.isEmpty()) {
+				this.file = null;
+				return;
+			}
 			this.file = file;
 
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
@@ -123,6 +127,8 @@ public class Analysis {
 					recordAnalyzer.train(rowRaw.getFields().toArray(new String[0]));
 				}
 
+				if (recordAnalyzer == null)
+					return;
 				final TextAnalysisResult[] results = recordAnalyzer.getResult().getStreamResults();
 				for (final TextAnalysisResult result : results)
 					analysisResult.add(new FTAInfo(result));

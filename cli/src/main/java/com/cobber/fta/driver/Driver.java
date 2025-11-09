@@ -117,13 +117,14 @@ public class Driver {
 					error.println(" --semanticType <JSON representation of Semantic Types> - Can be inline or as a File");
 					error.println(" --signature - Output the Signature for the supplied pluginName");
 					error.println(" --skip <n> - Skip the initial <n> rows of the input");
-					error.println(" --testMerge - exercise merging");
+					error.println(" --testMerge <n> - exercise merging of analyses, <n> is the number of samples per merge");
 					error.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
 					error.println(" --topBottomK <n> - Set the number of top/bottom values tracked");
 					error.println(" --trace <trace_options> - Set trace options");
 					error.println(" --trailer <n> - Skip the final <n> rows of the input");
 					error.println(" --validate <n> - Set the validations level to <n>, 1 == counts, 2 == regExp");
 					error.println(" --verbose - Output each record as it is processed");
+					error.println(" --version - Output the version of the FTA framework");
 					error.println(" --withBOM - Input file has a BOM");
 					helpRequested = true;
 

@@ -3,7 +3,7 @@ plugins {
 }
 
 wrapper {
-	gradleVersion = '9.1.0'
+	gradleVersion = '9.2.0'
 }
 
 repositories {
@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
 	// implementation fileTree(dir: '/Users/tsegall/src/fta/cli/build/install/fta/lib', include: '*.jar')
-	implementation group: 'com.cobber.fta', name: 'fta', version: '17.+'
+	implementation "com.cobber.fta:fta:17.+"
 }
 
 application {

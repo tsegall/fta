@@ -80,7 +80,7 @@ public class TestDoubles {
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
 
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -108,7 +108,7 @@ public class TestDoubles {
 		assertEquals(result.getMinLength(), 5);
 		assertEquals(result.getMaxLength(), 5);
 		assertTrue(input.matches(result.getRegExp()));
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -139,7 +139,7 @@ public class TestDoubles {
 		assertNull(result.getSemanticType());
 		assertEquals(result.getMinValue(), "0.1");
 		assertEquals(result.getMaxValue(), "99.23");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -173,7 +173,7 @@ public class TestDoubles {
 		assertNull(result.getSemanticType());
 		assertEquals(result.getMinValue(), "-99.23");
 		assertEquals(result.getMaxValue(), "43.8");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		assertTrue("0".matches(result.getRegExp()));
 
@@ -214,7 +214,7 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -247,7 +247,7 @@ public class TestDoubles {
 		assertEquals(result.getTypeModifier(), "SIGNED_TRAILING");
 		assertEquals(result.getMinValue(), "-2903.22");
 		assertEquals(result.getMaxValue(), "5234.0");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -290,7 +290,7 @@ public class TestDoubles {
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -332,7 +332,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(Double.parseDouble(result.getMinValue()), Double.parseDouble(smallest), TestUtils.EPSILON);
 		assertEquals(Double.parseDouble(result.getMaxValue()), Double.parseDouble(largest), TestUtils.EPSILON);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -377,7 +377,7 @@ public class TestDoubles {
 		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -409,7 +409,7 @@ public class TestDoubles {
 		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMean(), 80.26315789473685);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -439,7 +439,7 @@ public class TestDoubles {
 		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), "\\d{4}\\p{IsAlphabetic}\\d{3}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkQuantiles(result);
 
@@ -468,7 +468,7 @@ public class TestDoubles {
 		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), "\\d{4}\\p{IsAlphabetic}\\d{3}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkQuantiles(result);
 
@@ -508,7 +508,7 @@ public class TestDoubles {
 		assertEquals(result.getTypeModifier(), "SIGNED");
 		assertEquals(result.getRegExp(), "[+-]?\\d*\\.?\\d+");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -551,7 +551,7 @@ public class TestDoubles {
 		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), "\\d");
 		assertEquals(result.getConfidence(), 1 - (double)1/(result.getSampleCount() - result.getBlankCount()));
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -583,7 +583,7 @@ public class TestDoubles {
 		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -630,7 +630,7 @@ public class TestDoubles {
 		final Map<String, Long> invalids = result.getInvalidDetails();
 		assertEquals(invalids.size(), 3);
 		assertEquals(invalids.get("Zoomer"), 1L);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -673,7 +673,7 @@ public class TestDoubles {
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE));
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -717,7 +717,7 @@ public class TestDoubles {
 		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_GROUPING));
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -749,7 +749,7 @@ public class TestDoubles {
 		assertNull(result.getSemanticType());
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE));
 		assertEquals(result.getConfidence(), 1 - (double)4/(result.getSampleCount() - result.getBlankCount()));
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -787,7 +787,7 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -828,7 +828,7 @@ public class TestDoubles {
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		assertEquals(Double.valueOf(result.getMinValue()), min);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -864,7 +864,7 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -898,7 +898,7 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -933,7 +933,7 @@ public class TestDoubles {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -979,7 +979,7 @@ public class TestDoubles {
 		assertEquals(result.getTypeModifier(), "NON_LOCALIZED");
 		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1010,7 +1010,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
 		assertEquals(result.getMinValue(), "-101.0");
 		assertEquals(result.getMaxValue(), "119.0");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1059,7 +1059,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "0.0");
 		assertEquals(result.getMaxValue(), "3.0");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1162,7 +1162,7 @@ public class TestDoubles {
 
 			assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE_GROUPING));
 			assertEquals(result.getConfidence(), 1.0);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 
 			TestSupport.checkHistogram(result, 10, true);
 			TestSupport.checkQuantiles(result);
@@ -1210,7 +1210,7 @@ public class TestDoubles {
 
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		final String actualRegExp = result.getRegExp();
 
@@ -1289,7 +1289,7 @@ public class TestDoubles {
 
 			assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE_WITH_EXPONENT));
 			assertEquals(result.getConfidence(), 1.0);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 
 			final String actualRegExp = result.getRegExp();
 
@@ -1341,7 +1341,7 @@ public class TestDoubles {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMatchCount(), inputs.length);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1411,7 +1411,7 @@ public class TestDoubles {
 		assertEquals(result1.getSampleCount(), inputs1.length);
 		assertEquals(result1.getConfidence(), 1.0);
 		assertEquals(result1.getMatchCount(), inputs1.length);
-		assertNull(result1.checkCounts());
+		assertNull(result1.checkCounts(false));
 
 		TestSupport.checkHistogram(result3, 10, true);
 		TestSupport.checkQuantiles(result3);
@@ -1456,7 +1456,7 @@ public class TestDoubles {
 
 			assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_SIGNED_DOUBLE));
 			assertEquals(result.getConfidence(), 1.0);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 
 			for (final String sample : samples) {
 				assertTrue(sample.matches(result.getRegExp()), sample + " " + result.getRegExp());
@@ -1507,7 +1507,7 @@ public class TestDoubles {
 		assertEquals(result.getMaxValue(), maxValue);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1558,7 +1558,7 @@ public class TestDoubles {
 		assertEquals(result.getMaxValue(), maxValue);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_DOUBLE_WITH_EXPONENT));
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1601,7 +1601,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "3E8");
 		assertEquals(result.getMaxValue(), "6E27");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1644,7 +1644,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "-3E27");
 		assertEquals(result.getMaxValue(), "6E27");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1682,7 +1682,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "22.039");
 		assertEquals(result.getMaxValue(), "84.369.774");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1723,7 +1723,7 @@ public class TestDoubles {
 		assertEquals(result.getDecimalSeparator(), '.');
 		assertEquals(result.getMinValue(), "13.40948033");
 		assertEquals(result.getMaxValue(), "13.41310555");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1763,7 +1763,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "13,40948033");
 		assertEquals(result.getMaxValue(), "13,41310555");
 		assertEquals(result.getDecimalSeparator(), ',');
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1806,7 +1806,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "120256,857625212");
 		assertEquals(result.getMaxValue(), "123071,319201962");
 		assertEquals(result.getDecimalSeparator(), ',');
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1845,7 +1845,7 @@ public class TestDoubles {
 		assertEquals(result.getRegExp(), "[\\d\\.]{5,7}");
 		assertEquals(result.getMinValue(), "1.234");
 		assertEquals(result.getMaxValue(), "129.605");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1886,7 +1886,7 @@ public class TestDoubles {
 		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
 		assertEquals(result.getMinValue(), "1.234");
 		assertEquals(result.getMaxValue(), "1201.685");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1926,7 +1926,7 @@ public class TestDoubles {
 		assertEquals(result.getRegExp(), "\\d*\\.?\\d+");
 		assertEquals(result.getMinValue(), "1201.685");
 		assertEquals(result.getMaxValue(), "129605.0");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -1966,7 +1966,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "0.125");
 		assertEquals(result.getMaxValue(), "3.125");
 		assertEquals(result.getDecimalSeparator(), '.');
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -2006,7 +2006,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "6.341288");
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -2046,7 +2046,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "-1356.902");
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -2088,7 +2088,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "-1356.902");
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -2125,7 +2125,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "6.341288");
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -2165,7 +2165,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "-1356.902");
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -2207,7 +2207,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "-1356.902");
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -2246,7 +2246,7 @@ public class TestDoubles {
 		assertEquals(result.getMinValue(), "-1356.902");
 		assertEquals(result.getMaxValue(), "6313.005");
 		assertEquals(result.getDecimalSeparator(), '.');
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -2290,7 +2290,7 @@ public class TestDoubles {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getMinValue(), "-9999.0");
 		assertEquals(result.getMaxValue(), "0.69334954");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
@@ -2354,7 +2354,7 @@ public class TestDoubles {
 
 			assertEquals(result.getRegExp(), regExp);
 			assertEquals(result.getConfidence(), 1.0);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 
 			for (final String sample : samples) {
 				assertTrue(sample.matches(regExp), sample + " " + regExp);
@@ -2706,7 +2706,7 @@ public class TestDoubles {
 			assertEquals(result.getNullCount(), 0);
 			assertEquals(result.getLeadingZeroCount(), 0);
 			assertEquals(result.getDecimalSeparator(), '.');
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 
 //			String regExp = "-?";
 //			regExp += "[\\d" + Utils.slosh(formatSymbols.getGroupingSeparator()) + "]";
@@ -2780,7 +2780,7 @@ public class TestDoubles {
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertNull(result.getTypeModifier());
 		assertNull(result.getSemanticType());
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 		logger.info("Count {}, duration: {}ms, ~{} per second\n", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes

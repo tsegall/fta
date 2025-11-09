@@ -120,7 +120,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
@@ -212,7 +212,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getInvalidCount(), 1);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 		final Entry<String, Long> only = result.getInvalidDetails().entrySet().iterator().next();
 		assertEquals(only.getKey(), "rubbish");
 		assertEquals(only.getValue(), 1);
@@ -254,7 +254,7 @@ public class TestRegExpPlugins {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getInvalidCount(), 1);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 		final Entry<String, Long> only = result.getInvalidDetails().entrySet().iterator().next();
 		assertEquals(only.getKey(), "rubbish");
 		assertEquals(only.getValue(), 1);

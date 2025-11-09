@@ -72,6 +72,11 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 		super.initialize(analysisConfig);
 
+		if (defn.getOptions().get("words") != null) {
+			regExp = KnownTypes.PATTERN_ANY_VARIABLE;
+			return true;
+		}
+
 		regExp = pluginLocaleEntry.getRegExpReturned(-1);
 
 		// If the Regular Expression has not been set then generate one based on the content

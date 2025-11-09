@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Comparator;
@@ -102,6 +103,8 @@ public class TextAnalysisResult {
 	 * Confidence in the type classification.
 	 * Typically this will be the number of matches divided by the number of real samples.
 	 * Where a real sample does not include either nulls or blanks.
+	 * If no Semantic Type is detected then the confidence reflects the confidence in the Base Type, if a Semantic Type is detected
+	 * then the confidence reflects the confidence in the Semantic Type.
 	 * @return Confidence as a percentage.
 	 */
 	public double getConfidence() {
@@ -644,21 +647,24 @@ public class TextAnalysisResult {
 		return facts;
 	}
 
-	public String checkCounts() {
-		if (getOutlierCount() == getConfig().getMaxOutliers())
+	public String checkCounts(final boolean merging) {
+		if (getOutlierCount() >= getConfig().getMaxOutliers())
 			return null;
-		if (getInvalidCount() == getConfig().getMaxInvalids())
+		if (getInvalidCount() >= getConfig().getMaxInvalids())
 			return null;
 
 		final long outlierCount = getOutlierDetails().values().stream().mapToLong(l-> l).sum();
 		final long invalidCount = getInvalidDetails().values().stream().mapToLong(l-> l).sum();
 
 		// Check that the sum of the Cardinality set is equal to the matchCount
-		if (getCardinality() < getConfig().getMaxCardinality() && getCardinalityDetails().values().stream().mapToLong(l-> l).sum() != getMatchCount())
+		if (!getFacts().cardinality.hasOverflowed() && getCardinalityDetails().values().stream().mapToLong(l-> l).sum() != getMatchCount())
 			return "Cardinality sum incorrect";
 
-		if (getSampleCount() != getMatchCount() + getBlankCount() + getNullCount() + outlierCount + invalidCount)
+		if (!merging && (getSampleCount() != getMatchCount() + getBlankCount() + getNullCount() + outlierCount + invalidCount))
 			return "Samples != match + blank + null + outlier count + invalid count";
+
+		if (getTotalCount() != -1 && (getTotalCount() - getNullCount()) != Arrays.stream(facts.lengths).sum())
+			return "TotalCount != sum of lengths";
 
 		return null;
 	}
@@ -905,20 +911,20 @@ public class TextAnalysisResult {
 		if (facts.getMatchTypeInfo().isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
-		analysis.put("cardinality", facts.cardinality.size() < analysisConfig.getMaxCardinality() ? facts.cardinality.size() : -1);
+		analysis.put("cardinality", facts.cardinality.hasOverflowed() ? -1 : facts.cardinality.size());
 
 		if (!facts.cardinality.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("cardinalityDetail");
 			outputDetails(MAPPER, detail, facts.cardinality, verbose);
 		}
 
-		analysis.put("outlierCardinality", facts.outliers.size() < analysisConfig.getMaxOutliers() ? facts.outliers.size() : -1);
+		analysis.put("outlierCardinality", facts.outliers.hasOverflowed() ? -1 : facts.outliers.size());
 		if (!facts.outliers.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("outlierDetail");
 			outputDetails(MAPPER, detail, facts.outliers, verbose);
 		}
 
-		analysis.put("invalidCardinality", facts.invalid.size() < analysisConfig.getMaxOutliers() ? facts.invalid.size() : -1);
+		analysis.put("invalidCardinality", facts.invalid.hasOverflowed() ? -1 : facts.invalid.size());
 		if (!facts.invalid.isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("invalidDetail");
 			outputDetails(MAPPER, detail, facts.invalid, verbose);

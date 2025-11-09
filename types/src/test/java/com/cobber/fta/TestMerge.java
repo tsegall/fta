@@ -21,7 +21,10 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -32,7 +35,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -1440,6 +1442,85 @@ public class TestMerge {
 		final TextAnalysisResult mergedResult = merged.getResult();
 		assertEquals(mergedResult.getSampleCount(), SAMPLE_COUNT + 2 + 5);
 		assertEquals(mergedResult.getType(), FTAType.BOOLEAN);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void issueXX() throws IOException, FTAException {
+		final int MERGE_FREQ = 10000;
+		TextAnalyzer processor = new TextAnalyzer("ColorOne");
+		processor.setDebug(2);
+		TextAnalyzer altProcessor = new TextAnalyzer("ColorTwo");
+		int processedRecords = 0;
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/color_100K.csv"), StandardCharsets.UTF_8))) {
+			while (in.ready())
+			{
+				// Skip the header row
+				if (processedRecords == 0) {
+					in.readLine();
+					processedRecords++;
+					continue;
+				}
+				final String row = in.readLine();
+				if (processedRecords % 2 == 0)
+					processor.train(row);
+				else
+					altProcessor.train(row);
+
+				if (processedRecords % MERGE_FREQ == 0) {
+					processor = TextAnalyzer.merge(processor, altProcessor);
+					altProcessor = new TextAnalyzer("ColorTwo");
+				}
+				processedRecords++;
+			}
+		}
+
+		final TextAnalyzer merged = TextAnalyzer.merge(processor, altProcessor);
+		final TextAnalysisResult mergedResult = merged.getResult();
+		assertNull(mergedResult.checkCounts(true));
+		System.err.println(mergedResult.asJSON(true, 0));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void issueXXXX() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 50000;
+		final int MERGE_FREQ = 10000;
+		int color_base = 0x100000;
+		int invalid_base = 0x10000;
+
+		TextAnalyzer shardOne = new TextAnalyzer("ColorOne");
+		final TextAnalyzer shardTwo = new TextAnalyzer("ColorTwo");
+		for (int i = 0; i < SAMPLE_COUNT; i++) {
+			shardOne.train(String.format("#%06X", color_base++));
+			shardTwo.train(String.format("#%06X", color_base++));
+			if (i % 1000 == 0) {
+				shardOne.train(String.format("#%05X", invalid_base++));
+				shardTwo.train(String.format("#%05X", invalid_base++));
+			}
+			if (i % MERGE_FREQ == 0)
+				shardOne = TextAnalyzer.merge(shardOne, shardTwo);
+		}
+
+		final TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
+		System.err.println(mergedResult.asJSON(true, 0));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void issueXXXXX() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 100000;
+		final int MERGE_FREQ = 10000;
+		int color_base = 0x100000;
+		int invalid_base = 0x10000;
+
+		final TextAnalyzer shardOne = new TextAnalyzer("ColorOne");
+		for (int i = 0; i < SAMPLE_COUNT; i++) {
+			shardOne.train(String.format("#%06X", color_base++));
+			if (i % 1000 == 0) {
+				shardOne.train(String.format("#%05X", invalid_base++));
+			}
+		}
+		final TextAnalysisResult mergedResult = shardOne.getResult();
+		System.err.println(mergedResult.asJSON(true, 0));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })

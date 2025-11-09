@@ -3,7 +3,7 @@ plugins {
 }
 
 wrapper {
-	gradleVersion = '9.1.0'
+	gradleVersion = '9.2.0'
 }
 
 repositories {
@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-	implementation group: 'com.cobber.fta', name: 'fta-core', version: '17.+'
+	implementation "com.cobber.fta:fta-core:17.+"
 }
 
 application {

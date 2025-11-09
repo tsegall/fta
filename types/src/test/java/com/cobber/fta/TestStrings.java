@@ -71,7 +71,7 @@ public class TestStrings {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeModifier(), "NULL");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -102,7 +102,7 @@ public class TestStrings {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeModifier(), "BLANK");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		assertTrue("".matches(result.getRegExp()));
 		assertTrue(" ".matches(result.getRegExp()));
@@ -134,7 +134,7 @@ public class TestStrings {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getTypeModifier(), "BLANK");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		assertTrue("      ".matches(result.getRegExp()));
 	}
@@ -163,7 +163,7 @@ public class TestStrings {
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BLANK));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		assertTrue("".matches(result.getRegExp()));
 	}
@@ -193,7 +193,7 @@ public class TestStrings {
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BLANK));
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		assertTrue("".matches(result.getRegExp()));
 	}
@@ -225,7 +225,7 @@ public class TestStrings {
 		assertEquals(result.getBlankCount(), 20);
 		assertEquals(result.getRegExp(), analysis.getRegExp(KnownTypes.ID.ID_BLANKORNULL));
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -263,7 +263,7 @@ public class TestStrings {
 		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHANUMERIC + "{2,9}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getName(), "employeeNumber");
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		int matchCount = 0;
 		for (final String input : inputs) {
@@ -296,7 +296,7 @@ public class TestStrings {
 		assertEquals(result.getMaxValue(), "Z");
 		assertEquals(result.getMinLength(), 1);
 		assertEquals(result.getMaxLength(), 11);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()), input);
@@ -331,7 +331,7 @@ public class TestStrings {
 			assertEquals(result.getMaxValue(), "Z");
 			assertEquals(result.getMinLength(), 1);
 			assertEquals(result.getMaxLength(), 10);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 
 			for (final String input : inputs)
 				assertTrue(input.matches(result.getRegExp()));
@@ -357,7 +357,7 @@ public class TestStrings {
 			assertEquals(result.getMaxValue(), "Z");
 			assertEquals(result.getMinLength(), 1);
 			assertEquals(result.getMaxLength(), 10);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 		}
 	}
 
@@ -396,7 +396,7 @@ public class TestStrings {
 		assertEquals(result.getMaxValue(), "WY");
 		assertEquals(result.getMinLength(), 2);
 		assertEquals(result.getMaxLength(), 13);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (int i = 0; i < inputs.length; i++) {
 			assertTrue(inputs[i].matches(result.getRegExp()), inputs[i]);
@@ -435,7 +435,7 @@ public class TestStrings {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHA + "{12}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		// Now check that we achieve the same outcome but using trainBulk() instead of train()
 		final Map<String, Long> details = new HashMap<>(result.getCardinalityDetails());
@@ -451,7 +451,7 @@ public class TestStrings {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), KnownTypes.PATTERN_ALPHA + "{12}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -490,7 +490,7 @@ public class TestStrings {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\d]{32}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -535,7 +535,7 @@ public class TestStrings {
 		assertEquals(result.getConfidence(), 1.0);
 		assertNull(result.getMean());
 		assertNull(result.getStandardDeviation());
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -562,7 +562,7 @@ public class TestStrings {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "(?i)(CORRECTIVE|DISCRETIONARY|MARKETING/RETENTION|\\QREACTIVATION(FS ONLY)\\E|UNDEFINED)");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -593,7 +593,7 @@ public class TestStrings {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), ".{54,84}");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -625,7 +625,7 @@ public class TestStrings {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "(?i)(FIGHTER|FIGHTER; WANNABE|HATES FIGHTING|NOT A FIGHTER|WOULD LIKE TO BE A FIGHTER)");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -656,7 +656,7 @@ public class TestStrings {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "\\$\\d+\\.\\d+");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
@@ -686,7 +686,7 @@ public class TestStrings {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "£\\d+\\.\\d+");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
@@ -719,7 +719,7 @@ public class TestStrings {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "\\d%|\\d{2}%");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
@@ -752,7 +752,7 @@ public class TestStrings {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "\\d{5}(-\\d{4})?");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
@@ -781,8 +781,8 @@ public class TestStrings {
 		assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 		assertEquals(result1.getRegExp(), result2.getRegExp());
 		assertEquals(result1.getRegExp(), "(?i)(DEFERRED|ESCALATED|FOLLOW_UP_REQUIRED|HANDLED|HANDLED_WITH_ISSUES|INVALID_PRODUCT)");
-		assertNull(result1.checkCounts());
-		assertNull(result2.checkCounts());
+		assertNull(result1.checkCounts(false));
+		assertNull(result2.checkCounts(false));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -810,8 +810,8 @@ public class TestStrings {
 		assertNotEquals(result1.getDataSignature(), result2.getDataSignature());
 		assertEquals(result1.getSemanticType(), result2.getSemanticType());
 		assertEquals(result1.getSemanticType(), defn.semanticType);
-		assertNull(result1.checkCounts());
-		assertNull(result2.checkCounts());
+		assertNull(result1.checkCounts(false));
+		assertNull(result2.checkCounts(false));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -839,7 +839,7 @@ public class TestStrings {
 		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
@@ -880,7 +880,7 @@ public class TestStrings {
 		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
@@ -914,7 +914,7 @@ public class TestStrings {
 		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
@@ -956,7 +956,7 @@ public class TestStrings {
 		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL_PAREN");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
@@ -989,7 +989,7 @@ public class TestStrings {
 		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL_PAREN");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
@@ -1027,7 +1027,7 @@ public class TestStrings {
 		assertEquals(result.getSemanticType(), "COORDINATE_PAIR.DECIMAL_PAREN");
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String input : inputs) {
 			if (input.length() != 0)
@@ -1051,7 +1051,7 @@ public class TestStrings {
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getRegExp(), "\\d{5}\\|");
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -1081,7 +1081,7 @@ public class TestStrings {
 		assertEquals(result.getMinLength(), 3);
 		assertEquals(result.getMaxLength(), 22);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String sample : inputs)
 			assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
@@ -1140,7 +1140,7 @@ public class TestStrings {
 				break;
 			}
 		}
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String sample : inputs)
 			assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
@@ -1213,7 +1213,7 @@ public class TestStrings {
 				break;
 			}
 		}
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String sample : inputs)
 			assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
@@ -1247,7 +1247,7 @@ public class TestStrings {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertEquals(result.getConfidence(), 1 - (double)1/result.getSampleCount());
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String sample : samples) {
 			assertTrue(sample.matches(result.getRegExp()));
@@ -1311,7 +1311,7 @@ public class TestStrings {
 
 		assertNull(result.getTypeModifier());
 		assertEquals(result.getType(), FTAType.STRING);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -1336,7 +1336,7 @@ public class TestStrings {
 		assertEquals(result.getMinLength(), 20);
 		assertEquals(result.getMaxLength(), 21);
 		assertEquals(result.getConfidence(), 1.0);
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		for (final String sample : inputs)
 			assertTrue(sample.matches(result.getRegExp()), result.getRegExp());
@@ -1394,7 +1394,7 @@ public class TestStrings {
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.STRING);
 		assertNull(result.getTypeModifier());
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 		logger.info("Count {}, duration: {}ms, ~{} per second.", iters + 1, System.currentTimeMillis() - start, (iters  + 1)/seconds);
 
 		// With Statistics & LogicalTypes

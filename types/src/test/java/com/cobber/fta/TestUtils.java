@@ -407,7 +407,7 @@ public class TestUtils {
 		assertEquals(result.getType(), type);
 		assertEquals(result.getConfidence(), confidence);
 
-		assertNull(result.checkCounts());
+		assertNull(result.checkCounts(false));
 
 		final LogicalType logical = getLogical(analysis, semanticType);
 

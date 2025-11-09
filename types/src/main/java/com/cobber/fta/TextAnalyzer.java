@@ -2347,7 +2347,7 @@ public class TextAnalyzer {
 
 		facts.outliers.clear();
 		outliersSmashed.clear();
-		ctxdebug("Type determination", "backing out, matchTypeInfo - {}", facts.getMatchTypeInfo());
+		ctxdebug("Type determination", "backing out string, matchTypeInfo - {}", facts.getMatchTypeInfo());
 	}
 
 	private void backoutToTypeInfo(final long realSamples, final TypeInfo newTypeInfo) {
@@ -2657,7 +2657,7 @@ public class TextAnalyzer {
 		long realSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
 		long missCount = 0;				// count of number of misses
 
-		final FiniteMap newOutliers = new FiniteMap(outliers.getMaxCapacity());
+		final FiniteMap newOutliers = new FiniteMap(outliers);
 		final Map<String, Long> addMatches = new HashMap<>();
 		final double missThreshold = 1.0 - logical.getThreshold()/100.0;
 		long validCount = 0;
@@ -2702,7 +2702,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		final FiniteMap newCardinality = new FiniteMap(cardinalityUpper.getMaxCapacity());
+		final FiniteMap newCardinality = new FiniteMap(cardinalityUpper);
 		newCardinality.putAll(cardinalityUpper);
 		newCardinality.putAll(addMatches);
 		for (final String elt : minusMatches.keySet())
@@ -2950,7 +2950,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		final FiniteMap cardinalityUpper = new FiniteMap(facts.cardinality.getMaxCapacity());
+		final FiniteMap cardinalityUpper = new FiniteMap(facts.cardinality);
 		final FTAType currentType = facts.getMatchTypeInfo().getBaseType();
 
 		if (FTAType.LONG.equals(currentType))
@@ -3130,6 +3130,9 @@ public class TextAnalyzer {
 				}
 			}
 		}
+
+		if (FTAType.LONG.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType())
+			checkRegExpTypes();
 
 		// Only attempt to do key identification if we have not already been told the answer
 		if (facts.keyConfidence == null) {
@@ -3385,8 +3388,8 @@ public class TextAnalyzer {
 					final String re = entry.getRegExpReturned();
 					if (((newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0)) {
 						// Build the new Cardinality and Invalid maps - based on the RE
-						final FiniteMap newCardinality = new FiniteMap(facts.cardinality.getMaxCapacity());
-						final FiniteMap newInvalids = new FiniteMap(facts.outliers.getMaxCapacity());
+						final FiniteMap newCardinality = new FiniteMap(facts.cardinality);
+						final FiniteMap newInvalids = new FiniteMap(facts.outliers);
 						for (final Map.Entry<String, Long> current : facts.cardinality.entrySet()) {
 							if (current.getKey().trim().matches(re))
 								newCardinality.put(current.getKey(), current.getValue());
@@ -3689,7 +3692,7 @@ public class TextAnalyzer {
 			// If we updated the set then we need to remove the outliers we OK'd and
 			// also update the pattern to reflect the looser definition
 			if (updated) {
-				final FiniteMap remainingOutliers = new FiniteMap(facts.outliers.getMaxCapacity());
+				final FiniteMap remainingOutliers = new FiniteMap(facts.outliers);
 				remainingOutliers.putAll(facts.outliers);
 				for (final String elt : killSet)
 					remainingOutliers.remove(elt);
@@ -3927,12 +3930,14 @@ public class TextAnalyzer {
 				ret.facts.monotonicDecreasing = true;
 		}
 
+		boolean cardinalityBlown = false;
 		// Check to see if we have exceeded the cardinality on the the first, second, or the merge.
 		// If so the samples we have seen do not reflect the entirety of the input so we need to
-		// we need to calculate a set of attributes.
+		// calculate a set of attributes.
 		if (ret.facts.cardinality.size() == ret.analysisConfig.getMaxCardinality() ||
 				firstFacts.cardinality.size() == first.analysisConfig.getMaxCardinality() ||
 				secondFacts.cardinality.size() == second.analysisConfig.getMaxCardinality()) {
+			cardinalityBlown = true;
 
 			ret.facts.minRawNonBlankLength = Math.min(first.facts.minRawNonBlankLength, second.facts.minRawNonBlankLength);
 			ret.facts.maxRawNonBlankLength = Math.max(first.facts.maxRawNonBlankLength, second.facts.maxRawNonBlankLength);
@@ -3986,6 +3991,21 @@ public class TextAnalyzer {
 					ret.facts.variance = ((first.facts.matchCount - 1)*first.facts.variance + (second.facts.matchCount - 1)*second.facts.variance)/(first.facts.matchCount+second.facts.matchCount-2);
 				ret.facts.currentM2 = ret.facts.variance * ret.facts.matchCount;
 			}
+		}
+
+		if (cardinalityBlown)
+			ret.checkRegExpTypes();
+
+		// Do some basic sanity checks
+		if (first.facts.getMatchTypeInfo() != null || second.facts.getMatchTypeInfo() != null) {
+			if (ret.facts.getMatchTypeInfo() == null)
+				ret.ctxdebug("Type determination", "WARNING - had a type pre merge but no longer do?");
+			else
+				if (!ret.facts.getMatchTypeInfo().isSemanticType() &&
+						((first.facts.getMatchTypeInfo() != null && first.facts.getMatchTypeInfo().isSemanticType()) ||
+								(second.facts.getMatchTypeInfo() != null && second.facts.getMatchTypeInfo().isSemanticType()))) {
+					ret.ctxdebug("Type determination", "WARNING - result of merge not a Semantic Type but one of the inputs was?");
+				}
 		}
 
 		return ret;

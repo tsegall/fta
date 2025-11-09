@@ -34,6 +34,7 @@ public class FiniteMap implements Map<String, Long> {
 	private int maxCapacity = -1;
 	private Map<String, Long> impl;
 	private boolean sorted = false;
+	private boolean overflowed = false;
 
 	FiniteMap() {
 		impl = new HashMap<>();
@@ -48,6 +49,12 @@ public class FiniteMap implements Map<String, Long> {
 		impl = new HashMap<>(m);
 		this.maxCapacity = maxCapacity;
     }
+
+	public FiniteMap(final FiniteMap template) {
+		impl = new HashMap<>();
+		this.maxCapacity = template.maxCapacity;
+		this.overflowed = template.overflowed;
+	}
 
 	public int getMaxCapacity() {
 		return maxCapacity;
@@ -78,6 +85,10 @@ public class FiniteMap implements Map<String, Long> {
 		return sorted;
 	}
 
+	public boolean hasOverflowed() {
+		return overflowed;
+	}
+
 	/**
 	 * Similar to {@link java.util.Map#merge} but if this FiniteMap is full and this is a new key then just return false.
      * @param key key with which the resulting value is to be associated
@@ -93,8 +104,11 @@ public class FiniteMap implements Map<String, Long> {
 		final Long oldValue = get(key);
 
 		// If it is not already present and we are full then just return
-		if (oldValue == null && impl.size() >= getMaxCapacity())
+		if (oldValue == null && impl.size() >= getMaxCapacity()) {
+			if (!overflowed)
+				overflowed = true;
 			return false;
+		}
 
 		final Long newValue = (oldValue == null) ? value : remappingFunction.apply(oldValue, value);
 

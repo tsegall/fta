@@ -116,7 +116,7 @@ public class TestIssues {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMaxLength(), LONGEST);
 			assertEquals(result.getMinLength(), SHORTEST);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 		}
 	}
 
@@ -147,7 +147,7 @@ public class TestIssues {
 		assertEquals(streetName.getSampleCount(), rows);
 		assertEquals(streetName.getType(), FTAType.STRING);
 		assertEquals(streetName.getSemanticType(), "STREET_ADDRESS_EN");
-		assertNull(streetName.checkCounts());
+		assertNull(streetName.checkCounts(false));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
@@ -175,7 +175,7 @@ public class TestIssues {
 		for (final TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMatchCount(), values.length - 1);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 		}
 	}
 
@@ -207,7 +207,7 @@ public class TestIssues {
 		for (final TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMatchCount(), values.length - 1);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 		}
 	}
 
@@ -247,7 +247,7 @@ public class TestIssues {
 
 		for (final TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 			assertEquals(result.getMatchCount(), values.length - 6);
 		}
 	}
@@ -282,7 +282,7 @@ public class TestIssues {
 		for (final TextAnalysisResult result : analyzer.getResult().getStreamResults()) {
 			assertEquals(result.getSampleCount(), values.length);
 			assertEquals(result.getMatchCount(), values.length);
-			assertNull(result.checkCounts());
+			assertNull(result.checkCounts(false));
 		}
 	}
 
@@ -313,13 +313,13 @@ public class TestIssues {
 		assertEquals(streetName.getSampleCount(), rows);
 		assertEquals(streetName.getType(), FTAType.STRING);
 		assertEquals(streetName.getSemanticType(), "STREET_NAME_EN");
-		assertNull(streetName.checkCounts());
+		assertNull(streetName.checkCounts(false));
 
 		final TextAnalysisResult streetNumber = analyzer.getResult().getStreamResults()[0];
 		assertEquals(streetNumber.getSampleCount(), rows);
 		assertEquals(streetNumber.getType(), FTAType.LONG);
 		assertEquals(streetNumber.getSemanticType(), "STREET_NUMBER");
-		assertNull(streetNumber.checkCounts());
+		assertNull(streetNumber.checkCounts(false));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
