@@ -1449,7 +1449,9 @@ public class TestMerge {
 		final int MERGE_FREQ = 10000;
 		TextAnalyzer processor = new TextAnalyzer("ColorOne");
 		processor.setDebug(2);
+		processor.setLocale(Locale.US);
 		TextAnalyzer altProcessor = new TextAnalyzer("ColorTwo");
+		altProcessor.setLocale(Locale.US);
 		int processedRecords = 0;
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/color_100K.csv"), StandardCharsets.UTF_8))) {
 			while (in.ready())
