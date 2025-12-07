@@ -1446,14 +1446,12 @@ public class TestMerge {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void issueXX() throws IOException, FTAException {
-		System.err.printf("Locale: %s\n", Locale.getDefault());
-		Locale noCountry = Locale.getDefault();
 		final int MERGE_FREQ = 10000;
 		TextAnalyzer processor = new TextAnalyzer("ColorOne");
 		processor.setDebug(2);
-		processor.setLocale(noCountry);
+		processor.setLocale(Locale.US);
 		TextAnalyzer altProcessor = new TextAnalyzer("ColorTwo");
-		altProcessor.setLocale(noCountry);
+		altProcessor.setLocale(Locale.US);
 		int processedRecords = 0;
 
 		// Load the 100K color dataset, there are 990 short values (e.g. #FFFFF) that should be invalid for a color field.
@@ -1475,7 +1473,7 @@ public class TestMerge {
 				if (processedRecords % MERGE_FREQ == 0) {
 					processor = TextAnalyzer.merge(processor, altProcessor);
 					altProcessor = new TextAnalyzer("ColorTwo");
-					altProcessor.setLocale(noCountry);
+					altProcessor.setLocale(Locale.US);
 				}
 				processedRecords++;
 			}

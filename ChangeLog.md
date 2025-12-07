@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 17.1.9
+ - INT: Bump logback-classic to 1.5.21, SpotBugs to 6.4.7, commons-validator to 1.10.1, gradle to 9.2.1, google phonenumber to 9.0.19
+ - INT: Switch examples to use non-deprecated method for registering plugins
+
 ### 17.1.8
  - BUG: RegExp for list types incorrect if option 'words=[any|all|first' used
  - BUG: RegExp returned for MunicipalityCodes in the Netherlands was wrong if empty strings supplied

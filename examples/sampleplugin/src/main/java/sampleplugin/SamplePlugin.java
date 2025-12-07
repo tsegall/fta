@@ -41,6 +41,7 @@ public abstract class SamplePlugin {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("Colors");
+		// Add our custom Java plugin for detecting colors
 		addPlugin(analysis);
 
 		for (final String input : inputsEnglish)
@@ -62,6 +63,7 @@ public abstract class SamplePlugin {
 		final TextAnalyzer analysisFrench = new TextAnalyzer("Colors");
 		final Locale localeFR = Locale.forLanguageTag("fr-FR");
 		analysisFrench.setLocale(localeFR);
+		// Add our custom Java plugin for detecting colors
 		addPlugin(analysisFrench);
 
 		for (final String input : inputsFrench)
@@ -109,10 +111,10 @@ public abstract class SamplePlugin {
 	}
 
     static void addPlugin(final TextAnalyzer analysis) {
-		// Register our new magic plugin
+		// Register our new Java plugin (after the built-in plugins have been registered)
 		final String colorPlugin = "[ { \"semanticType\": \"CUSTOM_COLOR.TEXT_<LANG>\", \"pluginType\": \"java\", \"clazz\": \"sampleplugin.PluginColor\", \"validLocales\": [ { \"localeTag\": \"en,fr-FR\" } ] } ]";
 		try {
-			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", analysis.getConfig());
+			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", analysis.getConfig(), false);
 		} catch (FTAPluginException e) {
 			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
 		} catch (IOException e) {
@@ -121,8 +123,9 @@ public abstract class SamplePlugin {
     }
 
     static void addPlugins(final TextAnalyzer analysis, final String dataStreamName) {
+		// Register our sample list and regext plugins from a JSON definition file (after the built-in plugins have been registered)
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/CustomPlugins.json"), StandardCharsets.UTF_8))) {
-			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig());
+			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig(), false);
 		} catch (FTAPluginException e) {
 			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
 		} catch (IOException e) {
