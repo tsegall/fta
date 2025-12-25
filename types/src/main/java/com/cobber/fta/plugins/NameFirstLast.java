@@ -50,9 +50,16 @@ public class NameFirstLast extends LogicalTypeInfinite {
 
 	static {
 		excludes = new HashSet<>();
+		excludes.add("COMPANY");
+		excludes.add("CORP");
+		excludes.add("CORP.");
+		excludes.add("CORPORATION");
 		excludes.add("INC");
 		excludes.add("INC.");
+		excludes.add("INCORPORATED");
+		excludes.add("LIMITED");
 		excludes.add("LLC");
+		excludes.add("SERVICES");
 	}
 
 	/**
@@ -169,7 +176,7 @@ public class NameFirstLast extends LogicalTypeInfinite {
 		final String firstName = trimmed.substring(0, firstSpace);
 		final String lastName = trimmed.substring(lastSpace + 1);
 
-		if (excludes.contains(lastName))
+		if (excludes.contains(lastName.toUpperCase(locale)))
 			return false;
 
 		firstNames.mergeIfSpace(firstName, count, Long::sum);
