@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cobber.com/schemas/plugin-definition.schema.json",
+  "title": "Plugin Definition List",
+  "type": "array",
+  "items": {
+    "$ref": "#/$defs/plugin"
+  },
+
+  "$defs": {
+    "plugin": {
+      "type": "object",
+      "required": [
+        "semanticType",
+        "description",
+        "pluginType",
+        "signature",
+        "validLocales",
+        "priority"
+      ],
+      "properties": {
+        "semanticType": {
+          "type": "string",
+          "description": "Semantic identifier, possibly namespaced (e.g. POSTAL_CODE.ZIP5_US)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Simple description of the Semantic Type"
+        },
+        "pluginType": {
+          "type": "string",
+          "enum": ["java", "regex", "list"],
+          "description": "If 'java' then clazz field required, if 'list' then content field required, if 'regExp' then validLocale -> matchEntries required"
+        },
+        "signature": {
+          "type": "string",
+          "description": "Base 64 encoded version of '<Base Type>:<TypeInfo>'. Where <Base Type> is as defined above and <TypeInfo> is either the TypeQualifer if a known Semantic Type, e.g. NAME.FIRST or the detected Regular Expression + the set of shapes."
+        },
+        "clazz": {
+          "type": "string",
+          "description": "Fully qualified Java class name"
+        },
+        "priority": {
+          "type": "integer",
+          "description": "If two Semantic Types have equal confidence then the Semantic Type with the highest priority will be selected",
+          "minimum": 0
+        },
+        "threshold": {
+          "type": "integer",
+          "description": "Percentage confidence we require to establish the Stream Data as a valid instance of this Semantic Type",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "baseType": {
+          "type": "string",
+          "enum": ["BOOLEAN", "DOUBLE", "LONG", "STRING", "LOCALdATE", "LOCALTIME", "LOCALDATETIME", "OFFSETDATETIME", "ZONEDDATETIME"],
+          "description": "Constrains the plugin to streams that are of this baseType"
+        },
+        "minimum": {
+          "type": ["string", "number"],
+          "description": "Optional tag (regExp plugins) are valid for Stream of Base Type LONG or DOUBLE and further restrict the data that will be considered valid."
+        },
+        "maximum": {
+          "type": ["string", "number"],
+          "description": "Optional tag (regExp plugins) are valid for Stream of Base Type LONG or DOUBLE and further restrict the data that will be considered valid."
+        },
+        "minMaxPresent": {
+          "type": ["string", "number"],
+          "description": "Optional tag (regExp plugins) indicates that both the minimum and maxixum value must be present in order for the Semantic Type to be recognized."
+        },
+        "minSamples": {
+          "type": ["string", "number"],
+          "description": "Optional tag (regExp plugins) indicates that in order for this Semantic Type to be detected there must be at least this many samples."
+        },
+        "invalidList": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional tag (regExp plugins) with a list of invalid values for this Semantic Type, for example '[ \"000-00-0000\" ]' indicates that this is an invalid SSN, despite the fact that it matches the SSN regular expression."
+        },
+        "backout": {
+          "type": "string"
+        },
+        "ignoreList": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional tag (list plugins) a set of strings that we should ignore when checking the known good list."
+        },
+        "validLocales": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/validLocale"
+          },
+          "description": "The set of locales where the plugin should be enabled."
+        },
+        "documentation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/documentation"
+          },
+          "description": "The optional 'documentation' tag includes definitive reference material for the Semantic Type. This will typically include a well-known 'source' as well a 'reference' to the detailed information."
+        },
+        "content": {
+          "$ref": "#/$defs/content"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "validLocale": {
+      "type": "object",
+      "required": ["localeTag"],
+      "properties": {
+        "localeTag": {
+          "type": "string",
+          "description": "BCP-47 locale tag or comma-separated list"
+        },
+        "headerRegExps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/headerRegExp"
+          }
+        },
+        "matchEntries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/matchEntry"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "headerRegExp": {
+      "type": "object",
+      "required": ["regExp", "confidence"],
+      "properties": {
+        "regExp": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "integer",
+          "minimum": -100,
+          "maximum": 100
+        },
+        "mandatory": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "matchEntry": {
+      "type": "object",
+      "properties": {
+        "regExpsToMatch": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "regExpReturned": {
+          "type": "string"
+        },
+        "isRegExpComplete": {
+          "type": "boolean",
+          "description": "Indicates if the returned Regular Expression is a definitive representation of the Logical Type. For example, \\d{5} is not for US ZIP codes as 00000 is not a valid Zip but does match the Regular Expression."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "documentation": {
+      "type": "object",
+      "required": ["source", "reference"],
+      "description": "Optional tag that includes definitive reference material for the Semantic Type. This will typically include a well-known 'source' as well a 'reference' to the detailed information.",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "content": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["resource", "inline", "file"],
+          "description": "If the type is 'inline' then the tag 'members' is the array of possible values. If the type is 'resource' or 'file' then the tag 'reference' is the file/resource that contains the list of values. Note: the list of possible values is required to be upper case and encoded in UTF-8."
+        },
+        "reference": {
+          "type": "string",
+          "description": "File/resource that contains the list of values."
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of possible values."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "resource" } }
+          },
+          "then": {
+            "required": ["reference"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "inline" } }
+          },
+          "then": {
+            "required": ["members"]
+          }
+        }
+      ]
+    }
+  }
+}
+

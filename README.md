@@ -388,6 +388,8 @@ any locale that uses the English language. In addition the 'headerRegExps' tag i
 
 The optional 'isRegExpComplete' tag indicates if the returned Regular Expression is a definitive representation of the Logical Type. For example, \\d{5} is not for US ZIP codes as 00000 is not a valid Zip but does match the Regular Expression.
 
+The optional 'documentation' tag includes definitive reference material for the Semantic Type. This will typically include a well-known 'source' as well a 'reference' to the detailed information.
+
 ### RegExp plugins ###
 
 The mandatory 'regExpReturned' tag is the validation string that will be returned by this plugin if a successful match is established.
@@ -396,7 +398,7 @@ The optional 'regExpsToMatch' tag is an ordered list of Regular Expressions used
 
 The optional 'minimum (maximum)' tags are valid for Stream of Base Type Long or Double and further restrict the data that will be considered valid.
 
-The optional 'minMaxPresent' tag indicates that both the minimum and maxixum value must be present in order for the Semantic Type to be recognized.
+The optional 'minMaxPresent' tag indicates that both the minimum and maximum value must be present in order for the Semantic Type to be recognized.
 
 The optional 'minSamples' tag indicates that in order for this Semantic Type to be detected there must be at least this many samples.
 
@@ -430,6 +432,8 @@ The mandatory 'content' element is required.
 
 The 'type' tag determines how the content is provided (possible values are 'inline', 'resource', or 'file').
 If the type is 'inline' then the tag 'members' is the array of possible values.  If the type is 'resource' or 'file' then the tag 'reference' is the file/resource that contains the list of values.  Note: the list of possible values is required to be upper case and encoded in UTF-8.
+
+The optional 'ignoreList' tag is a set of strings that should be ignored when checking the known good list.
 
 #### Example
 The following example is looking for elements from the Periodic Table.  The list of valid entries is in a resource file named elements.csv.
