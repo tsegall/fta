@@ -42,16 +42,6 @@ public class Processor {
 		this.options = options;
 		this.streamCount = fieldNames.length;
 
-		if (options.pluginName != null && options.pluginMode != null) {
-			final PluginDefinition pluginDefinition = PluginDefinition.findByName(options.pluginName);
-			if (pluginDefinition == null) {
-				logger.printf("ERROR: Failed to locate plugin named '%s', use --help%n", options.pluginName);
-				System.exit(1);
-			}
-
-			logicalType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(options.getLocale()));
-		}
-
 		if (options.col == -1) {
 			final AnalyzerContext context = new AnalyzerContext(null, options.resolutionMode, compositeName, fieldNames);
 			if (options.knownTypes != null)
@@ -64,14 +54,19 @@ public class Processor {
 		}
 
 		analyzers = new TextAnalyzer[streamCount];
-		for (int i = 0; i < fieldNames.length; i++) {
-			if (options.col == -1 || options.col == i) {
-				final AnalyzerContext context = new AnalyzerContext(fieldNames[i] == null ? "" : fieldNames[i].trim(), options.resolutionMode, compositeName, fieldNames);
-				if (options.knownTypes != null)
-					context.withSemanticTypes(options.knownTypes.split(","));
-				analyzers[i] = new TextAnalyzer(context);
-				options.apply(analyzers[i]);
+		final AnalyzerContext context = new AnalyzerContext(fieldNames[options.col] == null ? "" : fieldNames[options.col].trim(), options.resolutionMode, compositeName, fieldNames);
+		if (options.knownTypes != null)
+			context.withSemanticTypes(options.knownTypes.split(","));
+		analyzers[options.col] = new TextAnalyzer(context);
+		options.apply(analyzers[options.col]);
+		if (options.pluginName != null && options.pluginMode != null) {
+			final PluginDefinition pluginDefinition = analyzers[options.col].findByName(options.pluginName);
+			if (pluginDefinition == null) {
+				logger.printf("ERROR: Failed to locate plugin named '%s', use --help%n", options.pluginName);
+				System.exit(1);
 			}
+
+			logicalType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(options.getLocale()));
 		}
 	}
 

@@ -89,6 +89,20 @@ public class Plugins {
 	}
 
 	/**
+	 * Register a set of Plugins by providing a list of existing user-defined Plugin definitions.
+	 *
+	 * @param plugins The list of PluginDefinitions.
+	 * @param dataStreamName The name of the datastream.
+	 * @param analysisConfig The Analysis configuration used for this analysis.
+	 *
+	 * @throws FTAPluginException if the plugin definitions are invalid or if a plugin with the same semantic type is already registered.
+	 */
+	protected void registerPluginListWithPrecedence(final List<PluginDefinition> plugins, final String dataStreamName, final AnalysisConfig analysisConfig) throws FTAPluginException {
+		for (final PluginDefinition plugin : plugins)
+			registerPluginListCore(List.of(plugin), dataStreamName, analysisConfig, false, plugin.getPrecedence() == PluginDefinition.Precedence.PRE_BUILTIN);
+	}
+
+	/**
 	 * Register a set of Plugins by providing a list of Plugin definitions.
 	 *
 	 * @param plugins The list of PluginDefinitions.

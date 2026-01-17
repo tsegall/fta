@@ -103,7 +103,7 @@ public class Driver {
 					error.println(" --noAnalysis - Do not do analysis");
 					error.println(" --noPretty - Do not pretty print analysis");
 					error.println(" --noQuantiles - Do not track quantiles");
-					error.println(" --noSemanticTypes - Do not register any Semantic Types");
+					error.println(" --noSemanticTypes - Do not register any of the built-in Semantic Types");
 					error.println(" --noStatistics - Do not track statistics");
 					error.println(" --pluginDefinition - Output the plugin definitions from the training data set");
 					error.println(" --pluginMode true|false - Set the detect mode when running Plugin validate");
@@ -115,6 +115,7 @@ public class Driver {
 					error.println(" --resolutionMode <DayFirst|MonthFirst|Auto|None> - Auto DayFirst or MonthFirst is determined from Locale");
 					error.println(" --samples - If set then generate samples (see --faker for comprehensive support)");
 					error.println(" --semanticType <JSON representation of Semantic Types> - Can be inline or as a File");
+					error.println(" --semanticTypesPre - If set then user-supplied Semantic Types (--semanticType) are registered ahead of built-ins");
 					error.println(" --signature - Output the Signature for the supplied pluginName");
 					error.println(" --skip <n> - Skip the initial <n> rows of the input");
 					error.println(" --testMerge <n> - exercise merging of analyses, <n> is the number of samples per merge");

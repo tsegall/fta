@@ -5171,7 +5171,7 @@ public class TestDates {
 		};
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
-			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig());
+			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig(), false);
 		} catch (FTAPluginException e) {
 			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
 		} catch (IOException e) {
@@ -5218,7 +5218,7 @@ public class TestDates {
 		};
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
-			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig());
+			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig(), false);
 		} catch (FTAPluginException e) {
 			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
 		} catch (IOException e) {
@@ -5265,7 +5265,7 @@ public class TestDates {
 		};
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
-			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig());
+			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig(), false);
 		} catch (FTAPluginException e) {
 			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
 		} catch (IOException e) {

@@ -2920,7 +2920,7 @@ public class RandomTests {
 		// This time we should detect the new Semantic Type: 'Guess'
 		final TextAnalyzer analyzerWithDefinition = new TextAnalyzer("Guess");
 		analyzerWithDefinition.getPlugins().registerPlugins(new StringReader("[" + result.asPlugin(analyzer).toString() + "]"),
-				analyzerWithDefinition.getStreamName(), analyzerWithDefinition.getConfig());
+				analyzerWithDefinition.getStreamName(), analyzerWithDefinition.getConfig(), false);
 
 		for (final String sample : samples)
 			analyzerWithDefinition.train(sample);

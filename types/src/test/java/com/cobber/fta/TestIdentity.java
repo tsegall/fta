@@ -125,7 +125,7 @@ public class TestIdentity {
 						true, 98, FTAType.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), analysis.getConfig());
+			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}

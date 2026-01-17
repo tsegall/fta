@@ -370,6 +370,8 @@ If the pluginType is 'java' then a *clazz* field is required and a new Instance 
 If the pluginType is 'list' then the *content* field must be present and a new instance of LogicalTypeFiniteSimpleExternal will be instantiated.
 If the pluginType is 'regex' then an instance of LogicalTypeRegExp will be instantiated.
 
+The JSON schema for plugin definitions is available [here](types/src/main/resources/reference/plugins-schema.json).
+
 In all cases the plugin definition and locale are passed as arguments.
 
 ### All Plugins ###

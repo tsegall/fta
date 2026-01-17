@@ -128,6 +128,10 @@ public class PluginDefinition {
 		this.precedence = precedence;
 	}
 
+	public Precedence getPrecedence() {
+		return this.precedence;
+	}
+
 	// *** Only use this for internal testing - be warned only works in English language ***
 	public PluginDefinition(final String semanticType, final String clazz) {
 		this.semanticType = semanticType;

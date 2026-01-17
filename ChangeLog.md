@@ -1,6 +1,13 @@
 
 ## Changes ##
 
+### 17.2.0
+ - INT: Bump logback-classic to 1.5.24, gradle to 9.3.0, phonenumber to 9.0.21
+ - CLI: Add --semanticTypesPre to control whether user-defined types (--semanticType) are registered before built-ins
+ - BUG: findByName on TextAnalyzer was not returning user-defined types
+ - BUG: Preserve precedence on plugins registered on TextAnalyzer template for RecordAnalyzer (Issue #152)
+ - BUG: Check for better RegExpTypes even if we have already detected a Semantic Type (Issue #152)
+ - INT: Remove remaining references to deprecated registerPluginList()
 
 ### 17.1.10
  - INT: Bump logback-classic to 1.5.23, SpotBugs to 6.4.8, commons-text:1.15.0, google phonenumber to 9.0.21,

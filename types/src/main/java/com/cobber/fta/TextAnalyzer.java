@@ -317,7 +317,7 @@ public class TextAnalyzer {
 
 		ret.setExternalFacts(getFacts().external);
 		ret.setConfig(new AnalysisConfig(getConfig()));
-		ret.getPlugins().registerPluginList(getPlugins().getUserDefinedPlugins(), getStreamName(), getConfig());
+		ret.getPlugins().registerPluginListWithPrecedence(getPlugins().getUserDefinedPlugins(), getStreamName(), getConfig());
 
 		return ret;
 	}
@@ -1254,15 +1254,15 @@ public class TextAnalyzer {
 	}
 
 	private void loadPlugins() {
-                synchronized (pluginDefinitions) {
-                        if (pluginDefinitions.isEmpty())
-                                try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
-                                        pluginDefinitions = mapper.readValue(reader, new TypeReference<List<PluginDefinition>>(){});
-                                } catch (Exception e) {
-                                        throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
-                                }
-                }
-        }
+		synchronized (pluginDefinitions) {
+			if (pluginDefinitions.isEmpty())
+				try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
+					pluginDefinitions = mapper.readValue(reader, new TypeReference<List<PluginDefinition>>(){});
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
+				}
+		}
+	}
 
 	/**
 	 * Register the default set of plugins for Semantic Type detection.
@@ -1292,11 +1292,8 @@ public class TextAnalyzer {
 	public PluginDefinition findByName(final String semanticTypeName) {
 		loadPlugins();
 
-		for (final PluginDefinition pluginDefinition : pluginDefinitions)
-			if (pluginDefinition.semanticType.equalsIgnoreCase(semanticTypeName))
-				return pluginDefinition;
-
-		return null;
+		LogicalType logicalType = getPlugins().getRegistered(semanticTypeName);
+		return logicalType == null ? null : logicalType.getPluginDefinition();
 	}
 
 	private void initialize() throws FTAPluginException, FTAUnsupportedLocaleException {
@@ -2632,7 +2629,7 @@ public class TextAnalyzer {
 
 		// So before we blow the cache (either Shapes or Cardinality) we should look for RegExp matches ONCE!
 		if (!cacheCheck && (tokenStreams.isFull() || facts.cardinality.size() + 1 == analysisConfig.getMaxCardinality())) {
-			checkRegExpTypes();
+			checkRegExpTypes(facts.getMatchTypeInfo().getBaseType());
 			cacheCheck = true;
 		}
 	}
@@ -2810,10 +2807,10 @@ public class TextAnalyzer {
 		double bestScore = scoreToBeat;
 
 		for (final LogicalTypeFinite logical : finiteTypes) {
-            if (!logical.acceptsBaseType(type))
-                continue;
+			if (!logical.acceptsBaseType(type))
+				continue;
 
-            // Either we need to be an open set or the cardinality should be reasonable (relative to the size of the set)
+			// Either we need to be an open set or the cardinality should be reasonable (relative to the size of the set)
 			if ((!logical.isClosed() || cardinalityUpper.size() <= logical.getSize() + 2 + logical.getSize()/20)) {
 				final FiniteMatchResult result = checkFiniteSet(cardinalityUpper, facts.outliers, logical);
 
@@ -3018,7 +3015,7 @@ public class TextAnalyzer {
 				}
 
 				if (!backedOutRegExp)
-					updated = checkRegExpTypes();
+					updated = checkRegExpTypes(FTAType.STRING);
 
 				final long interestingSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
 
@@ -3131,8 +3128,7 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (FTAType.LONG.equals(facts.getMatchTypeInfo().getBaseType()) && !facts.getMatchTypeInfo().isSemanticType())
-			checkRegExpTypes();
+		checkRegExpTypes(facts.getMatchTypeInfo().getBaseType());
 
 		// Only attempt to do key identification if we have not already been told the answer
 		if (facts.keyConfidence == null) {
@@ -3375,52 +3371,81 @@ public class TextAnalyzer {
 		return input != null && input.trim().length() != 0;
 	}
 
-	private boolean checkRegExpTypes() {
+	private boolean checkRegExpTypes(final FTAType type) {
 		final long realSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
+		boolean updated = false;
+
+		double scoreToBeat;
+
+		LogicalType priorLogical = null;
+		// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
+		if (facts.getMatchTypeInfo().isSemanticType()) {
+			priorLogical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
+			scoreToBeat = facts.confidence;
+		}
+		else
+			scoreToBeat = -1.0;
+
+		double bestScore = scoreToBeat;
 
 		for (final LogicalTypeRegExp logical : regExpTypes) {
+			if (!logical.acceptsBaseType(type) || logical == priorLogical)
+				continue;
+
 			// Check to see if either
 			// the Regular Expression we have matches the Semantic types, or
 			// the Regular Expression for the Semantic types matches all the data we have observed
-			if (logical.acceptsBaseType(FTAType.STRING)) {
-				for (final PluginMatchEntry entry : logical.getMatchEntries()) {
-					long newMatchCount = facts.matchCount;
-					final String re = entry.getRegExpReturned();
-					if (((newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0)) {
-						// Build the new Cardinality and Invalid maps - based on the RE
-						final FiniteMap newCardinality = new FiniteMap(facts.cardinality);
-						final FiniteMap newInvalids = new FiniteMap(facts.outliers);
-						for (final Map.Entry<String, Long> current : facts.cardinality.entrySet()) {
-							if (current.getKey().trim().matches(re))
-								newCardinality.put(current.getKey(), current.getValue());
-							else
-								newInvalids.put(current.getKey(), current.getValue());
-						}
-						for (final Map.Entry<String, Long> current : facts.outliers.entrySet()) {
-							if (current.getKey().trim().matches(re))
-								newCardinality.put(current.getKey(), current.getValue());
-							else
-								newInvalids.put(current.getKey(), current.getValue());
-						}
+			for (final PluginMatchEntry entry : logical.getMatchEntries()) {
+				long newMatchCount = facts.matchCount;
+				final String re = entry.getRegExpReturned();
+				if (((newMatchCount = tokenStreams.matches(re, logical.getThreshold())) != 0)) {
+					// Build the new Cardinality and Invalid maps - based on the RE
+					final FiniteMap newCardinality = new FiniteMap(facts.cardinality);
+					final FiniteMap newInvalids = new FiniteMap(facts.outliers);
+					for (final Map.Entry<String, Long> current : facts.cardinality.entrySet()) {
+						if (current.getKey().trim().matches(re))
+							newCardinality.put(current.getKey(), current.getValue());
+						else
+							newInvalids.put(current.getKey(), current.getValue());
+					}
+					for (final Map.Entry<String, Long> current : facts.outliers.entrySet()) {
+						if (current.getKey().trim().matches(re))
+							newCardinality.put(current.getKey(), current.getValue());
+						else
+							newInvalids.put(current.getKey(), current.getValue());
+					}
 
-						// Based on the new Cardinality/Outliers do we think this is a match?
-						if (logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), newCardinality, newInvalids, tokenStreams, analysisConfig).isValid()) {
-							logical.setMatchEntry(entry);
-							facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
-							facts.matchCount = newMatchCount;
-							facts.cardinality = newCardinality;
-							facts.invalid = newInvalids;
-							facts.outliers.clear();
-							ctxdebug("Type determination", "updated to Regular Expression Semantic type {}", facts.getMatchTypeInfo());
-							facts.confidence = logical.getConfidence(facts.matchCount, realSamples, context);
-							return true;
-						}
+					double newScore = 0.0;
+					// Based on the new Cardinality/Outliers do we think this is a match?
+					if (logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), newCardinality, newInvalids, tokenStreams, analysisConfig).isValid()) {
+							// Skip if the new score is worse than the current
+							if ((newScore = logical.getConfidence(newMatchCount, realSamples, context)) < bestScore)
+								continue;
+							if (newScore == bestScore) {
+								// Skip if the scores are the same but we like the header less
+								if (logical.getHeaderConfidence(context.getStreamName()) < priorLogical.getHeaderConfidence(context.getStreamName()))
+									continue;
+								// Skip if the scores are the same but the Order is higher
+								if (logical.getPluginDefinition().getOrder() > priorLogical.getPluginDefinition().getOrder())
+									continue;
+							}
+
+						logical.setMatchEntry(entry);
+						facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
+						facts.matchCount = newMatchCount;
+						facts.cardinality = newCardinality;
+						facts.invalid = newInvalids;
+						facts.outliers.clear();
+						ctxdebug("Type determination", "updated to Regular Expression Semantic type {}", facts.getMatchTypeInfo());
+						facts.confidence = bestScore = newScore;
+						priorLogical = logical;
+						updated = true;
 					}
 				}
 			}
 		}
 
-		return false;
+		return updated;
 	}
 
 	/*
@@ -3993,13 +4018,13 @@ public class TextAnalyzer {
 			}
 		}
 
-		if (cardinalityBlown)
-			ret.checkRegExpTypes();
+		if (cardinalityBlown && ret.facts.getMatchTypeInfo() != null)
+			ret.checkRegExpTypes(ret.facts.getMatchTypeInfo().getBaseType());
 
 		// Do some basic sanity checks
 		if (first.facts.getMatchTypeInfo() != null || second.facts.getMatchTypeInfo() != null) {
 			if (ret.facts.getMatchTypeInfo() == null)
-				ret.ctxdebug("Type determination", "WARNING - had a type pre merge but no longer do?");
+				ret.ctxdebug("Type determination", "WARNING - had a type pre merge but no longer does?");
 			else
 				if (!ret.facts.getMatchTypeInfo().isSemanticType() &&
 						((first.facts.getMatchTypeInfo() != null && first.facts.getMatchTypeInfo().isSemanticType()) ||

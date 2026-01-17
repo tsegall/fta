@@ -36,6 +36,7 @@ public class DriverOptions {
 	protected int col = -1;
 	protected int debug = -1;
 	protected String semanticTypes;
+	protected boolean semanticTypesPre;
 	// Used to pass in a list of known Semantic Types - e.g. User-stated, or previously identified in some manner
 	protected String knownTypes;
 	protected boolean noAnalysis;
@@ -110,6 +111,7 @@ public class DriverOptions {
 		this.pluginMode = other.pluginMode;
 		this.resolutionMode = other.resolutionMode;
 		this.samples = other.samples;
+		this.semanticTypesPre = other.semanticTypesPre;
 		this.signature = other.signature;
 		this.skip = other.skip;
 		this.threshold = other.threshold;
@@ -164,14 +166,14 @@ public class DriverOptions {
 				// If the argument starts with a '[' assume it is an inline definition, if not assume it is a file
 				if (this.semanticTypes.charAt(0) == '[')
 					analyzer.getPlugins().registerPlugins(new StringReader(this.semanticTypes),
-							analyzer.getStreamName(), analyzer.getConfig());
+							analyzer.getStreamName(), analyzer.getConfig(), semanticTypesPre);
 				else {
 					if(!Files.isRegularFile(Paths.get(this.semanticTypes))) {
 						System.err.println("ERROR: Failed to read Semantic Types file: " + this.semanticTypes);
 						System.exit(1);
 					}
 					try (FileReader logicalTypes = new FileReader(this.semanticTypes, StandardCharsets.UTF_8)) {
-						analyzer.getPlugins().registerPlugins(logicalTypes, analyzer.getStreamName(), analyzer.getConfig());
+						analyzer.getPlugins().registerPlugins(logicalTypes, analyzer.getStreamName(), analyzer.getConfig(), semanticTypesPre);
 					}
 				}
 			} catch (SecurityException | FTAPluginException e) {
@@ -314,6 +316,8 @@ public class DriverOptions {
 				samples = true;
 			else if ("--semanticType".equals(args[idx]))
 				semanticTypes = nextStringArg(args, idx++);
+			else if ("--semanticTypesPre".equals(args[idx]))
+				semanticTypesPre = true;
 			else if ("--signature".equals(args[idx]))
 				signature = true;
 			else if ("--skip".equals(args[idx]))
