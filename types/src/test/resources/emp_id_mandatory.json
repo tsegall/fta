@@ -1,0 +1,18 @@
+[
+{
+	"semanticType": "CUSTOM.EMP_ID_DIGITS",
+	"description": "Employee ID utilizing LUHN Checkdigit",
+	"pluginType": "java",
+	"clazz": "com.cobber.fta.plugins.CheckDigitLuhn",
+	"validLocales" : [ {
+	    "localeTag" : "en-US",
+	    "headerRegExps" : [ {
+	      "regExp" : ".*(?i)(EmpID|EmployeeID)",
+	      "confidence" : 90,
+	      "mandatory" : true
+	    } ]
+	    } ],
+	"threshold": 95,
+	"baseType": "LONG"
+}
+]

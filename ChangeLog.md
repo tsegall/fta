@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 17.3.0
+ - ENH: Change approach to registering plugins - no longer require dataStream name.  Some methods added and some deprecated.
+
 ### 17.2.0
  - INT: Bump logback-classic to 1.5.24, gradle to 9.3.0, phonenumber to 9.0.21
  - CLI: Add --semanticTypesPre to control whether user-defined types (--semanticType) are registered before built-ins

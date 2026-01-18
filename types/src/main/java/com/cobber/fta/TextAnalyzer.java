@@ -317,7 +317,7 @@ public class TextAnalyzer {
 
 		ret.setExternalFacts(getFacts().external);
 		ret.setConfig(new AnalysisConfig(getConfig()));
-		ret.getPlugins().registerPluginListWithPrecedence(getPlugins().getUserDefinedPlugins(), getStreamName(), getConfig());
+		ret.getPlugins().registerPluginListWithPrecedence(getPlugins().getUserDefinedPlugins(), getConfig());
 
 		return ret;
 	}
@@ -1323,6 +1323,10 @@ public class TextAnalyzer {
 
 			if ((logical instanceof LogicalTypeFinite) && ((LogicalTypeFinite)logical).getSize() + 10 > getMaxCardinality())
 				throw new FTAPluginException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getSemanticType());
+
+			// Check to see if this plugin requires a mandatory hotword (and it is present)
+			if (logical.getPluginDefinition().isMandatoryHeaderUnsatisfied(analysisConfig.getLocale(), getStreamName()))
+				continue;
 
 			if (logical instanceof LogicalTypeInfinite)
 				infiniteTypes.add((LogicalTypeInfinite)logical);

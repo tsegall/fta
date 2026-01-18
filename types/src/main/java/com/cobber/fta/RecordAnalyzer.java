@@ -43,7 +43,7 @@ public class RecordAnalyzer {
 			analyzers[i] = new TextAnalyzer(templateContext);
 			analyzers[i].setConfig(new AnalysisConfig(template.getConfig()));
 			try {
-				analyzers[i].getPlugins().registerPluginListWithPrecedence(template.getPlugins().getUserDefinedPlugins(), getFieldName(templateContext, i), template.getConfig());
+				analyzers[i].getPlugins().registerPluginListWithPrecedence(template.getPlugins().getUserDefinedPlugins(), template.getConfig());
 			} catch (Exception e) {
 				// As we previously successfully registered the plugin on the template, there is no reason to ever get here
 				throw new InternalErrorException("Issue registering templated plugin", e);

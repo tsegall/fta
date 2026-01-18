@@ -165,15 +165,14 @@ public class DriverOptions {
 			try {
 				// If the argument starts with a '[' assume it is an inline definition, if not assume it is a file
 				if (this.semanticTypes.charAt(0) == '[')
-					analyzer.getPlugins().registerPlugins(new StringReader(this.semanticTypes),
-							analyzer.getStreamName(), analyzer.getConfig(), semanticTypesPre);
+					analyzer.getPlugins().registerPlugins(new StringReader(this.semanticTypes), analyzer.getConfig(), semanticTypesPre);
 				else {
 					if(!Files.isRegularFile(Paths.get(this.semanticTypes))) {
 						System.err.println("ERROR: Failed to read Semantic Types file: " + this.semanticTypes);
 						System.exit(1);
 					}
 					try (FileReader logicalTypes = new FileReader(this.semanticTypes, StandardCharsets.UTF_8)) {
-						analyzer.getPlugins().registerPlugins(logicalTypes, analyzer.getStreamName(), analyzer.getConfig(), semanticTypesPre);
+						analyzer.getPlugins().registerPlugins(logicalTypes, analyzer.getConfig(), semanticTypesPre);
 					}
 				}
 			} catch (SecurityException | FTAPluginException e) {

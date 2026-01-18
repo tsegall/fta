@@ -826,7 +826,7 @@ public class TestPlugins {
 		plugins.add(plugin);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "C U S I P", analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -897,7 +897,7 @@ public class TestPlugins {
 		plugins.add(plugin);
 
 		try {
-			template.getPlugins().registerPluginList(plugins, "C U S I P", template.getConfig(), false);
+			template.getPlugins().registerPluginList(plugins, template.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -933,7 +933,7 @@ public class TestPlugins {
 		plugins.add(pluginDefinition);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "Ignore", analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -1762,7 +1762,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
 		final Locale locale = Locale.forLanguageTag("en-US");
 		analysis.setLocale(locale);
-		addEmpPlugin(analysis, dataStreamName, true);
+		addEmpPlugin(analysis, "/emp_id.json", true);
 
 		for (final String input : employeeIDs)
 			analysis.train(input);
@@ -1787,7 +1787,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
 		final Locale locale = Locale.forLanguageTag("en-US");
 		analysis.setLocale(locale);
-		addEmpPlugin(analysis, dataStreamName, false);
+		addEmpPlugin(analysis, "/emp_id.json", false);
 
 		for (final String input : employeeIDs)
 			analysis.train(input);
@@ -1808,9 +1808,9 @@ public class TestPlugins {
 		assertEquals(result.getSemanticType(), "CUSTOM.EMP_ID");
 	}
 
-	static void addEmpPlugin(final TextAnalyzer analysis, final String dataStreamName, final boolean preBuiltins) {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/emp_id.json"), StandardCharsets.UTF_8))) {
-			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig(), preBuiltins);
+	static void addEmpPlugin(final TextAnalyzer analysis, final String pluginPath, final boolean preBuiltins) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream(pluginPath), StandardCharsets.UTF_8))) {
+			analysis.getPlugins().registerPlugins(reader, analysis.getConfig(), preBuiltins);
 		} catch (FTAPluginException e) {
 			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
 		} catch (IOException e) {
@@ -1887,7 +1887,7 @@ public class TestPlugins {
 		final Locale locale = Locale.forLanguageTag("en-US");
 		analysis.setLocale(locale);
 		analysis.setDebug(2);
-		addEmpPlugin(analysis, dataStreamName, true);
+		addEmpPlugin(analysis, "/emp_id.json", true);
 
 		for (final String input : employeeIDsLUHN)
 			analysis.train(input);
@@ -1914,7 +1914,37 @@ public class TestPlugins {
 		final TextAnalyzer template = new TextAnalyzer(context);
 		template.setLocale(locale);
 		template.setDebug(2);
-		addEmpPlugin(template, dataStreamName, true);
+		addEmpPlugin(template, "/emp_id.json", true);
+
+		final RecordAnalyzer analysis = new RecordAnalyzer(template);
+
+		for (final String sample : employeeIDsLUHN)
+			analysis.train(new String[] { sample });
+
+		final RecordAnalysisResult recordResult = analysis.getResult();
+
+		final TextAnalysisResult result = recordResult.getStreamResults()[0];
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getTypeModifier());
+		assertEquals(result.getSampleCount(), employeeIDsLUHN.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), employeeIDsLUHN.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), "\\d{11}");
+		assertEquals(result.getConfidence(), 1.0);
+		assertEquals(result.getSemanticType(), "CUSTOM.EMP_ID_DIGITS");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	private void empID_LUHN_record_pre_mandatory() throws FTAException {
+		final String dataStreamName = "EmployeeID";
+		final Locale locale = Locale.forLanguageTag("en-US");
+		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "employee_info", new String[] { dataStreamName } );
+		final TextAnalyzer template = new TextAnalyzer(context);
+		template.setLocale(locale);
+		template.setDebug(2);
+		addEmpPlugin(template, "/emp_id_mandatory.json", true);
 
 		final RecordAnalyzer analysis = new RecordAnalyzer(template);
 
@@ -1955,7 +1985,7 @@ public class TestPlugins {
 		};
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
-			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig(), preBuiltins);
+			analysis.getPlugins().registerPlugins(reader, analysis.getConfig(), preBuiltins);
 		} catch (FTAPluginException e) {
 			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
 		} catch (IOException e) {
@@ -3503,7 +3533,7 @@ public class TestPlugins {
 				true, 98, FTAType.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, analysis.getStreamName(), analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -3544,7 +3574,7 @@ public class TestPlugins {
 		plugins.add(pluginDefinition);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "Planets", analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -3586,7 +3616,7 @@ public class TestPlugins {
 		plugins.add(pluginDefinition);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "Planets", analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -3621,7 +3651,7 @@ public class TestPlugins {
 
 		boolean pluginExceptionThrown = false;
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "Ignore", analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (FTAPluginException e) {
 			pluginExceptionThrown = true;
 		}
@@ -3641,7 +3671,7 @@ public class TestPlugins {
 		plugins.add(plugin);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "Percentages", analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -3679,7 +3709,7 @@ public class TestPlugins {
 		plugins.add(plugin);
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "BirthDate", analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -4157,7 +4187,7 @@ public class TestPlugins {
 				false, 98, FTAType.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "CUSIP", analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -4199,7 +4229,7 @@ public class TestPlugins {
 				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*CUSIP.*", 100, "[\\p{IsAlphabetic}\\d]{9}") }, false, 98, FTAType.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "CUSIP", analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -4276,7 +4306,7 @@ public class TestPlugins {
 				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*(?i)(cusip).*", 100, "[\\p{IsAlphabetic}\\d]{9}") }, false, 98, FTAType.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "CUSIP", analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -4329,7 +4359,7 @@ public class TestPlugins {
 				new PluginLocaleEntry[] { new PluginLocaleEntry("*", ".*(?i)(cusip).*", 90, FUND_REGEXP) }, false, 98, FTAType.STRING));
 
 		try {
-			analysis.getPlugins().registerPluginList(plugins, "FUND_ID", analysis.getConfig(), false);
+			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -4374,8 +4404,7 @@ public class TestPlugins {
 
 
 		try {
-			analysis.getPlugins().registerPlugins(new StringReader(pluginDefinitions),
-					analysis.getStreamName(), analysis.getConfig(), false);
+			analysis.getPlugins().registerPlugins(new StringReader(pluginDefinitions), analysis.getConfig(), false);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			fail();
