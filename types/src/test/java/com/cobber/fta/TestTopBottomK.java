@@ -71,10 +71,10 @@ public class TestTopBottomK {
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8));
 
-		boolean[] used;
+
+		final boolean[] used = new boolean[SIZE];
 		int usedCount = 0;
 
-		used = new boolean[SIZE];
 		while (usedCount < SIZE) {
 			final int r = random.nextInt(SIZE);
 			if (!used[r]) {
@@ -95,10 +95,9 @@ public class TestTopBottomK {
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-		boolean[] used;
+		final boolean[] used = new boolean[SIZE];
 		int usedCount = 0;
 
-		used = new boolean[SIZE];
 		while (usedCount < SIZE) {
 			final int r = random.nextInt(SIZE);
 			if (!used[r]) {
@@ -119,10 +118,9 @@ public class TestTopBottomK {
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-		boolean[] used;
+		final boolean[] used = new boolean[SIZE];
 		int usedCount = 0;
 
-		used = new boolean[SIZE];
 		while (usedCount < SIZE) {
 			final int r = random.nextInt(SIZE);
 			if (!used[r]) {
@@ -143,10 +141,9 @@ public class TestTopBottomK {
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(9, 10, 11, 12, 13, 14, 15, 16, 17, 18));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-		boolean[] used;
+		final boolean[] used = new boolean[SIZE];
 		int usedCount = 0;
 
-		used = new boolean[SIZE];
 		while (usedCount < SIZE) {
 			final int r = random.nextInt(SIZE);
 			if (!used[r]) {
@@ -167,10 +164,9 @@ public class TestTopBottomK {
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(10, 11, 12, 13, 14, 15, 16, 17, 18, 19));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-		boolean[] used;
+		final boolean[] used = new boolean[SIZE];
 		int usedCount = 0;
 
-		used = new boolean[SIZE];
 		while (usedCount < SIZE) {
 			final int r = random.nextInt(SIZE);
 			if (!used[r]) {
@@ -236,10 +232,9 @@ public class TestTopBottomK {
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(11, 12, 13, 14, 15, 16, 17, 18, 19, 20));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-		boolean[] used;
+		final boolean[] used = new boolean[SIZE];
 		int usedCount = 0;
 
-		used = new boolean[SIZE];
 		while (usedCount < SIZE) {
 			final int r = random.nextInt(SIZE);
 			if (!used[r]) {
@@ -260,10 +255,9 @@ public class TestTopBottomK {
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(99, 98, 97, 96, 95, 94, 93, 92, 91, 90));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-		boolean[] used;
+		final boolean[] used = new boolean[SIZE];
 		int usedCount = 0;
 
-		used = new boolean[SIZE];
 		while (usedCount < SIZE) {
 			final int r = random.nextInt(SIZE);
 			if (!used[r]) {
@@ -284,10 +278,9 @@ public class TestTopBottomK {
 		final Set<Integer> topK = new HashSet<>(Arrays.asList(6, 7, 8, 9, 10));
 		final Set<Integer> bottomK = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4));
 
-		boolean[] used;
+		final boolean[] used = new boolean[SIZE];
 		int usedCount = 0;
 
-		used = new boolean[SIZE];
 		while (usedCount < SIZE) {
 			final int r = random.nextInt(SIZE);
 			if (!used[r]) {
@@ -307,10 +300,9 @@ public class TestTopBottomK {
 		final Set<Long> topK = new HashSet<>(Arrays.asList(99L, 98L, 97L, 96L, 95L, 94L, 93L, 92L, 91L, 90L));
 		final Set<Long> bottomK = new HashSet<>(Arrays.asList(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L));
 
-		boolean[] used;
-		int usedCount = 0;
 
-		used = new boolean[100];
+		final boolean[] used = new boolean[100];
+		int usedCount = 0;
 		while (usedCount < 100) {
 			final int r = random.nextInt(100);
 			if (!used[r]) {
@@ -330,10 +322,9 @@ public class TestTopBottomK {
 		final Set<Double> topK = new HashSet<>(Arrays.asList(99.0, 98.0, 97.0, 96.0, 95.0, 94.0, 93.0, 92.0, 91.0, 90.0));
 		final Set<Double> bottomK = new HashSet<>(Arrays.asList(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0));
 
-		boolean[] used;
+		final boolean[] used = new boolean[100];
 		int usedCount = 0;
 
-		used = new boolean[100];
 		while (usedCount < 100) {
 			final int r = random.nextInt(100);
 			if (!used[r]) {

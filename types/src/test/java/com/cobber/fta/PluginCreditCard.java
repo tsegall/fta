@@ -22,7 +22,7 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
 
 public class PluginCreditCard extends LogicalTypeInfinite {
-	public final static String REGEXP = "(?:\\d[ -]*?){13,16}";
+	public static final String REGEXP = "(?:\\d[ -]*?){13,16}";
 	private static CreditCardValidator validator;
 
 	static {

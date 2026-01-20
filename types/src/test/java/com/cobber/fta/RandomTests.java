@@ -2301,7 +2301,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void adjustMaxShapesTooLate() throws IOException, FTAException {
-		TextAnalyzer analysis = new TextAnalyzer("setMaxShapes");
+		final TextAnalyzer analysis = new TextAnalyzer("setMaxShapes");
 		analysis.train("Hello, World");
 
 		try {
@@ -2316,12 +2316,12 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void defaultTopBottomK() throws IOException, FTAException {
-		TextAnalyzer analysis = new TextAnalyzer("TopBottomK");
+		final TextAnalyzer analysis = new TextAnalyzer("TopBottomK");
 
 		for (int i = 0; i < 100; i++)
 			analysis.train(String.valueOf(i));
 
-		TextAnalysisResult result = analysis.getResult();
+		final TextAnalysisResult result = analysis.getResult();
 
 		assertEquals(result.getType(), FTAType.LONG);
 		assertEquals(result.getTopK().size(), AnalysisConfig.TOP_BOTTOM_K);
@@ -2361,7 +2361,7 @@ public class RandomTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void adjustTopBottomKTooLate() throws IOException, FTAException {
-		TextAnalyzer analysis = new TextAnalyzer("setTopBottomK");
+		final TextAnalyzer analysis = new TextAnalyzer("setTopBottomK");
 		analysis.train("Hello, World");
 
 		try {
@@ -3202,7 +3202,7 @@ public class RandomTests {
 		assertEquals(result.getInvalidDetails().size(), 1);
 		assertTrue(result.getInvalidDetails().containsKey("ABCD"));
 
-		long[] lengths = result.getLengthFrequencies();
+		final long[] lengths = result.getLengthFrequencies();
 		assertEquals(lengths[4], 92L);
 		assertEquals(Arrays.stream(result.getLengthFrequencies()).sum(), result.getSampleCount());
 	}
@@ -3268,7 +3268,7 @@ public class RandomTests {
 		assertEquals(result.getRegExp(), "(?i)(CITY|TOWN)");
 		assertEquals(result.getOutlierCount(), 0L);
 
-		long[] lengths = result.getLengthFrequencies();
+		final long[] lengths = result.getLengthFrequencies();
 		assertEquals(lengths[4], 200L);
 		assertEquals(Arrays.stream(result.getLengthFrequencies()).sum(), result.getSampleCount() - result.getNullCount());
 	}
@@ -3303,7 +3303,7 @@ public class RandomTests {
 		RHS.setTrace("enabled=true,directory=/tmp");
 		for (final String input : inputs)
 			RHS.train(input);
-		String jsonRHS = RHS.serialize();
+		final String jsonRHS = RHS.serialize();
 		final TextAnalyzer hydratedRHS = TextAnalyzer.deserialize(jsonRHS);
 		final TextAnalysisResult resultRHS_WHY = hydratedRHS.getResult();
 		final TextAnalysisResult resultRHS_WHY_WHY = hydratedRHS.getResult();

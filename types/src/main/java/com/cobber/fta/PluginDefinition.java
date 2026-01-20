@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class PluginDefinition {
 	/** Priority of plugins must be between 0 and PRIORITY_MAX. */
-	public final static int PRIORITY_MAX = 10000;
+	public static final int PRIORITY_MAX = 10000;
 
 	private static List<PluginDefinition> builtinPlugins;
 
@@ -114,11 +114,11 @@ public class PluginDefinition {
 	public int getOrder() {
 		switch (precedence) {
 			case BUILTIN:
-				return priority + PluginDefinition.PRIORITY_MAX;
+				return priority + PRIORITY_MAX;
 			case PRE_BUILTIN:
 				return priority;
 			case POST_BUILTIN:
-				return priority + 2 * PluginDefinition.PRIORITY_MAX;
+				return priority + 2 * PRIORITY_MAX;
 			default:
 				return -1;
 		}
@@ -219,7 +219,7 @@ public class PluginDefinition {
 	}
 
 	public boolean isMandatoryHeaderUnsatisfied(final Locale locale, final String streamName) {
-		PluginLocaleEntry localeEntry;
+		final PluginLocaleEntry localeEntry;
 		try {
 			localeEntry = getLocaleEntry(locale);
 		} catch (FTAPluginException e) {

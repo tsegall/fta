@@ -191,7 +191,7 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 
 		structureSignature += getSemanticType();
 
-		MessageDigest md;
+		final MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-1");
 		} catch (NoSuchAlgorithmException e) {

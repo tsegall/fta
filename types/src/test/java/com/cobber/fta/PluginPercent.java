@@ -20,7 +20,7 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.token.TokenStreams;
 
 public class PluginPercent extends LogicalTypeInfinite {
-	public final static String REGEXP = "\\d*\\.?\\d+";
+	public static final String REGEXP = "\\d*\\.?\\d+";
 
 	public PluginPercent(final PluginDefinition plugin) {
 		super(plugin);

@@ -189,9 +189,9 @@ public class Trace {
 		}
 	}
 
-	public void tag(final String tag, long sampleCount) {
+	public void tag(final String tag, final long sampleCount) {
 		try {
-			String output = String.format("{\"tag\": { \"name\": \"%s\", \"sampleCount\": %d, \"time\": %d } }%n", tag, sampleCount, System.currentTimeMillis());
+			final String output = String.format("{\"tag\": { \"name\": \"%s\", \"sampleCount\": %d, \"time\": %d } }%n", tag, sampleCount, System.currentTimeMillis());
 			traceWriter.write(output);
 			traceWriter.flush();
 		} catch (IOException e) {

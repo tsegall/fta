@@ -3,6 +3,9 @@ plugins {
 	id "com.github.spotbugs" version "6.4.8" apply false
 }
 
+import com.github.spotbugs.snom.Confidence
+import com.github.spotbugs.snom.Effort
+
 wrapper {
 	gradleVersion = '9.3.0'
 }
@@ -59,8 +62,9 @@ subprojects {
 		}
 	}
 
-	artifacts {
-		archives javadocJar, sourcesJar
+	tasks.named("assemble") {
+		dependsOn javadocJar
+		dependsOn sourcesJar
 	}
 
 	jar {
@@ -157,7 +161,7 @@ subprojects {
 
 	spotbugs {
 		toolVersion = "4.9.8"
-		effort = "max"
+		effort = Effort.MAX
 		reportLevel = "low"
 		ignoreFailures = true
 	}

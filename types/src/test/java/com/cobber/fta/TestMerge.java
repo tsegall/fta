@@ -17,6 +17,7 @@ package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -64,7 +65,7 @@ public class TestMerge {
 	private final List<String> samplesBLANKORNULL = new ArrayList<>();
 	private final List<String> samplesAlphaData = new ArrayList<>();
 
-	private final static String[] shortStrings = {
+	private static final String[] shortStrings = {
 			"baby", "back", "bad", "bag", "ball", "bank", "base", "bath", "be", "bean",
 			"bear", "bed", "beer", "bell", "best", "big", "bird", "bit", "bite", "black",
 			"bleed", "block", "blood", "blow", "blue", "board", "boat", "body", "boil",
@@ -76,7 +77,7 @@ public class TestMerge {
 			"come", "cook", "cool", "corn", "cost", "count", "cover", "crash", "cross", "cry", "cup", "cut"
 	};
 
-	private final static String[] longStrings = {
+	private static final String[] longStrings = {
 			"across", "active", "activity", "afraid", "already", "always", "amount", "another", "answer", "anyone",
 			"anything", "anytime", "appear", "around", "arrive", "attack", "autumn", "basket", "beautiful", "bedroom",
 			"behave", "before", "behind", "besides", "better", "between", "birthday", "border", "borrow", "bottle",
@@ -654,7 +655,7 @@ public class TestMerge {
 		shardOne.train("100");
 		shardTwo.train("0100");
 
-		assertFalse(shardOne.equals(shardTwo));
+		assertNotEquals(shardOne, shardTwo);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -1637,8 +1638,8 @@ public class TestMerge {
 		merged.setTotalCount(0);
 
 		for (int iterations = 0; iterations < ITERATIONS; iterations++) {
-			TextAnalyzer shardOne = new TextAnalyzer("shardOne");
-			TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+			final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+			final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
 			for (int j = 0; j < SAMPLES; j++) {
 				shardOne.train(String.valueOf(j));
 				shardTwo.train(String.valueOf(-j));
@@ -1674,7 +1675,7 @@ public class TestMerge {
 
 		@Override
 		public RecordAnalyzer call() {
-			long start = System.currentTimeMillis();
+			final long start = System.currentTimeMillis();
 			try {
 				for (int i = 0; i < records; i++)
 					analysis.train(TestUtils.generateTestRecord(structure));
@@ -1772,13 +1773,13 @@ public class TestMerge {
 		final int COLS = 1;
 		final int RECORDS = 10;
 
-		ExecutorService executor = Executors.newFixedThreadPool(THREADS);
-		List<Future<RecordAnalyzer>> list = new ArrayList<Future<RecordAnalyzer>>();
+		final ExecutorService executor = Executors.newFixedThreadPool(THREADS);
+		final List<Future<RecordAnalyzer>> list = new ArrayList<Future<RecordAnalyzer>>();
 
 		final String[] header = new String[COLS];
 		final int[] structure = new int[COLS];
 		for (int c = 0; c < COLS; c++) {
-			int i = c == 0 ? 3 : random.nextInt(TestUtils.testCaseOptions.length);
+			final int i = c == 0 ? 3 : random.nextInt(TestUtils.testCaseOptions.length);
 			header[c] = String.valueOf(i) + "__" + TestUtils.testCaseOptions[i];
 			structure[c] = i;
 		}
@@ -1789,10 +1790,10 @@ public class TestMerge {
 		template.setLocale(locale);
 		template.setTrace("enabled=true,directory=/tmp");
 
-		long totalStart = System.currentTimeMillis();
+		final long totalStart = System.currentTimeMillis();
 		int partition = 0;
 		while (partition < 2 * THREADS) {
-			Future<RecordAnalyzer> future = executor.submit(new AnalysisThread(String.valueOf(partition), template, structure, RECORDS));
+			final Future<RecordAnalyzer> future = executor.submit(new AnalysisThread(String.valueOf(partition), template, structure, RECORDS));
             list.add(future);
             partition++;
 		}
@@ -1802,11 +1803,11 @@ public class TestMerge {
 		int mergeCount = 0;
 		int completed = 0;
 		while (completed < PARTITIONS) {
-			ListIterator<Future<RecordAnalyzer>> iter = list.listIterator();
+			final ListIterator<Future<RecordAnalyzer>> iter = list.listIterator();
 			while (iter.hasNext()) {
-				Future<RecordAnalyzer> future = iter.next();
+				final Future<RecordAnalyzer> future = iter.next();
 				if (future.isDone()) {
-					long mergeStart = System.currentTimeMillis();
+					final long mergeStart = System.currentTimeMillis();
 					final RecordAnalyzer processed = future.get();
 					System.err.printf("Processed: %d, aggregator: %d%n",
 							processed.getAnalyzer(0).getFacts().getSampleCount(),
@@ -1816,7 +1817,7 @@ public class TestMerge {
 					mergeCount++;
 					iter.remove();
 					if (partition < PARTITIONS) {
-						Future<RecordAnalyzer> newOne = executor.submit(new AnalysisThread(String.valueOf(partition), template, structure, RECORDS));
+						final Future<RecordAnalyzer> newOne = executor.submit(new AnalysisThread(String.valueOf(partition), template, structure, RECORDS));
 						iter.add(newOne);
 						partition++;
 					}
@@ -1831,7 +1832,7 @@ public class TestMerge {
 
 		final TextAnalyzer[] analyzers = aggregator.getAnalyzers();
 		for (int i = 0; i < analyzers.length; i++) {
-			TextAnalysisResult result = analyzers[i].getResult();
+			final TextAnalysisResult result = analyzers[i].getResult();
 			System.err.printf("result = %s%n", result.asJSON(true, 0));
 		}
 
@@ -1849,8 +1850,8 @@ public class TestMerge {
 		merged.setTotalCount(0);
 
 		for (int iterations = 0; iterations < ITERATIONS; iterations++) {
-			TextAnalyzer shardOne = new TextAnalyzer("shardOne");
-			TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
+			final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
+			final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
 			for (int j = 0; j < SAMPLES; j++) {
 				shardOne.train(String.valueOf(j));
 				shardTwo.train(String.valueOf(-j));
@@ -1858,7 +1859,7 @@ public class TestMerge {
 			shardOne.setTotalCount(SAMPLES);
 			shardTwo.setTotalCount(SAMPLES);
 
-			TextAnalyzer blend = TextAnalyzer.merge(shardOne, shardTwo);
+			final TextAnalyzer blend = TextAnalyzer.merge(shardOne, shardTwo);
 			merged = TextAnalyzer.merge(merged, blend);
 		}
 
@@ -1874,7 +1875,6 @@ public class TestMerge {
 	public void testHistogramMerge(final long sizeOne, final long sizeTwo) throws IOException, FTAException {
 		final TextAnalyzer shardOne = new TextAnalyzer("shardOne");
 		final TextAnalyzer shardTwo = new TextAnalyzer("shardTwo");
-		final SecureRandom random = new SecureRandom();
 
 		for (int i = 0; i < sizeOne; i++)
 //			shardOne.train(String.valueOf(random.nextGaussian()*5 + 20));

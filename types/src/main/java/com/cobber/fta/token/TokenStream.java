@@ -67,10 +67,10 @@ public class TokenStream {
 	/* The number of occurrences of this 'Pattern'. */
 	private long occurrences;
 
-	private final static CacheLRU<String, Automaton> cache = new CacheLRU<>(10);
+	private static final CacheLRU<String, Automaton> cache = new CacheLRU<>(10);
 
 	/** The TokenStream that represents any input that is too long. */
-	public final static TokenStream ANYSHAPE = new TokenStream(Utils.repeat('x', Token.MAX_LENGTH + 1), 1);
+	public static final TokenStream ANYSHAPE = new TokenStream(Utils.repeat('x', Token.MAX_LENGTH + 1), 1);
 
 	/**
 	 * Construct a new TokenStream based on the input.

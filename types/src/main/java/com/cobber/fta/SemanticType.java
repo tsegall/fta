@@ -132,10 +132,10 @@ public class SemanticType {
 	}
 
 	public String toJSONString() {
-		final StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder(128);
 		b.append("Id: ").append(id).append(", Description: ").append(description).append(", Languages: ");
 		for (final String language : languages)
-			b.append(language).append(" ");
+			b.append(language).append(' ');
 
 		return b.toString();
 	}

@@ -27,7 +27,7 @@ public class CheckDigitABA extends CheckDigitLT {
 	/** The Regular Expression for this Semantic type. */
 	private static final String REGEXP = "\\d{9}";
 
-	private final static String[] SAMPLES = {
+	private static final String[] SAMPLES = {
 			"981140283", "989853459", "892328657", "781258896", "112551654",
 			"438364101", "806651255", "095050162", "505993780", "827776957",
 			"086820709", "609581894", "463724075", "167622596", "355856417",

@@ -2,6 +2,11 @@
 ## Changes ##
 
 ### 17.3.0
+ - INT: Bump logback-classic to 1.5.25, Jackson to 2.21.0
+ - INT: Cleaning.
+ - INT: More gradle 10.0 changes
+
+### 17.3.0
  - ENH: Change approach to registering plugins - no longer require dataStream name.  Some methods added and some deprecated.
 
 ### 17.2.0

@@ -23,6 +23,7 @@ import static org.testng.Assert.assertTrue;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.DecimalFormatSymbols;
@@ -1976,7 +1977,7 @@ public class TestLongs {
 		final String[] samples = new String[10000];
 
 		if (saveOutput)
-			bw = new BufferedWriter(new FileWriter("/tmp/longPerf.csv"));
+			bw = new BufferedWriter(new FileWriter("/tmp/longPerf.csv", StandardCharsets.UTF_8));
 
 		for (int i = 0; i < samples.length; i++)
 			samples[i] = String.valueOf(random.nextInt(100000000));

@@ -20,10 +20,10 @@ public class PluginAnalysis {
 	private String newPattern;
 
 	/** Analysis was successful. */
-	public final static PluginAnalysis OK = new PluginAnalysis();
+	public static final PluginAnalysis OK = new PluginAnalysis();
 
 	/** Analysis was unsuccessful - and we want to back out to a wildcard match. */
-	public final static PluginAnalysis SIMPLE_NOT_OK = new PluginAnalysis(KnownTypes.PATTERN_ANY_VARIABLE);
+	public static final PluginAnalysis SIMPLE_NOT_OK = new PluginAnalysis(KnownTypes.PATTERN_ANY_VARIABLE);
 
 	/**
 	 * Construct a 'happy' analysis.

@@ -423,7 +423,7 @@ public class TestDates {
 				TestUtils.checkSerialization(analysis);
 
 				assertEquals(result.getType(), FTAType.LOCALDATE);
-				String expected;
+				final String expected;
 				if (resolutionMode == DateResolutionMode.DayFirst)
 					expected = "d/M/yy";
 				else if (resolutionMode == DateResolutionMode.MonthFirst)

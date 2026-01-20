@@ -52,7 +52,7 @@ public class TextAnalysisResult {
 		CONSUMER
 	}
 
-	private final static ObjectMapper MAPPER = new ObjectMapper();
+	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	private static final String DISTRIBUTIONS_NOT_ENABLED = "Distributions not enabled.";
 	private static final String STATISTICS_NOT_ENABLED = "Statistics not enabled.";
@@ -683,7 +683,7 @@ public class TextAnalysisResult {
 		else if (!shape.getShapes().isEmpty())
 			structureSignature += getRegExp() + shape.getShapes().keySet().toString();
 
-		MessageDigest md;
+		final MessageDigest md;
 		try {
 
 			md = MessageDigest.getInstance("SHA-1");
@@ -712,7 +712,7 @@ public class TextAnalysisResult {
 	 * @return A String SHA-1 hash that reflects the data stream contents.
 	 */
 	public String getDataSignature() {
-		MessageDigest md;
+		final MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-1");
 		} catch (NoSuchAlgorithmException e) {
@@ -930,7 +930,7 @@ public class TextAnalysisResult {
 			outputDetails(MAPPER, detail, facts.invalid, verbose);
 		}
 
-		analysis.put("shapesCardinality", (shape.getShapes().size() > 0 && shape.getShapes().size() < analysisConfig.getMaxShapes()) ? shape.getShapes().size() : -1);
+		analysis.put("shapesCardinality", (!shape.getShapes().isEmpty() && shape.getShapes().size() < analysisConfig.getMaxShapes()) ? shape.getShapes().size() : -1);
 		if (!shape.getShapes().isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("shapesDetail");
 			outputDetails(MAPPER, detail, shape.getShapes(), verbose);

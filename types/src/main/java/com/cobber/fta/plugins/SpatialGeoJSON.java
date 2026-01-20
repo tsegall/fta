@@ -61,7 +61,7 @@ public class SpatialGeoJSON extends LogicalTypeInfinite {
 	public SpatialGeoJSON(final PluginDefinition plugin) {
 		super(plugin);
 
-		for (String keyword : keywords) {
+		for (final String keyword : keywords) {
 			final int len = keyword.length();
 			if (len < minKeywordLength)
 				minKeywordLength = len;
@@ -74,7 +74,7 @@ public class SpatialGeoJSON extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		StringBuilder s = new StringBuilder();
+		final StringBuilder s = new StringBuilder();
 		s.append("{ \"coordinates\": [");
 		final int points = getRandom().nextInt(8) + 2;
 		for (int i = 0; i < points; i++) {
@@ -121,13 +121,13 @@ public class SpatialGeoJSON extends LogicalTypeInfinite {
 		// Quick test to see if it might be a JSON structure (note: must see entire JSON field, i.e. not truncated)
 		if (first == '{' && last == '}') {
 			try {
-				JsonNode root = mapper.readTree(input);
-				JsonNode typeNode = root.path("type");
+				final JsonNode root = mapper.readTree(input);
+				final JsonNode typeNode = root.path("type");
 				if (!typeNode.isMissingNode()) {
-					JsonNode coordinatesNode = root.path("coordinates");
+					final JsonNode coordinatesNode = root.path("coordinates");
 					if (coordinatesNode.isMissingNode())
 						return false;
-					String shapeType = root.path("type").asText();
+					final String shapeType = root.path("type").asText();
 					return keywordSet.contains(shapeType.toUpperCase(Locale.ROOT));
 				}
 			} catch (IOException e) {

@@ -36,7 +36,7 @@ import com.cobber.fta.token.TokenStreams;
  */
 public class LastName extends PersonName {
 	// This set covers the first two letters of ~95% of our last name list - assume this is a reasonable proxy for last names more generally
-	private final static String plausibleStarters[] = {
+	private static final String plausibleStarters[] = {
 		"AB", "AC", "AD", "AG", "AL", "AM", "AN", "AP", "AR", "AS", "AT", "AU", "AV", "AY",
 		"BA", "BE", "BI", "BL", "BO", "BR", "BU", "BY",
 		"CA", "CE", "CH", "CL", "CO", "CR", "CU",
@@ -63,10 +63,10 @@ public class LastName extends PersonName {
 		"YA", "YO", "ZA",
 		"ZE",
 	};
-	private final static String badFirstWords[] = {
+	private static final String badFirstWords[] = {
 			"NORTH",  "SOUTH", "EAST", "WEST", "NEW", "OLD", "MOUNT", "LAKE"
 	};
-	private final static String badSecondWords[] = {
+	private static final String badSecondWords[] = {
 			"HILL",  "HILLS", "PARK", "SPRING", "SPRINGS", "RIDGE", "PARK", "VALLEY", "LAKE", "CREEK"
 	};
 
@@ -74,7 +74,7 @@ public class LastName extends PersonName {
 	private final Set<String> badFirstSet;
 	private final Set<String> badSecondSet;
 	private String language;
-	private final static Set<String> suffixes = new SingletonSet(new Content("resource", "/reference/en_name_suffix.csv")).getMembers();
+	private static final Set<String> suffixes = new SingletonSet(new Content("resource", "/reference/en_name_suffix.csv")).getMembers();
 	private long lengthSum;
 	private long sampleCount;
 	private long bad;

@@ -1169,7 +1169,7 @@ public class TestPlugins {
 		assertNull(result.checkCounts(false));
 	}
 
-	private final static String INPUT_URLS = "http://www.lavastorm.com|ftp://ftp.sun.com|https://www.google.com|" +
+	private static final String INPUT_URLS = "http://www.lavastorm.com|ftp://ftp.sun.com|https://www.google.com|" +
 			"https://www.homedepot.com|http://www.lowes.com|http://www.apple.com|http://www.sgi.com|" +
 			"http://www.ibm.com|http://www.snowgum.com|http://www.zaius.com|http://www.cobber.com|" +
 			"http://www.ey.com|http://www.zoomer.com|http://www.redshift.com|http://www.segall.net|" +
@@ -1966,7 +1966,7 @@ public class TestPlugins {
 		assertEquals(result.getSemanticType(), "CUSTOM.EMP_ID_DIGITS");
 	}
 
-	private void pluginsOrder(boolean preBuiltins, String expectedSemanticType) throws FTAException {
+	private void pluginsOrder(final boolean preBuiltins, final String expectedSemanticType) throws FTAException {
 		final String dataStreamName = "BirthDate";
 		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
 		final Locale locale = Locale.forLanguageTag("en-US");
@@ -2035,11 +2035,11 @@ public class TestPlugins {
 		assertNull(resultPre.getSemanticType());
 
 		// Edit the FIRST NAME plugin to add our header "fn"
-		PluginDefinition defn = analysisPre.findByName("NAME.FIRST");
-		for (PluginLocaleEntry localeEntry : defn.validLocales)
+		final PluginDefinition defn = analysisPre.findByName("NAME.FIRST");
+		for (final PluginLocaleEntry localeEntry : defn.validLocales)
 		 if ("en".equals(localeEntry.localeTag)) {
 			 final int entries = localeEntry.headerRegExps.length;
-			 HeaderEntry[] newHeaders = new HeaderEntry[entries + 1];
+			 final HeaderEntry[] newHeaders = new HeaderEntry[entries + 1];
 			 for (int i = 0; i < entries; i++)
 				 newHeaders[i] = new HeaderEntry(localeEntry.headerRegExps[i]);
 			 newHeaders[entries] = new HeaderEntry("(?i)fn", 100);
@@ -3126,7 +3126,7 @@ public class TestPlugins {
 	}
 
 	// Set of valid months + 4 x "UNK"
-	private final static String MONTH_TEST_GERMAN =
+	private static final String MONTH_TEST_GERMAN =
 			"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
 					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
 					"Jan|Feb|Mär|UNK|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +

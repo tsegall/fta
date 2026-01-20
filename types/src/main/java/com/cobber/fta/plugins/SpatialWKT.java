@@ -57,7 +57,7 @@ public class SpatialWKT extends LogicalTypeInfinite {
 	public SpatialWKT(final PluginDefinition plugin) {
 		super(plugin);
 
-		for (String keyword : keywords) {
+		for (final String keyword : keywords) {
 			final int len = keyword.length();
 			if (len < minKeywordLength)
 				minKeywordLength = len;
@@ -75,8 +75,8 @@ public class SpatialWKT extends LogicalTypeInfinite {
 		switch (getRandom().nextInt(3)) {
 		case 0:
 //			POINT (0 0)
-			int x = getRandom().nextInt(100);
-			int y = getRandom().nextInt(100);
+			final int x = getRandom().nextInt(100);
+			final int y = getRandom().nextInt(100);
 			if (x == 0 || y == 0)
 				return "POINT EMPTY";
 			return "POINT (" + x + " " + y + ")";

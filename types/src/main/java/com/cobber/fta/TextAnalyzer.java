@@ -141,7 +141,7 @@ public class TextAnalyzer {
 
 	private int internalErrors;
 
-	private final static String insufficient = "Insufficient digits in input (";
+	private static final String insufficient = "Insufficient digits in input (";
 
 	private Collator collator;
 
@@ -1081,7 +1081,7 @@ public class TextAnalyzer {
 			// If we think we are a Non Localized number then no point in using the locale-aware parsing
 			if (typeInfo.isNonLocalized())
 				return false;
-			Double dd;
+			final Double dd;
 			try {
 				// Failed to parse using the naive parseDouble, so use the locale-sensitive Numberformat.parse
 				dd = Utils.parseDouble(input, doubleFormatter);
@@ -1292,7 +1292,7 @@ public class TextAnalyzer {
 	public PluginDefinition findByName(final String semanticTypeName) {
 		loadPlugins();
 
-		LogicalType logicalType = getPlugins().getRegistered(semanticTypeName);
+		final LogicalType logicalType = getPlugins().getRegistered(semanticTypeName);
 		return logicalType == null ? null : logicalType.getPluginDefinition();
 	}
 
@@ -1562,7 +1562,7 @@ public class TextAnalyzer {
 		}
 	}
 
-	final static int CACHE_SIZE = 10;
+	static final int CACHE_SIZE = 10;
 	FiniteMap cache = new FiniteMap(CACHE_SIZE);
 
 	private void emptyCache() {
@@ -1578,7 +1578,7 @@ public class TextAnalyzer {
 		final Map<String, Long> invalid = new HashMap<>();
 
 		// Process the valid entries first
-		for (Map.Entry<String, Long> entry : cache.entrySet()) {
+		for (final Map.Entry<String, Long> entry : cache.entrySet()) {
 			final String key = entry.getKey();
 			if (key != null && ((logical != null && logical.isValid(key)) || (regExp != null && key.matches(regExp))))
 				trainBulkCore(entry.getKey(), entry.getValue());
@@ -1587,7 +1587,7 @@ public class TextAnalyzer {
 		}
 
 		// Now process the invalid entries
-		for (Map.Entry<String, Long> entry : invalid.entrySet())
+		for (final Map.Entry<String, Long> entry : invalid.entrySet())
 			trainBulkCore(entry.getKey(), entry.getValue());
 
 		cache.clear();
@@ -1646,7 +1646,7 @@ public class TextAnalyzer {
 
 		// This next try/catch is unnecessary in theory, if there are zero bugs then it will never trip,
 		// if there happens to be an issue then we will lose this training event.
-		boolean result;
+		final boolean result;
 		try {
 			result = trainCore(rawInput, trimmed, 1);
 		}
@@ -2796,19 +2796,18 @@ public class TextAnalyzer {
 	}
 
 	private LogicalTypeFinite matchFiniteTypes(final FTAType type, final FiniteMap cardinalityUpper) {
-		double scoreToBeat;
+		double bestScore;
 
 		LogicalType priorLogical = null;
 		// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
 		if (facts.getMatchTypeInfo().isSemanticType()) {
 			priorLogical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
-			scoreToBeat = facts.confidence;
+			bestScore = facts.confidence;
 		}
 		else
-			scoreToBeat = -1.0;
+			bestScore = -1.0;
 
 		FiniteMatchResult bestResult = null;
-		double bestScore = scoreToBeat;
 
 		for (final LogicalTypeFinite logical : finiteTypes) {
 			if (!logical.acceptsBaseType(type))
@@ -2876,8 +2875,8 @@ public class TextAnalyzer {
 		return best;
 	}
 
-	private final static int EARLY_LONG_YYYYMMDD = 19000101;
-	private final static int LATE_LONG_YYYYMMDD = 20510101;
+	private static final int EARLY_LONG_YYYYMMDD = 19000101;
+	private static final int LATE_LONG_YYYYMMDD = 20510101;
 
 	protected TextAnalysisResult reAnalyze(final Map<String, Long> details) throws FTAPluginException, FTAUnsupportedLocaleException {
 		final TextAnalyzer analysisBulk = duplicate();
@@ -2971,7 +2970,7 @@ public class TextAnalyzer {
 
 			for (final LogicalTypeInfinite logical : infiniteTypes) {
 				if (logical.acceptsBaseType(facts.getMatchTypeInfo().getBaseType()) && logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-					double dataConfidence = logical.getConfidence(facts.matchCount, realSamples, context);
+					final double dataConfidence = logical.getConfidence(facts.matchCount, realSamples, context);
 					// We take the best data confidence, if two have the same data confidence then tie-break based on header confidence
 					if (dataConfidence > bestScore ||
 							(best != null && dataConfidence == bestScore && logical.getHeaderConfidence(context.getStreamName()) > best.getHeaderConfidence(context.getStreamName()))) {
@@ -3352,7 +3351,7 @@ public class TextAnalyzer {
 			if (bulkResult.isSemanticType() || bulkResult.getType() != facts.getMatchTypeInfo().getBaseType()) {
 				if (!getFacts().outliers.isEmpty()) {
 					bulkResult.getFacts().invalid.putAll(getFacts().outliers);
-					bulkResult.getFacts().sampleCount += getFacts().outliers.values().stream().mapToLong(l-> l).sum();;
+					bulkResult.getFacts().sampleCount += getFacts().outliers.values().stream().mapToLong(l-> l).sum();
 				}
 				bulkResult.getFacts().confidence -= 0.05;
 				result = bulkResult;
@@ -3372,25 +3371,23 @@ public class TextAnalyzer {
 	}
 
 	private boolean isInteresting(final String input) {
-		return input != null && input.trim().length() != 0;
+		return input != null && !input.isBlank();
 	}
 
 	private boolean checkRegExpTypes(final FTAType type) {
 		final long realSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
 		boolean updated = false;
 
-		double scoreToBeat;
+		double bestScore;
 
 		LogicalType priorLogical = null;
 		// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
 		if (facts.getMatchTypeInfo().isSemanticType()) {
 			priorLogical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
-			scoreToBeat = facts.confidence;
+			bestScore = facts.confidence;
 		}
 		else
-			scoreToBeat = -1.0;
-
-		double bestScore = scoreToBeat;
+			bestScore = -1.0;
 
 		for (final LogicalTypeRegExp logical : regExpTypes) {
 			if (!logical.acceptsBaseType(type) || logical == priorLogical)
@@ -4098,7 +4095,7 @@ public class TextAnalyzer {
 		if (extremes == null)
 			return;
 
-		Map<Object, String> missing = new HashMap<>();
+		final Map<Object, String> missing = new HashMap<>();
 		for (final String e : extremes) {
 			if (e == null)
 				return;

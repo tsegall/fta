@@ -35,7 +35,7 @@ import com.cobber.fta.token.TokenStreams;
  * Plugin to detect Birth Year (Person).
  */
 public class BirthYear extends LogicalTypeInfinite {
-	private final static String dateFormat = "yyyy";
+	private static final String dateFormat = "yyyy";
 	private String regExp;
 
 	/**

@@ -25,7 +25,7 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.token.TokenStreams;
 
 public class PluginBirthDate extends LogicalTypeInfinite {
-	public final static String REGEXP = "\\d{4}/\\d{2}/\\d{2}";
+	public static final String REGEXP = "\\d{4}/\\d{2}/\\d{2}";
 
 	private static DateTimeParser dtp = new DateTimeParser();
 	private static LocalDate plausibleBirth = LocalDate.of(1910, 1, 1);

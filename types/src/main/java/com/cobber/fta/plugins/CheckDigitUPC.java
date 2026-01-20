@@ -26,7 +26,7 @@ public class CheckDigitUPC extends CheckDigitLT {
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "\\d{12}";
 
-	private final static String[] SAMPLES = {
+	private static final String[] SAMPLES = {
 			"689228994560", "723660982409", "796941331913", "072774354948", "888571055670", "400310025319",
 			"840226095042", "796941332781", "796941332767", "796941332743", "796941332873", "796941332835",
 			"796941332828", "796941333108", "796941333115", "796941331678", "796941331654", "796941331456",

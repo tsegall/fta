@@ -39,7 +39,7 @@ public class SingletonSet {
 	private final String key;
 	private final String commentLeader;
 
-	private final static Map<String, RandomSet<String>> MEMBER_CACHE = new ConcurrentHashMap<>();
+	private static final Map<String, RandomSet<String>> MEMBER_CACHE = new ConcurrentHashMap<>();
 
 	/**
 	 * Create a SingletonSet using "#" as the comment character.

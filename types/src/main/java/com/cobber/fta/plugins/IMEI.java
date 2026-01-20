@@ -25,7 +25,7 @@ import com.cobber.fta.core.Utils;
  * Plugin to detect IMEI numbers (15 digits with a valid LUHN check digit)
  */
 public class IMEI extends CheckDigitLuhn {
-	private final static int IMEI_LENGTH = 15;
+	private static final int IMEI_LENGTH = 15;
 
 	/**
 	 * Construct a plugin to detect an IMEI.

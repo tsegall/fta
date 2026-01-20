@@ -39,7 +39,7 @@ public class Age extends LogicalTypeInfinite {
 	private static final String LONG_REGEXP = "\\d{1,3}";
 	private static final String DOUBLE_REGEXP = "\\d{1,3}\\.\\d+";
 
-	private final static int MAX_AGE = 120;
+	private static final int MAX_AGE = 120;
 
 	private boolean longType = true;
 

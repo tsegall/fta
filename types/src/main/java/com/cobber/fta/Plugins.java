@@ -165,9 +165,7 @@ public class Plugins {
 				else
 					plugin.setPrecedence(PluginDefinition.Precedence.POST_BUILTIN);
 
-			boolean register = plugin.isLocaleSupported(analysisConfig.getLocale());
-
-			if (register)
+			if (plugin.isLocaleSupported(analysisConfig.getLocale()))
 				if ("java".equals(plugin.pluginType))
 					registerLogicalTypeClass(plugin, analysisConfig);
 				else if ("list".equals(plugin.pluginType))
@@ -208,9 +206,9 @@ public class Plugins {
 	 * @throws FTAPluginException
 	 */
 	private void registerLogicalTypeClass(final PluginDefinition plugin, final AnalysisConfig analysisConfig) throws FTAPluginException {
-		Class<?> newLogicalType;
-		Constructor<?> ctor;
-		Object logical;
+		final Class<?> newLogicalType;
+		final Constructor<?> ctor;
+		final Object logical;
 
 		try {
 			newLogicalType = Class.forName(plugin.clazz);

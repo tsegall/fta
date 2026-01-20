@@ -43,9 +43,9 @@ import com.cobber.fta.core.RegExpGenerator;
 
 public class TestUtils {
 	private static final Random random = new Random(314159);
-	public final static double EPSILON = 0.00000001;
+	public static final double EPSILON = 0.00000001;
 
-	protected final static String validZips = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
+	protected static final String validZips = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
 			"06045|06233|06439|06704|06910|07101|07510|07764|08006|08205|08534|08829|10044|10260|10549|10965|11239|11501|11743|11976|" +
 			"12138|12260|12503|12746|12878|13040|13166|13418|13641|13801|14068|14276|14548|14731|14865|15077|15261|15430|15613|15741|" +
 			"15951|16210|16410|16662|17053|17247|17516|17765|17951|18109|18428|18702|18957|19095|19339|19486|19808|20043|20170|20370|" +
@@ -54,23 +54,23 @@ public class TestUtils {
 			"29111|29329|29475|29622|29744|30016|30119|30234|30343|30503|30643|31002|31141|31518|31727|31901|32134|32277|32455|32617|" +
 			"32780|32934|33093|33265|33448|33603|33763|33907|34138|34470|34731|35053|35221|35491|35752|36022|36460|36616|36860|37087|";
 
-	protected final static String validUSStates = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
+	protected static final String validUSStates = "AL|AK|AZ|KY|KS|LA|ME|MD|MI|MA|MN|MS|MO|NE|MT|SD|TN|TX|UT|VT|WI|" +
 			"VA|WA|WV|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|" +
 			"NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|" +
 			"WY|AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|" +
 			"MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|RI|SC|SD|" +
 			"TX|UT|VT|WV|WI|WY|NV|NH|NJ|OR|PA|RI|SC|AR|CA|CO|CT|ID|HI|IL|IN|";
 
-	protected final static String validCAProvinces = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
+	protected static final String validCAProvinces = "AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 			"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 			"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 			"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|" +
 			"AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT|";
 
-	protected final static String validAUStates = "ACT|NSW|NT|QLD|SA|TAS|VIC|WA";
+	protected static final String validAUStates = "ACT|NSW|NT|QLD|SA|TAS|VIC|WA";
 
 	// Set of valid months + 4 x "UNK"
-	protected final static String months = "Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+	protected static final String months = "Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
 			"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
@@ -82,7 +82,7 @@ public class TestUtils {
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|UNK|Sep|Jan|Oct|Oct|Oct|";
 
 	// Set of valid months + 4 x "UNK"
-	protected final static String monthsFrench =
+	protected static final String monthsFrench =
 			"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
 					"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
 					"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
@@ -92,20 +92,20 @@ public class TestUtils {
 					"janv.|févr.|mars|avr.|mai|UNK|juil.|août|sept.|oct.|nov.|déc.|" +
 					"janv.|févr.|mars|UNK|mai|juin|juil.|août|sept.|UNK|nov.|déc.|";
 
-	protected final static String valid3166_2 =  "AL|AW|BZ|BW|BV|BR|IO|BN|BG|" +
+	protected static final String valid3166_2 =  "AL|AW|BZ|BW|BV|BR|IO|BN|BG|" +
 			"BF|BI|CV|KH|CF|CK|DM|FK|GE|" +
 			"GG|IS|JP|LA|LT|LU|MO|MK|MG|" +
 			"MW|MY|MV|ML|MT|MU|MZ|NG|PG|" +
 			"RO|WS|SK|SR|TG|TC|TV|UG|UA|" +
 			"AE|GB|UM|US|UY|UZ|VG|";
 
-	protected final static String valid3166_3 = "ALA|ARM|BEL|BIH|BWA|BVT|BRA|IOT|BRN|BGR|BFA|" +
+	protected static final String valid3166_3 = "ALA|ARM|BEL|BIH|BWA|BVT|BRA|IOT|BRN|BGR|BFA|" +
 			"BDI|CPV|CYM|COG|DJI|ETH|GMB|GTM|HUN|JAM|KGZ|" +
 			"LIE|LTU|LUX|MAC|MKD|MDG|MWI|MYS|MDV|MLI|MRT|" +
 			"MAR|NER|PAN|REU|VCT|SXM|SDN|TLS|TKM|TCA|TUV|" +
 			"UGA|UKR|ARE|GBR|UMI|USA|URY|VNM|";
 
-	protected final static String validUSStreets[] = {
+	protected static final String validUSStreets[] = {
 			"9885 Princeton Court",
 			"11 San Pablo Rd.",
 			"365 3rd St.",
@@ -138,17 +138,17 @@ public class TestUtils {
 			"324 North Lancaster Dr."
 	};
 
-	protected final static String[] testCaseOptions = {
+	protected static final String[] testCaseOptions = {
 			"Integer", "Boolean", "Long", "Double", "Date",
 			"ISO-3166-3", "ISO-3166-2", "ZIP", "US_STATE", "CA_PROVINCE",
 			"US_STREET"
 	};
 
-	final static String[] candidatesISO3166_3 = TestUtils.valid3166_3.split("\\|");
-	final static String[] candidatesISO3166_2 = TestUtils.valid3166_2.split("\\|");
-	final static String[] candidatesZips = TestUtils.validZips.split("\\|");
-	final static String[] candidatesUSStates = TestUtils.validUSStates.split("\\|");
-	final static String[] candidatesCAProvinces = TestUtils.validCAProvinces.split("\\|");
+	static final String[] candidatesISO3166_3 = TestUtils.valid3166_3.split("\\|");
+	static final String[] candidatesISO3166_2 = TestUtils.valid3166_2.split("\\|");
+	static final String[] candidatesZips = TestUtils.validZips.split("\\|");
+	static final String[] candidatesUSStates = TestUtils.validUSStates.split("\\|");
+	static final String[] candidatesCAProvinces = TestUtils.validCAProvinces.split("\\|");
 
 	static String generateTestStreamValue(final int type) {
 
@@ -322,7 +322,7 @@ public class TestUtils {
 
 	@Test(groups = { TestGroups.ALL })
 	public void testPatternFG() throws IOException {
-		PatternFG patternFG = PatternFG.compile("|null|no data|sin dato|");
+		final PatternFG patternFG = PatternFG.compile("|null|no data|sin dato|");
 
 		assertFalse(patternFG.matcher("ß - Eszett as in straße	"));
 		assertTrue(patternFG.matcher("null"));

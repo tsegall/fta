@@ -33,7 +33,7 @@ import com.cobber.fta.token.TokenStreams;
 public class EpochMilliseconds extends LogicalTypeInfinite {
 	private long minObservation = Long.MAX_VALUE;
 	private long maxObservation = Long.MIN_VALUE;
-	private final static long YEAR_2000_MILLISECONDS = 946_684_800_000L;
+	private static final long YEAR_2000_MILLISECONDS = 946_684_800_000L;
 
 	/**
 	 * Construct a plugin to detect an Epoch time in milliseconds based on the Plugin Definition.

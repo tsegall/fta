@@ -34,7 +34,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 	protected Reader reader;
 	protected SingletonSet memberSet;
 
-	private final static CacheLRU<String, String> cache = new CacheLRU<>(30);
+	private static final CacheLRU<String, String> cache = new CacheLRU<>(30);
 
 	public LogicalTypeFiniteSimple(final PluginDefinition plugin, final String backout, final int threshold) {
 		super(plugin);
