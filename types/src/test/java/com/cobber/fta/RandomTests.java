@@ -50,7 +50,7 @@ import com.cobber.fta.plugins.address.USZip5;
 import com.cobber.fta.plugins.address.USZipPlus4;
 
 public class RandomTests {
-	private static final SecureRandom random = new SecureRandom();
+	private static final SecureRandom RANDOM = new SecureRandom();
 	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
@@ -425,7 +425,7 @@ public class RandomTests {
 		int matchCount = 0;
 		for (int i = 0; i < samplesProcessed - 1; i++) {
 			final String input = inputs[i];
-			if (!input.trim().isEmpty() && input.matches(result.getRegExp()))
+			if (!input.isBlank() && input.matches(result.getRegExp()))
 				matchCount++;
 		}
 		assertEquals(matchCount, result.getMatchCount());
@@ -602,7 +602,7 @@ public class RandomTests {
 		for (int i = start; i < end; i++) {
 			final StringBuilder sample = new StringBuilder(STRING_LENGTH);
 			for (int j = 0; j < STRING_LENGTH; j++)
-				sample.append(alphabet.charAt(random.nextInt(52)));
+				sample.append(alphabet.charAt(RANDOM.nextInt(52)));
 			if (analysis.train(sample.toString()) && locked == -1)
 				locked = i;
 		}
@@ -777,9 +777,9 @@ public class RandomTests {
 		final TextAnalyzer analysis = new TextAnalyzer("zip_code");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final String[] inputs = {
-				"54814", "71644", "66016", /** leading I **/ "I2538", "78705", "37909", "39603", "32612", "65779", "49072",
-				"85013", "07452", "43828", "90714", /** leading I **/ "I7375", "45787", "12305", "23328", "65108", "09468",
-				"10028", "80621", "56382", /** leading I **/ "I0950", "24562", "57242", "35956", "96830", "19041", "75431",
+				"54814", "71644", "66016", /* leading I */ "I2538", "78705", "37909", "39603", "32612", "65779", "49072",
+				"85013", "07452", "43828", "90714", /* leading I */ "I7375", "45787", "12305", "23328", "65108", "09468",
+				"10028", "80621", "56382", /* leading I */ "I0950", "24562", "57242", "35956", "96830", "19041", "75431",
 				"02121", "30711", "58771", "63783", "18966", "27629", "19367", "06840", "54519", "47226",
 				"57756", "56325", "05737", "07752", "72442", "98385", "45858", "27401", "69346", "17113",
 				"29031", "30124", "30527", "33322", "80219", "75503", "92273", "33514", "27858", "61737",
@@ -915,8 +915,8 @@ public class RandomTests {
 		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples) {
-			if (sample.trim().length() > 0)
-				assertTrue(sample.matches(result.getRegExp()));
+			if (!sample.isBlank())
+					assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
 
@@ -955,7 +955,7 @@ public class RandomTests {
 		assertEquals(result.getConfidence(), 1.0);
 
 		for (final String sample : samples) {
-			if (sample.trim().length() > 0)
+			if (!sample.isBlank())
 				assertTrue(sample.matches(result.getRegExp()));
 		}
 	}
@@ -1148,7 +1148,7 @@ public class RandomTests {
 
 		int matches = 0;
 		for (final String input : inputs) {
-			if (!input.trim().isEmpty() && input.matches(result.getRegExp()))
+			if (!input.isBlank() && input.matches(result.getRegExp()))
 				matches++;
 		}
 		assertEquals(matches, result.getMatchCount());
@@ -1411,11 +1411,11 @@ public class RandomTests {
 
 		for (int i = 0; i < iterations; i++) {
 			line.setLength(0);
-			final int wordCount = random.nextInt(20);
+			final int wordCount = RANDOM.nextInt(20);
 			for (int words = 0; words < wordCount; words++) {
-				final int charCount = random.nextInt(10);
+				final int charCount = RANDOM.nextInt(10);
 				for (int chars = 0; chars < charCount; chars++) {
-					line.append(alphabet.charAt(random.nextInt(25)));
+					line.append(alphabet.charAt(RANDOM.nextInt(25)));
 				}
 				line.append(' ');
 			}
@@ -1470,11 +1470,11 @@ public class RandomTests {
 
 		for (int i = 0; i < iterations; i++) {
 			line.setLength(0);
-			final int wordCount = random.nextInt(20);
+			final int wordCount = RANDOM.nextInt(20);
 			for (int words = 0; words < wordCount; words++) {
-				final int charCount = random.nextInt(10);
+				final int charCount = RANDOM.nextInt(10);
 				for (int chars = 0; chars < charCount; chars++) {
-					line.append(alphabet.charAt(random.nextInt(25)));
+					line.append(alphabet.charAt(RANDOM.nextInt(25)));
 				}
 				line.append(' ');
 			}
@@ -1497,7 +1497,7 @@ public class RandomTests {
 		final int iterations = 1_000_000;
 
 		for (int i = 0; i < iterations; i++) {
-			start = start.plusSeconds(random.nextInt(100));
+			start = start.plusSeconds(RANDOM.nextInt(100));
 			analysis.train(String.valueOf(start));
 		}
 
@@ -1523,11 +1523,11 @@ public class RandomTests {
 			int j = samples;
 			while (j-- > 0) {
 				line.setLength(0);
-				final int wordCount = random.nextInt(20);
+				final int wordCount = RANDOM.nextInt(20);
 				for (int words = 0; words < wordCount; words++) {
-					final int charCount = random.nextInt(10);
+					final int charCount = RANDOM.nextInt(10);
 					for (int chars = 0; chars < charCount; chars++) {
-						line.append(alphabet.charAt(random.nextInt(25)));
+						line.append(alphabet.charAt(RANDOM.nextInt(25)));
 					}
 					line.append(' ');
 				}
@@ -1553,12 +1553,12 @@ public class RandomTests {
 		analysis.setDetectWindow(2* AnalysisConfig.DETECT_WINDOW_DEFAULT);
 		for (int i = 0; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			sample++;
-			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+			if (analysis.train(String.valueOf(RANDOM.nextInt(1000000))) && locked == -1)
 				locked = sample;
 		}
 		for (int i = 0; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
 			sample++;
-			if (analysis.train(String.valueOf(random.nextDouble())) && locked == -1)
+			if (analysis.train(String.valueOf(RANDOM.nextDouble())) && locked == -1)
 				locked = sample;
 		}
 
@@ -1600,7 +1600,7 @@ public class RandomTests {
 		int i = 0;
 
 		for (; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
-			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+			if (analysis.train(String.valueOf(RANDOM.nextInt(1000000))) && locked == -1)
 				locked = i;
 		}
 
@@ -1623,7 +1623,7 @@ public class RandomTests {
 		int i = 0;
 
 		for (; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
-			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+			if (analysis.train(String.valueOf(RANDOM.nextInt(1000000))) && locked == -1)
 				locked = i;
 		}
 
@@ -1716,7 +1716,7 @@ public class RandomTests {
 		int i = 0;
 
 		for (; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
-			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+			if (analysis.train(String.valueOf(RANDOM.nextInt(1000000))) && locked == -1)
 				locked = i;
 		}
 
@@ -1758,7 +1758,7 @@ public class RandomTests {
 		int i = 0;
 
 		for (; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
-			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+			if (analysis.train(String.valueOf(RANDOM.nextInt(1000000))) && locked == -1)
 				locked = i;
 		}
 
@@ -1779,7 +1779,7 @@ public class RandomTests {
 		int i = 0;
 
 		for (; i <= AnalysisConfig.DETECT_WINDOW_DEFAULT; i++) {
-			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+			if (analysis.train(String.valueOf(RANDOM.nextInt(1000000))) && locked == -1)
 				locked = i;
 		}
 
@@ -1801,11 +1801,11 @@ public class RandomTests {
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
 			b.append("+1 ")
-				.append(String.format("%03d", random.nextInt(1000)))
+				.append(String.format("%03d", RANDOM.nextInt(1000)))
 				.append(' ')
-				.append(String.format("%03d", random.nextInt(1000)))
+				.append(String.format("%03d", RANDOM.nextInt(1000)))
 				.append(' ')
-				.append(String.format("%04d", random.nextInt(10000)));
+				.append(String.format("%04d", RANDOM.nextInt(10000)));
 			samples[i] = b.toString();
 		}
 
@@ -1838,11 +1838,11 @@ public class RandomTests {
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
 			b.append("1.")
-				.append(String.format("%03d", random.nextInt(1000)))
+				.append(String.format("%03d", RANDOM.nextInt(1000)))
 				.append('.')
-				.append(String.format("%03d", random.nextInt(1000)))
+				.append(String.format("%03d", RANDOM.nextInt(1000)))
 				.append('.')
-				.append(String.format("%04d", random.nextInt(10000)));
+				.append(String.format("%04d", RANDOM.nextInt(10000)));
 			samples[i] = b.toString();
 		}
 
@@ -1874,11 +1874,11 @@ public class RandomTests {
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
 			b.append('(')
-				.append(String.format("%03d", random.nextInt(1000)))
+				.append(String.format("%03d", RANDOM.nextInt(1000)))
 				.append(") ")
-				.append(String.format("%03d", random.nextInt(1000)))
+				.append(String.format("%03d", RANDOM.nextInt(1000)))
 				.append(' ')
-				.append(String.format("%04d", random.nextInt(10000)));
+				.append(String.format("%04d", RANDOM.nextInt(10000)));
 			samples[i] = b.toString();
 		}
 
@@ -1943,11 +1943,11 @@ public class RandomTests {
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
 			b.append('[')
-				.append(String.format("%03d", random.nextInt(1000)))
+				.append(String.format("%03d", RANDOM.nextInt(1000)))
 				.append("){[0-9] ^")
-				.append(String.format("%03d", random.nextInt(1000)))
+				.append(String.format("%03d", RANDOM.nextInt(1000)))
 				.append('$')
-				.append(String.format("%04d", random.nextInt(10000)));
+				.append(String.format("%04d", RANDOM.nextInt(10000)));
 			samples[i] = b.toString();
 		}
 
@@ -1986,7 +1986,7 @@ public class RandomTests {
 		}
 		int cnt = 0;
 		while (cnt < iterations) {
-			final long randomLong = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
+			final long randomLong = RANDOM.nextInt(Integer.MAX_VALUE) + 1000000000L;
 			if (randomLong >  9999999999L)
 				continue;
 			if (analysis.train(String.valueOf(randomLong)) && locked == -1)
@@ -3044,7 +3044,7 @@ public class RandomTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void testTypes() throws IOException, FTAException, FTAException, InterruptedException {
 		for (int i = 0; i < 100; i++) {
-			final int index = random.nextInt(someSemanticTypes.length);
+			final int index = RANDOM.nextInt(someSemanticTypes.length);
 			final String semanticType = someSemanticTypes[index];
 			final String heading = someSemanticTypesHeader[index];
 			if (
@@ -3060,7 +3060,7 @@ public class RandomTests {
 			final PluginDefinition pluginDefinition = PluginDefinition.findByName(semanticType);
 			final LogicalType logicalType = LogicalTypeFactory.newInstance(pluginDefinition, analysis.getConfig());
 
-			final int length = 30 + random.nextInt(10000);
+			final int length = 30 + RANDOM.nextInt(10000);
 			final String[] stream = new String[length];
 			for (int j = 0; j < length; j++)
 				stream[j] = logicalType.nextRandom();
@@ -3095,8 +3095,8 @@ public class RandomTests {
 		final Thread[] threads = new Thread[THREADS];
 
 		for (int t = 0; t < THREADS; t++) {
-			final int type = random.nextInt(TestUtils.testCaseOptions.length);
-			final int length = 30 + random.nextInt(10000);
+			final int type = RANDOM.nextInt(TestUtils.testCaseOptions.length);
+			final int length = 30 + RANDOM.nextInt(10000);
 			final String[] stream = TestUtils.generateTestStream(type, length);
 
 			final TextAnalyzer analysis = new TextAnalyzer("testThreading");
@@ -3134,8 +3134,8 @@ public class RandomTests {
 
 				final TextAnalyzer analysis = new TextAnalyzer("testThreading");
 				for (int i = 0; i < samples; i++) {
-					final int type = random.nextInt(TestUtils.testCaseOptions.length);
-					final int length = 30 + random.nextInt(10000);
+					final int type = RANDOM.nextInt(TestUtils.testCaseOptions.length);
+					final int length = 30 + RANDOM.nextInt(10000);
 					analysis.train(TestUtils.generateTestStream(type, 1)[0]);
 				}
 
@@ -3433,7 +3433,7 @@ public class RandomTests {
 			LogicalType logical = null;
 			final Locale locale = Locale.forLanguageTag("en-US");
 			do {
-				final String semanticType = someSemanticTypes[random.nextInt(someSemanticTypes.length)];
+				final String semanticType = someSemanticTypes[RANDOM.nextInt(someSemanticTypes.length)];
 				try {
 					final PluginDefinition defn = PluginDefinition.findByName(semanticType);
 					if (!defn.isLocaleSupported(locale))
@@ -3616,7 +3616,7 @@ public class RandomTests {
 			final TextAnalyzer analysis = new TextAnalyzer("fuzzInt");
 			analysis.setThreshold(100 - errorRate);
 			assertEquals(analysis.getThreshold(), 100 - errorRate);
-			final int length = random.nextInt(9);
+			final int length = RANDOM.nextInt(9);
 			final long low = (long)Math.pow(10, length);
 			long lowest = low;
 			long lowestFloat = low;
@@ -3624,7 +3624,7 @@ public class RandomTests {
 			final long high = low + SAMPLES - 1;
 			final int highLength = String.valueOf(high).length();
 			int misses = 0;
-			final boolean sticky = random.nextBoolean();
+			final boolean sticky = RANDOM.nextBoolean();
 			boolean isNegative = false;
 			int floats = 0;
 			int strings = 0;
@@ -3635,9 +3635,9 @@ public class RandomTests {
 			final String[] errorCaseDecode = { "String", "NegativeInt", "Double", "negativeDouble", "null", "blank" };
 
 			for (long i = low; i <= high; i++) {
-				if (i != low && i != high && random.nextInt(99) < 2) {
+				if (i != low && i != high && RANDOM.nextInt(99) < 2) {
 					if (errorCase == -1 || !sticky)
-						errorCase = random.nextInt(6);
+						errorCase = RANDOM.nextInt(6);
 					switch (errorCase) {
 					case 0:
 						// String

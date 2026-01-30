@@ -23,7 +23,7 @@ import com.cobber.fta.core.Utils;
 public class AddressCommon {
 	public static final String POBOX = "P.? ?O.?.?BOX.|POST OFFICE BOX";
 
-	public static final String[] sampleStreets = {
+	public static final String[] SAMPLE_STREETS = {
 			"Main",  "Lakeside", "Pennsylvania", "Penaton", "Croydon", "Buchanan", "Riverside", "Flushing",
 			"Jefferson", "Randolph", "North Lakeside", "Massachusetts", "Central", "Lincoln", "Final Mile",
 			"4th", "Flower", "High", "3rd", "12th", "D", "Piedmont", "Chaton", "Kenwood", "Sycamore Lake",
@@ -32,35 +32,35 @@ public class AddressCommon {
 			"Winifred", "Pratt", "Hillview", "Rosemont", "Romines Mill", "School House", "Candlelight"
 	};
 
-	private static final Set<String> directions = new HashSet<>();
+	private static final Set<String> DIRECTIONS = new HashSet<>();
 	private static final Set<String> modifiersWithArgument = new HashSet<>();
-	private static final Set<String> modifiersAny = new HashSet<>();
-	private static final Set<String> textDigit = new HashSet<>();
-	private static final Set<String> ordinal = new HashSet<>();
-	private static final Set<String> ordinalIndicator = new HashSet<>();
-	private static final Set<String> initialMarker = new HashSet<>();
+	private static final Set<String> MODIFIERS_ANY = new HashSet<>();
+	private static final Set<String> TEXT_DIGIT = new HashSet<>();
+	private static final Set<String> ORDINAL = new HashSet<>();
+	private static final Set<String> ORDINAL_INDICATOR = new HashSet<>();
+	private static final Set<String> INITIAL_MARKER = new HashSet<>();
 
 	static {
-		directions.add("N");
-		directions.add("NE");
-		directions.add("NW");
-		directions.add("S");
-		directions.add("SE");
-		directions.add("SW");
-		directions.add("E");
-		directions.add("W");
-		directions.add("NORTH");
-		directions.add("NORTHEAST");
-		directions.add("NORTHWEST");
-		directions.add("SOUTH");
-		directions.add("SOUTHEAST");
-		directions.add("SOUTHWEST");
-		directions.add("EAST");
-		directions.add("WEST");
-		directions.add("NB");
-		directions.add("SB");
-		directions.add("EB");
-		directions.add("WB");
+		DIRECTIONS.add("N");
+		DIRECTIONS.add("NE");
+		DIRECTIONS.add("NW");
+		DIRECTIONS.add("S");
+		DIRECTIONS.add("SE");
+		DIRECTIONS.add("SW");
+		DIRECTIONS.add("E");
+		DIRECTIONS.add("W");
+		DIRECTIONS.add("NORTH");
+		DIRECTIONS.add("NORTHEAST");
+		DIRECTIONS.add("NORTHWEST");
+		DIRECTIONS.add("SOUTH");
+		DIRECTIONS.add("SOUTHEAST");
+		DIRECTIONS.add("SOUTHWEST");
+		DIRECTIONS.add("EAST");
+		DIRECTIONS.add("WEST");
+		DIRECTIONS.add("NB");
+		DIRECTIONS.add("SB");
+		DIRECTIONS.add("EB");
+		DIRECTIONS.add("WB");
 
 		modifiersWithArgument.add("APARTMENT");
 		modifiersWithArgument.add("APT");
@@ -72,61 +72,61 @@ public class AddressCommon {
 		modifiersWithArgument.add("STE");
 		modifiersWithArgument.add("SUITE");
 		modifiersWithArgument.add("UNIT");
-		modifiersAny.add("FL");
-		modifiersAny.add("FLOOR");
-		modifiersAny.add("LBBY");
-		modifiersAny.add("LOBBY");
+		MODIFIERS_ANY.add("FL");
+		MODIFIERS_ANY.add("FLOOR");
+		MODIFIERS_ANY.add("LBBY");
+		MODIFIERS_ANY.add("LOBBY");
 
-		textDigit.add("ONE");
-		textDigit.add("TWO");
-		textDigit.add("THREE");
-		textDigit.add("FOUR");
-		textDigit.add("FIVE");
-		textDigit.add("SIX");
-		textDigit.add("SEVEN");
-		textDigit.add("EIGHT");
-		textDigit.add("NINE");
-		textDigit.add("TEN");
+		TEXT_DIGIT.add("ONE");
+		TEXT_DIGIT.add("TWO");
+		TEXT_DIGIT.add("THREE");
+		TEXT_DIGIT.add("FOUR");
+		TEXT_DIGIT.add("FIVE");
+		TEXT_DIGIT.add("SIX");
+		TEXT_DIGIT.add("SEVEN");
+		TEXT_DIGIT.add("EIGHT");
+		TEXT_DIGIT.add("NINE");
+		TEXT_DIGIT.add("TEN");
 
-		ordinal.add("FIRST");
-		ordinal.add("SECOND");
-		ordinal.add("THIRD");
-		ordinal.add("FOURTH");
-		ordinal.add("FIFTH");
-		ordinal.add("SIXTH");
-		ordinal.add("SEVENTH");
-		ordinal.add("EIGHT");
-		ordinal.add("NINTH");
-		ordinal.add("TENTH");
+		ORDINAL.add("FIRST");
+		ORDINAL.add("SECOND");
+		ORDINAL.add("THIRD");
+		ORDINAL.add("FOURTH");
+		ORDINAL.add("FIFTH");
+		ORDINAL.add("SIXTH");
+		ORDINAL.add("SEVENTH");
+		ORDINAL.add("EIGHT");
+		ORDINAL.add("NINTH");
+		ORDINAL.add("TENTH");
 
-		ordinalIndicator.add("ST");
-		ordinalIndicator.add("ND");
-		ordinalIndicator.add("RD");
-		ordinalIndicator.add("TH");
+		ORDINAL_INDICATOR.add("ST");
+		ORDINAL_INDICATOR.add("ND");
+		ORDINAL_INDICATOR.add("RD");
+		ORDINAL_INDICATOR.add("TH");
 
-		initialMarker.add("AVENUE");
-		initialMarker.add("AVE");
-		initialMarker.add("CR");
-		initialMarker.add("HIGHWAY");
-		initialMarker.add("HWY");
-		initialMarker.add("INTERSTATE");
-		initialMarker.add("I");
-		initialMarker.add("ROUTE");
-		initialMarker.add("SR");
+		INITIAL_MARKER.add("AVENUE");
+		INITIAL_MARKER.add("AVE");
+		INITIAL_MARKER.add("CR");
+		INITIAL_MARKER.add("HIGHWAY");
+		INITIAL_MARKER.add("HWY");
+		INITIAL_MARKER.add("INTERSTATE");
+		INITIAL_MARKER.add("I");
+		INITIAL_MARKER.add("ROUTE");
+		INITIAL_MARKER.add("SR");
 	}
 
 	public static boolean isDirection(final String input) {
-		return directions.contains(input);
+		return DIRECTIONS.contains(input);
 	}
 
 	public static boolean isModifier(final String input, final boolean isLastWord) {
 		if (isLastWord)
-			return modifiersAny.contains(input);
+			return MODIFIERS_ANY.contains(input);
 		return modifiersWithArgument.contains(input);
 	}
 
 	public static boolean isInitialMarker(final String input) {
-		return initialMarker.contains(input);
+		return INITIAL_MARKER.contains(input);
 	}
 
 	/**
@@ -196,7 +196,7 @@ public class AddressCommon {
 			return false;
 		final char firstCh = input.charAt(0);
 		if (Character.isLetter(firstCh))
-			return ordinal.contains(input);
+			return ORDINAL.contains(input);
 		if (!Character.isDigit(firstCh))
 			return false;
 
@@ -214,7 +214,7 @@ public class AddressCommon {
 		if (digits == 0 || i == len)
 			return false;
 
-		return ordinalIndicator.contains(input.substring(i).trim());
+		return ORDINAL_INDICATOR.contains(input.substring(i).trim());
 	}
 
 	/*
@@ -223,6 +223,6 @@ public class AddressCommon {
 	 * @return True if the input is a representation of a single digit.
 	 */
 	private static boolean isTextDigit(final String input) {
-		return textDigit.contains(input);
+		return TEXT_DIGIT.contains(input);
 	}
 }

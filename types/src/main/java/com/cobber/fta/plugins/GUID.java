@@ -150,7 +150,7 @@ public class GUID extends LogicalTypeInfinite {
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// Insist on a plausible header if it is just 32 hex digits
-		if (len32 != 0 && getHeaderConfidence(context.getStreamName()) <= 0)
+		if (len32 != 0 && getHeaderConfidence(context) <= 0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;

@@ -34,7 +34,7 @@ public class CacheLRU<K, V> {
         cache.put(key, value);
     }
 
-    public V get(K key) {
+    public V get(final K key) {
         return cache.getIfPresent(key);
     }
 

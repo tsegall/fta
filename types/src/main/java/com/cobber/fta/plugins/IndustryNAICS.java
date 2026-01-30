@@ -116,7 +116,7 @@ public class IndustryNAICS extends LogicalTypeInfinite {
 
 		int minCardinality = 10;
 		int minSamples = 20;
-		if (getHeaderConfidence(context.getStreamName()) > 0) {
+		if (getHeaderConfidence(context) > 0) {
 			minCardinality = 5;
 			minSamples = 5;
 		}
@@ -137,9 +137,9 @@ public class IndustryNAICS extends LogicalTypeInfinite {
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final double confidence = (double)matchCount/realSamples;
 
-		if (confidence > 0.75 && getHeaderConfidence(context.getStreamName()) >= 99)
+		if (confidence > 0.75 && getHeaderConfidence(context) >= 99)
 			return 1.0;
-		else if (getHeaderConfidence(context.getStreamName()) >= 90)
+		else if (getHeaderConfidence(context) >= 90)
 			return Math.min(confidence + Math.min((1.0 - confidence)/2, 0.15), 1.0);
 
 		return confidence;

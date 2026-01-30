@@ -58,7 +58,7 @@ import com.cobber.fta.plugins.Gender;
 
 public class TestMerge {
 	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
-	private static final SecureRandom random = new SecureRandom();
+	private static final SecureRandom RANDOM = new SecureRandom();
 
 	private final List<String> samplesBLANK = new ArrayList<>();
 	private final List<String> samplesNULL = new ArrayList<>();
@@ -406,7 +406,7 @@ public class TestMerge {
 		final long testStart = System.currentTimeMillis();
 		for (int i = 0; i < ITERATIONS; i++) {
 			final long start = System.currentTimeMillis();
-			t.train(options[random.nextInt(options.length)]);
+			t.train(options[RANDOM.nextInt(options.length)]);
 			final long postTrain = System.currentTimeMillis();
 			serialized = t.serialize();
 			final long postSerialize = System.currentTimeMillis();
@@ -899,11 +899,11 @@ public class TestMerge {
 	public void cardinalityNotExceededString() throws IOException, FTAException {
 		final List<String> shardOne = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
-			shardOne.add(shortStrings[random.nextInt(shortStrings.length)]);
+			shardOne.add(shortStrings[RANDOM.nextInt(shortStrings.length)]);
 
 		final List<String> shardTwo = new ArrayList<>();
 		for (int i = 0; i < 20000; i++)
-			shardTwo.add(longStrings[random.nextInt(longStrings.length)]);
+			shardTwo.add(longStrings[RANDOM.nextInt(longStrings.length)]);
 
 		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityNotExceededString", null, true);
 		final TextAnalysisResult mergedResult = merged.getResult();
@@ -916,7 +916,7 @@ public class TestMerge {
 		final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		final StringBuilder b = new StringBuilder(length);
 		for (int i = 0; i < length; i++)
-			b.append(alphabet.charAt(random.nextInt(alphabet.length())));
+			b.append(alphabet.charAt(RANDOM.nextInt(alphabet.length())));
 
 		return b.toString();
 	}
@@ -1779,7 +1779,7 @@ public class TestMerge {
 		final String[] header = new String[COLS];
 		final int[] structure = new int[COLS];
 		for (int c = 0; c < COLS; c++) {
-			final int i = c == 0 ? 3 : random.nextInt(TestUtils.testCaseOptions.length);
+			final int i = c == 0 ? 3 : RANDOM.nextInt(TestUtils.testCaseOptions.length);
 			header[c] = String.valueOf(i) + "__" + TestUtils.testCaseOptions[i];
 			structure[c] = i;
 		}

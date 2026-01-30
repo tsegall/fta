@@ -108,13 +108,13 @@ public class IndustryEN extends LogicalTypeInfinite {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		if (getHeaderConfidence(context.getStreamName()) >= 99)
+		if (getHeaderConfidence(context) >= 99)
 			return PluginAnalysis.OK;
 
 		final int minCardinality = 5;
 		final int minSamples = 5;
 
-		if (getHeaderConfidence(context.getStreamName()) <= 0 || cardinality.size() < minCardinality || realSamples < minSamples)
+		if (getHeaderConfidence(context) <= 0 || cardinality.size() < minCardinality || realSamples < minSamples)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		if (getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0)
@@ -127,7 +127,7 @@ public class IndustryEN extends LogicalTypeInfinite {
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final double confidence = (double)matchCount/realSamples;
 
-		if (getHeaderConfidence(context.getStreamName()) >= 99)
+		if (getHeaderConfidence(context) >= 99)
 			return Math.min(confidence + 0.20, 1.0);
 
 		return confidence;

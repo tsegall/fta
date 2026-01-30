@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
 import com.cobber.fta.core.FTAPluginException;
 
 public class TestTopBottomK {
-	private static final SecureRandom random = new SecureRandom();
+	private static final SecureRandom RANDOM = new SecureRandom();
 
 	@Test(groups = { TestGroups.ALL })
 	public void basicZips() throws IOException {
@@ -76,7 +76,7 @@ public class TestTopBottomK {
 		int usedCount = 0;
 
 		while (usedCount < SIZE) {
-			final int r = random.nextInt(SIZE);
+			final int r = RANDOM.nextInt(SIZE);
 			if (!used[r]) {
 				usedCount++;
 				used[r] = true;
@@ -99,7 +99,7 @@ public class TestTopBottomK {
 		int usedCount = 0;
 
 		while (usedCount < SIZE) {
-			final int r = random.nextInt(SIZE);
+			final int r = RANDOM.nextInt(SIZE);
 			if (!used[r]) {
 				usedCount++;
 				used[r] = true;
@@ -122,7 +122,7 @@ public class TestTopBottomK {
 		int usedCount = 0;
 
 		while (usedCount < SIZE) {
-			final int r = random.nextInt(SIZE);
+			final int r = RANDOM.nextInt(SIZE);
 			if (!used[r]) {
 				usedCount++;
 				used[r] = true;
@@ -145,7 +145,7 @@ public class TestTopBottomK {
 		int usedCount = 0;
 
 		while (usedCount < SIZE) {
-			final int r = random.nextInt(SIZE);
+			final int r = RANDOM.nextInt(SIZE);
 			if (!used[r]) {
 				usedCount++;
 				used[r] = true;
@@ -168,7 +168,7 @@ public class TestTopBottomK {
 		int usedCount = 0;
 
 		while (usedCount < SIZE) {
-			final int r = random.nextInt(SIZE);
+			final int r = RANDOM.nextInt(SIZE);
 			if (!used[r]) {
 				usedCount++;
 				used[r] = true;
@@ -236,7 +236,7 @@ public class TestTopBottomK {
 		int usedCount = 0;
 
 		while (usedCount < SIZE) {
-			final int r = random.nextInt(SIZE);
+			final int r = RANDOM.nextInt(SIZE);
 			if (!used[r]) {
 				usedCount++;
 				used[r] = true;
@@ -259,7 +259,7 @@ public class TestTopBottomK {
 		int usedCount = 0;
 
 		while (usedCount < SIZE) {
-			final int r = random.nextInt(SIZE);
+			final int r = RANDOM.nextInt(SIZE);
 			if (!used[r]) {
 				usedCount++;
 				used[r] = true;
@@ -282,7 +282,7 @@ public class TestTopBottomK {
 		int usedCount = 0;
 
 		while (usedCount < SIZE) {
-			final int r = random.nextInt(SIZE);
+			final int r = RANDOM.nextInt(SIZE);
 			if (!used[r]) {
 				usedCount++;
 				used[r] = true;
@@ -304,7 +304,7 @@ public class TestTopBottomK {
 		final boolean[] used = new boolean[100];
 		int usedCount = 0;
 		while (usedCount < 100) {
-			final int r = random.nextInt(100);
+			final int r = RANDOM.nextInt(100);
 			if (!used[r]) {
 				usedCount++;
 				used[r] = true;
@@ -326,7 +326,7 @@ public class TestTopBottomK {
 		int usedCount = 0;
 
 		while (usedCount < 100) {
-			final int r = random.nextInt(100);
+			final int r = RANDOM.nextInt(100);
 			if (!used[r]) {
 				usedCount++;
 				used[r] = true;

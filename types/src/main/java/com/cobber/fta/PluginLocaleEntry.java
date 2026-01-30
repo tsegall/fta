@@ -138,16 +138,17 @@ public class PluginLocaleEntry {
 
 	/**
 	 * Determine the confidence that the name of the data stream is likely a valid header for this PluginLocaleEntry.
+	 * @param dataStreamName The name of this composite (Table/File)
 	 * @param dataStreamName The name of this data stream
 	 * @return An integer between 0 and 100 reflecting the confidence that this stream name is a valid header.
 	 */
-	public int getHeaderConfidence(final String dataStreamName) {
+	public int getHeaderConfidence(final String compositeName, final String dataStreamName) {
 		if (dataStreamName == null || dataStreamName.isBlank())
 			return 0;
 
 		if (headerRegExps != null)
 			for (final HeaderEntry headerEntry : headerRegExps) {
-				if (headerEntry.matches(dataStreamName))
+				if (headerEntry.matches(compositeName, dataStreamName))
 					return headerEntry.confidence;
 			}
 

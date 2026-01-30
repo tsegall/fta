@@ -42,7 +42,7 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
 
 public class TestStrings {
-	private static final SecureRandom random = new SecureRandom();
+	private static final SecureRandom RANDOM = new SecureRandom();
 	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.STRINGS })
@@ -420,7 +420,7 @@ public class TestStrings {
 		for (int i = 0; i < iterations; i++) {
 			b.setLength(0);
 			for (int j = 0; j < length; j++) {
-				b.append(alphabet.charAt(Math.abs(random.nextInt()%alphabet.length())));
+				b.append(alphabet.charAt(Math.abs(RANDOM.nextInt()%alphabet.length())));
 			}
 			if (analysis.train(b.toString()) && locked == -1)
 				locked = i;
@@ -1228,11 +1228,11 @@ public class TestStrings {
 
 		for (int i = 0; i < SAMPLE_COUNT/2; i++) {
 			String sample = String.format("%c%02d%c",
-					'a' + random.nextInt(26), random.nextInt(100), 'a' + random.nextInt(26));
+					'a' + RANDOM.nextInt(26), RANDOM.nextInt(100), 'a' + RANDOM.nextInt(26));
 			samples.add(sample);
 			analysis.train(sample);
 			sample = String.format("%02d%c%c",
-					random.nextInt(100), 'a' + random.nextInt(26), 'a' + random.nextInt(26));
+					RANDOM.nextInt(100), 'a' + RANDOM.nextInt(26), 'a' + RANDOM.nextInt(26));
 			samples.add(sample);
 			analysis.train(sample);
 		}
@@ -1270,11 +1270,11 @@ public class TestStrings {
 		final long startTime = System.currentTimeMillis();
 
 		for (int i = 1; i <= SAMPLE_COUNT; i++) {
-			final int wordCount = random.nextInt(10) + 1;
-			final int wordLength = random.nextInt(15) + 1;
+			final int wordCount = RANDOM.nextInt(10) + 1;
+			final int wordLength = RANDOM.nextInt(15) + 1;
 			final StringBuffer sampleb = new StringBuffer();
 			for (int c = 0; c < wordCount; c++) {
-				sampleb.append(Utils.repeat(possibles.charAt(random.nextInt(possibles.length())), random.nextInt(wordLength) + 1));
+				sampleb.append(Utils.repeat(possibles.charAt(RANDOM.nextInt(possibles.length())), RANDOM.nextInt(wordLength) + 1));
 				if (sampleb.length() > MAX_SAMPLE_LENGTH)
 					break;
 				if (c + 1 < wordCount)
@@ -1359,11 +1359,11 @@ public class TestStrings {
 		final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		final StringBuilder b = new StringBuilder(alphabet.length());
 		for (int i = 0; i < samples.length; i++) {
-			final int length = random.nextInt(alphabet.length()) + 1;
+			final int length = RANDOM.nextInt(alphabet.length()) + 1;
 
 			b.setLength(0);
 			for (int j = 0; j < length; j++)
-				b.append(alphabet.charAt(Math.abs(random.nextInt()%alphabet.length())));
+				b.append(alphabet.charAt(Math.abs(RANDOM.nextInt()%alphabet.length())));
 			samples[i] = b.toString();
 		}
 

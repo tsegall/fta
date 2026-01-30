@@ -33,7 +33,7 @@ import com.cobber.fta.core.FTAException;
 import com.cobber.fta.core.FTAType;
 
 public class TestIdentity {
-	private static final SecureRandom random = new SecureRandom();
+	private static final SecureRandom RANDOM = new SecureRandom();
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void possibleSSN() throws IOException, FTAException {
@@ -47,14 +47,14 @@ public class TestIdentity {
 				samples[i] = "943-00-1067";
 			else {
 				b.setLength(0);
-				int component = random.nextInt(899) + 1;
+				int component = RANDOM.nextInt(899) + 1;
 				if (component == 666)
 					component = 667;
 				b.append(String.format("%03d", component));
 				b.append('-');
-				b.append(String.format("%02d", random.nextInt(99) + 1));
+				b.append(String.format("%02d", RANDOM.nextInt(99) + 1));
 				b.append('-');
-				b.append(String.format("%04d", random.nextInt(9999) + 1));
+				b.append(String.format("%04d", RANDOM.nextInt(9999) + 1));
 				samples[i] = b.toString();
 			}
 		}
@@ -107,11 +107,11 @@ public class TestIdentity {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < samples.length; i++) {
 			b.setLength(0);
-			b.append(String.format("%03d", random.nextInt(1000)));
+			b.append(String.format("%03d", RANDOM.nextInt(1000)));
 			b.append('-');
-			b.append(String.format("%02d", random.nextInt(100)));
+			b.append(String.format("%02d", RANDOM.nextInt(100)));
 			b.append('-');
-			b.append(String.format("%04d", random.nextInt(10000)));
+			b.append(String.format("%04d", RANDOM.nextInt(10000)));
 			samples[i] = b.toString();
 		}
 

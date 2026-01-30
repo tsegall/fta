@@ -118,12 +118,12 @@ public class JobTitleEN extends LogicalTypeInfinite {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		if (getHeaderConfidence(context.getStreamName()) >= 99)
+		if (getHeaderConfidence(context) >= 99)
 			return PluginAnalysis.OK;
 
 		int minCardinality = 10;
 		int minSamples = 20;
-		if (getHeaderConfidence(context.getStreamName()) > 0) {
+		if (getHeaderConfidence(context) > 0) {
 			minCardinality = 5;
 			minSamples = 5;
 		}
@@ -144,9 +144,9 @@ public class JobTitleEN extends LogicalTypeInfinite {
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final double confidence = (double)matchCount/realSamples;
 
-		if (getHeaderConfidence(context.getStreamName()) >= 99)
+		if (getHeaderConfidence(context) >= 99)
 			return 1.0;
-		else if (getHeaderConfidence(context.getStreamName()) >= 90)
+		else if (getHeaderConfidence(context) >= 90)
 			return Math.min(1.2 * confidence, 1.0);
 
 		return confidence;

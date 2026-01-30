@@ -126,26 +126,31 @@ public class Age extends LogicalTypeInfinite {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+		final int headerConfidence = getHeaderConfidence(context);
 
-		if (((Number)(facts.getMax())).longValue() > MAX_AGE || ((Number)(facts.getMin())).longValue() < 0 || facts.mean < 5.0 || getHeaderConfidence(context.getStreamName()) == 0)
+		if (((Number)(facts.getMax())).longValue() > MAX_AGE || ((Number)(facts.getMin())).longValue() < 0 || facts.mean < 5.0 || headerConfidence == 0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// Age covers many concepts, we are hunting for a person's age so insist on another highly correlated field
 		boolean signalFound = false;
-		for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
-			if (logicalGender != null && logicalGender.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
-				signalFound = true;
-				break;
+
+		if (headerConfidence == 100)
+			signalFound = true;
+		else
+			for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
+				if (logicalGender != null && logicalGender.getHeaderConfidence(context.getCompositeName(), context.getCompositeStreamNames()[i]) >= 90) {
+					signalFound = true;
+					break;
+				}
+				if (logicalFirst != null && logicalFirst.getHeaderConfidence(context.getCompositeName(), context.getCompositeStreamNames()[i]) >= 90) {
+					signalFound = true;
+					break;
+				}
+				if (logicalRace != null && logicalRace.getHeaderConfidence(context.getCompositeName(), context.getCompositeStreamNames()[i]) >= 90) {
+					signalFound = true;
+					break;
+				}
 			}
-			if (logicalFirst != null && logicalFirst.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
-				signalFound = true;
-				break;
-			}
-			if (logicalRace != null && logicalRace.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90) {
-				signalFound = true;
-				break;
-			}
-		}
 
 		// This check is similar to the one above but will fire if a suitable Semantic Type was identified on a previous pass
 		if (!signalFound &&

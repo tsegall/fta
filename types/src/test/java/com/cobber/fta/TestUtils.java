@@ -42,7 +42,7 @@ import com.cobber.fta.core.PatternFG;
 import com.cobber.fta.core.RegExpGenerator;
 
 public class TestUtils {
-	private static final Random random = new Random(314159);
+	private static final Random RANDOM = new Random(314159);
 	public static final double EPSILON = 0.00000001;
 
 	protected static final String validZips = "01770|01772|01773|02027|02030|02170|02379|02657|02861|03216|03561|03848|04066|04281|04481|04671|04921|05072|05463|05761|" +
@@ -70,7 +70,7 @@ public class TestUtils {
 	protected static final String validAUStates = "ACT|NSW|NT|QLD|SA|TAS|VIC|WA";
 
 	// Set of valid months + 4 x "UNK"
-	protected static final String months = "Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
+	protected static final String MONTHS = "Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
 			"Jan|Mar|Jun|Jul|Feb|Dec|Apr|Nov|Apr|Oct|May|Aug|Aug|Jan|Jun|Sep|Nov|Jan|" +
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|Sep|Jan|Oct|Oct|Oct|" +
@@ -82,7 +82,7 @@ public class TestUtils {
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|UNK|Sep|Jan|Oct|Oct|Oct|";
 
 	// Set of valid months + 4 x "UNK"
-	protected static final String monthsFrench =
+	protected static final String MONTHS_FRENCH =
 			"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
 					"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
 					"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
@@ -155,37 +155,37 @@ public class TestUtils {
 		switch (type) {
 		case 0:
 			// Integer
-			return String.valueOf(random.nextInt());
+			return String.valueOf(RANDOM.nextInt());
 		case 1:
 			// Boolean
-			return String.valueOf(random.nextBoolean());
+			return String.valueOf(RANDOM.nextBoolean());
 		case 2:
 			// Long
-			return String.valueOf(random.nextLong());
+			return String.valueOf(RANDOM.nextLong());
 		case 3:
 			// Double
-			return String.valueOf(random.nextDouble());
+			return String.valueOf(RANDOM.nextDouble());
 		case 4:
 			// Date
-			return new Date(random.nextLong()).toString();
+			return new Date(RANDOM.nextLong()).toString();
 		case 5:
 			// ISO 3166-3
-			return candidatesISO3166_3[random.nextInt(candidatesISO3166_3.length)];
+			return candidatesISO3166_3[RANDOM.nextInt(candidatesISO3166_3.length)];
 		case 6:
 			// ISO 3166-2
-			return candidatesISO3166_2[random.nextInt(candidatesISO3166_2.length)];
+			return candidatesISO3166_2[RANDOM.nextInt(candidatesISO3166_2.length)];
 		case 7:
 			// Zip Cpde
-			return candidatesZips[random.nextInt(candidatesZips.length)];
+			return candidatesZips[RANDOM.nextInt(candidatesZips.length)];
 		case 8:
 			// US State
-			return candidatesUSStates[random.nextInt(candidatesUSStates.length)];
+			return candidatesUSStates[RANDOM.nextInt(candidatesUSStates.length)];
 		case 9:
 			// CA Provinces
-			return candidatesCAProvinces[random.nextInt(candidatesCAProvinces.length)];
+			return candidatesCAProvinces[RANDOM.nextInt(candidatesCAProvinces.length)];
 		case 10:
 			// US Street
-			return TestUtils.validUSStreets[random.nextInt(TestUtils.validUSStreets.length)];
+			return TestUtils.validUSStreets[RANDOM.nextInt(TestUtils.validUSStreets.length)];
 		default:
 			return "";
 		}

@@ -42,7 +42,7 @@ public class SpatialGeoJSON extends LogicalTypeInfinite {
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	private static final String[] keywords = {
+	private static final String[] KEYWORDS = {
 			"POINT",
 			"MULTIPOINT",
 			"LINESTRING",
@@ -61,7 +61,7 @@ public class SpatialGeoJSON extends LogicalTypeInfinite {
 	public SpatialGeoJSON(final PluginDefinition plugin) {
 		super(plugin);
 
-		for (final String keyword : keywords) {
+		for (final String keyword : KEYWORDS) {
 			final int len = keyword.length();
 			if (len < minKeywordLength)
 				minKeywordLength = len;
@@ -69,12 +69,12 @@ public class SpatialGeoJSON extends LogicalTypeInfinite {
 				maxKeywordLength = len;
 		}
 
-		keywordSet = new HashSet<>(Arrays.asList(keywords));
+		keywordSet = new HashSet<>(Arrays.asList(KEYWORDS));
 	}
 
 	@Override
 	public String nextRandom() {
-		final StringBuilder s = new StringBuilder();
+		final StringBuilder s = new StringBuilder(64);
 		s.append("{ \"coordinates\": [");
 		final int points = getRandom().nextInt(8) + 2;
 		for (int i = 0; i < points; i++) {

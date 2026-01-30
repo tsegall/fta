@@ -371,7 +371,7 @@ public class Facts {
 		return minLong;
 	}
 
-	public void setMinLong(long minLong) {
+	public void setMinLong(final long minLong) {
 		this.minLong = minLong;
 	}
 
@@ -379,7 +379,7 @@ public class Facts {
 		return maxLong;
 	}
 
-	public void setMaxLong(long maxLong) {
+	public void setMaxLong(final long maxLong) {
 		this.maxLong = maxLong;
 	}
 
@@ -387,7 +387,7 @@ public class Facts {
 		return minLongNonZero;
 	}
 
-	public void setMinLongNonZero(long minLongNonZero) {
+	public void setMinLongNonZero(final long minLongNonZero) {
 		this.minLongNonZero = minLongNonZero;
 	}
 

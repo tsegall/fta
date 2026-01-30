@@ -92,7 +92,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 			return "QTR" + quarter;
 
 		case Nth:
-			return String.valueOf(quarter) + ordinals[quarter - 1];
+			return quarter + ordinals[quarter - 1];
 
 		default:
 			return "Q" + quarter;
@@ -186,7 +186,7 @@ public class PeriodQuarter extends LogicalTypeInfinite {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		if ((form == Form.Digit || form == Form.Nth) && getHeaderConfidence(context.getStreamName()) < 99)
+		if ((form == Form.Digit || form == Form.Nth) && getHeaderConfidence(context) < 99)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;

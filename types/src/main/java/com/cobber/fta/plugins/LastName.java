@@ -237,7 +237,7 @@ public class LastName extends PersonName {
 			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		if (realSamples > 10 && !averageLengthOK())
 			return PluginAnalysis.SIMPLE_NOT_OK;
-		if (getHeaderConfidence(context.getStreamName()) < 90 && realSamples > 10 && (100*bad)/realSamples > 1)
+		if (getHeaderConfidence(context) < 90 && realSamples > 10 && (100*bad)/realSamples > 1)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 		return super.analyzeSet(context, matchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig);
 	}

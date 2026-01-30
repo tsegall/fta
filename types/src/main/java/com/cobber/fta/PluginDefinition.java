@@ -218,7 +218,7 @@ public class PluginDefinition {
 		return null;
 	}
 
-	public boolean isMandatoryHeaderUnsatisfied(final Locale locale, final String streamName) {
+	public boolean isMandatoryHeaderUnsatisfied(final Locale locale, final AnalyzerContext context) {
 		final PluginLocaleEntry localeEntry;
 		try {
 			localeEntry = getLocaleEntry(locale);
@@ -236,7 +236,7 @@ public class PluginDefinition {
 			if (entry.mandatory)
 				mandatory = true;
 
-			if (entry.matches(streamName))
+			if (entry.matches(context.getCompositeName(), context.getStreamName()))
 				return entry.confidence < 0;
 		}
 

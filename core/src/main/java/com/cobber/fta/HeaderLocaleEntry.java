@@ -33,7 +33,7 @@ public class HeaderLocaleEntry {
 	public int getHeaderConfidence(final String input) {
 		if (headerRegExps != null)
 			for (final HeaderEntry headerEntry : headerRegExps) {
-				if (headerEntry.matches(input))
+				if (headerEntry.matches(null, input))
 					return headerEntry.confidence;
 			}
 

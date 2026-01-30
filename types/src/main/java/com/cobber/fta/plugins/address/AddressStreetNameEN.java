@@ -57,7 +57,7 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 	public String nextRandom() {
 		final String simpleAddressMarkers[] = { "Street", "St", "Road", "Rd", "Rd.", "Avenue", "Ave", "Terrace", "Drive" };
 
-		return AddressCommon.sampleStreets[getRandom().nextInt(AddressCommon.sampleStreets.length)] + ' ' + simpleAddressMarkers[getRandom().nextInt(simpleAddressMarkers.length)];
+		return AddressCommon.SAMPLE_STREETS[getRandom().nextInt(AddressCommon.SAMPLE_STREETS.length)] + ' ' + simpleAddressMarkers[getRandom().nextInt(simpleAddressMarkers.length)];
 	}
 
 	@Override
@@ -165,18 +165,16 @@ public class AddressStreetNameEN extends LogicalTypeInfinite {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		// Don't declare success if the header does not look good and we only have a few sample OR the uniqueness of the set is extremely low
-		if (getHeaderConfidence(context.getStreamName()) <= 85 && realSamples < 10 ||
-				getHeaderConfidence(context.getStreamName()) <= 85 && markersSeen.size() < 2 ||
-				getHeaderConfidence(context.getStreamName()) < 99 && cardinality.size() * 100 / realSamples < 1)
+		if (getHeaderConfidence(context) <= 85 && realSamples < 10 ||
+				getHeaderConfidence(context) <= 85 && markersSeen.size() < 2 ||
+				getHeaderConfidence(context) < 99 && cardinality.size() * 100 / realSamples < 1)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 		return getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;
 	}
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
-		final String dataStreamName = context.getStreamName();
-
-		final int headerConfidence = getHeaderConfidence(dataStreamName);
+		final int headerConfidence = getHeaderConfidence(context);
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost based on how much we like the header

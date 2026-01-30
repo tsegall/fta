@@ -122,7 +122,7 @@ public class MunicipalityCodeNL extends LogicalTypeInfinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		final int headerConfidence = getHeaderConfidence(context.getStreamName());
+		final int headerConfidence = getHeaderConfidence(context);
 		if (headerConfidence == 0 && cardinality.size() < 5)
 			return new PluginAnalysis(backout());
 

@@ -135,7 +135,7 @@ public class FirstName extends PersonName {
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(context.getStreamName()) > 0)
+		if (getHeaderConfidence(context) > 0)
 			confidence = Math.min(confidence * 1.2, 1.0);
 
 		return confidence;
@@ -145,7 +145,7 @@ public class FirstName extends PersonName {
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
 			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 		// We do not expect to see much true rubbish or less than 20% names that we do not recognize
-		if (getHeaderConfidence(context.getStreamName()) < 90 &&
+		if (getHeaderConfidence(context) < 90 &&
 				(realSamples > 10 && (((100*bad)/realSamples > 1) || ((recognized*100)/realSamples < 2))))
 			return PluginAnalysis.SIMPLE_NOT_OK;
 		return super.analyzeSet(context, matchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig);

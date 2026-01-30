@@ -50,7 +50,7 @@ import com.cobber.fta.core.RegExpSplitter;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 public class TestLongs {
-	private static final SecureRandom random = new SecureRandom();
+	private static final SecureRandom RANDOM = new SecureRandom();
 	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	public void _variableLengthPositiveInteger(final boolean collectStatistics) throws IOException, FTAException {
@@ -453,9 +453,9 @@ public class TestLongs {
 		final int EIN_COUNT = 125;
 
 		for (int i = 0; i < EIN_COUNT; i++)
-			analysis.train(new String[] {String.valueOf(100000000 + random.nextInt(1000)) });
+			analysis.train(new String[] {String.valueOf(100000000 + RANDOM.nextInt(1000)) });
 		for (int i = 0; i < maxCardinality; i++)
-			analysis.train(new String[] { String.valueOf(1200000000000L + random.nextInt(100000000)) });
+			analysis.train(new String[] { String.valueOf(1200000000000L + RANDOM.nextInt(100000000)) });
 		analysis.train(new String[] { "1.01E+12" });
 
 
@@ -668,7 +668,7 @@ public class TestLongs {
 		final NumberFormat longFormatter = NumberFormat.getNumberInstance(Locale.US);
 
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
-			final long l = random.nextInt(100000000);
+			final long l = RANDOM.nextInt(100000000);
 			final String sample = longFormatter.format(l);
 			if (l < min) {
 				min = l;
@@ -730,7 +730,7 @@ public class TestLongs {
 			samples.clear();
 
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
-				long l = random.nextInt(100000000);
+				long l = RANDOM.nextInt(100000000);
 				if (l%2 == 0)
 					l = -l;
 				final String sample = nf.format(l);
@@ -967,7 +967,7 @@ public class TestLongs {
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
 					// Make sure we have at least one duplicate - so the field is not detected as an IDENTIFIER
 					if (i != SAMPLE_SIZE - 1)
-						l = random.nextLong();
+						l = RANDOM.nextLong();
 					if (l % 2 == 0)
 						l = -l;
 					final String sample = nf.format(l);
@@ -1046,7 +1046,7 @@ public class TestLongs {
 		int bad = 0;
 
 		for (samples = 0; samples <= AnalysisConfig.DETECT_WINDOW_DEFAULT; samples++) {
-			final String input = String.valueOf(random.nextInt(1000000));
+			final String input = String.valueOf(RANDOM.nextInt(1000000));
 			final int len = input.length();
 			if (len < minLength)
 				minLength = len;
@@ -1056,7 +1056,7 @@ public class TestLongs {
 				locked = samples;
 		}
 
-		analysis.train(String.valueOf(random.nextDouble()));
+		analysis.train(String.valueOf(RANDOM.nextDouble()));
 		bad++;
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -1091,7 +1091,7 @@ public class TestLongs {
 		}
 		int cnt = 0;
 		while (cnt < iterations) {
-			final long randomLong = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
+			final long randomLong = RANDOM.nextInt(Integer.MAX_VALUE) + 1000000000L;
 			if (randomLong >  9999999999L)
 				continue;
 			if (analysis.train(String.valueOf(randomLong)) && locked == -1)
@@ -1425,8 +1425,8 @@ public class TestLongs {
 		final NumberFormat longFormatter = NumberFormat.getNumberInstance(Locale.US);
 
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
-			long l = random.nextInt(100000000);
-			if (random.nextBoolean())
+			long l = RANDOM.nextInt(100000000);
+			if (RANDOM.nextBoolean())
 				l *= -1;
 			if (l < min) {
 				min = l;
@@ -1537,7 +1537,7 @@ public class TestLongs {
 			analysis.train(null);
 		}
 		for (int i = 0; i < iterations; i++) {
-			if (analysis.train(String.valueOf(random.nextInt(1000000))) && locked == -1)
+			if (analysis.train(String.valueOf(RANDOM.nextInt(1000000))) && locked == -1)
 				locked = i;
 		}
 
@@ -1944,7 +1944,7 @@ public class TestLongs {
 
 		int iters;
 		for (iters = 0; iters < samples.length; iters++) {
-			analysis.train(String.valueOf(random.nextInt(100000000)));
+			analysis.train(String.valueOf(RANDOM.nextInt(100000000)));
 		}
 
 		final TextAnalysisResult result = analysis.getResult();
@@ -1980,7 +1980,7 @@ public class TestLongs {
 			bw = new BufferedWriter(new FileWriter("/tmp/longPerf.csv", StandardCharsets.UTF_8));
 
 		for (int i = 0; i < samples.length; i++)
-			samples[i] = String.valueOf(random.nextInt(100000000));
+			samples[i] = String.valueOf(RANDOM.nextInt(100000000));
 
 		final long start = System.currentTimeMillis();
 

@@ -110,7 +110,7 @@ public class AddressOther extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
-		final int headerConfidence = getHeaderConfidence(context.getStreamName());
+		final int headerConfidence = getHeaderConfidence(context);
 
 		// We really want to see a great header
 		if (headerConfidence < 99)

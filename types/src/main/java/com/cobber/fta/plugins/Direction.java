@@ -190,42 +190,42 @@ public class Direction extends LogicalTypeInfinite {
 			return PluginAnalysis.SIMPLE_NOT_OK;
 		case BOUND_SHORT:
 			numberSeen = seenCount(boundShortCounts);
-			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
+			if (numberSeen != 4 && getHeaderConfidence(context) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
 			break;
 		case BOUND_LONG:
 			numberSeen = seenCount(boundLongCounts);
-			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
+			if (numberSeen != 4 && getHeaderConfidence(context) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
 			break;
 		case CARDINAL:
 			numberSeen = seenCount(cardinalCounts);
-			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
+			if (numberSeen != 4 && getHeaderConfidence(context) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
 			break;
 		case INTERCARDINAL:
 			numberSeen = seenCount(intercardinalCounts);
-			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
+			if (numberSeen != 4 && getHeaderConfidence(context) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
 			break;
 		case INTERCARDINAL_FULL:
 			numberSeen = seenCount(intercardinalFullCounts);
-			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
+			if (numberSeen != 4 && getHeaderConfidence(context) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
 			break;
 		case CARDINAL_FULL:
 			numberSeen = seenCount(intercardinalCounts);
-			if (numberSeen != 4 && getHeaderConfidence(context.getStreamName()) < 90)
+			if (numberSeen != 4 && getHeaderConfidence(context) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
 			break;
 		case CARDINAL_BOTH:
 			numberSeen = seenCount(cardinalCounts) + seenCount(intercardinalCounts);
-			if (numberSeen < 5 && getHeaderConfidence(context.getStreamName()) < 90)
+			if (numberSeen < 5 && getHeaderConfidence(context) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
 			break;
 		case CARDINAL_FULL_BOTH:
 			numberSeen = seenCount(cardinalFullCounts) + seenCount(intercardinalFullCounts);
-			if (numberSeen < 5 && getHeaderConfidence(context.getStreamName()) < 90)
+			if (numberSeen < 5 && getHeaderConfidence(context) < 90)
 				return PluginAnalysis.SIMPLE_NOT_OK;
 			break;
 		}

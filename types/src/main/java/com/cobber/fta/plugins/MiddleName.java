@@ -60,11 +60,11 @@ public class MiddleName extends FirstName {
 	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
 		final String trimmedUpper = input.trim().toUpperCase(locale);
-		final int length = trimmedUpper.length();
 
 		if (getMembers().contains(trimmedUpper))
 			return true;
 
+		final int length = trimmedUpper.length();
 		// We are prepared to accepted X or X. as a middle name
 		if (length == 1 || length == 2) {
 			if (!Character.isAlphabetic(trimmedUpper.charAt(0)))
@@ -98,7 +98,7 @@ public class MiddleName extends FirstName {
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		// We have 'Middle Name' or MiddleName'
-		if (getHeaderConfidence(context.getStreamName()) >= 99) {
+		if (getHeaderConfidence(context) >= 99) {
 			long newMatchCount = matchCount;
 			for (final Map.Entry<String, Long> outlier : outliers.entrySet())
 				if (outlier.getKey().length() == 1 && Character.isAlphabetic(outlier.getKey().charAt(0)))
@@ -112,15 +112,15 @@ public class MiddleName extends FirstName {
 		int last = -1;
 		final int current = context.getStreamIndex();
 		for (int i = 0; i < context.getCompositeStreamNames().length; i++) {
-			if (first == -1 && logicalFirst.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90)
+			if (first == -1 && logicalFirst.getHeaderConfidence(context.getCompositeName(), context.getCompositeStreamNames()[i]) >= 90)
 				first = i;
-			if (last == -1 && logicalLast.getHeaderConfidence(context.getCompositeStreamNames()[i]) >= 90)
+			if (last == -1 && logicalLast.getHeaderConfidence(context.getCompositeName(), context.getCompositeStreamNames()[i]) >= 90)
 				last = i;
 		}
 
 		// We want to see fields we recognize as first and last names and a header that looks reasonable and a set of names that look good
 		if (first != -1 && last != -1 && current > first &&
-				getHeaderConfidence(context.getStreamName()) >= 90 &&
+				getHeaderConfidence(context) >= 90 &&
 				super.analyzeSet(context, matchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig).isValid())
 			return PluginAnalysis.OK;
 

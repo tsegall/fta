@@ -423,7 +423,7 @@ public class VAT extends LogicalTypeInfinite {
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost based on how much we like the header
-		if (getHeaderConfidence(context.getStreamName()) >= 90)
+		if (getHeaderConfidence(context) >= 90)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.30), 1.0);
 
 		return confidence;

@@ -91,7 +91,7 @@ public class EpochMilliseconds extends LogicalTypeInfinite {
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams,
 			AnalysisConfig analysisConfig) {
 		// If we are not sure about the header and it less than YEAR 2000 or > now() call it a day
-		if (getHeaderConfidence(context.getStreamName()) < 99 && (cardinality.size() < 10 || minObservation < YEAR_2000_MILLISECONDS || maxObservation > System.currentTimeMillis()))
+		if (getHeaderConfidence(context) < 99 && (cardinality.size() < 10 || minObservation < YEAR_2000_MILLISECONDS || maxObservation > System.currentTimeMillis()))
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		return getConfidence(matchCount, realSamples, context) >= getThreshold()/100.0 ? PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;

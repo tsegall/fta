@@ -181,7 +181,7 @@ public class FileName extends LogicalTypeInfinite {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		if (getHeaderConfidence(context.getStreamName()) >= 99)
+		if (getHeaderConfidence(context) >= 99)
 			return PluginAnalysis.OK;
 
 		final int minCardinality = 5;
@@ -199,7 +199,7 @@ public class FileName extends LogicalTypeInfinite {
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final double confidence = (double)matchCount/realSamples;
-		final int headerConfidence = getHeaderConfidence(context.getStreamName());
+		final int headerConfidence = getHeaderConfidence(context);
 
 		if (headerConfidence >= 99)
 			return Math.min(confidence + 0.20, 1.0);

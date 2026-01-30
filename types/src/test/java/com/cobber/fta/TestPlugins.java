@@ -65,7 +65,7 @@ import de.siegmar.fastcsv.reader.CsvReader;
 import de.siegmar.fastcsv.reader.NamedCsvRecord;
 
 public class TestPlugins {
-	private static final SecureRandom random = new SecureRandom();
+	private static final SecureRandom RANDOM = new SecureRandom();
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderTwoValues() throws IOException, FTAException {
@@ -517,6 +517,42 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicRace", Locale.US, "PERSON.RACE_EN", FTAType.STRING, 1.0);
 		assertEquals(result.getOutlierCount(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void testCompositeKey() throws IOException, FTAException {
+		final String[] inputs = {
+				"12", "21", "88", "34", "60", "37",
+				"42", "22", "77", "24", "50", "38",
+				"56", "23", "65", "24", "40", "36",
+				"61", "13", "42", "41", "33", "24",
+				"35", "33", "31", "90", "80", "22",
+		};
+
+		final String dataStreamName = "Age";
+		final AnalyzerContext contextWithComposite = new AnalyzerContext(dataStreamName, DateResolutionMode.Auto, "Person", new String[] { dataStreamName } );
+		final TextAnalyzer analysis = new TextAnalyzer(contextWithComposite);
+
+		for (int i = 0; i < 10; i++)
+			for (final String input : inputs)
+				analysis.train(input);
+
+		TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getSemanticType(), "PERSON.AGE");
+
+		final AnalyzerContext contextNoComposite = new AnalyzerContext(dataStreamName, DateResolutionMode.Auto, null, new String[] { dataStreamName } );
+		final TextAnalyzer analysisNC = new TextAnalyzer(contextNoComposite);
+
+		for (int i = 0; i < 10; i++)
+			for (final String input : inputs)
+				analysisNC.train(input);
+
+		result = analysisNC.getResult();
+
+		assertEquals(result.getType(), FTAType.LONG);
+		assertNull(result.getSemanticType());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -3204,7 +3240,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicMonthAbbrBackout() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbrBackout");
-		final String inputs[] = TestUtils.months.split("\\|");
+		final String inputs[] = TestUtils.MONTHS.split("\\|");
 
 		int locked = -1;
 
@@ -3241,7 +3277,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicMonthAbbrExcessiveBad() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbrExcessiveBad");
-		final String inputs[] = TestUtils.months.split("\\|");
+		final String inputs[] = TestUtils.MONTHS.split("\\|");
 
 		int locked = -1;
 
@@ -3278,7 +3314,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbr");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		final int badCount = 4;
-		final String inputs[] = TestUtils.months.split("\\|");
+		final String inputs[] = TestUtils.MONTHS.split("\\|");
 
 		int locked = -1;
 
@@ -3335,7 +3371,7 @@ public class TestPlugins {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbr");
 		analysis.setLocale(Locale.CANADA);
 		final int badCount = 4;
-		final String inputs[] = TestUtils.months.split("\\|");
+		final String inputs[] = TestUtils.MONTHS.split("\\|");
 
 		int locked = -1;
 
@@ -3373,7 +3409,7 @@ public class TestPlugins {
 		analysis.setLocale(Locale.FRENCH);
 		analysis.configure(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION, false);
 		final int badCount = 4;
-		final String inputs[] = TestUtils.monthsFrench.split("\\|");
+		final String inputs[] = TestUtils.MONTHS_FRENCH.split("\\|");
 
 		int locked = -1;
 
@@ -3520,7 +3556,7 @@ public class TestPlugins {
 		final String[] samples = new String[1000];
 
 		for (int i = 0; i < samples.length; i++) {
-			samples[i] = random.nextInt(2) == 1 ? "femenino" : "masculino";
+			samples[i] = RANDOM.nextInt(2) == 1 ? "femenino" : "masculino";
 		}
 
 		final TextAnalyzer analysis = new TextAnalyzer("genero");
@@ -3580,7 +3616,7 @@ public class TestPlugins {
 		}
 
 		for (int i = 0; i < SAMPLES; i++) {
-			analysis.train(planets.members[random.nextInt(planets.members.length)]);
+			analysis.train(planets.members[RANDOM.nextInt(planets.members.length)]);
 		}
 		analysis.train("032--45-0981");
 
@@ -3623,7 +3659,7 @@ public class TestPlugins {
 
 		analysis.train("io");
 		for (int i = 0; i < SAMPLES; i++) {
-			analysis.train(planets.members[random.nextInt(planets.members.length)]);
+			analysis.train(planets.members[RANDOM.nextInt(planets.members.length)]);
 		}
 		analysis.train("europa");
 
@@ -3677,7 +3713,7 @@ public class TestPlugins {
 		}
 
 		for (int i = 0; i < COUNT; i++)
-			analysis.train(String.valueOf(random.nextDouble()));
+			analysis.train(String.valueOf(RANDOM.nextDouble()));
 
 		analysis.train("A");
 		analysis.train("BBBBBBBBBBBBBBBBBBBBBBBBB");
@@ -5130,7 +5166,7 @@ public class TestPlugins {
 		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			samples[i] = new Sample(String.valueOf(CARDINAL[random.nextInt(CARDINAL.length)]));
+			samples[i] = new Sample(String.valueOf(CARDINAL[RANDOM.nextInt(CARDINAL.length)]));
 
 		TestUtils.simpleCore(samples, "directionCardinal", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
@@ -5141,7 +5177,7 @@ public class TestPlugins {
 		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			samples[i] = new Sample(String.valueOf(INTERCARDINAL[random.nextInt(INTERCARDINAL.length)]));
+			samples[i] = new Sample(String.valueOf(INTERCARDINAL[RANDOM.nextInt(INTERCARDINAL.length)]));
 
 		TestUtils.simpleCore(samples, "directionInterCardinal", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
@@ -5152,8 +5188,8 @@ public class TestPlugins {
 		final Sample[] samples = new Sample[2 * ITERATIONS];
 
 		for (int i = 0; i < 2 * ITERATIONS; i += 2) {
-			samples[i] = new Sample(String.valueOf(CARDINAL[random.nextInt(CARDINAL.length)]));
-			samples[i + 1] = new Sample(String.valueOf(INTERCARDINAL[random.nextInt(INTERCARDINAL.length)]));
+			samples[i] = new Sample(String.valueOf(CARDINAL[RANDOM.nextInt(CARDINAL.length)]));
+			samples[i + 1] = new Sample(String.valueOf(INTERCARDINAL[RANDOM.nextInt(INTERCARDINAL.length)]));
 		}
 
 		TestUtils.simpleCore(samples, "directionCardinalBoth", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
@@ -5165,7 +5201,7 @@ public class TestPlugins {
 		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			samples[i] = new Sample(String.valueOf(CARDINAL_FULL[random.nextInt(CARDINAL_FULL.length)]));
+			samples[i] = new Sample(String.valueOf(CARDINAL_FULL[RANDOM.nextInt(CARDINAL_FULL.length)]));
 
 		TestUtils.simpleCore(samples, "directionInterFull", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
@@ -5176,7 +5212,7 @@ public class TestPlugins {
 		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			samples[i] = new Sample(String.valueOf(INTERCARDINAL_FULL[random.nextInt(INTERCARDINAL_FULL.length)]));
+			samples[i] = new Sample(String.valueOf(INTERCARDINAL_FULL[RANDOM.nextInt(INTERCARDINAL_FULL.length)]));
 
 		TestUtils.simpleCore(samples, "directionInterFull", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
@@ -5187,7 +5223,7 @@ public class TestPlugins {
 		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			samples[i] = new Sample(String.valueOf(BOUND_SHORT[random.nextInt(BOUND_SHORT.length)]));
+			samples[i] = new Sample(String.valueOf(BOUND_SHORT[RANDOM.nextInt(BOUND_SHORT.length)]));
 
 		TestUtils.simpleCore(samples, "directionboundShort", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}
@@ -5198,7 +5234,7 @@ public class TestPlugins {
 		final Sample[] samples = new Sample[ITERATIONS];
 
 		for (int i = 0; i < ITERATIONS; i++)
-			samples[i] = new Sample(String.valueOf(BOUND_LONG[random.nextInt(BOUND_LONG.length)]));
+			samples[i] = new Sample(String.valueOf(BOUND_LONG[RANDOM.nextInt(BOUND_LONG.length)]));
 
 		TestUtils.simpleCore(samples, "directionBoundLong", Locale.US, "DIRECTION", FTAType.STRING, 1.0);
 	}

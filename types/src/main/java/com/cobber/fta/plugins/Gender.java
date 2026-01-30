@@ -268,7 +268,7 @@ public class Gender extends LogicalTypeFinite {
 		if (cardinality.isEmpty())
 			return new PluginAnalysis(BACKOUT_REGEX);
 
-		final boolean positiveStreamName = getHeaderConfidence(context.getStreamName()) > 0;
+		final boolean positiveStreamName = getHeaderConfidence(context) > 0;
 
 		if (positiveStreamName) {
 			for (final GenderPair candidate : genderData.getAll()) {

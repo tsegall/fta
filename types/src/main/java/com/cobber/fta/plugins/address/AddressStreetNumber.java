@@ -96,7 +96,7 @@ public class AddressStreetNumber extends LogicalTypeInfinite {
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final double confidence = (double)matchCount/realSamples;
-		if (getHeaderConfidence(context.getStreamName()) >= 99)
+		if (getHeaderConfidence(context) >= 99)
 			return 1.0;
 
 		// If there is already an existing close field identified as the Street Number we are done
@@ -122,7 +122,7 @@ public class AddressStreetNumber extends LogicalTypeInfinite {
 
 	private boolean isDirectionField(final int fieldIndex, final AnalyzerContext context) {
         final String streamName = context.getCompositeStreamNames()[fieldIndex];
-        if (directionEntry.getHeaderConfidence(streamName) >= 99)
+        if (directionEntry.getHeaderConfidence(context.getCompositeName(), streamName) >= 99)
                 return true;
         return context.isSemanticType(fieldIndex, "DIRECTION");
 	}

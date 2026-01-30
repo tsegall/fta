@@ -113,7 +113,6 @@ public class URLLT extends LogicalTypeInfinite {
 				includeScheme = false;
 			}
 
-			final String scheme = uri.getScheme() != null ? uri.getScheme() + "://" : null;
 			final String authority = uri.getRawAuthority() != null ? uri.getRawAuthority() : ""; // includes domain and port
 			if (authority.length() > MAX_AUTHORITY_LENGTH)
 				return null;
@@ -121,6 +120,7 @@ public class URLLT extends LogicalTypeInfinite {
 			final String queryString = uri.getRawQuery() != null ? "?" + uri.getRawQuery() : "";
 			final String fragment = uri.getRawFragment() != null ? "#" + uri.getRawFragment() : "";
 
+			final String scheme = uri.getScheme() != null ? uri.getScheme() + "://" : null;
 			// Must convert domain to punycode separately from the path
 			url = (includeScheme ? scheme : "") + IDN.toASCII(authority) + path + queryString + fragment;
 
@@ -183,7 +183,7 @@ public class URLLT extends LogicalTypeInfinite {
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		double confidence = (double)matchCount/realSamples;
 		// Boost by 10% if we like the header, drop by 5% if we have only seen items with no protocol
-		if (getHeaderConfidence(context.getStreamName()) > 0)
+		if (getHeaderConfidence(context) > 0)
 			confidence = Math.min(confidence + 0.1, 1.0);
 		else if (protocol[0] == 0)
 			confidence = Math.max(confidence - 0.05, 0.0);

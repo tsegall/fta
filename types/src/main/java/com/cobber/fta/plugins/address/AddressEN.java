@@ -209,10 +209,10 @@ public class AddressEN extends LogicalTypeInfinite {
 
 		if (context.isPreviousSemanticType("STREET_ADDRESS_EN", "STREET_ADDRESS2_EN", "STREET_ADDRESS3_EN") ||
 				// If we have all the headers then we can check if this one is less likely to be the primary address field than the previous one
-				(!previousSemanticTypeInfoAvailable && (current >= 1 && getHeaderConfidence(context.getCompositeStreamNames()[current - 1]) > getHeaderConfidence(dataStreamName))))
+				(!previousSemanticTypeInfoAvailable && (current >= 1 && getHeaderConfidence(context.getCompositeName(), context.getCompositeStreamNames()[current - 1]) > getHeaderConfidence(context))))
 			return 0.0;
 
-		final int headerConfidence = getHeaderConfidence(dataStreamName);
+		final int headerConfidence = getHeaderConfidence(context);
 		double confidence = (double)matchCount/realSamples;
 
 		// Does the next field have a Semantic Type that indicates it is a Street Address 2

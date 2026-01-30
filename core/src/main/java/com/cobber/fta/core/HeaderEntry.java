@@ -28,6 +28,8 @@ public class HeaderEntry {
 	public int confidence;
 	/** If true then the header must match be present. */
 	public boolean mandatory;
+	/** If true then the match against &lt;CompositeName&gt;.&lt;DataStreamName&gt; as opposed to just &lt;DataStreamName&gt;. */
+	public boolean compositeKey;
 
 	/** The pattern is used to cache the compiled regular expression since it will be executed many times. */
 	private Pattern pattern;
@@ -62,13 +64,16 @@ public class HeaderEntry {
 		return (new StringBuilder()).append('[').append(regExp).append(':').append(confidence).append(':').append(mandatory).append(']').toString();
 	}
 
-	public boolean matches(final String input) {
+	public boolean matches(final String compositeName, final String dataStreamName) {
 		if (pattern == null) {
 			synchronized (this) {
 				pattern = Pattern.compile(regExp);
 			}
 		}
 
-		return pattern.matcher(input).matches();
+		if (!compositeKey || compositeName == null)
+			return pattern.matcher(dataStreamName).matches();
+
+		return pattern.matcher(compositeName + '.' + dataStreamName).matches();
 	}
 }

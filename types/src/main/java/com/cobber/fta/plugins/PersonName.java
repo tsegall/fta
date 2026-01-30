@@ -116,7 +116,7 @@ abstract class PersonName extends LogicalTypeFiniteSimple {
 			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers,
 			final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
-		final int headerConfidence = getHeaderConfidence(context.getStreamName());
+		final int headerConfidence = getHeaderConfidence(context);
 		if (headerConfidence < 0)
 			return new PluginAnalysis(backout);
 

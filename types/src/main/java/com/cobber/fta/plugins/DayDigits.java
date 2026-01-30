@@ -90,7 +90,7 @@ public class DayDigits extends LogicalTypeInfinite {
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		final String streamName = context.getStreamName();
-		final int headerConfidence = getHeaderConfidence(streamName);
+		final int headerConfidence = getHeaderConfidence(context);
 		if (headerConfidence == 0 || (double) matchCount / realSamples < getThreshold() / 100.0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
@@ -115,26 +115,26 @@ public class DayDigits extends LogicalTypeInfinite {
 		// We check for day as some times month as a number is adjacent to day as a string
 		if (current >= 1) {
 			final String previousStreamName = context.getCompositeStreamNames()[current - 1];
-			if (monthEntry.getHeaderConfidence(previousStreamName) >= 99)
+			if (monthEntry.getHeaderConfidence(context.getCompositeName(), previousStreamName) >= 99)
 				return PluginAnalysis.OK;
 			if (context.isPreviousSemanticType("MONTH.DIGITS"))
 				return PluginAnalysis.OK;
 			if (keywords.match(previousStreamName, "YEAR") >= 90)
 				return PluginAnalysis.OK;
-			if (getHeaderConfidence(previousStreamName) >= 99)
+			if (getHeaderConfidence(context.getCompositeName(), previousStreamName) >= 99)
 				return PluginAnalysis.OK;
 		}
 
 		// Check the next column for either a day, month, or year to boost our confidence
 		if (current < context.getCompositeStreamNames().length - 1) {
 			final String nextStreamName = context.getCompositeStreamNames()[current + 1];
-			if (monthEntry.getHeaderConfidence(nextStreamName) >= 99)
+			if (monthEntry.getHeaderConfidence(context.getCompositeName(), nextStreamName) >= 99)
 				return PluginAnalysis.OK;
 			if (context.isNextSemanticType("MONTH.DIGITS"))
 				return PluginAnalysis.OK;
 			if (keywords.match(nextStreamName, "YEAR") >= 90)
 				return PluginAnalysis.OK;
-			if (getHeaderConfidence(nextStreamName) >= 99)
+			if (getHeaderConfidence(context.getCompositeName(), nextStreamName) >= 99)
 				return PluginAnalysis.OK;
 		}
 

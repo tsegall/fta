@@ -50,7 +50,7 @@ public class AddressStreetNameBare extends LogicalTypeInfinite {
 
 	@Override
 	public String nextRandom() {
-		return AddressCommon.sampleStreets[getRandom().nextInt(AddressCommon.sampleStreets.length)];
+		return AddressCommon.SAMPLE_STREETS[getRandom().nextInt(AddressCommon.SAMPLE_STREETS.length)];
 	}
 
 	@Override
@@ -87,9 +87,7 @@ public class AddressStreetNameBare extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
-		final String dataStreamName = context.getStreamName();
-
-		final int headerConfidence = getHeaderConfidence(dataStreamName);
+		final int headerConfidence = getHeaderConfidence(context);
 		double confidence = (double)matchCount/realSamples;
 		if (headerConfidence >= 99) {
 			if (context.isNextSemanticType("STREET_NUMBER"))

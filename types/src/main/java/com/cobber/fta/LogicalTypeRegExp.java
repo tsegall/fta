@@ -220,7 +220,7 @@ public class LogicalTypeRegExp extends LogicalType {
 		if (isMinMaxPresent() && (cardinality.get(defn.minimum) == null || cardinality.get(defn.maximum) == null))
 			return new PluginAnalysis(backout);
 
-		if (defn.isMandatoryHeaderUnsatisfied(locale, context.getStreamName()))
+		if (defn.isMandatoryHeaderUnsatisfied(locale, context))
 			return new PluginAnalysis(backout);
 
 		if (facts != null) {

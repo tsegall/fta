@@ -38,7 +38,7 @@ public class SpatialWKT extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP = "[-+\\p{IsAlphabetic}\\d (),\\.]+";
 
-	private static final String[] keywords = {
+	private static final String[] KEYWORDS = {
 			"POINT",
 			"MULTIPOINT",
 			"LINESTRING",
@@ -57,7 +57,7 @@ public class SpatialWKT extends LogicalTypeInfinite {
 	public SpatialWKT(final PluginDefinition plugin) {
 		super(plugin);
 
-		for (final String keyword : keywords) {
+		for (final String keyword : KEYWORDS) {
 			final int len = keyword.length();
 			if (len < minKeywordLength)
 				minKeywordLength = len;
@@ -65,7 +65,7 @@ public class SpatialWKT extends LogicalTypeInfinite {
 				maxKeywordLength = len;
 		}
 
-		keywordSet = new HashSet<>(Arrays.asList(keywords));
+		keywordSet = new HashSet<>(Arrays.asList(KEYWORDS));
 	}
 
 	@Override

@@ -51,37 +51,37 @@ import com.cobber.fta.token.TokenStreams;
  */
 public class AgeRange extends LogicalTypeInfinite {
 	private static final int MAX_AGE = 120;
-	private static final String symbols = "<>+≤≥";
-	private static final Set<String> agesPUF = new HashSet<>();
+	private static final String SYMBOLS = "<>+≤≥";
+	private static final Set<String> AGES_PUF = new HashSet<>();
 	private Keywords keywords;
 
 	static {
-		agesPUF.add("AGE011");
-		agesPUF.add("AGE017");
-		agesPUF.add("AGE1217");
-		agesPUF.add("AGE1824");
-		agesPUF.add("AGE1834");
-		agesPUF.add("AGE1839");
-		agesPUF.add("AGE18PLUS");
-		agesPUF.add("AGE2529");
-		agesPUF.add("AGE3034");
-		agesPUF.add("AGE3539");
-		agesPUF.add("AGE4044");
-		agesPUF.add("AGE4064");
-		agesPUF.add("AGE4549");
-		agesPUF.add("AGE5054");
-		agesPUF.add("AGE5559");
-		agesPUF.add("AGE6064");
-		agesPUF.add("AGE6569");
-		agesPUF.add("AGE6579");
-		agesPUF.add("AGE6584");
-		agesPUF.add("AGE65PLUS");
-		agesPUF.add("AGE7074");
-		agesPUF.add("AGE7579");
-		agesPUF.add("AGE8084");
-		agesPUF.add("AGE80PLUS");
-		agesPUF.add("AGE85PLUS");
-		agesPUF.add("AGEALL");
+		AGES_PUF.add("AGE011");
+		AGES_PUF.add("AGE017");
+		AGES_PUF.add("AGE1217");
+		AGES_PUF.add("AGE1824");
+		AGES_PUF.add("AGE1834");
+		AGES_PUF.add("AGE1839");
+		AGES_PUF.add("AGE18PLUS");
+		AGES_PUF.add("AGE2529");
+		AGES_PUF.add("AGE3034");
+		AGES_PUF.add("AGE3539");
+		AGES_PUF.add("AGE4044");
+		AGES_PUF.add("AGE4064");
+		AGES_PUF.add("AGE4549");
+		AGES_PUF.add("AGE5054");
+		AGES_PUF.add("AGE5559");
+		AGES_PUF.add("AGE6064");
+		AGES_PUF.add("AGE6569");
+		AGES_PUF.add("AGE6579");
+		AGES_PUF.add("AGE6584");
+		AGES_PUF.add("AGE65PLUS");
+		AGES_PUF.add("AGE7074");
+		AGES_PUF.add("AGE7579");
+		AGES_PUF.add("AGE8084");
+		AGES_PUF.add("AGE80PLUS");
+		AGES_PUF.add("AGE85PLUS");
+		AGES_PUF.add("AGEALL");
 	}
 
 	private final WordProcessor wordProcessor = new WordProcessor().withBreakChars(" \u00A0-");
@@ -130,7 +130,7 @@ public class AgeRange extends LogicalTypeInfinite {
 
 	private boolean isAgeModifier(final String modifier) {
 		final int len = modifier.length();
-		if (len == 1 && symbols.indexOf(modifier.charAt(0)) != -1)
+		if (len == 1 && SYMBOLS.indexOf(modifier.charAt(0)) != -1)
 			return true;
 
 		return keywords.match(modifier, "UNDER") >= 90 || keywords.match(modifier, "OVER") >= 90;
@@ -153,7 +153,7 @@ public class AgeRange extends LogicalTypeInfinite {
 			return false;
 
 		// Handle CDCWord
-		if (agesPUF.contains(trimmed))
+		if (AGES_PUF.contains(trimmed))
 			return true;
 
 		final List<String> words = wordProcessor.asWords(Utils.cleanse(trimmed));

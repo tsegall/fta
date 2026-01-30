@@ -47,7 +47,7 @@ import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 
 public class TestDoubles {
-	private static final SecureRandom random = new SecureRandom();
+	private static final SecureRandom RANDOM = new SecureRandom();
 	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DOUBLES })
@@ -605,7 +605,7 @@ public class TestDoubles {
 			analysis.train(null);
 		}
 		for (int i = 0; i < iterations; i++) {
-			if (analysis.train(String.valueOf(random.nextDouble())) && locked == -1)
+			if (analysis.train(String.valueOf(RANDOM.nextDouble())) && locked == -1)
 				locked = i;
 		}
 		// This is an invalid value
@@ -653,10 +653,10 @@ public class TestDoubles {
 		}
 		int cnt = 0;
 		while (cnt < iterations) {
-			final long randomLong = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
+			final long randomLong = RANDOM.nextInt(Integer.MAX_VALUE) + 1000000000L;
 			if (randomLong >  9999999999L)
 				continue;
-			final String sample = String.valueOf(randomLong) + formatSymbols.getDecimalSeparator() + random.nextInt(10);
+			final String sample = String.valueOf(randomLong) + formatSymbols.getDecimalSeparator() + RANDOM.nextInt(10);
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = cnt;
@@ -771,7 +771,7 @@ public class TestDoubles {
 		analysis.train("1010e:");
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%04d.0e+%d",
-					random.nextInt(10000), random.nextInt(10));
+					RANDOM.nextInt(10000), RANDOM.nextInt(10));
 			samples.add(sample);
 			analysis.train(sample);
 		}
@@ -808,7 +808,7 @@ public class TestDoubles {
 		analysis.train("1010e:");
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%04d.0e%d",
-					random.nextInt(10000), random.nextInt(10));
+					RANDOM.nextInt(10000), RANDOM.nextInt(10));
 			samples.add(sample);
 			final double d = Double.parseDouble(sample.toUpperCase(Locale.ROOT));
 			if (d < min)
@@ -848,7 +848,7 @@ public class TestDoubles {
 		analysis.train("1010e:");
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%04d.0E+%d",
-					random.nextInt(10000), random.nextInt(10));
+					RANDOM.nextInt(10000), RANDOM.nextInt(10));
 			samples.add(sample);
 			analysis.train(sample);
 		}
@@ -958,10 +958,10 @@ public class TestDoubles {
 		}
 		int cnt = 0;
 		while (cnt < iterations) {
-			final long randomLong = random.nextInt(Integer.MAX_VALUE) + 1000000000L;
+			final long randomLong = RANDOM.nextInt(Integer.MAX_VALUE) + 1000000000L;
 			if (randomLong >  9999999999L)
 				continue;
-			final String sample = Long.toString(randomLong) + "." + random.nextInt(10);
+			final String sample = Long.toString(randomLong) + "." + RANDOM.nextInt(10);
 			samples.add(sample);
 			if (analysis.train(sample) && locked == -1)
 				locked = cnt;
@@ -1131,7 +1131,7 @@ public class TestDoubles {
 
 			try {
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
-					final double d = random.nextDouble() * random.nextInt();
+					final double d = RANDOM.nextDouble() * RANDOM.nextInt();
 					final String sample = nf.format(d);
 					if (KnownTypes.LEFT_TO_RIGHT_MARK == sample.charAt(0))
 						throw new FTAUnsupportedLocaleException("Locale uses Left-to-right Mark");
@@ -1184,14 +1184,14 @@ public class TestDoubles {
 		final NumberFormat nf = NumberFormat.getNumberInstance();
 		nf.setMinimumFractionDigits(1);
 		for (int i = 0; i < 10; i++) {
-			final double d = random.nextDouble();
+			final double d = RANDOM.nextDouble();
 			sample = nf.format(d);
 			samples.add(sample);
 			analysis.train(sample);
 		}
 
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
-			final double d = random.nextDouble() * random.nextInt();
+			final double d = RANDOM.nextDouble() * RANDOM.nextInt();
 			sample = df.format(d);
 			samples.add(sample);
 			analysis.train(sample);
@@ -1257,8 +1257,8 @@ public class TestDoubles {
 			final Set<String> samples = new HashSet<>();
 			try {
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
-					double d = random.nextDouble() * random.nextInt();
-					final int pow = random.nextInt(10);
+					double d = RANDOM.nextDouble() * RANDOM.nextInt();
+					final int pow = RANDOM.nextInt(10);
 					if (pow % 2 == 0)
 						d *= Math.pow(10, pow);
 					else
@@ -1434,10 +1434,10 @@ public class TestDoubles {
 
 			final Set<String> samples = new HashSet<>();
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
-				long l = random.nextInt(10000000);
+				long l = RANDOM.nextInt(10000000);
 				if (l % 2 == 0)
 					l = -l;
-				final String sample = String.valueOf(l) + formatSymbols.getDecimalSeparator() + random.nextInt(10);
+				final String sample = String.valueOf(l) + formatSymbols.getDecimalSeparator() + RANDOM.nextInt(10);
 				samples.add(sample);
 				analysis.train(sample);
 			}
@@ -1479,7 +1479,7 @@ public class TestDoubles {
 		decimalFormatter.applyPattern("#.##################E0");
 		decimalFormatter.setMinimumFractionDigits(1);
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
-			final double d = random.nextDouble();
+			final double d = RANDOM.nextDouble();
 			final String sample = decimalFormatter.format(d);
 			if (d < min) {
 				min = d;
@@ -1531,7 +1531,7 @@ public class TestDoubles {
 		final DecimalFormat nf = (DecimalFormat)doubleFormatter;
 		nf.applyPattern("#.##################E0");
 		for (int i = 0; i < SAMPLE_SIZE; i++) {
-			final double d = random.nextDouble() * 10000;
+			final double d = RANDOM.nextDouble() * 10000;
 			final String sample = nf.format(d);
 			if (d < min) {
 				min = d;
@@ -2319,7 +2319,7 @@ public class TestDoubles {
 
 			try {
 				for (int i = 0; i < SAMPLE_SIZE; i++) {
-					final double d = random.nextDouble() * 100000000;
+					final double d = RANDOM.nextDouble() * 100000000;
 					final String sample = nf.format(d);
 					samples.add(sample);
 					analysis.train(sample);
@@ -2673,10 +2673,10 @@ public class TestDoubles {
 
 			final Set<String> samples = new HashSet<>();
 			for (int i = 0; i < SAMPLE_SIZE; i++) {
-				long l = random.nextInt(10000000);
+				long l = RANDOM.nextInt(10000000);
 				if (l % 2 == 0)
 					l = -l;
-				final String sample = Long.toString(l) + "." + random.nextInt(10);
+				final String sample = Long.toString(l) + "." + RANDOM.nextInt(10);
 
 				if (l < min) {
 					min = l;
@@ -2748,7 +2748,7 @@ public class TestDoubles {
 			bw = new BufferedWriter(new FileWriter("/tmp/doublePerf.csv"));
 
 		for (int i = 0; i < samples.length; i++) {
-			samples[i] = String.valueOf(random.nextDouble() * 1000000);
+			samples[i] = String.valueOf(RANDOM.nextDouble() * 1000000);
 			samples[i] = samples[i].replace('.', ',');
 		}
 

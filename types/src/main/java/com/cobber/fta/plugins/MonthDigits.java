@@ -90,7 +90,7 @@ public class MonthDigits extends LogicalTypeInfinite {
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
 		final String streamName = context.getStreamName();
-		if (getHeaderConfidence(streamName) == 0 || (double) matchCount / realSamples < getThreshold() / 100.0)
+		if (getHeaderConfidence(context) == 0 || (double) matchCount / realSamples < getThreshold() / 100.0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		if (facts.getMinLong() < 1 || facts.getMaxLong() > 12)
@@ -115,26 +115,26 @@ public class MonthDigits extends LogicalTypeInfinite {
 		// We check for month as some times month as a number is adjacent to month as a string
 		if (myIndex >= 1) {
 			final String previousStreamName = context.getCompositeStreamNames()[myIndex - 1];
-			if (dayEntry.getHeaderConfidence(previousStreamName) >= 99)
+			if (dayEntry.getHeaderConfidence(context.getCompositeName(), previousStreamName) >= 99)
 				return PluginAnalysis.OK;
 			if (context.isPreviousSemanticType("DAY.DIGITS"))
 				return PluginAnalysis.OK;
 			if (keywords.match(previousStreamName, "YEAR") >= 90)
 				return PluginAnalysis.OK;
-			if (getHeaderConfidence(previousStreamName) >= 99)
+			if (getHeaderConfidence(context.getCompositeName(), previousStreamName) >= 99)
 				return PluginAnalysis.OK;
 		}
 
 		// Check the next column for either a day, month, or year to boost our confidence
 		if (myIndex < columns - 1) {
 			final String nextStreamName = context.getCompositeStreamNames()[myIndex + 1];
-			if (dayEntry.getHeaderConfidence(nextStreamName) >= 99)
+			if (dayEntry.getHeaderConfidence(context.getCompositeName(), nextStreamName) >= 99)
 				return PluginAnalysis.OK;
 			if (context.isNextSemanticType("DAY.DIGITS"))
 				return PluginAnalysis.OK;
 			if (keywords.match(nextStreamName, "YEAR") >= 90)
 				return PluginAnalysis.OK;
-			if (getHeaderConfidence(nextStreamName) >= 99)
+			if (getHeaderConfidence(context.getCompositeName(), nextStreamName) >= 99)
 				return PluginAnalysis.OK;
 		}
 

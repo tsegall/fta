@@ -84,7 +84,7 @@ public class RaceAbbr extends LogicalTypeInfinite {
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
-		if (getHeaderConfidence(context.getStreamName()) < 95)
+		if (getHeaderConfidence(context) < 95)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;

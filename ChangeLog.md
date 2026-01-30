@@ -1,7 +1,13 @@
 
 ## Changes ##
 
-### 17.3.0
+### 17.4.0
+ - INT: Bump testng to 7.12.0, logback-classic to 1.5.26
+ - ENH: Improve ZIP detection if have data of the form 99999- (i.e. a trailing hyphen)
+ - CLI: Fix bug when validating data based on a plugin
+ - ENH: Add support for biasing detection based on composite name (Table/File) (Issue #154)
+
+### 17.3.1
  - INT: Bump logback-classic to 1.5.25, Jackson to 2.21.0
  - INT: Cleaning.
  - INT: More gradle 10.0 changes

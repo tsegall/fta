@@ -273,7 +273,7 @@ In addition to detecting a set of Base types FTA will also, when enabled (defaul
 like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
 * The set of Semantic Types detected is dependent on the current locale
 * The data stream name (e.g. the database field name or CSV field name) is commonly used to bias the detection.  For example, if the locale language is English and the data stream matches the regular expression '.\*(?i)(surname|last.?name|lname|maiden.?name|name.?last|last_nm).\*|last' then the detection is more likely to declare this stream a NAME.LAST Semantic Type. The data stream name can also be used to negatively bias the detection.  Consult the plugins.json file for more details.
-* Assuming the entire set of stream names is available, Semantic Type detection of a particular column may be impacted by other stream names, for example the Semantic Type PERSON.AGE is detected if we detect another field of type GENDER or NAME.FIRST.
+* Assuming the entire set of stream names is available, Semantic Type detection of a particular column may be impacted by other stream names, for example the Semantic Type PERSON.AGE is commonly detected if we detect another field of type GENDER or NAME.FIRST.
 * When using Record mode for Semantic Type analysis - the detection of Semantic Types for a stream may be impacted by prior determination of the Semantic Type of another Stream (either via detection or provided with the Context)
 * By default analysis is performed on the initial 4096 characters of the field (adjustable via setMaxInputLength()).
 * If two Semantic Types have equal confidence then the Semantic Type with the highest priority will be selected.
@@ -302,7 +302,7 @@ There are three basic types of plugins:
 * Finite (list) - captures any finite type (e.g. ISO-3166-2 (Country codes), US States, ...).  Implemented via a supplied list with the valid elements enumerated.
 * Code (java) - captures any complex type (e.g. Even numbers, Credit Cards numbers).  Implemented via a Java Class.
 
-Note: The Context (the current Stream Name and other field names) can be used to bias detection of the incoming data and/or solely determine the detection.
+Note: The Context (which includes the composite name (Table/File), the current stream names, and the other stream names) can be used to bias detection of the incoming data and/or solely determine the detection.
 
 ```json
 [
@@ -406,7 +406,7 @@ The optional 'minSamples' tag indicates that in order for this Semantic Type to 
 
 The optional 'invalidList' tag is a list of invalid values for this Semantic Type, for example '[ "000-00-0000" ]' indicates that this is an invalid SSN, despite the fact that it matches the SSN regular expression.
 
-#### Example
+#### Examples
 The following example is looking for an Indian Postal Code.  In this case the header is mandatory so we will insist on both detecting a regular expression of the form '\d{6}' and a case independent match for the header.  The plugin will return '[1-9]\\d{5}' as it is illegal to have a leading zero for an Indian Postal Code.
 
 ```json
@@ -425,6 +425,28 @@ The following example is looking for an Indian Postal Code.  In this case the he
 			}
 		],
 		"threshold": 98
+	}
+```
+
+The following example is looking for a Persons age. The plugin uses two possible regular expressions the first is an example of how to bias using a combination of the Composite name (Table or File) as well as the Stream name (Column or Field), the second is simply using the Stream name.  If 'compositeKey' is set to true then the input provided to match will be the concatenation of the Composite name with a period with the Stream name, this is commonly useful when the input source is a Database.  For example, if the Table name was 'Person' and the field name was 'Age' then the Composite key would be 'Person.Age' which matches the regular expression and hence we have a 100% confidence that this is a Person's age. The second regular expression only considers the Stream name and is only 90% confident that it is a Person's age.  In this case the plugin insists on another field that indicates we have found a Person (e.g. Gender, FirstName) so as not to misdetect if the 'Age' was the age of a building/pet etc..
+
+```json
+	{
+		"semanticType" : "PERSON.AGE",
+		"description": "Age (person)",
+		"pluginType": "java",
+		"clazz": "com.cobber.fta.plugins.person.Age",
+		"validLocales": [
+			{
+				"localeTag": "en",
+				"headerRegExps": [
+					{ "regExp": "(?i)(Person|Employee|Client|Customer)\\.(age|age[_ ].*|.*[_ ]age)", "confidence": 100, "mandatory": true, "compositeKey": true },
+					{ "regExp": "(?i)(age|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true }
+				]
+			}
+		],
+		"baseType" : "LONG",
+		"priority": 98
 	}
 ```
 
@@ -661,6 +683,10 @@ Just the dates tests
 Just one test
 
 `$ ./gradlew types:test --tests TestDates.localeDateTest`
+
+Validate a set of samples (against a known plugin)
+
+`$ cli --pluginMode true --pluginName POSTAL_CODE.ZIP5_US --col 0 <file.csv>`
 
 ### Generate JavaDoc ###
 `$ ./gradlew javadoc`

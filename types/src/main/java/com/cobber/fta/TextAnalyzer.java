@@ -1253,7 +1253,13 @@ public class TextAnalyzer {
 		return plugins;
 	}
 
-	private void loadPlugins() {
+	/**
+	 * Register the default set of plugins for Semantic Type detection.
+	 *
+	 * @param analysisConfig The Analysis configuration used for this analysis.
+	 * Note: The Locale (on the configuration)  will impact both the set of plugins registered as well as the behavior of the individual plugins
+	 */
+	public void registerDefaultPlugins(final AnalysisConfig analysisConfig) {
 		synchronized (pluginDefinitions) {
 			if (pluginDefinitions.isEmpty())
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
@@ -1262,16 +1268,6 @@ public class TextAnalyzer {
 					throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
 				}
 		}
-	}
-
-	/**
-	 * Register the default set of plugins for Semantic Type detection.
-	 *
-	 * @param analysisConfig The Analysis configuration used for this analysis.
-	 * Note: The Locale (on the configuration)  will impact both the set of plugins registered as well as the behavior of the individual plugins
-	 */
-	public void registerDefaultPlugins(final AnalysisConfig analysisConfig) {
-		loadPlugins();
 
 		try {
 			plugins.registerPluginsInternal(pluginDefinitions, context.getStreamName(), analysisConfig);
@@ -1290,7 +1286,13 @@ public class TextAnalyzer {
 	 * @return The Plugin Definition associated with the supplied name.
 	 */
 	public PluginDefinition findByName(final String semanticTypeName) {
-		loadPlugins();
+		if (!initialized) {
+			try {
+				initialize();
+			} catch (FTAPluginException|FTAUnsupportedLocaleException e) {
+				return null;
+			}
+		}
 
 		final LogicalType logicalType = getPlugins().getRegistered(semanticTypeName);
 		return logicalType == null ? null : logicalType.getPluginDefinition();
@@ -1325,7 +1327,7 @@ public class TextAnalyzer {
 				throw new FTAPluginException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getSemanticType());
 
 			// Check to see if this plugin requires a mandatory hotword (and it is present)
-			if (logical.getPluginDefinition().isMandatoryHeaderUnsatisfied(analysisConfig.getLocale(), getStreamName()))
+			if (logical.getPluginDefinition().isMandatoryHeaderUnsatisfied(analysisConfig.getLocale(), context))
 				continue;
 
 			if (logical instanceof LogicalTypeInfinite)
@@ -2717,7 +2719,7 @@ public class TextAnalyzer {
 
 		// If the number of misses is less than 10% then remove the worst offender since it will often be something
 		// silly like All, Other, N/A, ...
-		if (missEntries != 0 && (double)missEntries/cardinalityUpper.size() < .1 && logical.getHeaderConfidence(context.getStreamName()) >= 90) {
+		if (missEntries != 0 && (double)missEntries/cardinalityUpper.size() < .1 && logical.getHeaderConfidence(context) >= 90) {
 			realSamples -= missEntry.getValue();
 			if (logical.analyzeSet(context, validCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), newCardinality, newOutliers, tokenStreams, analysisConfig).isValid())
 				return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, context), validCount, newOutliers, newCardinality);
@@ -2822,7 +2824,7 @@ public class TextAnalyzer {
 
 				// We prefer finite matches to infinite matches only if header or priority is better
 				if (bestResult == null && priorLogical != null && result.score <= bestScore &&
-						logical.getHeaderConfidence(context.getStreamName()) <= priorLogical.getHeaderConfidence(context.getStreamName()) &&
+						logical.getHeaderConfidence(context) <= priorLogical.getHeaderConfidence(context) &&
 						logical.getPluginDefinition().getOrder() <= priorLogical.getPluginDefinition().getOrder())
 					continue;
 
@@ -2831,9 +2833,9 @@ public class TextAnalyzer {
 						// If bestResult is null then this finite match has matched an incoming score to beat
 						bestResult == null ||
 						// If two scores the same then prefer the one with the higher header confidence
-						logical.getHeaderConfidence(context.getStreamName()) > bestResult.logical.getHeaderConfidence(context.getStreamName()) ||
+						logical.getHeaderConfidence(context) > bestResult.logical.getHeaderConfidence(context) ||
 						// If two scores the same then prefer the logical with the highest priority
-						(logical.getHeaderConfidence(context.getStreamName()) == bestResult.logical.getHeaderConfidence(context.getStreamName()) &&
+						(logical.getHeaderConfidence(context) == bestResult.logical.getHeaderConfidence(context) &&
 						logical.getPluginDefinition().getOrder() < bestResult.logical.getPluginDefinition().getOrder())) {
 					bestResult = result;
 					bestScore = result.score;
@@ -2973,7 +2975,7 @@ public class TextAnalyzer {
 					final double dataConfidence = logical.getConfidence(facts.matchCount, realSamples, context);
 					// We take the best data confidence, if two have the same data confidence then tie-break based on header confidence
 					if (dataConfidence > bestScore ||
-							(best != null && dataConfidence == bestScore && logical.getHeaderConfidence(context.getStreamName()) > best.getHeaderConfidence(context.getStreamName()))) {
+							(best != null && dataConfidence == bestScore && logical.getHeaderConfidence(context) > best.getHeaderConfidence(context))) {
 						best = logical;
 						bestScore = logical.getConfidence(facts.matchCount, realSamples, context);
 						facts.getMatchTypeInfo().setSemanticType(logical.getSemanticType());
@@ -3200,7 +3202,7 @@ public class TextAnalyzer {
 				final Map<String, Long> details = facts.synthesizeBulk();
 				long worst = (facts.sampleCount - (facts.nullCount + facts.blankCount)) / 20;
 				Map.Entry<String, Long> worstEntry = null;
-				if (logical.getHeaderConfidence(getContext().getStreamName()) >= 90) {
+				if (logical.getHeaderConfidence(context) >= 90) {
 					for (final Map.Entry<String, Long> entry : details.entrySet()) {
 						if (isInteresting(entry.getKey()) && !logical.isValid(entry.getKey()) && entry.getValue() > worst) {
 							worstEntry = entry;
@@ -3424,7 +3426,7 @@ public class TextAnalyzer {
 								continue;
 							if (newScore == bestScore) {
 								// Skip if the scores are the same but we like the header less
-								if (logical.getHeaderConfidence(context.getStreamName()) < priorLogical.getHeaderConfidence(context.getStreamName()))
+								if (logical.getHeaderConfidence(context) < priorLogical.getHeaderConfidence(context))
 									continue;
 								// Skip if the scores are the same but the Order is higher
 								if (logical.getPluginDefinition().getOrder() > priorLogical.getPluginDefinition().getOrder())

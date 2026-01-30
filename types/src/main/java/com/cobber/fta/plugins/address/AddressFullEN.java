@@ -309,9 +309,7 @@ public class AddressFullEN extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
-		final String dataStreamName = context.getStreamName();
-
-		final int headerConfidence = getHeaderConfidence(dataStreamName);
+		final int headerConfidence = getHeaderConfidence(context);
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost based on how much we like the header

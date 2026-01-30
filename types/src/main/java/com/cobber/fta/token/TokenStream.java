@@ -67,7 +67,7 @@ public class TokenStream {
 	/* The number of occurrences of this 'Pattern'. */
 	private long occurrences;
 
-	private static final CacheLRU<String, Automaton> cache = new CacheLRU<>(10);
+	private static final CacheLRU<String, Automaton> CACHE = new CacheLRU<>(10);
 
 	/** The TokenStream that represents any input that is too long. */
 	public static final TokenStream ANYSHAPE = new TokenStream(Utils.repeat('x', Token.MAX_LENGTH + 1), 1);
@@ -141,9 +141,10 @@ public class TokenStream {
 	}
 
 	public boolean isComplete() {
-		for (int i = 0; i < tokens.length;i++)
-			if (!tokens[i].isComplete())
+		for (Token token : tokens) {
+			if (!token.isComplete())
 				return false;
+		}
 
 		return true;
 	}
@@ -473,10 +474,10 @@ public class TokenStream {
 	 * @return True if the TokenStream matches the supplied Regular Expression.
 	 */
 	public boolean matches(final String regExp) {
-		Automaton automaton = cache.get(regExp);
+		Automaton automaton = CACHE.get(regExp);
 		if (automaton == null) {
 			automaton = new RegExp(RegExpGenerator.toAutomatonRE(regExp, false), RegExp.AUTOMATON).toAutomaton(new DatatypesAutomatonProvider());
-			cache.put(regExp, automaton);
+			CACHE.put(regExp, automaton);
 		}
 
 		return matches(automaton.getInitialState(), 0);

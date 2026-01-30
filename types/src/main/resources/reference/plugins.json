@@ -700,7 +700,10 @@
 		"validLocales": [
 			{
 				"localeTag": "en",
-				"headerRegExps": [ { "regExp": "(?i)(age|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true } ]
+				"headerRegExps": [
+					{ "regExp": "(?i)(Person|Employee|Client|Customer)\\.(age|age[_ ].*|.*[_ ]age)", "confidence": 100, "mandatory": true, "compositeKey": true },
+					{ "regExp": "(?i)(age|age[_ ].*|.*[_ ]age)", "confidence": 90, "mandatory": true }
+				]
 			},
 			{
 				"localeTag": "es",

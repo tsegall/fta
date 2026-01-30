@@ -41,7 +41,7 @@ import de.siegmar.fastcsv.reader.CsvReader;
 import de.siegmar.fastcsv.reader.NamedCsvRecord;
 
 public class TestRegExpPlugins {
-	private static final SecureRandom random = new SecureRandom();
+	private static final SecureRandom RANDOM = new SecureRandom();
 
 	@Test(groups = { TestGroups.ALL })
 	public void testRegExpLogicalType_MAC() throws IOException, FTAException {
@@ -106,7 +106,7 @@ public class TestRegExpPlugins {
 
 		for (int i = 0; i < SAMPLE_COUNT; i++) {
 			final String sample = String.format("%03d-%02d-%04d",
-					random.nextInt(1000),  random.nextInt(100), random.nextInt(10000));
+					RANDOM.nextInt(1000),  RANDOM.nextInt(100), RANDOM.nextInt(10000));
 			samples.add(sample);
 			analysis.train(sample);
 		}

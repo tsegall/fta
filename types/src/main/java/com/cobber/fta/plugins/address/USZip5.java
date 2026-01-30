@@ -54,12 +54,15 @@ public class USZip5 extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		final int len = trimmed.length();
-		if (len != 5 && len != 4 && len != 3)
+		if (len != 6 && len != 5 && len != 4 && len != 3)
+			return false;
+
+		if (len == 6 && trimmed.charAt(5) != '-')
 			return false;
 
 		final int digits = charCounts['0'] + charCounts['1'] + charCounts['2'] + charCounts['3'] + charCounts['4'] +
 				charCounts['5'] + charCounts['6'] + charCounts['7'] + charCounts['8'] + charCounts['9'];
-		if (len == 5)
+		if (len == 6 || len == 5)
 			return digits == 5;
 
 		return zips.contains(len == 3 ? "00" + trimmed : "0" + trimmed);
@@ -99,8 +102,14 @@ public class USZip5 extends LogicalTypeInfinite {
 	public boolean isValid(String input, final boolean detectMode, long count) {
 		final int len = input.length();
 
-		if (len != 5 && len != 4 && len != 3)
+		if (len != 6 && len != 5 && len != 4 && len != 3)
 			return false;
+
+		if (len == 6) {
+			if (input.charAt(5) != '-')
+				return false;
+			return zips.contains(input.substring(0, 5));
+		}
 
 		if (len < 5) {
 			input = (len == 3 ? "00" : "0") + input;
@@ -116,7 +125,7 @@ public class USZip5 extends LogicalTypeInfinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		final int headerConfidence = getHeaderConfidence(context.getStreamName());
+		final int headerConfidence = getHeaderConfidence(context);
 		if (headerConfidence == 0 && cardinality.size() < 5)
 			return new PluginAnalysis(backout());
 
@@ -137,7 +146,7 @@ public class USZip5 extends LogicalTypeInfinite {
 		double confidence = (double)matchCount/realSamples;
 
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(context.getStreamName()) > 0)
+		if (getHeaderConfidence(context) > 0)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.20), 1.0);
 
 		return confidence;

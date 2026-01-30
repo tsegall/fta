@@ -89,7 +89,7 @@ public class Identifier extends LogicalTypeInfinite {
 		if (facts.uniqueness == null || facts.uniqueness != 1.0 || facts.sampleCount != facts.matchCount)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
-		if (getHeaderConfidence(context.getStreamName()) >= 85)
+		if (getHeaderConfidence(context) >= 85)
 			return PluginAnalysis.OK;
 
 		// If the type is LONG and we have a reasonable number of samples then we can do further analysis
@@ -111,7 +111,7 @@ public class Identifier extends LogicalTypeInfinite {
 		if (matchCount == 0)
 			return 0;
 
-		final int headerConfidence = getHeaderConfidence(context.getStreamName());
+		final int headerConfidence = getHeaderConfidence(context);
 		if (headerConfidence >= 85)
 			return (double)headerConfidence/100;
 

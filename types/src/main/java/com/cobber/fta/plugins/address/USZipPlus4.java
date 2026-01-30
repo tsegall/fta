@@ -156,7 +156,7 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
-		final int headerConfidence = getHeaderConfidence(context.getStreamName());
+		final int headerConfidence = getHeaderConfidence(context);
 		if (headerConfidence == 0 && cardinality.size() < 5)
 			return new PluginAnalysis(backout());
 
@@ -168,15 +168,14 @@ public class USZipPlus4 extends LogicalTypeInfinite {
 
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
-		final String dataStreamName = context.getStreamName();
 		double confidence = (double)matchCount/realSamples;
 
 		// If we do not have an embedded '-' then insist that the header is good
-		if (allDigits && getHeaderConfidence(dataStreamName) <= 0)
+		if (allDigits && getHeaderConfidence(context) <= 0)
 			return 0;
 
 		// Boost by up to 20% if we like the header
-		if (getHeaderConfidence(dataStreamName) > 0)
+		if (getHeaderConfidence(context) > 0)
 			confidence = Math.min(confidence + Math.min((1.0 - confidence)/2, 0.20), 1.0);
 
 		return confidence;

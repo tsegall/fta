@@ -123,10 +123,10 @@ public class EIN extends LogicalTypeInfinite {
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples, final String currentRegExp,
 			final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
 
-		if (getHeaderConfidence(context.getStreamName()) <= 0)
+		if (getHeaderConfidence(context) <= 0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
-		if (cardinality.size() < 20 && getHeaderConfidence(context.getStreamName()) < 95)
+		if (cardinality.size() < 20 && getHeaderConfidence(context) < 95)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		return (double) matchCount / realSamples >= getThreshold() / 100.0 ?  PluginAnalysis.OK : PluginAnalysis.SIMPLE_NOT_OK;

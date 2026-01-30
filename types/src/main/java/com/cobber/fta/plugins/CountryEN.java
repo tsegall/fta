@@ -41,7 +41,7 @@ public class CountryEN extends LogicalTypeFiniteSimpleExternal {
 		if (matchCount < 50 && outliers.size() > Math.sqrt(getMembers().size()))
 			return new PluginAnalysis(defn.backout);
 
-		final int headerConfidence = getHeaderConfidence(context.getStreamName());
+		final int headerConfidence = getHeaderConfidence(context);
 
 		if (headerConfidence <= 0 && (realSamples < 10 || cardinality.size() == 1))
 			return new PluginAnalysis(defn.backout);

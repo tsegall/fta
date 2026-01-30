@@ -156,7 +156,7 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 		if (dataStreamName.length() == 0)
 			return 0;
 
-		final int headerConfidence = getHeaderConfidence(dataStreamName);
+		final int headerConfidence = getHeaderConfidence(context);
 		if (headerConfidence >= 99)
 			return headerConfidence;
 
@@ -187,9 +187,9 @@ public abstract class AddressLineNEN extends LogicalTypeInfinite {
 			return 0;
 
 		// Does the previous field look like an Address Line <N-1> AND not look like an Address Line <N>
-		if (previousAddressLineEntry.getHeaderConfidence(previousStreamName) >= 90 && getHeaderConfidence(previousStreamName) < 99) {
+		if (previousAddressLineEntry.getHeaderConfidence(context.getCompositeName(), previousStreamName) >= 90 && getHeaderConfidence(context.getCompositeName(), previousStreamName) < 99) {
 			if (current + 1 < context.getCompositeStreamNames().length &&
-					cityEntry.getHeaderConfidence(context.getCompositeStreamNames()[current + 1]) > 0)
+					cityEntry.getHeaderConfidence(context.getCompositeName(), context.getCompositeStreamNames()[current + 1]) > 0)
 				return headerConfidence == 0 ? 85 : 95;
 			return headerConfidence == 0 ? 85 : 90;
 		}

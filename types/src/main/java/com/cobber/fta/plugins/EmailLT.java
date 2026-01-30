@@ -155,7 +155,7 @@ public class EmailLT extends LogicalTypeInfinite {
 	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		final double is = (double)matchCount/realSamples;
-		if (matchCount == realSamples || getHeaderConfidence(context.getStreamName()) <= 0)
+		if (matchCount == realSamples || getHeaderConfidence(context) <= 0)
 			return is;
 
 		return is + (1.0 - is)/2;

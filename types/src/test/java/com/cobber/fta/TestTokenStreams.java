@@ -27,7 +27,7 @@ import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 public class TestTokenStreams {
-	private static final SecureRandom random = new SecureRandom();
+	private static final SecureRandom RANDOM = new SecureRandom();
 	private static String ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	private static String NUMERIC = "0123456789";
 	private static int MAX_STREAMS = 1000;
@@ -39,7 +39,7 @@ public class TestTokenStreams {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
-				b.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
+				b.append(ALPHA.charAt(RANDOM.nextInt(ALPHA.length())));
 			tokenStreams.track(b.toString(), 1);
 			b.setLength(0);
 		}
@@ -55,11 +55,11 @@ public class TestTokenStreams {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 1000; i++) {
 			for (int j = 0; j < 5; j++)
-				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
+				b.append(NUMERIC.charAt(RANDOM.nextInt(NUMERIC.length())));
 			if (i % 2 == 0) {
 				b.append('-');
 				for (int j = 0; j < 4; j++)
-					b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
+					b.append(NUMERIC.charAt(RANDOM.nextInt(NUMERIC.length())));
 			}
 			tokenStreams.track(b.toString(), 1);
 			b.setLength(0);
@@ -76,14 +76,14 @@ public class TestTokenStreams {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
-				b.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
+				b.append(ALPHA.charAt(RANDOM.nextInt(ALPHA.length())));
 			tokenStreams.track(b.toString(), 1);
 			b.setLength(0);
 		}
 
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 7; j++)
-				b.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
+				b.append(ALPHA.charAt(RANDOM.nextInt(ALPHA.length())));
 			tokenStreams.track(b.toString(), 1);
 			b.setLength(0);
 		}
@@ -100,7 +100,7 @@ public class TestTokenStreams {
 		for (int j = 4; j < 9; j++) {
 			for (int i = 0; i < 100; i++) {
 				for (int l = 0; l < j; l++)
-					b.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
+					b.append(ALPHA.charAt(RANDOM.nextInt(ALPHA.length())));
 				tokenStreams.track(b.toString(), 1);
 				b.setLength(0);
 			}
@@ -117,7 +117,7 @@ public class TestTokenStreams {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
-				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
+				b.append(NUMERIC.charAt(RANDOM.nextInt(NUMERIC.length())));
 			tokenStreams.track(b.toString(), 1);
 			b.setLength(0);
 		}
@@ -133,14 +133,14 @@ public class TestTokenStreams {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 9; j++)
-				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
+				b.append(NUMERIC.charAt(RANDOM.nextInt(NUMERIC.length())));
 			tokenStreams.track(b.toString(), 1);
 			b.setLength(0);
 		}
 
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 7; j++)
-				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
+				b.append(NUMERIC.charAt(RANDOM.nextInt(NUMERIC.length())));
 			tokenStreams.track(b.toString(), 1);
 			b.setLength(0);
 		}
@@ -156,21 +156,21 @@ public class TestTokenStreams {
 		final StringBuilder b = new StringBuilder();
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 8; j++)
-				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
+				b.append(NUMERIC.charAt(RANDOM.nextInt(NUMERIC.length())));
 			tokenStreams.track(b.toString(), 1);
 			b.setLength(0);
 		}
 
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 7; j++)
-				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
+				b.append(NUMERIC.charAt(RANDOM.nextInt(NUMERIC.length())));
 			tokenStreams.track(b.toString(), 1);
 			b.setLength(0);
 		}
 
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 6; j++)
-				b.append(NUMERIC.charAt(random.nextInt(NUMERIC.length())));
+				b.append(NUMERIC.charAt(RANDOM.nextInt(NUMERIC.length())));
 			tokenStreams.track(b.toString(), 1);
 			b.setLength(0);
 		}

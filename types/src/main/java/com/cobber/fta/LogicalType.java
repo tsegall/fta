@@ -80,11 +80,36 @@ public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
 	/**
 	 * Determine the confidence that the name of the data stream is likely a valid header for this Semantic Type.
 	 * Positive Numbers indicate it could be this Semantic Type, negative numbers indicate is it unlikely to be this Semantic Type, 0 indicates no opinion.
+	 * @param context The context used to interpret the Data Stream (for example, stream name, date resolution mode, etc)
+	 * @return An integer between -100 and 100 reflecting the confidence that this stream name is a valid header.
+	 */
+	public int getHeaderConfidence(final AnalyzerContext context) {
+		return pluginLocaleEntry.getHeaderConfidence(context.getCompositeName(), context.getStreamName());
+	}
+
+	/**
+	 * Determine the confidence that the name of the data stream is likely a valid header for this Semantic Type.
+	 * Positive Numbers indicate it could be this Semantic Type, negative numbers indicate is it unlikely to be this Semantic Type, 0 indicates no opinion.
+	 * @param compositeName The name of this composite (Table/File)
 	 * @param dataStreamName The name of this data stream
 	 * @return An integer between -100 and 100 reflecting the confidence that this stream name is a valid header.
 	 */
+	public int getHeaderConfidence(final String compositeName, final String dataStreamName) {
+		return pluginLocaleEntry.getHeaderConfidence(compositeName, dataStreamName);
+	}
+
+	/**
+	 * Determine the confidence that the name of the data stream is likely a valid header for this Semantic Type.
+	 * Positive Numbers indicate it could be this Semantic Type, negative numbers indicate is it unlikely to be this Semantic Type, 0 indicates no opinion.
+	 *
+	 * @deprecated  Replaced by {@link getHeaderConfidence(AnalyzerContext)}
+	 *
+	 * @param dataStreamName The name of this data stream
+	 * @return An integer between -100 and 100 reflecting the confidence that this stream name is a valid header.
+	 */
+	@Deprecated
 	public int getHeaderConfidence(final String dataStreamName) {
-		return pluginLocaleEntry.getHeaderConfidence(dataStreamName);
+		return pluginLocaleEntry.getHeaderConfidence(null, dataStreamName);
 	}
 
 	/**
