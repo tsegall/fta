@@ -17,6 +17,8 @@ package com.cobber.fta;
 
 import java.util.Arrays;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Used to capture the members for a set of items - defined either inline or via a file or resource.
  */
@@ -43,6 +45,7 @@ public class Content {
 		this.members = members;
 	}
 
+	@JsonIgnore
 	public String getCacheKey() {
 		if (INLINE.equals(type))
 			return type + "---" + Arrays.hashCode(members);

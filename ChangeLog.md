@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 17.4.2
+ - BUG: User-defined plugins not being serialized (Issue #155)
+
 ### 17.4.1
  - INT: Bump logback-classic to 1.5.27, google phonenumber to 9.0.23, gradle to 9.3.1
  - INT: Cleaning.

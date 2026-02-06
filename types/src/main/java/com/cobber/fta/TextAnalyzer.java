@@ -3775,7 +3775,7 @@ public class TextAnalyzer {
 		if (facts.getMatchTypeInfo() == null)
 			determineType();
 
-		final TextAnalyzerWrapper wrapper = new TextAnalyzerWrapper(analysisConfig, context, facts.calculateFacts());
+		final TextAnalyzerWrapper wrapper = new TextAnalyzerWrapper(analysisConfig, context, getPlugins().getUserDefinedPlugins(), facts.calculateFacts());
 
 		// We are serializing the analyzer (assume it will not be used again - so persist the samples)
 		if (traceConfig != null) {
@@ -3809,6 +3809,7 @@ public class TextAnalyzer {
 
 			ret.facts = wrapper.facts;
 			ret.facts.setConfig(wrapper.analysisConfig);
+			ret.getPlugins().registerPluginListWithPrecedence(wrapper.userDefinedPlugins, wrapper.analysisConfig);
 			ret.initializeTrace();
 			ret.initialize();
 			ret.facts.hydrate();

@@ -425,11 +425,99 @@ public class TestIssues {
 	final String[] inputsRE = {
             "2345:AQ", "5993:FG", "3898:WW", "5543:NH", "1992:WW", "4002:CS", "5982:KG", "1090:DD", "3030:XX", "1088:TR",
             "2547:DE", "6587:DS", "3215:QQ", "7745:VD", "4562:DD", "4582:SS", "2257:WE", "3578:HT", "4568:FB", "1587:SW",
-            "4573:LF", "3574:SS", "8122:GK", "4523:EW", "7128:RT", "2548:RF", "6873:HH", "4837:NR", "2358:EE", "3731:HY"
+            "4573:LF", "3574:SS", "8122:GK", "4523:EW", "7128:RT", "2548:RF", "6873:HH", "4837:NR", "2358:EE", "3731:HY",
+            "0010:AA", "0011:DB", "0012:FT", "0013:KG", "0014:EM", "0015:RP", "0016:TA", "0017:AP", "0018:AA", "0019:AA",
+            "0020:QA", "0021:UT", "0022:AA", "0023:AA", "0024:AQ", "0025:PA", "0026:AA", "0027:AA", "0028:AQ", "0029:AG",
+            "0030:OA", "0031:AA", "0032:AA", "0033:AA", "0034:AA", "0035:NA", "0036:AI", "0037:AI", "0038:AA", "0039:FA",
+            "0040:AH", "0041:AL", "0042:AL", "0043:EA", "0044:AA", "0045:WA", "0046:AA", "0047:QA", "0048:AS", "0049:XA",
+            "0050:AS", "0051:ZA", "0052:AA", "0053:BS", "0054:JA", "0055:MA", "0056:AA", "0057:AV", "0058:AC", "0059:AA",
+            "0060:AA", "0061:AC", "0062:AA", "0063:AD", "0064:AF", "0065:AA", "0066:AZ", "0067:AA", "0068:AK", "0069:AI",
+            "0070:AA", "0071:AA", "0072:AA", "0073:AA", "0074:AF", "0075:AG", "0076:AY", "0077:AI", "0078:AU", "0079:AA"
     };
 
+	final String[] primaryColors = {
+		"Red", "Green", "Green", "Red", "Red", "Blue", "Green", "Green", "Green", "Blue",
+		"Green", "Blue", "Blue", "Red", "Red", "Blue", "Green", "Blue", "Blue", "Red",
+		"Blue", "Green", "Blue"
+	};
+
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
-	public void issue155() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+	public void issue155_serialize_pre() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+		// Load our new plugins from a file and test the new Regular Expression Semantic Type
+		TextAnalyzer analysis = new TextAnalyzer("ID");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+
+		// Register our sample list and regex plugins from a JSON definition file (before the built-in plugins have been registered)
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/custom_id.json"), StandardCharsets.UTF_8))) {
+				analysis.getPlugins().registerPlugins(reader, analysis.getConfig(), true);
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+
+		TextAnalyzer hydrated = TextAnalyzer.deserialize(analysis.serialize());
+
+		for (final String input : inputsRE)
+			hydrated.train(input);
+
+		TextAnalysisResult result = hydrated.getResult();
+
+		assertEquals(result.getSemanticType(), "CUSTOM.DIGIT_ALPHA_ID");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void issue155_serialize_color_pre() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+		// Load our new plugins from a file and test the new Regular Expression Semantic Type
+		TextAnalyzer analysis = new TextAnalyzer("Color");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+
+		// Register our sample list and regex plugins from a JSON definition file (before the built-in plugins have been registered)
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/custom_id.json"), StandardCharsets.UTF_8))) {
+				analysis.getPlugins().registerPlugins(reader, analysis.getConfig(), true);
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+
+		TextAnalyzer hydrated = TextAnalyzer.deserialize(analysis.serialize());
+
+		for (final String input : primaryColors)
+			hydrated.train(input);
+
+		TextAnalysisResult result = hydrated.getResult();
+
+		assertEquals(result.getSemanticType(), "CUSTOM.PRIMARY_COLOR");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void issue155_serialize_color_post() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+		// Load our new plugins from a file and test the new Regular Expression Semantic Type
+		TextAnalyzer analysis = new TextAnalyzer("Color");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+
+		// Register our sample list and regex plugins from a JSON definition file (before the built-in plugins have been registered)
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/custom_id.json"), StandardCharsets.UTF_8))) {
+				analysis.getPlugins().registerPlugins(reader, analysis.getConfig(), false);
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+
+		TextAnalyzer hydrated = TextAnalyzer.deserialize(analysis.serialize());
+
+		for (final String input : primaryColors)
+			hydrated.train(input);
+
+		TextAnalysisResult result = hydrated.getResult();
+
+		assertEquals(result.getSemanticType(), "COLOR.TEXT_EN");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void issue155_merge() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
 		// Load our new plugins from a file and test the new Regular Expression Semantic Type
 		TextAnalyzer shardOne = new TextAnalyzer("ID");
 		shardOne.setLocale(Locale.forLanguageTag("en-US"));
@@ -457,7 +545,7 @@ public class TestIssues {
 			shardTwo.train(input);
 		}
 
-		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		TextAnalyzer merged = TextAnalyzer.merge(TextAnalyzer.deserialize(shardOne.serialize()), TextAnalyzer.deserialize(shardTwo.serialize()));
 		TextAnalysisResult result = merged.getResult();
 
 		assertEquals(result.getSemanticType(), "CUSTOM.DIGIT_ALPHA_ID");

@@ -30,6 +30,7 @@ import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.HeaderEntry;
 import com.cobber.fta.core.InternalErrorException;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -111,6 +112,7 @@ public class PluginDefinition {
 	 *
 	 * @return The order for this plugin.
 	 */
+	@JsonIgnore
 	public int getOrder() {
 		switch (precedence) {
 			case BUILTIN:
@@ -276,6 +278,7 @@ public class PluginDefinition {
 		return getLocaleEntry(locale) != null;
 	}
 
+	@JsonIgnore
 	public String getLocaleDescription() {
 		final StringBuilder ret = new StringBuilder();
 		for (final PluginLocaleEntry validLocale : validLocales)

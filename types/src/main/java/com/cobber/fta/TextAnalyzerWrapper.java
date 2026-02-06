@@ -15,6 +15,8 @@
  */
 package com.cobber.fta;
 
+import java.util.List;
+
 /**
  * Simple class used to aid serialization/de-serialization of a TextAnalyzer.
  */
@@ -22,13 +24,15 @@ class TextAnalyzerWrapper {
 	public AnalysisConfig analysisConfig;
 	public AnalyzerContext analyzerContext;
 	public Facts facts;
+	public List<PluginDefinition> userDefinedPlugins;
 
 	TextAnalyzerWrapper() {
 	}
 
-	TextAnalyzerWrapper(final AnalysisConfig analysisConfig, final AnalyzerContext analyzerContext, final Facts facts) {
+	TextAnalyzerWrapper(final AnalysisConfig analysisConfig, final AnalyzerContext analyzerContext, final List<PluginDefinition> userDefinedPlugins, final Facts facts) {
 		this.analysisConfig = analysisConfig;
 		this.analyzerContext = analyzerContext;
 		this.facts = facts;
+		this.userDefinedPlugins = userDefinedPlugins;
 	}
 }

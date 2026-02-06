@@ -10,5 +10,17 @@
 		} ],
 	"threshold": 95,
 	"baseType": "STRING"
+},
+{
+	"semanticType": "CUSTOM.PRIMARY_COLOR",
+	"description": "Additive primary colors",
+	"pluginType": "list",
+	"validLocales": [ { "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(color|colour).*", "confidence": 90 } ] } ],
+	"content": {
+		"type": "inline",
+		"members": [ "RED", "GREEN", "BLUE" ]
+	},
+	"backout": "[ \\p{IsAlphabetic}]+",
+	"threshold": 99
 }
 ]

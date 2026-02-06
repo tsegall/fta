@@ -15,6 +15,8 @@
  */
 package com.cobber.fta;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /*
  * Used by RegExp plugins.  Each RegExp plugin has a set of PluginMatchEntries which have an ordered list of regular Expressions used to match against the Stream Data.
  * If the data matches one of the regular expressions then the regExpReturned is the answer returned to the user.  For example for a SSN the "regExpsToMatch" is
@@ -27,7 +29,8 @@ public class PluginMatchEntry {
 	/** RegExp plugins: the RegExp to be returned for this Semantic Type. */
 	public String regExpReturned;
 	/** Is the returned Regular Expression a complete representation of the Semantic Type. */
-	public boolean isRegExpComplete;
+	@JsonProperty("isRegExpComplete")
+	public boolean regExpComplete;
 
 	PluginMatchEntry() {
 	}
@@ -43,7 +46,7 @@ public class PluginMatchEntry {
 	PluginMatchEntry(final PluginMatchEntry other) {
 		this.regExpsToMatch = other.regExpsToMatch == null ? null : other.regExpsToMatch.clone();
 		this.regExpReturned = other.regExpReturned;
-		this.isRegExpComplete = other.isRegExpComplete;
+		this.regExpComplete = other.regExpComplete;
 	}
 
 	public String[] getRegExpsToMatch() {
@@ -56,7 +59,7 @@ public class PluginMatchEntry {
 	}
 
 	public boolean isRegExpComplete() {
-		return isRegExpComplete;
+		return regExpComplete;
 	}
 
 	public String getRegExpReturned() {

@@ -44,10 +44,11 @@ public abstract class SamplePlugin {
 		// Add our custom Java plugin for detecting colors
 		addPlugin(analysis);
 
+		final TextAnalyzer hydratedEnglish = TextAnalyzer.deserialize(analysis.serialize());
 		for (final String input : inputsEnglish)
-			analysis.train(input);
+			hydratedEnglish.train(input);
 
-		result = analysis.getResult();
+		result = hydratedEnglish.getResult();
 
 		System.err.printf("Result: %s, Semantic Type: %s, Regular Expression: %s, Max: %s, Min: %s.%n", result.getType(), result.getSemanticType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
 
@@ -66,10 +67,12 @@ public abstract class SamplePlugin {
 		// Add our custom Java plugin for detecting colors
 		addPlugin(analysisFrench);
 
-		for (final String input : inputsFrench)
-			analysisFrench.train(input);
+		final TextAnalyzer hydratedFrench = TextAnalyzer.deserialize(analysisFrench.serialize());
 
-		result = analysisFrench.getResult();
+		for (final String input : inputsFrench)
+			hydratedFrench.train(input);
+
+		result = hydratedFrench.getResult();
 
 		System.err.printf("Result: %s, Semantic Type: %s, Regular Expression: %s, Max: %s, Min: %s.%n", result.getType(), result.getSemanticType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
 
@@ -91,10 +94,12 @@ public abstract class SamplePlugin {
 		analyzerAugmented.setLocale(Locale.forLanguageTag("en-IN"));
 		addPlugins(analyzerAugmented);
 
-		for (final String input : inputsRE)
-			analyzerAugmented.train(input);
+		TextAnalyzer hydratedAugmented = TextAnalyzer.deserialize(analyzerAugmented.serialize());
 
-		result = analyzerAugmented.getResult();
+		for (final String input : inputsRE)
+			hydratedAugmented.train(input);
+
+		result = hydratedAugmented.getResult();
 
 		System.err.printf("Result: %s, Semantic Type: %s, Regular Expression: %s, Max: %s, Min: %s.%n", result.getType(), result.getSemanticType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
 
@@ -102,10 +107,13 @@ public abstract class SamplePlugin {
 		analyzerAugmented = new TextAnalyzer("Element");
 		analyzerAugmented.setLocale(Locale.US);
 		addPlugins(analyzerAugmented);
-		for (final String input : inputList)
-			analyzerAugmented.train(input);
 
-		result = analyzerAugmented.getResult();
+		hydratedAugmented = TextAnalyzer.deserialize(analyzerAugmented.serialize());
+
+		for (final String input : inputList)
+			hydratedAugmented.train(input);
+
+		result = hydratedAugmented.getResult();
 
 		System.err.printf("Result: %s, Semantic Type: %s, Regular Expression: %s, Max: %s, Min: %s.%n", result.getType(), result.getSemanticType(), result.getRegExp(), result.getMaxValue(), result.getMinValue());
 	}
