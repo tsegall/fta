@@ -98,7 +98,7 @@ public class RegExpGenerator {
 		if (firstRE.equals(secondRE))
 			return firstRE;
 
-		String simpleAnswer = firstRE.compareTo(secondRE) < 0 ? firstRE + '|' + secondRE : secondRE + '|' + firstRE;
+		final String simpleAnswer = firstRE.compareTo(secondRE) < 0 ? firstRE + '|' + secondRE : secondRE + '|' + firstRE;
 
 		if (!firstRE.contains(secondRE) && !secondRE.contains(firstRE))
 			return simpleAnswer;
@@ -112,7 +112,7 @@ public class RegExpGenerator {
 
 		// Case 1: first starts with second (e.g. "\d{2}" and "\d{2}-\d{2}") should return "\d{2}(-\d{2})?")
 		if (firstRE.startsWith(secondRE)) {
-			String optionalTail = firstRE.substring(secondRE.length());
+			final String optionalTail = firstRE.substring(secondRE.length());
 			// We need to not merge if we have something like "\d{2}" and "\d-\d{2}" as we would NOT want to return "\d({2}-\d{2})?"
 			if (optionalTail.charAt(0) == '{')
 				return simpleAnswer;

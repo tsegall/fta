@@ -458,11 +458,11 @@ class FileProcessor {
 							else {
 								final ArrayNode enumArray = mapper.createArrayNode();
 
-								for (String key : result.getCardinalityDetails().keySet())
+								for (final String key : result.getCardinalityDetails().keySet())
 									enumArray.add(key);
 								fieldNode.set("values", enumArray);
 
-								Map<String, Long> map = result.getCardinalityDetails();
+								final Map<String, Long> map = result.getCardinalityDetails();
 								map.keySet().stream().sorted().collect(Collectors.joining(","));
 							}
 							break;
@@ -513,7 +513,7 @@ class FileProcessor {
 				}
 
 				if (options.validate == 2 && matched[i] != result.getMatchCount()) {
-					String logicalType = result.isSemanticType() ? "Logical Type " : "";
+					final String logicalType = result.isSemanticType() ? "Logical Type " : "";
 
 					if (matched[i] > result.getMatchCount())
 						error.printf("\t*** NOTE: Composite: %s, field: %s (%d), match Count via RegExp (%d) > %smatch analysis (%d) ***%n",

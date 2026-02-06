@@ -57,7 +57,6 @@ import com.cobber.fta.dates.DateTimeParserConfig;
 import com.cobber.fta.dates.DateTimeParserResult;
 import com.cobber.fta.dates.DateTimeParserState;
 import com.cobber.fta.dates.SimpleDateMatcher;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -133,19 +132,19 @@ public class DetermineDateTimeFormatTests {
 				final FTAType type = result.getType();
 				try {
 					final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(fmts[i]);
-					if (FTAType.LOCALTIME.equals(type)) {
+					if (FTAType.LOCALTIME == type) {
 						text = localTime.format(formatter);
 						localTime = localTime.minusHours(209);
 					}
-					else if (FTAType.LOCALDATE.equals(type)) {
+					else if (FTAType.LOCALDATE == type) {
 						text = localDate.format(formatter);
 						localDate = localDate.minusDays(29);
 					}
-					else if (FTAType.LOCALDATETIME.equals(type)) {
+					else if (FTAType.LOCALDATETIME == type) {
 						text = localDateTime.format(formatter);
 						localDateTime = localDateTime.minusHours(209);
 					}
-					else if (FTAType.ZONEDDATETIME.equals(type)) {
+					else if (FTAType.ZONEDDATETIME == type) {
 						text = zonedDateTime.format(formatter);
 						zonedDateTime = zonedDateTime.minusHours(209);
 					}
@@ -1565,13 +1564,13 @@ public class DetermineDateTimeFormatTests {
 
 		try {
 			final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString, locale);
-			if (FTAType.LOCALTIME.equals(type))
+			if (FTAType.LOCALTIME == type)
 				LocalTime.parse(input, formatter);
-			else if (FTAType.LOCALDATE.equals(type))
+			else if (FTAType.LOCALDATE == type)
 				LocalDate.parse(input, formatter);
-			else if (FTAType.LOCALDATETIME.equals(type))
+			else if (FTAType.LOCALDATETIME == type)
 				LocalDateTime.parse(input, formatter);
-			else if (FTAType.ZONEDDATETIME.equals(type))
+			else if (FTAType.ZONEDDATETIME == type)
 				ZonedDateTime.parse(input, formatter);
 			else
 				OffsetDateTime.parse(input, formatter);
@@ -2676,13 +2675,13 @@ public class DetermineDateTimeFormatTests {
 
 					try {
 						final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString);
-						if (FTAType.LOCALTIME.equals(type))
+						if (FTAType.LOCALTIME == type)
 							LocalTime.parse(trimmed, formatter);
-						else if (FTAType.LOCALDATE.equals(type))
+						else if (FTAType.LOCALDATE == type)
 							LocalDate.parse(trimmed, formatter);
-						else if (FTAType.LOCALDATETIME.equals(type))
+						else if (FTAType.LOCALDATETIME == type)
 							LocalDateTime.parse(trimmed, formatter);
-						else if (FTAType.ZONEDDATETIME.equals(type))
+						else if (FTAType.ZONEDDATETIME == type)
 							ZonedDateTime.parse(trimmed, formatter);
 						else
 							OffsetDateTime.parse(trimmed, formatter);
@@ -3220,9 +3219,9 @@ public class DetermineDateTimeFormatTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void SerializeDateTimeParserConfig() {
 		ObjectMapper mapper = new ObjectMapper();
-		DateTimeParserConfig cfg = new DateTimeParserConfig(Locale.US);
+		final DateTimeParserConfig cfg = new DateTimeParserConfig(Locale.US);
 		try {
-			String serialized = mapper.writeValueAsString(cfg);
+			final String serialized = mapper.writeValueAsString(cfg);
 			mapper.readValue(serialized, DateTimeParserConfig.class);
 		}
 		catch (JsonProcessingException e) {
@@ -3233,11 +3232,11 @@ public class DetermineDateTimeFormatTests {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void SerializeDateTimeParserStateConfig() {
 		ObjectMapper mapper = new ObjectMapper();
-		DateTimeParserState state = new DateTimeParserState();
+		final DateTimeParserState state = new DateTimeParserState();
 		state.results.put("hello", 1);
 		try {
-			String serialized = mapper.writeValueAsString(state);
-			DateTimeParserState post = mapper.readValue(serialized, DateTimeParserState.class);
+			final String serialized = mapper.writeValueAsString(state);
+			final DateTimeParserState post = mapper.readValue(serialized, DateTimeParserState.class);
 			assertEquals(post.results.size(), 1);
 		}
 		catch (JsonProcessingException e) {

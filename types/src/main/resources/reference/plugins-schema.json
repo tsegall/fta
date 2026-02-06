@@ -145,10 +145,16 @@
         "confidence": {
           "type": "integer",
           "minimum": -100,
-          "maximum": 100
+          "maximum": 100,
+          "description": "Confidence in this header being a predictor of this Semantic Type.  Note: a confidence of -100 means that the supplied value must NOT be present in the header."
         },
         "mandatory": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "If true then insist that a header is always present."
+        },
+        "compositeKey": {
+          "type": "boolean",
+          "description": "If true then the input provided to match will be the concatenation of the Composite name with a period with the Stream name."
         }
       },
       "additionalProperties": false

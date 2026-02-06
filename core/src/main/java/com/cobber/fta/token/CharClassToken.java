@@ -53,11 +53,11 @@ public class CharClassToken extends Token {
 			countNonASCII = 1;
 		}
 
-		if (type.equals(Token.Type.DIGIT_CLASS))
+		if (type == Token.Type.DIGIT_CLASS)
 			maxSetASCII = 10;								// 0-9
-		else if (type.equals(Token.Type.ALPHA_CLASS))
+		else if (type == Token.Type.ALPHA_CLASS)
 			maxSetASCII = 52;								// a-zA-Z
-		else if (type.equals(Token.Type.ALPHADIGIT_CLASS))
+		else if (type == Token.Type.ALPHADIGIT_CLASS)
 			maxSetASCII = 62;								// 0-9a-zA-Z
 	}
 
@@ -163,7 +163,7 @@ public class CharClassToken extends Token {
 		boolean enumerateRanges = false;
 		// Coalesce multiple numerics or alphas into one
 		for (final CharClassToken token : kids) {
-			enumerateRanges = Token.Type.DIGIT_CLASS.equals(token.type) && token.countASCII != token.maxSetASCII;
+			enumerateRanges = Token.Type.DIGIT_CLASS == token.type && token.countASCII != token.maxSetASCII;
 			if (lastToken == null) {
 				lastToken = token.newCopy();
 				continue;
@@ -218,7 +218,7 @@ public class CharClassToken extends Token {
 
 	private void mergeObservations(final CharClassToken other) {
 		// The only differing types we are prepared to merge is anything to ALPHADIGIT
-		if (!type.equals(other.type) && !type.equals(Token.Type.ALPHADIGIT_CLASS)) {
+		if (type != other.type && type != Token.Type.ALPHADIGIT_CLASS) {
 			type = Token.Type.ALPHADIGIT_CLASS;
 			maxSetASCII = 62;
 		}

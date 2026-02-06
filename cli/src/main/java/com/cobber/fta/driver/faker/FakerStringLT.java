@@ -67,7 +67,7 @@ public class FakerStringLT extends FakerLT {
 			return values[random.nextInt(values.length)];
 
 		if (format.startsWith(".{")) {
-			StringBuffer buf = new StringBuffer(freeText.nextRandom());
+			final StringBuffer buf = new StringBuffer(freeText.nextRandom());
 			while (buf.length() < minLength)
 				buf.append(" ").append(freeText.nextRandom());
 

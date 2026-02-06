@@ -3859,6 +3859,13 @@ public class TextAnalyzer {
 
 		ret.setConfig(first.analysisConfig);
 
+		// An inadequate check that the two Analyzers being merged have the same user-defined plugins registered
+		if (first.getPlugins().getUserDefinedPlugins().size() != second.getPlugins().getUserDefinedPlugins().size())
+			throw new FTAMergeException("The user-defined plugins for both TextAnalyzers must be identical.");
+
+		// Register the user-defined plugins on the merged TextAnalyzer
+		ret.getPlugins().registerPluginListWithPrecedence(first.getPlugins().getUserDefinedPlugins(), first.getConfig());
+
 		// Train using all the non-null/non-blank elements
 		final Map<String, Long>merged = new HashMap<>();
 

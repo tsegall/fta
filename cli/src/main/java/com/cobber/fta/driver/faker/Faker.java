@@ -63,7 +63,7 @@ public class Faker {
 		}
 		final FakerParameters[] parameters = new FakerParameters[params.size()];
 		final LogicalType[] logicals = new LogicalType[params.size()];
-		for (FakerParameters param : params) {
+		for (final FakerParameters param : params) {
 			parameters[param.index] = param;
 			parameters[param.index].bind();
 		}

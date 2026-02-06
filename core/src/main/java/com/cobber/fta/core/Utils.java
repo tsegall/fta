@@ -310,7 +310,7 @@ public final class Utils {
 			}
 			if (first == '<' && last == '>' && samples - fmtXML < 5) {
 				try {
-					DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+					final DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 					db.setErrorHandler(new ErrorHandler()
 					{
 					    @Override
@@ -448,7 +448,7 @@ public final class Utils {
 		return 1.0 - result;
 	}
 
-	public static boolean containsIgnoreCase(String src, String hunting) {
+	public static boolean containsIgnoreCase(final String src, final String hunting) {
 	    final int len = hunting.length();
 	    if (len == 0)
 	        return true; // Empty string is contained

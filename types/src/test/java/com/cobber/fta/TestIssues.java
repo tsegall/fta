@@ -31,6 +31,7 @@ import java.util.Locale;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAException;
+import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
@@ -419,5 +420,46 @@ public class TestIssues {
 		assertEquals(jsonNode.get("detectionLocale").asText(), "de");
 		assertEquals(jsonNode.get("structureSignature").asText(), "slggsAEDZ26rz9dqs15eNF23j2w=");
 		assertEquals(jsonNode.get("dataSignature").asText(), "hOm2Ez8xHWr6iDeQ1j/A3hBtz0Y=");
+	}
+
+	final String[] inputsRE = {
+            "2345:AQ", "5993:FG", "3898:WW", "5543:NH", "1992:WW", "4002:CS", "5982:KG", "1090:DD", "3030:XX", "1088:TR",
+            "2547:DE", "6587:DS", "3215:QQ", "7745:VD", "4562:DD", "4582:SS", "2257:WE", "3578:HT", "4568:FB", "1587:SW",
+            "4573:LF", "3574:SS", "8122:GK", "4523:EW", "7128:RT", "2548:RF", "6873:HH", "4837:NR", "2358:EE", "3731:HY"
+    };
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void issue155() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+		// Load our new plugins from a file and test the new Regular Expression Semantic Type
+		TextAnalyzer shardOne = new TextAnalyzer("ID");
+		shardOne.setLocale(Locale.forLanguageTag("en-US"));
+		TextAnalyzer shardTwo = new TextAnalyzer("ID");
+		shardTwo.setLocale(Locale.forLanguageTag("en-US"));
+
+		// Register our sample list and regex plugins from a JSON definition file (before the built-in plugins have been registered)
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/custom_id.json"), StandardCharsets.UTF_8))) {
+				shardOne.getPlugins().registerPlugins(reader, shardOne.getConfig(), true);
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/custom_id.json"), StandardCharsets.UTF_8))) {
+			shardTwo.getPlugins().registerPlugins(reader, shardTwo.getConfig(), true);
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+
+		for (final String input : inputsRE) {
+			shardOne.train(input);
+			shardTwo.train(input);
+		}
+
+		TextAnalyzer merged = TextAnalyzer.merge(shardOne, shardTwo);
+		TextAnalysisResult result = merged.getResult();
+
+		assertEquals(result.getSemanticType(), "CUSTOM.DIGIT_ALPHA_ID");
 	}
 }

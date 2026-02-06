@@ -27,14 +27,14 @@ class TimeDateElement {
 		Constant
 	}
 
-	final static TimeDateElement Time = new TimeDateElement(TimeDateElementType.Time);
-	final static TimeDateElement Date = new TimeDateElement(TimeDateElementType.Date);
-	final static TimeDateElement TimeZone = new TimeDateElement(TimeDateElementType.TimeZone);
+	static final TimeDateElement Time = new TimeDateElement(TimeDateElementType.Time);
+	static final TimeDateElement Date = new TimeDateElement(TimeDateElementType.Date);
+	static final TimeDateElement TimeZone = new TimeDateElement(TimeDateElementType.TimeZone);
 
-	final static TimeDateElement AMPM = new TimeDateElement(TimeDateElementType.AMPM, "a");
-	final static TimeDateElement English_AMPM = new TimeDateElement(TimeDateElementType.English_AMPM, "P");
-	final static TimeDateElement WhiteSpace = new TimeDateElement(TimeDateElementType.WhiteSpace, " ");
-	final static TimeDateElement Indicator_8601 = new TimeDateElement(TimeDateElementType.Indicator_8601, "'T'");
+	static final TimeDateElement AMPM = new TimeDateElement(TimeDateElementType.AMPM, "a");
+	static final TimeDateElement English_AMPM = new TimeDateElement(TimeDateElementType.English_AMPM, "P");
+	static final TimeDateElement WhiteSpace = new TimeDateElement(TimeDateElementType.WhiteSpace, " ");
+	static final TimeDateElement Indicator_8601 = new TimeDateElement(TimeDateElementType.Indicator_8601, "'T'");
 
 	public final TimeDateElementType type;
 	public final String rep;

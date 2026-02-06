@@ -89,7 +89,7 @@ public abstract class SamplePlugin {
 		// Load our new plugins from a file and test the new Regular Expression Semantic Type
 		TextAnalyzer analyzerAugmented = new TextAnalyzer("ID");
 		analyzerAugmented.setLocale(Locale.forLanguageTag("en-IN"));
-		addPlugins(analyzerAugmented, "ID");
+		addPlugins(analyzerAugmented);
 
 		for (final String input : inputsRE)
 			analyzerAugmented.train(input);
@@ -101,7 +101,7 @@ public abstract class SamplePlugin {
 		// Load our new plugins from a file and test the new List-based Semantic Type
 		analyzerAugmented = new TextAnalyzer("Element");
 		analyzerAugmented.setLocale(Locale.US);
-		addPlugins(analyzerAugmented, "Element");
+		addPlugins(analyzerAugmented);
 		for (final String input : inputList)
 			analyzerAugmented.train(input);
 
@@ -114,7 +114,7 @@ public abstract class SamplePlugin {
 		// Register our new Java plugin (after the built-in plugins have been registered)
 		final String colorPlugin = "[ { \"semanticType\": \"CUSTOM_COLOR.TEXT_<LANG>\", \"pluginType\": \"java\", \"clazz\": \"sampleplugin.PluginColor\", \"validLocales\": [ { \"localeTag\": \"en,fr-FR\" } ] } ]";
 		try {
-			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), "color", analysis.getConfig(), false);
+			analysis.getPlugins().registerPlugins(new StringReader(colorPlugin), analysis.getConfig(), false);
 		} catch (FTAPluginException e) {
 			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
 		} catch (IOException e) {
@@ -122,10 +122,10 @@ public abstract class SamplePlugin {
 		}
     }
 
-    static void addPlugins(final TextAnalyzer analysis, final String dataStreamName) {
-		// Register our sample list and regext plugins from a JSON definition file (after the built-in plugins have been registered)
+    static void addPlugins(final TextAnalyzer analysis) {
+		// Register our sample list and regex plugins from a JSON definition file (after the built-in plugins have been registered)
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/CustomPlugins.json"), StandardCharsets.UTF_8))) {
-			analysis.getPlugins().registerPlugins(reader, dataStreamName, analysis.getConfig(), false);
+			analysis.getPlugins().registerPlugins(reader, analysis.getConfig(), false);
 		} catch (FTAPluginException e) {
 			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
 		} catch (IOException e) {

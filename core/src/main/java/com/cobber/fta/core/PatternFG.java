@@ -28,7 +28,7 @@ public class PatternFG {
 	private PatternFG(final String wPattern) {
 		final String withSentinel = wPattern + '|';
 
-		long wordCount = withSentinel.codePoints().filter(ch -> ch =='|').count() + 1;
+		final long wordCount = withSentinel.codePoints().filter(ch -> ch =='|').count() + 1;
 		words = new String[(int)wordCount];
 
 		int start = 0;
@@ -36,7 +36,7 @@ public class PatternFG {
 		for (int i = start; i < withSentinel.length(); i++) {
 			if (withSentinel.charAt(i) == '|') {
 				if (i != withSentinel.length() - 1) {
-					char ch = withSentinel.charAt(i + 1);
+					final char ch = withSentinel.charAt(i + 1);
 					candidates[ch] = true;
 					if (Character.isLowerCase(ch))
 						candidates[Character.toUpperCase(ch)] = true;
@@ -57,7 +57,7 @@ public class PatternFG {
 		if (input == null || input.isEmpty())
 			return false;
 
-		char ch = input.charAt(0);
+		final char ch = input.charAt(0);
 		if (ch >= candidates.length || !candidates[ch])
 			return false;
 
@@ -65,7 +65,7 @@ public class PatternFG {
 		if (len == 0 || len < minLength || len > maxLength)
 			return false;
 
-		for (String word : words)
+		for (final String word : words)
 			if (input.equalsIgnoreCase(word))
 				return true;
 

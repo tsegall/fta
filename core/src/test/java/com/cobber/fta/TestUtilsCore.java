@@ -17,6 +17,8 @@ package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -460,7 +462,7 @@ public class TestUtilsCore {
 			final String random9 = Utils.getRandomDigits(random, 1 + i%10);
 			assertEquals(random9.length(), 1 + i%10);
 			assertTrue(Utils.isNumeric(random9));
-			assertTrue(random9.charAt(0) != '0');
+			assertNotEquals(random9.charAt(0), '0');
 		}
 
 		assertFalse(Utils.isNumeric(null));
@@ -685,7 +687,7 @@ public class TestUtilsCore {
 		knownTypes.initialize(Locale.US);
 		assertTrue(knownTypes.getByID(KnownTypes.ID.ID_LONG).equals(knownTypes.getByID(KnownTypes.ID.ID_LONG)));
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).equals(knownTypes.getByID(KnownTypes.ID.ID_LONG_GROUPING)));
-		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG) == null);
+		assertNotNull(knownTypes.getByID(KnownTypes.ID.ID_LONG));
 
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).hasGrouping());
 		assertFalse(knownTypes.getByID(KnownTypes.ID.ID_LONG).isSigned());

@@ -31,9 +31,6 @@ public class FakerParameters {
 	public String distribution;
 	public String[] values;
 
-	public FakerParameters() {
-	}
-
 	public void bind() {
 		if ("LOCALDATE".equals(type))
 			clazz = "com.cobber.fta.driver.faker.FakerLocalDateLT";

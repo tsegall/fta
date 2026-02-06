@@ -21,7 +21,7 @@ package com.cobber.fta.token;
  */
 public abstract class Token {
 	/* Any input whose input is longer than this is deemed to be too long to be interesting. */
-	public final static int MAX_LENGTH = 65;
+	public static final int MAX_LENGTH = 65;
 
 	protected Type type;
 	protected char ch;
@@ -71,9 +71,9 @@ public abstract class Token {
 		this.ch = ch;
 	}
 
-	abstract public Token merge(Token o);
-	abstract public int charactersUsed();
-	abstract public Token newCopy();
+	public abstract Token merge(Token o);
+	public abstract int charactersUsed();
+	public abstract Token newCopy();
 
 	/**
 	 * Get the Regular Expression for this Token.
@@ -96,7 +96,7 @@ public abstract class Token {
 		return ch;
 	}
 
-	abstract public boolean isComplete();
+	public abstract boolean isComplete();
 
 	/**
 	 * Construct the key based on the input.

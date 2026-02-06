@@ -50,18 +50,18 @@ public class TypeInfo {
 		}
 	}
 
-	public final static int SIGNED_FLAG = TypeModifier.SIGNED.getFlag();
-	public final static int GROUPING_FLAG = TypeModifier.GROUPING.getFlag();
-	public final static int EXPONENT_FLAG = TypeModifier.EXPONENT.getFlag();
-	public final static int NON_LOCALIZED_FLAG = TypeModifier.NON_LOCALIZED.getFlag();
-	public final static int SIGNED_TRAILING_FLAG = TypeModifier.SIGNED_TRAILING.getFlag();
-	public final static int NULL_FLAG = TypeModifier.NULL.getFlag();
-	public final static int BLANK_FLAG = TypeModifier.BLANK.getFlag();
-	public final static int BLANKORNULL_FLAG = TypeModifier.BLANKORNULL.getFlag();
-	public final static int TRUE_FALSE_FLAG = TypeModifier.TRUE_FALSE.getFlag();
-	public final static int YES_NO_FLAG = TypeModifier.YES_NO.getFlag();
-	public final static int Y_N_FLAG = TypeModifier.Y_N.getFlag();
-	public final static int ONE_ZERO_FLAG = TypeModifier.ONE_ZERO.getFlag();
+	public static final int SIGNED_FLAG = TypeModifier.SIGNED.getFlag();
+	public static final int GROUPING_FLAG = TypeModifier.GROUPING.getFlag();
+	public static final int EXPONENT_FLAG = TypeModifier.EXPONENT.getFlag();
+	public static final int NON_LOCALIZED_FLAG = TypeModifier.NON_LOCALIZED.getFlag();
+	public static final int SIGNED_TRAILING_FLAG = TypeModifier.SIGNED_TRAILING.getFlag();
+	public static final int NULL_FLAG = TypeModifier.NULL.getFlag();
+	public static final int BLANK_FLAG = TypeModifier.BLANK.getFlag();
+	public static final int BLANKORNULL_FLAG = TypeModifier.BLANKORNULL.getFlag();
+	public static final int TRUE_FALSE_FLAG = TypeModifier.TRUE_FALSE.getFlag();
+	public static final int YES_NO_FLAG = TypeModifier.YES_NO.getFlag();
+	public static final int Y_N_FLAG = TypeModifier.Y_N.getFlag();
+	public static final int ONE_ZERO_FLAG = TypeModifier.ONE_ZERO.getFlag();
 
 	private FTAType baseType;
 
@@ -267,7 +267,7 @@ public class TypeInfo {
 		return regexp;
 	}
 
-	public void setRegExp(String regexp) {
+	public void setRegExp(final String regexp) {
 		this.regexp = regexp;
 	}
 

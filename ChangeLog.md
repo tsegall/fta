@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 17.4.1
+ - INT: Bump logback-classic to 1.5.27, google phonenumber to 9.0.23, gradle to 9.3.1
+ - INT: Cleaning.
+ - BUG: User-defined plugins not registered when merging two analyzers (Issue #155)
+
 ### 17.4.0
  - INT: Bump testng to 7.12.0, logback-classic to 1.5.26
  - ENH: Improve ZIP detection if have data of the form 99999- (i.e. a trailing hyphen)
@@ -16,7 +21,7 @@
  - ENH: Change approach to registering plugins - no longer require dataStream name.  Some methods added and some deprecated.
 
 ### 17.2.0
- - INT: Bump logback-classic to 1.5.24, gradle to 9.3.0, phonenumber to 9.0.21
+ - INT: Bump logback-classic to 1.5.24, gradle to 9.3.0, google phonenumber to 9.0.22
  - CLI: Add --semanticTypesPre to control whether user-defined types (--semanticType) are registered before built-ins
  - BUG: findByName on TextAnalyzer was not returning user-defined types
  - BUG: Preserve precedence on plugins registered on TextAnalyzer template for RecordAnalyzer (Issue #152)
@@ -24,7 +29,7 @@
  - INT: Remove remaining references to deprecated registerPluginList()
 
 ### 17.1.10
- - INT: Bump logback-classic to 1.5.23, SpotBugs to 6.4.8, commons-text:1.15.0, google phonenumber to 9.0.21,
+ - INT: Bump logback-classic to 1.5.23, SpotBugs to 6.4.8, commons-text:1.15.0, google phonenumber to 9.0.21
  - ENH: Small improvement to Semantic Type NAME.FIRST_LAST to reject more company names (Issue #151)
 
 ### 17.1.9

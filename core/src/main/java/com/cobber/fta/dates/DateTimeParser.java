@@ -1337,7 +1337,7 @@ public class DateTimeParser {
 
 				if (timeTracker.seen()) {
 					final String rest = trimmed.substring(i).toUpperCase(config.getLocale());
-					final LinkedHashSet<String> all = new LinkedHashSet<>(localeInfo.getAMPMStrings());
+					final HashSet<String> all = new LinkedHashSet<>(localeInfo.getAMPMStrings());
 					if (config.allowEnglishAMPM && !all.contains("AM"))
 						all.addAll(localeInfo.getAMPMStringsNonLocalized());
 					final String[] indicators = all.toArray(new String[0]);

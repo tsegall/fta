@@ -41,8 +41,8 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
  * DateTimeParserResult is the result of a {@link DateTimeParser} analysis.
  */
 public class DateTimeParserResult {
-	public final static int HOUR_INDEX = 0;
-	public final static int FRACTION_INDEX = 3;
+	public static final int HOUR_INDEX = 0;
+	public static final int FRACTION_INDEX = 3;
 
 	public int timeElements = -1;
 	public int dateElements = -1;
@@ -206,13 +206,13 @@ public class DateTimeParserResult {
 		final DateTimeFormatter dtf = new DateTimeParser().withLocale(locale).ofPattern(getFormatString());
 
 		try {
-			if (FTAType.LOCALTIME.equals(getType()))
+			if (FTAType.LOCALTIME == getType())
 				LocalTime.parse(input, dtf);
-			else if (FTAType.LOCALDATE.equals(getType()))
+			else if (FTAType.LOCALDATE == getType())
 				LocalDate.parse(input, dtf);
-			else if (FTAType.LOCALDATETIME.equals(getType()))
+			else if (FTAType.LOCALDATETIME == getType())
 				LocalDateTime.parse(input, dtf);
-			else if (FTAType.ZONEDDATETIME.equals(getType()))
+			else if (FTAType.ZONEDDATETIME == getType())
 				ZonedDateTime.parse(input, dtf);
 			else
 				OffsetDateTime.parse(input, dtf);
@@ -236,15 +236,15 @@ public class DateTimeParserResult {
 	 */
 	public boolean isPlausible(final String input, final DateTimeFormatter dtf) {
 		try {
-			if (FTAType.LOCALTIME.equals(getType())) {
+			if (FTAType.LOCALTIME == getType()) {
 				LocalTime.parse(input, dtf);
 				return true;
 			}
-			else if (FTAType.LOCALDATE.equals(getType()))
+			else if (FTAType.LOCALDATE == getType())
 				return checkYear(LocalDate.parse(input, dtf));
-			else if (FTAType.LOCALDATETIME.equals(getType()))
+			else if (FTAType.LOCALDATETIME == getType())
 				return checkYear(LocalDateTime.parse(input, dtf));
-			else if (FTAType.ZONEDDATETIME.equals(getType()))
+			else if (FTAType.ZONEDDATETIME == getType())
 				return checkYear(ZonedDateTime.parse(input, dtf));
 			else
 				return checkYear(OffsetDateTime.parse(input, dtf));
@@ -902,10 +902,10 @@ public class DateTimeParserResult {
 
 
 		for (final FormatterToken t : tokenized) {
-			if (t.getType().equals(Token.TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_ZERO) ||
-					t.getType().equals(Token.LOCALIZED_TIMEZONE_OFFSET) || t.getType().equals(Token.TIMEZONE_OFFSET_Z))
+			if (t.getType() == Token.TIMEZONE_OFFSET || t.getType() == Token.TIMEZONE_OFFSET_ZERO ||
+					t.getType() == Token.LOCALIZED_TIMEZONE_OFFSET || t.getType() == Token.TIMEZONE_OFFSET_Z)
 				return FTAType.OFFSETDATETIME;
-			if (t.getType().equals(Token.TIMEZONE_NAME))
+			if (t.getType() == Token.TIMEZONE_NAME)
 				return FTAType.ZONEDDATETIME;
 		}
 
