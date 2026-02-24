@@ -56,20 +56,22 @@ public abstract class LogicalTypeFinite extends LogicalTypeCode {
 		if (trimmedUpper.length() <= maxLength && getMembers().contains(trimmedUpper))
 			return true;
 
-		final String value = defn.getOptions().get("words");
-		if (value != null) {
-			final boolean any = "any".equalsIgnoreCase(value);
-			final boolean all = "all".equalsIgnoreCase(value);
-			final boolean first = "first".equalsIgnoreCase(value);
+		if (defn.getOptions() != null) {
+			final String value = (String) defn.getOptions().get("words");
+			if (value != null) {
+				final boolean any = "any".equalsIgnoreCase(value);
+				final boolean all = "all".equalsIgnoreCase(value);
+				final boolean first = "first".equalsIgnoreCase(value);
 
-			final List<String> words = wordProcessor.asWords(trimmedUpper);
-			boolean found = false;
-			for (final String word : words) {
-				found = getMembers().contains(Utils.cleanse(word).toUpperCase(locale));
-				if (first || (any && found) || (all && !found))
-					return found;
+				final List<String> words = wordProcessor.asWords(trimmedUpper);
+				boolean found = false;
+				for (final String word : words) {
+					found = getMembers().contains(Utils.cleanse(word).toUpperCase(locale));
+					if (first || (any && found) || (all && !found))
+						return found;
+				}
+				return all && found;
 			}
-			return all && found;
 		}
 
 		return false;

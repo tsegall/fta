@@ -72,7 +72,7 @@ public abstract class LogicalTypeFiniteSimple extends LogicalTypeFinite {
 
 		super.initialize(analysisConfig);
 
-		if (defn.getOptions().get("words") != null) {
+		if (defn.getOptions() != null && defn.getOptions().get("words") != null) {
 			regExp = KnownTypes.PATTERN_ANY_VARIABLE;
 			return true;
 		}

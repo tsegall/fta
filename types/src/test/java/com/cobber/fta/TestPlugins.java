@@ -2003,21 +2003,21 @@ public class TestPlugins {
 	}
 
 	private void pluginsOrder(final boolean preBuiltins, final String expectedSemanticType) throws FTAException {
-		final String dataStreamName = "BirthDate";
+		final String dataStreamName = "BirthYear";
 		final TextAnalyzer analysis = new TextAnalyzer(dataStreamName, DateResolutionMode.DayFirst);
 		final Locale locale = Locale.forLanguageTag("en-US");
 		analysis.setLocale(locale);
 		final String[] inputs = {
-				"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
-				"2008-05-31Z", "2002-02-28Z", "2008-05-31Z", "2003-02-28Z", "1993-02-28Z",
-				"2001-02-28Z", "1993-02-28Z", "1995-02-28Z", "1996-02-29Z", "1995-02-28Z",
-				"1993-02-28Z", "1998-02-28Z", "2004-02-29Z", "2007-02-28Z", "1990-02-28Z",
-				"2008-05-31Z", "1996-02-29Z", "1990-02-28Z", "2006-02-28Z", "2010-12-31Z",
-				"2006-02-28Z", "1998-02-28Z", "2001-02-28Z", "1965-02-28Z", "1995-02-28Z",
-				"2006-02-28Z", "1990-02-28Z", "2007-10-31Z", "1969-12-31Z", "2009-12-31Z",
-				"1985-02-28Z", "1986-02-28Z", "1987-02-28Z", "1988-02-29Z", "2001-02-28Z",
-				"1988-02-29Z", "1965-02-28Z", "2001-02-28Z", "2003-02-28Z", "2009-02-28Z",
-				"1978-02-28Z", "2008-12-31Z", "1994-02-28Z", "1995-02-28Z", "1996-02-29Z"
+				"1995", "1994", "2003", "2004", "1991",
+				"2008", "2002", "2008", "2003", "1993",
+				"2001", "1993", "1995", "1996", "1995",
+				"1993", "1998", "2004", "2007", "1990",
+				"2008", "1996", "1990", "2006", "2010",
+				"2006", "1998", "2001", "1965", "1995",
+				"2006", "1990", "2007", "1969", "2009",
+				"1985", "1986", "1987", "1988", "2001",
+				"1988", "1965", "2001", "2003", "2009",
+				"1978", "2008", "1994", "1995", "1996"
 		};
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
@@ -2035,12 +2035,12 @@ public class TestPlugins {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
-		assertEquals(result.getTypeModifier(), "yyyy-MM-dd'Z'");
+		assertEquals(result.getTypeModifier(), "yyyy");
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}Z");
+		assertEquals(result.getRegExp(), "\\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getSemanticType(), expectedSemanticType);
 	}
@@ -2054,8 +2054,49 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void pluginsPost() throws FTAException {
 		// Register our plugin after the pre-defined types - so we should return the built-in PERSON.DATE_OF_BIRTH
-		pluginsOrder(false, "PERSON.DATE_OF_BIRTH");
+		pluginsOrder(false, "PERSON.YEAR_OF_BIRTH");
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void customLocalDate() throws FTAException, IOException {
+		TextAnalyzer analyzer;
+		int records = 0;
+
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/event_data.csv"), StandardCharsets.UTF_8))) {
+			analyzer = new TextAnalyzer(in.readLine());
+			analyzer.setDebug(2);
+			addPlugin(analyzer);
+
+			String line;
+
+			while ((line = in.readLine()) != null) {
+				analyzer.train(line);
+				records++;
+			}
+		}
+
+		final TextAnalysisResult result = analyzer.getResult();
+
+		System.err.printf("SemanticType: %s\n", result.getSemanticType());
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getSemanticType(), "CUSTOM.EVENT_DATE");
+		assertEquals(result.getTypeModifier(), "yyyy-MM-dd");
+		assertEquals(result.getSampleCount(), records);
+
+		// 8 records fall on Xmas which is an invalid event date (4 unique values are erroneous)
+		assertEquals(result.getMatchCount(), records - 8);
+		assertEquals(result.getOutlierCount(), 4);
+	}
+
+	private void addPlugin(final TextAnalyzer analysis) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
+			analysis.getPlugins().registerPlugins(reader, analysis.getConfig(), true);
+		} catch (FTAException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+    }
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void pluginsEdit() throws FTAException {
@@ -3509,6 +3550,45 @@ public class TestPlugins {
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getMinLength(), 3);
 		assertEquals(result.getMaxLength(), 3);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts(false));
+
+		for (final String input : inputs)
+			assertTrue(input.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicBirthYear() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("BirthYear");
+		final String pipedInput = "2019|2020|1959|1960|1958|1948|1950|1990|1991|1993|2001|2003|" +
+				"1943|2010|1949|1965|1957|1943|1951|1990|1981|1991|2002|2003|" +
+				"1944|2011|1939|1960|1958|1948|1956|1991|1972|1500|2003|2004|" +
+				"1945|2010|1929|1963|1955|1942|1953|1992|1961|1972|2025|2005|" +
+				"1949|2000|1969|1960|1958|1948|1950|2016|1952|1953|2009|2001|" +
+				"1935|2001|1979|1961|1951|1941|1954|1998|1941|1962|2018|2003|";
+		final String inputs[] = pipedInput.split("\\|");
+		int locked = -1;
+
+		for (int i = 0; i < inputs.length; i++) {
+			if (analysis.train(inputs[i]) && locked == -1)
+				locked = i;
+		}
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getRegExp(), "\\d{4}");
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getSemanticType(), "PERSON.YEAR_OF_BIRTH");
+		assertEquals(result.getStructureSignature(), PluginDefinition.findByName("PERSON.YEAR_OF_BIRTH").signature);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getBlankCount(), 0);
+		assertEquals(result.getOutlierCount(), 0);
+		// TODO - this is a bug!  Starts life as a long then gets switch to a date but the data does not reprocessed
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getMinLength(), 4);
+		assertEquals(result.getMaxLength(), 4);
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getConfidence(), 1.0);
 

@@ -100,6 +100,9 @@ public class TypeInfo {
 			this.typeModifier = newType;
 		this.isSemanticType = isSemanticType;
 		this.format = format;
+
+		if (baseType.isDateOrTimeType())
+			this.typeModifier = format;
 	}
 
 	/**

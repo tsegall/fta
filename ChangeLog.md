@@ -1,6 +1,14 @@
 
 ## Changes ##
 
+### 17.5.1
+ - INT: Bump jackson to 2.21.1
+
+### 17.5.0
+ - INT: Bump logback-classic to 1.5.31, google phonenumber to 9.0.24
+ - ENH: Improve support for Java plugins derived from DateTime types (Issue #157)
+ - **ENH:** pluginOptions in the JSON plugin definition are now a JSON object not a String
+
 ### 17.4.2
  - BUG: User-defined plugins not being serialized (Issue #155)
 

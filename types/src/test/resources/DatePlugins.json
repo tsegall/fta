@@ -26,5 +26,24 @@
 		],
 		"baseType": "LOCALDATE",
 		"priority": 3000
+	},
+	{
+		"semanticType": "CUSTOM.EVENT_DATE",
+		"description": "Event Date - format must be yyyy-mm-dd",
+		"pluginType": "java",
+	            "pluginOptions": {
+					"regExp": "\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])",
+					"dateFormat": "yyyy-MM-dd",
+					"invalid": "\\d{4}-12-25"
+					},
+		"clazz": "com.cobber.fta.PluginCustomLocalDate",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [ { "regExp": ".*(?i)(event.*date|date.*event).*", "confidence": 95, "mandatory": false } ]
+			}
+		],
+		"baseType": "LOCALDATE",
+		"priority": 1
 	}
 ]

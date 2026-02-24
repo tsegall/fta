@@ -2984,7 +2984,7 @@
 		"semanticType": "LANGUAGE.TEXT_EN",
 		"description": "Language name, e.g. English, French, ...",
 		"pluginType": "list",
-		"pluginOptions": "words=all",
+		"pluginOptions": { "words": "all" },
 		"signature": "XCjtEvkiEs1eLR9wqzgkxxgosg0=",
 		"validLocales": [
 			{
@@ -3375,7 +3375,7 @@
 		"semanticType": "COLOR.TEXT_EN",
 		"description": "Color name (English)",
 		"pluginType": "list",
-		"pluginOptions": "words=all",
+		"pluginOptions": { "words": "all" },
 		"signature": "CIsljBWEmutE4EulPJgCkQZyzMU=",
 		"validLocales": [
 			{ "localeTag": "*", "headerRegExps": [ { "regExp": ".*(?i)(color|colour).*", "confidence": 90 } ] }
@@ -3397,7 +3397,7 @@
 		"semanticType": "COLOR.TEXT_NL",
 		"description": "Color name (Dutch)",
 		"pluginType": "list",
-		"pluginOptions": "words=all",
+		"pluginOptions": { "words": "all" },
 		"signature": "+WrxpZvBxXNUyWInyd9r2FadhuY=",
 		"validLocales": [
 			{ "localeTag": "nl", "headerRegExps": [ { "regExp": ".*(?i)(kleur).*", "confidence": 90, "mandatory": true } ] }
@@ -3419,7 +3419,7 @@
 		"semanticType": "COLOR.TEXT_ES",
 		"description": "Color name (Spanish)",
 		"pluginType": "list",
-		"pluginOptions": "words=all",
+		"pluginOptions": { "words": "all" },
 		"signature": "I2y3yXfuj8RTGMSr6exv3TnPWoE=",
 		"validLocales": [
 			{ "localeTag": "es", "headerRegExps": [ { "regExp": ".*(?i)(color).*", "confidence": 90, "mandatory": true } ] }

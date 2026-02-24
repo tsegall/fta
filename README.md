@@ -285,7 +285,7 @@ like phone numbers, but that are in fact invalid, will NOT be detected as the Se
 The English-language performance of Semantic Type determination is based on a large sample of inputs from open data portals.
 The data set can be found at [semantic-types](https://github.com/tsegall/semantic-types).
 
-Based on this set the average Precision across the identified Semantic Types is estimated at ~99.7%, the Recall at ~98.4% with an F1-Score of ~99.0%.
+Based on this set the average Precision across the identified Semantic Types is estimated at ~99.7%, the Recall at ~98.5% with an F1-Score of ~99.1%.
 
 Precision == True Positives / (True Positives + False Positives)
 

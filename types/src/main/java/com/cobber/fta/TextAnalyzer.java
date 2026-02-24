@@ -2097,7 +2097,12 @@ public class TextAnalyzer {
 			for (final LogicalTypeInfinite logical : infiniteTypes) {
 				if (logical.acceptsBaseType(facts.getMatchTypeInfo().getBaseType()) && logical.getConfidence(candidateCounts[i], raw.size(), context)  >= logical.getThreshold()/100.0) {
 					int count = 0;
-					final TypeInfo candidate = new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo());
+					TypeInfo candidate;
+					if (logical.getBaseType().isDateOrTimeType())
+						candidate = new TypeInfo(null, facts.getMatchTypeInfo().getRegExp(), facts.getMatchTypeInfo().getBaseType(), logical.getSemanticType(), true, facts.getMatchTypeInfo().format);
+					else
+						candidate = new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo());
+
 					for (final String sample : raw) {
 						switch (logical.getBaseType()) {
 						case STRING:
@@ -2111,6 +2116,15 @@ public class TextAnalyzer {
 						case DOUBLE:
 							if (trackDouble(sample, candidate, false, 1))
 								count++;
+							break;
+						case LOCALDATE:
+							try {
+								if (trackDateTime(sample, candidate, false, 1))
+									count++;
+							}
+							catch (DateTimeParseException e) {
+								// DO NOTHING
+							}
 							break;
 						default:
 							break;
@@ -2527,8 +2541,8 @@ public class TextAnalyzer {
 		case OFFSETDATETIME:
 		case ZONEDDATETIME:
 			try {
-				trackDateTime(input, facts.getMatchTypeInfo(), true, count);
-				valid = true;
+				if (trackDateTime(input, facts.getMatchTypeInfo(), true, count))
+					valid = true;
 			}
 			catch (DateTimeParseException reale) {
 				// The real parse threw an Exception, this does not give us enough facts to usefully determine if there are any
@@ -3590,7 +3604,7 @@ public class TextAnalyzer {
 			final Entry<String, Long> entry = it.next();
 			boolean kill = false;
 			try {
-				trackDateTime(entry.getKey().trim(), facts.getMatchTypeInfo(), false, 1);
+				kill = !trackDateTime(entry.getKey().trim(), facts.getMatchTypeInfo(), false, 1);
 			}
 			catch (DateTimeException e) {
 				kill = true;

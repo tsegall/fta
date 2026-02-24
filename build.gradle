@@ -162,7 +162,7 @@ subprojects {
 	spotbugs {
 		toolVersion = "4.9.8"
 		effort = Effort.MAX
-		reportLevel = "low"
+		reportLevel = com.github.spotbugs.snom.Confidence.valueOf('LOW')
 		ignoreFailures = true
 	}
 
