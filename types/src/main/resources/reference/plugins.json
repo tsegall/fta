@@ -2362,7 +2362,11 @@
 		"description": "Person - Year of Birth",
 		"pluginType": "java",
 		"signature": "MwDOGFRD1CFBe0yMNQwdyIN+QQg=",
-		"clazz": "com.cobber.fta.plugins.person.BirthYear",
+		"pluginOptions": {
+			"dateFormat": "yyyy",
+			"minimum": "1600"
+			},
+		"clazz": "com.cobber.fta.plugins.PluginCustomLocalDate",
 		"validLocales": [
 			{
 				"localeTag": "*",

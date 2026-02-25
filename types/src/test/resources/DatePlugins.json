@@ -3,7 +3,11 @@
 		"semanticType": "CUSTOM.YEAR_OF_BIRTH",
 		"description": "Person - Year of Birth",
 		"pluginType": "java",
-		"clazz": "com.cobber.fta.plugins.person.BirthYear",
+		"pluginOptions": {
+			"dateFormat": "yyyy",
+			"minimum": "1600"
+		},
+		"clazz": "com.cobber.fta.plugins.PluginCustomLocalDate",
 		"validLocales": [
 			{
 				"localeTag": "*",
@@ -17,7 +21,11 @@
 		"semanticType": "CUSTOM.YEAR_OF_DEATH",
 		"description": "Person - Year of Death",
 		"pluginType": "java",
-		"clazz": "com.cobber.fta.plugins.person.BirthYear",
+		"pluginOptions": {
+			"dateFormat": "yyyy",
+			"minimum": "1600"
+		},
+		"clazz": "com.cobber.fta.plugins.PluginCustomLocalDate",
 		"validLocales": [
 			{
 				"localeTag": "*",
@@ -32,11 +40,11 @@
 		"description": "Event Date - format must be yyyy-mm-dd",
 		"pluginType": "java",
 	            "pluginOptions": {
-					"regExp": "\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])",
 					"dateFormat": "yyyy-MM-dd",
-					"invalid": "\\d{4}-12-25"
+					"invalidRegExp": "\\d{4}-12-25",
+					"minimum": "2000-01-01"
 					},
-		"clazz": "com.cobber.fta.PluginCustomLocalDate",
+		"clazz": "com.cobber.fta.plugins.PluginCustomLocalDate",
 		"validLocales": [
 			{
 				"localeTag": "*",

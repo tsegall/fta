@@ -5161,16 +5161,16 @@ public class TestDates {
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		analysis.setLocale(locale);
 		final String[] inputs = {
-			"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
-			"2008-05-31Z", "2002-02-28Z", "2008-05-31Z", "2003-02-28Z", "1993-02-28Z",
-			"2001-02-28Z", "1993-02-28Z", "1995-02-28Z", "1996-02-29Z", "1995-02-28Z",
-			"1993-02-28Z", "1998-02-28Z", "2004-02-29Z", "2007-02-28Z", "1990-02-28Z",
-			"2008-05-31Z", "1996-02-29Z", "1990-02-28Z", "2006-02-28Z", "2010-12-31Z",
-			"2006-02-28Z", "1998-02-28Z", "2001-02-28Z", "1965-02-28Z", "1995-02-28Z",
-			"2006-02-28Z", "1990-02-28Z", "2007-10-31Z", "1969-12-31Z", "2009-12-31Z",
-			"1985-02-28Z", "1986-02-28Z", "1987-02-28Z", "1988-02-29Z", "2001-02-28Z",
-			"1988-02-29Z", "1965-02-28Z", "2001-02-28Z", "2003-02-28Z", "2009-02-28Z",
-			"1978-02-28Z", "2008-12-31Z", "1994-02-28Z", "1995-02-28Z", "1996-02-29Z"
+			"1995", "1994", "2003", "2004", "1991",
+			"2008", "2002", "2008", "2003", "1993",
+			"2001", "1993", "1995", "1996", "1995",
+			"1993", "1998", "2004", "2007", "1990",
+			"2008", "1996", "1990", "2006", "2010",
+			"2006", "1998", "2001", "1965", "1995",
+			"2006", "1990", "2007", "1969", "2009",
+			"1985", "1986", "1987", "1988", "2001",
+			"1988", "1965", "2001", "2003", "2009",
+			"1978", "2008", "1994", "1995", "1996"
 		};
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
@@ -5190,12 +5190,12 @@ public class TestDates {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
-		assertEquals(result.getTypeModifier(), "yyyy-MM-dd'Z'");
+		assertEquals(result.getTypeModifier(), "yyyy");
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}Z");
+		assertEquals(result.getRegExp(), "\\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 		System.err.println("Semantic Type = " + result.getSemanticType());
 		assertEquals(result.getSemanticType(), "CUSTOM.YEAR_OF_BIRTH");
@@ -5210,16 +5210,16 @@ public class TestDates {
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		analysis.setLocale(locale);
 		final String[] inputs = {
-			"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
-			"2008-05-31Z", "2002-02-28Z", "2008-05-31Z", "2003-02-28Z", "1993-02-28Z",
-			"2001-02-28Z", "1993-02-28Z", "1995-02-28Z", "1996-02-29Z", "1995-02-28Z",
-			"1993-02-28Z", "1998-02-28Z", "2004-02-29Z", "2007-02-28Z", "1990-02-28Z",
-			"2008-05-31Z", "1996-02-29Z", "1990-02-28Z", "2006-02-28Z", "2010-12-31Z",
-			"2006-02-28Z", "1998-02-28Z", "2001-02-28Z", "1965-02-28Z", "1995-02-28Z",
-			"2006-02-28Z", "1990-02-28Z", "2007-10-31Z", "1969-12-31Z", "2009-12-31Z",
-			"1985-02-28Z", "1986-02-28Z", "1987-02-28Z", "1988-02-29Z", "2001-02-28Z",
-			"1988-02-29Z", "1965-02-28Z", "2001-02-28Z", "2003-02-28Z", "2009-02-28Z",
-			"1978-02-28Z", "2008-12-31Z", "1994-02-28Z", "1995-02-28Z", "1996-02-29Z"
+			"1995", "1994", "2003", "2004", "1991",
+			"2008", "2002", "2008", "2003", "1993",
+			"2001", "1993", "1995", "1996", "1995",
+			"1993", "1998", "2004", "2007", "1990",
+			"2008", "1996", "1990", "2006", "2010",
+			"2006", "1998", "2001", "1965", "1995",
+			"2006", "1990", "2007", "1969", "2009",
+			"1985", "1986", "1987", "1988", "2001",
+			"1988", "1965", "2001", "2003", "2009",
+			"1978", "2008", "1994", "1995", "1996"
 		};
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
@@ -5237,12 +5237,12 @@ public class TestDates {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
-		assertEquals(result.getTypeModifier(), "yyyy-MM-dd'Z'");
+		assertEquals(result.getTypeModifier(), "yyyy");
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}Z");
+		assertEquals(result.getRegExp(), "\\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 		System.err.println("Semantic Type = " + result.getSemanticType());
 		assertEquals(result.getSemanticType(), "CUSTOM.YEAR_OF_DEATH");
@@ -5257,16 +5257,16 @@ public class TestDates {
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		analysis.setLocale(locale);
 		final String[] inputs = {
-				"1995-02-28Z", "1994-02-28Z", "2003-02-28Z", "2004-02-29Z", "1991-02-28Z",
-				"2008-05-31Z", "2002-02-28Z", "2008-05-31Z", "2003-02-28Z", "1993-02-28Z",
-				"2001-02-28Z", "1993-02-28Z", "1995-02-28Z", "1996-02-29Z", "1995-02-28Z",
-				"1993-02-28Z", "1998-02-28Z", "2004-02-29Z", "2007-02-28Z", "1990-02-28Z",
-				"2008-05-31Z", "1996-02-29Z", "1990-02-28Z", "2006-02-28Z", "2010-12-31Z",
-				"2006-02-28Z", "1998-02-28Z", "2001-02-28Z", "1965-02-28Z", "1995-02-28Z",
-				"2006-02-28Z", "1990-02-28Z", "2007-10-31Z", "1969-12-31Z", "2009-12-31Z",
-				"1985-02-28Z", "1986-02-28Z", "1987-02-28Z", "1988-02-29Z", "2001-02-28Z",
-				"1988-02-29Z", "1965-02-28Z", "2001-02-28Z", "2003-02-28Z", "2009-02-28Z",
-				"1978-02-28Z", "2008-12-31Z", "1994-02-28Z", "1995-02-28Z", "1996-02-29Z"
+				"1995", "1994", "2003", "2004", "1991",
+				"2008", "2002", "2008", "2003", "1993",
+				"2001", "1993", "1995", "1996", "1995",
+				"1993", "1998", "2004", "2007", "1990",
+				"2008", "1996", "1990", "2006", "2010",
+				"2006", "1998", "2001", "1965", "1995",
+				"2006", "1990", "2007", "1969", "2009",
+				"1985", "1986", "1987", "1988", "2001",
+				"1988", "1965", "2001", "2003", "2009",
+				"1978", "2008", "1994", "1995", "1996"
 		};
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TestDates.class.getResourceAsStream("/DatePlugins.json"), StandardCharsets.UTF_8))) {
@@ -5284,12 +5284,12 @@ public class TestDates {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
-		assertEquals(result.getTypeModifier(), "yyyy-MM-dd'Z'");
+		assertEquals(result.getTypeModifier(), "yyyy");
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "\\d{4}-\\d{2}-\\d{2}Z");
+		assertEquals(result.getRegExp(), "\\d{4}");
 		assertEquals(result.getConfidence(), 1.0);
 		System.err.println("Semantic Type = " + result.getSemanticType());
 		assertEquals(result.getSemanticType(), "CUSTOM.YEAR_OF_BIRTH");

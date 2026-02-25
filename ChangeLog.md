@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 17.5.2
+ - ENH: Move PluginCustomLocalDate to src from tests (and use it to re-implement BirthYear) (Issue #157)
+
 ### 17.5.1
  - INT: Bump jackson to 2.21.1
 

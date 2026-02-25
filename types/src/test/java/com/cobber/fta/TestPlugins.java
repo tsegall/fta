@@ -2084,8 +2084,13 @@ public class TestPlugins {
 		assertEquals(result.getSampleCount(), records);
 
 		// 8 records fall on Xmas which is an invalid event date (4 unique values are erroneous)
-		assertEquals(result.getMatchCount(), records - 8);
-		assertEquals(result.getOutlierCount(), 4);
+		// 1 records is pre 2000-01-01 which is rejected because the minimum is set
+		assertEquals(result.getMatchCount(), records - 9);
+		assertEquals(result.getOutlierCount(), 5);
+
+		final LogicalType logical = analyzer.getPlugins().getRegistered("CUSTOM.EVENT_DATE");
+
+		System.err.printf("Random value: %s\n", logical.nextRandom());
 	}
 
 	private void addPlugin(final TextAnalyzer analysis) {
