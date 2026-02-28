@@ -3590,12 +3590,12 @@ public class TestPlugins {
 		assertEquals(result.getSampleCount(), inputs.length);
 		assertEquals(result.getBlankCount(), 0);
 		assertEquals(result.getOutlierCount(), 0);
-		// TODO - this is a bug!  Starts life as a long then gets switch to a date but the data does not reprocessed
-		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getInvalidCount(), 1);
+		assertEquals(result.getInvalidDetails().get("1500"), 1L);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getMinLength(), 4);
 		assertEquals(result.getMaxLength(), 4);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getConfidence(), 1.0);
 
 		assertNull(result.checkCounts(false));
 

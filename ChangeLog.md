@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 17.5.3
+ - INT: Bump google phonenumber to 9.0.24
+ - BUG: Reprocess data associated with DateTime types before declaring success (Issue #157)
+
 ### 17.5.2
  - ENH: Move PluginCustomLocalDate to src from tests (and use it to re-implement BirthYear) (Issue #157)
 

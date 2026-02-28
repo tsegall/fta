@@ -2978,27 +2978,6 @@ public class TextAnalyzer {
 		else if (FTAType.STRING.equals(currentType))
 			finalizeString(realSamples, cardinalityUpper);
 
-		// Check Date/Time types for a Semantic Type
-		// NOTE: finalizeLong() above may have switched a long to a date - hence this is not an else!
-		if (facts.getMatchTypeInfo().getBaseType().isDateOrTimeType() && !facts.getMatchTypeInfo().isSemanticType()) {
-			LogicalType best = null;
-			double bestScore = -1.0;
-
-			for (final LogicalTypeInfinite logical : infiniteTypes) {
-				if (logical.acceptsBaseType(facts.getMatchTypeInfo().getBaseType()) && logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
-					final double dataConfidence = logical.getConfidence(facts.matchCount, realSamples, context);
-					// We take the best data confidence, if two have the same data confidence then tie-break based on header confidence
-					if (dataConfidence > bestScore ||
-							(best != null && dataConfidence == bestScore && logical.getHeaderConfidence(context) > best.getHeaderConfidence(context))) {
-						best = logical;
-						bestScore = logical.getConfidence(facts.matchCount, realSamples, context);
-						facts.getMatchTypeInfo().setSemanticType(logical.getSemanticType());
-						ctxdebug("Type determination", "infinite type, matchTypeInfo - {}", facts.getMatchTypeInfo());
-					}
-				}
-			}
-		}
-
 		if (FTAType.STRING.equals(facts.getMatchTypeInfo().getBaseType())) {
 			if (facts.getMatchTypeInfo().isSemanticType()) {
 				final LogicalType logical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
@@ -3147,6 +3126,7 @@ public class TextAnalyzer {
 			}
 		}
 
+		checkDateTimeTypes(facts.getMatchTypeInfo().getBaseType());
 		checkRegExpTypes(facts.getMatchTypeInfo().getBaseType());
 
 		// Only attempt to do key identification if we have not already been told the answer
@@ -3390,14 +3370,88 @@ public class TextAnalyzer {
 		return input != null && !input.isBlank();
 	}
 
+	private boolean checkDateTimeTypes(final FTAType type) {
+		final long realSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
+		boolean updated = false;
+		double bestScore;
+		LogicalType priorLogical = null;
+
+		// We may have a Semantic Type already identified but see if there is a better option
+		if (facts.getMatchTypeInfo().isSemanticType()) {
+			priorLogical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
+			bestScore = facts.confidence;
+		}
+		else
+			bestScore = -1.0;
+
+		if (facts.getMatchTypeInfo().getBaseType().isDateOrTimeType() && !facts.getMatchTypeInfo().isSemanticType()) {
+			for (final LogicalTypeInfinite logical : infiniteTypes) {
+				if (!logical.acceptsBaseType(type) || logical == priorLogical)
+					continue;
+
+				long newMatchCount = facts.matchCount;
+				final FiniteMap newCardinality = new FiniteMap(facts.cardinality);
+				final FiniteMap newInvalids = new FiniteMap(facts.outliers);
+				for (final Map.Entry<String, Long> current : facts.cardinality.entrySet()) {
+					if (logical.isValid(current.getKey().trim()))
+						newCardinality.put(current.getKey(), current.getValue());
+					else {
+						newMatchCount -= current.getValue();
+						newInvalids.put(current.getKey(), current.getValue());
+					}
+				}
+
+				double newScore = 0.0;
+				// Based on the new Cardinality/Outliers do we think this is a match?
+				if (logical.analyzeSet(context, newMatchCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), newCardinality, newInvalids, tokenStreams, analysisConfig).isValid()) {
+						// Skip if the new score is worse than the current
+						if ((newScore = logical.getConfidence(newMatchCount, realSamples, context)) < bestScore)
+							continue;
+						if (newScore == bestScore) {
+							// Skip if the scores are the same but we like the header less
+							if (logical.getHeaderConfidence(context) < priorLogical.getHeaderConfidence(context))
+								continue;
+							// Skip if the scores are the same but the Order is higher
+							if (logical.getHeaderConfidence(context) == priorLogical.getHeaderConfidence(context) && logical.getPluginDefinition().getOrder() > priorLogical.getPluginDefinition().getOrder())
+								continue;
+						}
+
+					facts.setMatchTypeInfo(new TypeInfo(null, facts.getMatchTypeInfo().getRegExp(), facts.getMatchTypeInfo().getBaseType(), logical.getSemanticType(), true, facts.getMatchTypeInfo().format));
+					facts.matchCount = newMatchCount;
+					facts.cardinality = newCardinality;
+					facts.invalid = newInvalids;
+					ctxdebug("Type determination", "infinite type, matchTypeInfo - {}", facts.getMatchTypeInfo());
+					facts.confidence = bestScore = newScore;
+					priorLogical = logical;
+					updated = true;
+				}
+			}
+		}
+
+//				if (logical.analyzeSet(context, facts.matchCount, realSamples, facts.getMatchTypeInfo().getRegExp(), facts.calculateFacts(), facts.cardinality, facts.outliers, tokenStreams, analysisConfig).isValid()) {
+//					final double dataConfidence = logical.getConfidence(facts.matchCount, realSamples, context);
+//					// We take the best data confidence, if two have the same data confidence then tie-break based on header confidence
+//					if (dataConfidence > bestScore ||
+//							(best != null && dataConfidence == bestScore && logical.getHeaderConfidence(context) > best.getHeaderConfidence(context))) {
+//						best = logical;
+//						bestScore = logical.getConfidence(facts.matchCount, realSamples, context);
+//						facts.getMatchTypeInfo().setSemanticType(logical.getSemanticType());
+//						ctxdebug("Type determination", "infinite type, matchTypeInfo - {}", facts.getMatchTypeInfo());
+//						updated = true;
+//					}
+//				}
+//			}
+
+		return updated;
+	}
+
 	private boolean checkRegExpTypes(final FTAType type) {
 		final long realSamples = facts.sampleCount - (facts.nullCount + facts.blankCount);
 		boolean updated = false;
-
 		double bestScore;
-
 		LogicalType priorLogical = null;
-		// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
+
+		// We may have a Semantic Type already identified but see if there is a better option
 		if (facts.getMatchTypeInfo().isSemanticType()) {
 			priorLogical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
 			bestScore = facts.confidence;
