@@ -68,7 +68,7 @@ public class LogicalTypeRegExp extends LogicalType {
 
 			case STRING:
 				minString = defn.minimum;
-				maxString = defn.minimum;
+				maxString = defn.maximum;
 				break;
 
 			default:

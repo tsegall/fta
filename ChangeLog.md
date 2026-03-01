@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 17.5.4
+ - BUG: Fix bug related to setting max value for RegularExpression Semantic Types (Issue #159)
+
 ### 17.5.3
  - INT: Bump google phonenumber to 9.0.24
  - BUG: Reprocess data associated with DateTime types before declaring success (Issue #157)
