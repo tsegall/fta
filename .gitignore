@@ -1,0 +1,32 @@
+.gradle/
+.project
+build/
+
+# macOS
+.DS_Store
+
+# Eclipse IDE
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# Vim/editor temporaries
+*.swp
+*~
+.#*
+
+# Maven
+target/
+.mvn/
+
+# TestNG output
+test-output/
+
+# Logs and output
+*.out
+LOGS
+
+# GPG private keys
+*.pgp
