@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 17.5.5
+ - INT: Bump gradle to 9.4.0
+
 ### 17.5.4
  - BUG: Fix bug related to setting max value for RegularExpression Semantic Types (Issue #159)
 
