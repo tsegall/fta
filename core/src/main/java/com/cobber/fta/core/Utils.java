@@ -158,7 +158,7 @@ public final class Utils {
 		if (input == null || input.isEmpty())
 			return false;
 
-		return input.chars().allMatch(Character::isLetter);
+		return input.chars().allMatch(Character::isAlphabetic);
 	}
 
 	/**

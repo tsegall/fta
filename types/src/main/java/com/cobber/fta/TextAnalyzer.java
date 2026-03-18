@@ -2812,16 +2812,17 @@ public class TextAnalyzer {
 	}
 
 	private LogicalTypeFinite matchFiniteTypes(final FTAType type, final FiniteMap cardinalityUpper) {
-		double bestScore;
+		double originalScore;
 
 		LogicalType priorLogical = null;
 		// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
 		if (facts.getMatchTypeInfo().isSemanticType()) {
 			priorLogical = plugins.getRegistered(facts.getMatchTypeInfo().getSemanticType());
-			bestScore = facts.confidence;
+			originalScore = facts.confidence;
 		}
 		else
-			bestScore = -1.0;
+			originalScore = -1.0;
+		double bestScore = originalScore;
 
 		FiniteMatchResult bestResult = null;
 
@@ -2839,7 +2840,7 @@ public class TextAnalyzer {
 				// We prefer finite matches to infinite matches only if header or priority is better
 				if (bestResult == null && priorLogical != null && result.score <= bestScore &&
 						logical.getHeaderConfidence(context) <= priorLogical.getHeaderConfidence(context) &&
-						logical.getPluginDefinition().getOrder() <= priorLogical.getPluginDefinition().getOrder())
+						logical.getPluginDefinition().getOrder() >= priorLogical.getPluginDefinition().getOrder())
 					continue;
 
 				// Choose the best score
@@ -2865,7 +2866,13 @@ public class TextAnalyzer {
 		facts.matchCount = bestResult.validCount;
 		facts.setMatchTypeInfo(new TypeInfo(bestResult.logical.getRegExp(), bestResult.logical.getBaseType(), bestResult.logical.getSemanticType(), facts.getMatchTypeInfo()));
 
-		ctxdebug("Type determination", "new matchTypeInfo - {}", facts.getMatchTypeInfo());
+		ctxdebug("Type determination", "new matchTypeInfo - {}, original score: {}, new score: {}",
+				facts.getMatchTypeInfo(), originalScore, bestScore);
+		if (priorLogical != null) {
+			ctxdebug("Type determination", "header confidence (current, prior): {},{}, priority (current, prior): {}, {}",
+					bestResult.logical.getHeaderConfidence(context), priorLogical.getHeaderConfidence(context),
+					bestResult.logical.getPluginDefinition().getOrder(), priorLogical.getPluginDefinition().getOrder());
+		}
 
 		return bestResult.logical;
 	}

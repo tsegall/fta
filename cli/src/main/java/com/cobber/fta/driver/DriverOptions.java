@@ -71,6 +71,7 @@ public class DriverOptions {
 	protected String trace;
 	protected int trailer;
 	protected int validate;
+	protected boolean validatePlugin;
 	protected int verbose;
 	protected boolean withBOM;
 	protected String delimiter;
@@ -119,6 +120,7 @@ public class DriverOptions {
 		this.trace = other.trace;
 		this.trailer = other.trailer;
 		this.validate = other.validate;
+		this.validatePlugin = other.validatePlugin;
 		this.verbose = other.verbose;
 		this.withBOM = other.withBOM;
 		this.delimiter = other.delimiter;
@@ -333,6 +335,8 @@ public class DriverOptions {
 				trailer = nextIntegerArg(args, idx++);
 			else if ("--validate".equals(args[idx]))
 				validate = nextIntegerArg(args, idx++);
+			else if ("--validatePlugin".equals(args[idx]))
+				validatePlugin = true;
 			else if ("--verbose".equals(args[idx]))
 				verbose++;
 			else if ("--version".equals(args[idx]))

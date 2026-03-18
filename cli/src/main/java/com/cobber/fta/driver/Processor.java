@@ -17,18 +17,25 @@ package com.cobber.fta.driver;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.LogicalType;
 import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.PluginLocaleEntry;
+import com.cobber.fta.PluginMatchEntry;
 import com.cobber.fta.RecordAnalyzer;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAMergeException;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAUnsupportedLocaleException;
+import com.cobber.fta.core.HeaderEntry;
 
 public class Processor {
 	private TextAnalyzer[] analyzers;
@@ -59,14 +66,81 @@ public class Processor {
 			context.withSemanticTypes(options.knownTypes.split(","));
 		analyzers[options.col] = new TextAnalyzer(context);
 		options.apply(analyzers[options.col]);
-		if (options.pluginName != null && options.pluginMode != null) {
-			final PluginDefinition pluginDefinition = analyzers[options.col].findByName(options.pluginName);
-			if (pluginDefinition == null) {
+		if (options.pluginName != null && options.validatePlugin) {
+			final PluginDefinition defn = analyzers[options.col].findByName(options.pluginName);
+			if (defn == null) {
 				logger.printf("ERROR: Failed to locate plugin named '%s', use --help%n", options.pluginName);
 				System.exit(1);
 			}
 
-			logicalType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(options.getLocale()));
+			logicalType = LogicalTypeFactory.newInstance(defn, new AnalysisConfig(options.getLocale()));
+
+			validatePlugin(defn);
+		}
+	}
+
+	private void validatePlugin(final PluginDefinition defn) {
+		System.out.printf("Plugin: %s%n", defn.semanticType);
+		if (defn.description != null && !defn.description.isEmpty())
+			System.out.printf("  Description: %s%n", defn.description);
+		System.out.printf("  Plugin type: %s%n", defn.pluginType);
+		System.out.printf("  Base type:   %s%n", defn.baseType);
+		System.out.printf("  Priority:   %d%n", defn.priority);
+		System.out.printf("  Threshold:   %d%%%n", defn.threshold);
+
+		for (final PluginLocaleEntry localeEntry : defn.validLocales) {
+			System.out.printf("  Locale: %s%n", localeEntry.localeTag);
+
+			if (localeEntry.headerRegExps != null && localeEntry.headerRegExps.length > 0) {
+				System.out.println("    headerRegExps:");
+				for (final HeaderEntry entry : localeEntry.headerRegExps) {
+					try {
+						Pattern.compile(entry.regExp);
+						System.out.printf("      %-50s VALID  (confidence: %d%s)%n", "\"" + entry.regExp + "\"", entry.confidence,
+								entry.mandatory ? ", mandatory" : "");
+					} catch (PatternSyntaxException e) {
+						System.out.printf("      %-50s INVALID — %s%n", "\"" + entry.regExp + "\"", e.getMessage());
+					}
+				}
+
+				if ("regex".equals(defn.pluginType) ) {
+					if (localeEntry.matchEntries != null) {
+						for (final PluginMatchEntry entry : localeEntry.matchEntries) {
+							final String regExp = entry.getRegExpReturned();
+							System.out.printf("%n    regExpReturned: \"%s\"%n", regExp);
+
+							if (regExp == null) {
+								System.out.println("      ERROR: regExpReturned is null");
+								continue;
+							}
+
+							boolean javaValid = false;
+							try {
+								Pattern.compile(regExp);
+								System.out.println("      Java regex:       VALID");
+								javaValid = true;
+							} catch (PatternSyntaxException e) {
+								System.out.printf("      Java regex:       INVALID — %s%n", e.getMessage());
+							}
+							if (javaValid) {
+								final boolean xegerOk = !regExp.matches(".*[^\\\\]\\(\\?.*");
+								System.out.printf("      Xeger compatible: %s%n", xegerOk ? "YES" : "NO  (pattern contains '(?' — sample generation disabled)");
+
+								if (xegerOk) {
+									System.out.print("      Sample values:    ");
+									final List<String> sampleList = new ArrayList<>();
+									for (int i = 0; i < 5; i++) {
+										final String s = logicalType.nextRandom();
+										if (s != null)
+											sampleList.add("\"" + s + "\"");
+									}
+									System.out.println(sampleList.isEmpty() ? "(none generated)" : String.join(", ", sampleList));
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -78,7 +152,7 @@ public class Processor {
 
 		if (options.verbose != 0 && options.noAnalysis)
 			System.out.printf("\"%s\"%n", row[options.col]);
-		if (options.pluginName != null && options.pluginMode != null) {
+		if (options.pluginName != null && options.validatePlugin) {
 			if (row[options.col] != null && !row[options.col].trim().isEmpty())
 				System.out.printf("'%s': %b%n", row[options.col], logicalType.isValid(row[options.col], options.pluginMode, 0));
 		}

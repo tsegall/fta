@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 17.5.6
+ - INT: Bump google phonenumber to 9.0.26
+ - BUG: Priority test for finite types was inverted (Issue #161)
+
 ### 17.5.5
  - INT: Bump gradle to 9.4.0
 

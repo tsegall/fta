@@ -124,6 +124,7 @@ public class Driver {
 					error.println(" --trace <trace_options> - Set trace options");
 					error.println(" --trailer <n> - Skip the final <n> rows of the input");
 					error.println(" --validate <n> - Set the validations level to <n>, 1 == counts, 2 == regExp");
+					error.println(" --validatePlugin <pluginFile> - Validate a plugin definition file; optionally supply a data CSV as an argument to check match rates");
 					error.println(" --verbose - Output each record as it is processed");
 					error.println(" --version - Output the version of the FTA framework");
 					error.println(" --withBOM - Input file has a BOM");
