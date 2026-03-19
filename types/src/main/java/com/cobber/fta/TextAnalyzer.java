@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2025 Tim Segall
+ * Copyright 2017-2026 Tim Segall
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -2837,11 +2837,16 @@ public class TextAnalyzer {
 				if (!result.matched() || result.score < bestScore)
 					continue;
 
-				// We prefer finite matches to infinite matches only if header or priority is better
-				if (bestResult == null && priorLogical != null && result.score <= bestScore &&
-						logical.getHeaderConfidence(context) <= priorLogical.getHeaderConfidence(context) &&
-						logical.getPluginDefinition().getOrder() >= priorLogical.getPluginDefinition().getOrder())
-					continue;
+				// We prefer finite matches to infinite matches only if the score is equal
+				// - header is better or
+				// - header is equal and priority is better
+				if (bestResult == null && priorLogical != null && result.score == bestScore) {
+					if (logical.getHeaderConfidence(context) < priorLogical.getHeaderConfidence(context))
+						continue;
+					if (logical.getHeaderConfidence(context) == priorLogical.getHeaderConfidence(context) &&
+							logical.getPluginDefinition().getOrder() > priorLogical.getPluginDefinition().getOrder())
+						continue;
+				}
 
 				// Choose the best score
 				if (result.score > bestScore ||
