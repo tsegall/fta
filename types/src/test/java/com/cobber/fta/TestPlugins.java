@@ -268,7 +268,7 @@ public class TestPlugins {
 		};
 
 		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "latitude", Locale.forLanguageTag("de-DE"), "COORDINATE.LATITUDE_DECIMAL", FTAType.DOUBLE, 1.0);
-		assertEquals(result.getRegExp(), "(-?([0-9]|[0-8][0-9])\\.\\d+)|-?90\\.0+");
+		assertEquals(result.getRegExp(), "-?([0-9]|[0-8][0-9])([,\\.]\\d+)?|-?90[,\\.]0+");
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
 

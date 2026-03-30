@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 17.5.7
+ - INT: Bump gradle to 9.4.1, jackson to 2.21.2, google phonenumber to 9.0.27
+ - BUG: regExpReturned not being honored (Issue #159)
+
 ### 17.5.6
  - INT: Bump google phonenumber to 9.0.26
  - BUG: Priority test for finite types was inverted (Issue #161)

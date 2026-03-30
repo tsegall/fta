@@ -16,6 +16,8 @@
 package com.cobber.fta;
 
 import java.security.SecureRandom;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.regex.Pattern;
@@ -50,6 +52,7 @@ public class LogicalTypeRegExp extends LogicalType {
 	private PluginMatchEntry matchEntry = null;
 	private SingletonSet samples;
 	private boolean randomInitialized;
+	private boolean decimalSeparatorIsComma;
 
 	public LogicalTypeRegExp(final PluginDefinition plugin) throws FTAPluginException {
 		super(plugin);
@@ -82,6 +85,9 @@ public class LogicalTypeRegExp extends LogicalType {
 
 		longFormatter = NumberFormat.getIntegerInstance(locale);
 		doubleFormatter = NumberFormat.getInstance(locale);
+
+		final DecimalFormatSymbols symbols = ((DecimalFormat)doubleFormatter).getDecimalFormatSymbols();
+		decimalSeparatorIsComma = symbols.getDecimalSeparator() == ',';
 
 		return true;
 	}
@@ -136,16 +142,23 @@ public class LogicalTypeRegExp extends LogicalType {
 	}
 
 	private double safeParseDouble(final String input) {
-		double ret;
-		try {
-			ret = Double.parseDouble(input);
-		}
-		catch (NumberFormatException e) {
+		double ret = 0.0;
+		boolean failed = false;
+		if (!decimalSeparatorIsComma || input.indexOf(',') == -1) {
 			try {
-				ret = doubleFormatter.parse(input.charAt(0) == '+' ? input.substring(1) : input).doubleValue();
-			} catch (ParseException pe) {
-				throw new NumberFormatException(pe.getMessage());
+				ret = Double.parseDouble(input);
 			}
+			catch (NumberFormatException e) {
+				failed = true;
+			}
+			if (!failed)
+				return ret;
+		}
+
+		try {
+			ret = doubleFormatter.parse(input.charAt(0) == '+' ? input.substring(1) : input).doubleValue();
+		} catch (ParseException pe) {
+			throw new NumberFormatException(pe.getMessage());
 		}
 
 		return ret;

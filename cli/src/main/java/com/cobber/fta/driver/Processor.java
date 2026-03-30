@@ -152,7 +152,7 @@ public class Processor {
 
 		if (options.verbose != 0 && options.noAnalysis)
 			System.out.printf("\"%s\"%n", row[options.col]);
-		if (options.pluginName != null && options.validatePlugin) {
+		if (options.pluginName != null && options.validatePlugin && options.verbose != 0) {
 			if (row[options.col] != null && !row[options.col].trim().isEmpty())
 				System.out.printf("'%s': %b%n", row[options.col], logicalType.isValid(row[options.col], options.pluginMode, 0));
 		}

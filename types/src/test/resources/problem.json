@@ -1,0 +1,26 @@
+[
+{
+  "pluginType": "regex",
+  "validLocales": [
+    {
+      "localeTag": "*",
+      "headerRegExps": [
+        {
+          "regExp": "Weird",
+          "confidence": 99
+        }
+      ],
+      "matchEntries": [
+        {
+          "regExpReturned": "0[0-5]|1[6-9]",
+          "isRegExpComplete": true
+        }
+      ]
+    }
+  ],
+  "priority": 2,
+  "semanticType": "PROBLEM",
+  "threshold": 90,
+  "baseType": "LONG"
+}
+]

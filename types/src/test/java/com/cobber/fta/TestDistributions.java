@@ -751,7 +751,7 @@ public class TestDistributions {
 		assertEquals(result.getOutlierCount(), 0);
 		assertEquals(result.getMatchCount(), testCases.length);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "([+-]?([0-9]|[0-8][0-9])\\.\\d+)|[+-]?90\\.0+|0");
+		assertEquals(result.getRegExp(), "[+-]?([0-9]|[0-8][0-9])(\\.\\d+)?|[+-]?90\\.0+");
 		assertEquals(result.getConfidence(), 1.0);
 		assertEquals(result.getType(), FTAType.DOUBLE);
 		assertEquals(result.getSemanticType(), "COORDINATE.LATITUDE_DECIMAL");

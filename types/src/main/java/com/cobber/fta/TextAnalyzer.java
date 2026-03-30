@@ -259,6 +259,7 @@ public class TextAnalyzer {
 	private final List<LogicalTypeFinite> finiteTypes = new ArrayList<>();
 	private final List<LogicalTypeRegExp> regExpTypes = new ArrayList<>();
 	private int[] candidateCounts;
+	private int[] candidateCountsRE;
 
 	private final KnownTypes knownTypes = new KnownTypes();
 	private Keywords keywords;
@@ -1347,6 +1348,7 @@ public class TextAnalyzer {
 		Collections.sort(regExpTypes);
 
 		candidateCounts = new int[infiniteTypes.size()];
+		candidateCountsRE = new int[regExpTypes.size()];
 
 		longFormatter = NumberFormat.getIntegerInstance(locale);
 		doubleFormatter = NumberFormat.getInstance(locale);
@@ -1762,6 +1764,19 @@ public class TextAnalyzer {
 			c++;
 		}
 
+		// Check to see if this input is one of our registered RegExp Semantic Types
+		c = 0;
+		for (final LogicalTypeRegExp logical : regExpTypes) {
+			try {
+				if ((facts.getMatchTypeInfo() == null || logical.acceptsBaseType(facts.getMatchTypeInfo().getBaseType())) && logical.isValid(trimmed))
+					candidateCountsRE[c]++;
+			}
+			catch (Exception e) {
+				LoggerFactory.getLogger("com.cobber.fta").error("Plugin: {}, issue: {}.", logical.getSemanticType(), e.getMessage());
+			}
+			c++;
+		}
+
 		// Create the level 1 and 2
 		if (nr.digitsSeen > 0 && nr.couldBeNumeric && nr.numericDecimalSeparators <= 1) {
 			updateNumericPattern(escalation, nr.numericSigned, nr.numericDecimalSeparators, nr.possibleExponentSeen, nr.nonLocalizedDouble);
@@ -2143,13 +2158,15 @@ public class TextAnalyzer {
 			}
 
 			// Try a regExp match nice and early - we can always back out
+			i = 0;
 			for (final LogicalTypeRegExp logical : regExpTypes) {
 				if (logical.acceptsBaseType(facts.getMatchTypeInfo().getBaseType()) &&
-						logical.isMatch(facts.getMatchTypeInfo().getRegExp())) {
+					logical.getConfidence(candidateCountsRE[i], raw.size(), context) >= logical.getThreshold()/100.0) {
 					facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), facts.getMatchTypeInfo()));
 					ctxdebug("Type determination", "was '{}', matchTypeInfo - {}", facts.getMatchTypeInfo().getBaseType(), facts.getMatchTypeInfo());
 					break;
 				}
+				i++;
 			}
 
 			raw.forEach((value) -> trackResult(value, value.trim(), false, 1));
@@ -3492,6 +3509,12 @@ public class TextAnalyzer {
 							newInvalids.put(current.getKey(), current.getValue());
 					}
 					for (final Map.Entry<String, Long> current : facts.outliers.entrySet()) {
+						if (current.getKey().trim().matches(re))
+							newCardinality.put(current.getKey(), current.getValue());
+						else
+							newInvalids.put(current.getKey(), current.getValue());
+					}
+					for (final Map.Entry<String, Long> current : facts.invalid.entrySet()) {
 						if (current.getKey().trim().matches(re))
 							newCardinality.put(current.getKey(), current.getValue());
 						else

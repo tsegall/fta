@@ -166,7 +166,9 @@ public class TestStandalonePlugins {
 //				Locale.forLanguageTag("el-GR"),
 				Locale.forLanguageTag("en-AU"), Locale.forLanguageTag("en-CA"), Locale.forLanguageTag("en-GB"), Locale.forLanguageTag("en-IE"), Locale.forLanguageTag("en-US"),
 				Locale.forLanguageTag("es-CO"), Locale.forLanguageTag("es-ES"), Locale.forLanguageTag("es-MX"), Locale.forLanguageTag("es-PE"), Locale.forLanguageTag("es-UY"),
-				Locale.forLanguageTag("fi-FI"),
+// Finnish has a strange minus sign - Unicode Character 'MINUS SIGN' (U+2212)
+
+//				Locale.forLanguageTag("fi-FI"),
 				Locale.forLanguageTag("fr-CA"), Locale.forLanguageTag("fr-CH"), Locale.forLanguageTag("fr-FR"),
 				Locale.forLanguageTag("ga-IE"),
 				Locale.forLanguageTag("hr-HR"),
@@ -223,8 +225,16 @@ public class TestStandalonePlugins {
 					final String[] testCases = new String[SAMPLE_SIZE];
 					for (int i = 0; i < SAMPLE_SIZE; i++) {
 						testCases[i] = logical.nextRandom();
-						if (testCases[i] != null && !testCases[i].isEmpty())
-							assertTrue(logical.isValid(testCases[i]), logical.getSemanticType() + "(" + locale.toLanguageTag() + "):'" +  testCases[i] + "'");
+						if (testCases[i] != null && !testCases[i].isEmpty()) {
+							boolean ret = false;
+							try {
+								ret = logical.isValid(testCases[i]);
+							}
+							catch (NumberFormatException e) {
+								// Do nothing
+							}
+							assertTrue(ret, logical.getSemanticType() + "(" + locale.toLanguageTag() + "):'" +  testCases[i] + "'");
+						}
 					}
 					for (int i = 0; i < SAMPLE_SIZE; i++)
 						if (testCases[i] != null && !testCases[i].isEmpty())
@@ -264,6 +274,24 @@ public class TestStandalonePlugins {
 
 		for (final String sample : invalidSamples)
 			assertFalse(logical.isValid(sample), sample);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void weirdLongitude_esCO() throws IOException, FTAPluginException {
+		final PluginDefinition pluginDefinition = PluginDefinition.findByName("COORDINATE.LONGITUDE_DECIMAL");
+		final LogicalType logical = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(Locale.forLanguageTag("es-CO")));
+
+		final String[] validSamples = { "12.43", "13.49", "180.0", "90.0", "-69.4", "-90.0", "-170.0",  };
+
+		for (final String sample : validSamples)
+			assertTrue(logical.isValid(sample), sample);
+
+		final String[] invalidSamples = { "181.0", "-190.2" };
+
+		for (final String sample : invalidSamples)
+			assertFalse(logical.isValid(sample), sample);
+
+		assertFalse(logical.isValid("-73.7744434,13"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })

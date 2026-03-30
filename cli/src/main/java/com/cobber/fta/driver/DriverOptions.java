@@ -350,6 +350,9 @@ public class DriverOptions {
 			idx++;
 		}
 
+		if (validatePlugin && pluginName == null)
+			throw new IllegalArgumentException("--validatePlugin requires a plugin name");
+
 		while (idx < args.length)
 			unprocessed.add(args[idx++]);
 

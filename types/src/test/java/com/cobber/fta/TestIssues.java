@@ -550,4 +550,69 @@ public class TestIssues {
 
 		assertEquals(result.getSemanticType(), "CUSTOM.DIGIT_ALPHA_ID");
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void issue161() throws FTAPluginException, FTAUnsupportedLocaleException, FTAMergeException {
+		final String[] inputs = {
+				"00", "01", "02", "03", "04", "05", "16", "17", "18", "19",
+				"00", "01", "02", "03", "04", "05", "16", "17", "18", "19",
+				"00", "01", "02", "03", "04", "05", "16", "17", "18", "19",
+				"00", "01", "02", "03", "04", "05", "16", "17", "18", "19",
+				"10"
+	    };
+
+		// Load our new plugins from a file and test the new Regular Expression Semantic Type
+		TextAnalyzer analysis = new TextAnalyzer("ID");
+		analysis.setDebug(2);
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+
+		// Register our sample list and regex plugins from a JSON definition file (before the built-in plugins have been registered)
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/problem.json"), StandardCharsets.UTF_8))) {
+				analysis.getPlugins().registerPlugins(reader, analysis.getConfig(), true);
+		} catch (FTAPluginException e) {
+			System.err.println("ERROR: Failed to register plugin: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("ERROR: Failed to register plugin: " + e.getMessage());
+		}
+
+		TextAnalyzer hydrated = TextAnalyzer.deserialize(analysis.serialize());
+
+		for (final String input : inputs)
+			hydrated.train(input);
+
+		TextAnalysisResult result = hydrated.getResult();
+
+		assertEquals(result.getSemanticType(), "PROBLEM");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void issue159() throws IOException, FTAException {
+		RecordAnalyzer analyzer = null;
+		int rows = 0;
+
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(TestPlugins.class.getResourceAsStream("/lat.csv"), StandardCharsets.UTF_8))) {
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
+
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();) {
+				final NamedCsvRecord rowRaw = iter.next();
+				final String[] row = rowRaw.getFields().toArray(new String[0]);
+				if (rows == 0) {
+					final String[] header = rowRaw.getHeader().toArray(new String[0]);
+					final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "profile", header);
+					final TextAnalyzer template = new TextAnalyzer(context);
+					template.setLocale(Locale.forLanguageTag("es-CO"));
+					template.setDebug(2);
+					analyzer = new RecordAnalyzer(template);
+				}
+				analyzer.train(row);
+				rows++;
+			}
+		}
+
+		final TextAnalysisResult coordinate = analyzer.getResult().getStreamResults()[0];
+		assertEquals(coordinate.getSampleCount(), rows);
+		assertEquals(coordinate.getType(), FTAType.STRING);
+		assertEquals(coordinate.getSemanticType(), "COORDINATE.LONGITUDE_DECIMAL");
+		assertNull(coordinate.checkCounts(false));
+	}
 }
