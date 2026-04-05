@@ -49,7 +49,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.siegmar.fastcsv.reader.CloseableIterator;
 import de.siegmar.fastcsv.reader.CsvReader;
+import de.siegmar.fastcsv.reader.FieldMismatchStrategy;
 import de.siegmar.fastcsv.reader.NamedCsvRecord;
+import de.siegmar.fastcsv.reader.NamedCsvRecordHandler;
 
 class FileProcessor {
 	private final DriverOptions options;
@@ -231,13 +233,19 @@ class FileProcessor {
 					.quoteCharacter(settings.quoteCharacter)
 					.detectBomHeader(true)
 					.skipEmptyLines(false)
-					.ofNamedCsvRecord(Files.newInputStream(Path.of(filename)), Charset.forName(options.charset));
+					.extraFieldStrategy(FieldMismatchStrategy.IGNORE)
+					.missingFieldStrategy(FieldMismatchStrategy.IGNORE)
+					.build(NamedCsvRecordHandler.builder().allowDuplicateHeaderFields(true).build(),
+							Files.newInputStream(Path.of(filename)), Charset.forName(options.charset));
 			else
 				csv = CsvReader.builder()
 						.fieldSeparator(settings.delimiter)
 						.quoteCharacter(settings.quoteCharacter)
 						.skipEmptyLines(false)
-						.ofNamedCsvRecord(new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset)));
+						.extraFieldStrategy(FieldMismatchStrategy.IGNORE)
+						.missingFieldStrategy(FieldMismatchStrategy.IGNORE)
+						.build(NamedCsvRecordHandler.builder().allowDuplicateHeaderFields(true).build(),
+								new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), options.charset)));
 
 			// Skip the first <n> lines if requested
 			if (options.skip != 0) {
@@ -346,7 +354,9 @@ class FileProcessor {
 						.quoteCharacter(settings.quoteCharacter)
 						.detectBomHeader(settings.withBOM)
 						.skipEmptyLines(false)
-						.ofNamedCsvRecord(in);
+						.extraFieldStrategy(FieldMismatchStrategy.IGNORE)
+						.missingFieldStrategy(FieldMismatchStrategy.IGNORE)
+						.build(NamedCsvRecordHandler.builder().allowDuplicateHeaderFields(true).build(), in);
 				Pattern[] patterns = null;
 				rawRecordIndex = 0;
 

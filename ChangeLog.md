@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 18.0.0
+ - **INT**: Bump fastcsv to 4.2.0, Java target to 17, jacoco to 0.8.14
+ - INT: Minor changes to support new version of fastcsv
+ - BUG: Fix synchronization issue with caching plugin definitions
+
 ### 17.5.7
  - INT: Bump gradle to 9.4.1, jackson to 2.21.2, google phonenumber to 9.0.27
  - BUG: regExpReturned not being honored (Issue #159)

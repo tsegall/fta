@@ -152,9 +152,10 @@ public class TextAnalyzer {
 
 	private Correlation correlation;
 
-	private static List<PluginDefinition> pluginDefinitions = new ArrayList<>();
+	private static final Object pluginDefinitionsLock = new Object();
+	private static volatile List<PluginDefinition> pluginDefinitions;
 
-	private static boolean nullTextAsNull;
+	private boolean nullTextAsNull;
 
 	/** Enumeration that defines all on/off features for parsers. */
 	public enum Feature {
@@ -1261,8 +1262,8 @@ public class TextAnalyzer {
 	 * Note: The Locale (on the configuration)  will impact both the set of plugins registered as well as the behavior of the individual plugins
 	 */
 	public void registerDefaultPlugins(final AnalysisConfig analysisConfig) {
-		synchronized (pluginDefinitions) {
-			if (pluginDefinitions.isEmpty())
+		synchronized (pluginDefinitionsLock) {
+			if (pluginDefinitions == null)
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
 					pluginDefinitions = mapper.readValue(reader, new TypeReference<List<PluginDefinition>>(){});
 				} catch (Exception e) {

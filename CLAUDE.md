@@ -39,7 +39,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Code quality**: SpotBugs (static analysis) and Checkstyle (config in `config/checkstyle/`) are configured. Test framework is TestNG. Coverage via Jacoco (reports in `build/reports/jacoco/test/`).
 
-**Java target**: Java 11 (`options.release = 11`).
+**Java target**: Java 17 (`options.release = 17`).
 
 **Debugging**: Capture analysis traces with `export FTA_TRACE="enabled=true,directory=/tmp,samples=10000"`, then replay with `cli/build/install/fta/bin/cli --replay <Stream>.fta`.
 

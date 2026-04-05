@@ -40,11 +40,11 @@ includeBuild 'examples/core/speed'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '17.5.7')
-			version('jacoco', '0.8.12')
+			version('fta', '18.0.0')
+			version('jacoco', '0.8.14')
 
 // https://mvnrepository.com/artifact/de.siegmar/fastcsv
-			library('fastcsv', 'de.siegmar:fastcsv:3.7.0')
+			library('fastcsv', 'de.siegmar:fastcsv:4.2.0')
 // https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail
 			library('javaxMailAPI', 'com.sun.mail:jakarta.mail:2.0.2')
 // https://mvnrepository.com/artifact/commons-validator/commons-validator
