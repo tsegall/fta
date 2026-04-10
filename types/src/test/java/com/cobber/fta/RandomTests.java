@@ -2393,6 +2393,8 @@ public class RandomTests {
 		analysis.setTotalCount(ENTIRE_SET + 3);
 		analysis.setTotalNullCount(2);
 		analysis.setTotalBlankCount(1);
+		analysis.setTotalInvalidCount(7);
+		analysis.setTotalMatchCount(ENTIRE_SET - 2 - 1 - 7);
 		analysis.setTotalMinValue("0");
 		analysis.setTotalMaxValue("999");
 
@@ -2412,6 +2414,9 @@ public class RandomTests {
 
 		assertEquals(result.getBlankCount(), 1);
 		assertEquals(result.getTotalBlankCount(), 1);
+
+		assertEquals(result.getTotalInvalidCount(), 7);
+		assertEquals(result.getTotalMatchCount(), ENTIRE_SET - 2 - 1 - 7);
 
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getTotalMinValue(), "0");
@@ -2455,6 +2460,8 @@ public class RandomTests {
 		assertEquals(result.getBlankCount(), 1);
 		assertEquals(result.getTotalBlankCount(), -1);
 
+		assertEquals(result.getTotalInvalidCount(), -1);
+		assertEquals(result.getTotalMatchCount(), -1);
 
 		assertEquals(result.getMinValue(), "0");
 		assertEquals(result.getTotalMinValue(), null);

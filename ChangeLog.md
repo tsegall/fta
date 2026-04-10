@@ -1,6 +1,14 @@
 
 ## Changes ##
 
+### 18.1.0
+ - INT: Improve security posture
+ - INT: Fix synchronization issues
+ - ENH: Add totalInvalidCount and totalMatchCount to ExternalFacts to support tracking invalid/match counts across merged data streams (Issue #147)
+ - BUG: Fix duplicate totalBlankCount merge
+ - ENH: Remove deprecated registerPlugins methods
+ - INT: Bump google phonenumber to 9.0.28
+
 ### 18.0.0
  - **INT**: Bump fastcsv to 4.2.0, Java target to 17, jacoco to 0.8.14
  - INT: Minor changes to support new version of fastcsv

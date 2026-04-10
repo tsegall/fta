@@ -718,6 +718,24 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Set the count of all invalid elements in the entire data stream.
+	 * Only used when there is an external source that has visibility into the entire data stream.
+	 * @param totalInvalidCount The total number of invalid elements, as opposed to the number of invalids in the sample set.
+	 */
+	public void setTotalInvalidCount(final long totalInvalidCount) {
+		facts.external.totalInvalidCount = totalInvalidCount;
+	}
+
+	/**
+	 * Set the count of all elements that match the detected type in the entire data stream.
+	 * Only used when there is an external source that has visibility into the entire data stream.
+	 * @param totalMatchCount The total number of matching elements, as opposed to the number of matches in the sample set.
+	 */
+	public void setTotalMatchCount(final long totalMatchCount) {
+		facts.external.totalMatchCount = totalMatchCount;
+	}
+
+	/**
 	 * Set the mean for Numeric types (Long, Double) across the entire data stream.
 	 * Only used when there is an external source that has visibility into the entire data stream.
 	 * @param totalMean The mean of all elements in the data stream, as opposed to the mean of the sampled set.
@@ -1664,7 +1682,7 @@ public class TextAnalyzer {
 		return result;
 	}
 
-	private static PatternFG patternFG = null;
+	private static volatile PatternFG patternFG = null;
 	/**
 	 * Check if the input is equivalent to null based on the configuration, this includes the set of words which are considered null.
 	 * @param input Input string to check for null equivalency.
@@ -1677,8 +1695,12 @@ public class TextAnalyzer {
 		if (!nullTextAsNull)
 			return false;
 
-		if (patternFG == null)
-			patternFG = PatternFG.compile(keywords.get("NO_DATA"));
+		if (patternFG == null) {
+			synchronized (pluginDefinitionsLock) {
+				if (patternFG == null)
+					patternFG = PatternFG.compile(keywords.get("NO_DATA"));
+			}
+		}
 
 		return patternFG.matcher(input);
 	}
@@ -4028,8 +4050,10 @@ public class TextAnalyzer {
 			ret.facts.external.totalNullCount = firstFacts.external.totalNullCount + secondFacts.external.totalNullCount;
 		if (firstFacts.external.totalBlankCount != -1 && secondFacts.external.totalBlankCount != -1)
 			ret.facts.external.totalBlankCount = firstFacts.external.totalBlankCount + secondFacts.external.totalBlankCount;
-		if (firstFacts.external.totalBlankCount != -1 && secondFacts.external.totalBlankCount != -1)
-			ret.facts.external.totalBlankCount = firstFacts.external.totalBlankCount + secondFacts.external.totalBlankCount;
+		if (firstFacts.external.totalInvalidCount != -1 && secondFacts.external.totalInvalidCount != -1)
+			ret.facts.external.totalInvalidCount = firstFacts.external.totalInvalidCount + secondFacts.external.totalInvalidCount;
+		if (firstFacts.external.totalMatchCount != -1 && secondFacts.external.totalMatchCount != -1)
+			ret.facts.external.totalMatchCount = firstFacts.external.totalMatchCount + secondFacts.external.totalMatchCount;
 		if (firstFacts.external.totalMinLength != -1 && secondFacts.external.totalMinLength != -1)
 			ret.facts.external.totalMinLength = Math.min(firstFacts.external.totalMinLength, secondFacts.external.totalMinLength);
 		if (firstFacts.external.totalMaxLength != -1 && secondFacts.external.totalMaxLength != -1)

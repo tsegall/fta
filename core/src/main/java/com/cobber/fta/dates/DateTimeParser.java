@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -133,7 +134,7 @@ public class DateTimeParser {
 	private DateTimeParserState state = new DateTimeParserState();
 	private DateTimeParserConfig config = new DateTimeParserConfig();
 
-	private static final Map<String, DateTimeFormatter> formatterCache = new HashMap<>();
+	private static final Map<String, DateTimeFormatter> formatterCache = new ConcurrentHashMap<>();
 
 	private LocaleInfo localeInfo;
 

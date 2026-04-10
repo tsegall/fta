@@ -397,6 +397,24 @@ public class TextAnalysisResult {
 	}
 
 	/**
+	 * Get the count of all invalid elements in the entire data stream (if known).
+	 * Use {@link #getInvalidCount() getInvalidCount()} for the equivalent on the sample set.
+	 * @return Count of all invalid elements in the entire data stream (-1 if not known).
+	 */
+	public long getTotalInvalidCount() {
+		return facts.external.totalInvalidCount;
+	}
+
+	/**
+	 * Get the count of all elements that match the detected type in the entire data stream (if known).
+	 * Use {@link #getMatchCount() getMatchCount()} for the equivalent on the sample set.
+	 * @return Count of all matching elements in the entire data stream (-1 if not known).
+	 */
+	public long getTotalMatchCount() {
+		return facts.external.totalMatchCount;
+	}
+
+	/**
 	 * Get the mean for Numeric types (Long, Double) across the entire data stream (if known).
 	 * Use {@link #getMean() getMean()} for the equivalent on the sample set.
 	 * @return The mean across the entire data stream (null if not known).
@@ -989,6 +1007,10 @@ public class TextAnalysisResult {
 				analysis.put("totalNullCount", facts.external.totalNullCount);
 			if (facts.external.totalBlankCount != -1)
 				analysis.put("totalBlankCount", facts.external.totalBlankCount);
+			if (facts.external.totalInvalidCount != -1)
+				analysis.put("totalInvalidCount", facts.external.totalInvalidCount);
+			if (facts.external.totalMatchCount != -1)
+				analysis.put("totalMatchCount", facts.external.totalMatchCount);
 			if (facts.external.totalMean != null)
 				analysis.put("toalMean", facts.external.totalMean);
 			if (facts.external.totalStandardDeviation != null)

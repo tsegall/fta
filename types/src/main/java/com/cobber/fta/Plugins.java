@@ -45,39 +45,6 @@ public class Plugins {
 	/**
 	 * Register a new set of Plugins by providing JSON Plugin definitions.
 	 *
-	 * @deprecated  Replaced by {@link registerPlugins(Reader, String, AnalysisConfig, boolean)}
-	 *
-	 * @param JSON The definition of the plugins.
-	 * @param dataStreamName The name of the datastream.
-	 * @param analysisConfig The Analysis configuration used for this analysis.
-	 *
-	 * @throws IOException if the JSON cannot be parsed.
-	 * @throws FTAPluginException if the plugin definition is invalid or if a plugin with the same semantic type is already registered.
-	 */
-	 @Deprecated public void registerPlugins(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig) throws IOException, FTAPluginException {
-		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), analysisConfig, false, false);
-	}
-
-	/**
-	 * Register a new set of Plugins by providing JSON Plugin definitions.
-	 *
-	 * @deprecated  Replaced by {@link registerPlugins(Reader, AnalysisConfig, boolean)}
-	 *
-	 * @param JSON The definition of the plugins.
-	 * @param dataStreamName The name of the datastream.
-	 * @param analysisConfig The Analysis configuration used for this analysis.
-	 * @param preBuiltins True if these are to be registered ahead of the pre-builtin plugins.
-	 *
-	 * @throws IOException if the JSON cannot be parsed.
-	 * @throws FTAPluginException if the plugin definition is invalid or if a plugin with the same semantic type is already registered.
-	 */
-	 @Deprecated public void registerPlugins(final Reader JSON, final String dataStreamName, final AnalysisConfig analysisConfig, final boolean preBuiltins) throws IOException, FTAPluginException {
-		registerPluginListCore(MAPPER.readValue(JSON, new TypeReference<List<PluginDefinition>>(){}), analysisConfig, false, preBuiltins);
-	}
-
-	/**
-	 * Register a new set of Plugins by providing JSON Plugin definitions.
-	 *
 	 * @param JSON The definition of the plugins.
 	 * @param analysisConfig The Analysis configuration used for this analysis.
 	 * @param preBuiltins True if these are to be registered ahead of the pre-builtin plugins.
@@ -212,14 +179,13 @@ public class Plugins {
 
 		try {
 			newLogicalType = Class.forName(plugin.clazz);
+			if (!LogicalType.class.isAssignableFrom(newLogicalType))
+				throw new FTAPluginException("Semantic type: " + plugin.clazz + " does not appear to be a Semantic Type.");
 			ctor = newLogicalType.getConstructor(PluginDefinition.class);
 			logical = ctor.newInstance(plugin);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | ClassNotFoundException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			throw new FTAPluginException("Semantic type: " + plugin.clazz + " failure to instantiate/contstruct.", e);
 		}
-
-		if (!(logical instanceof LogicalType))
-			throw new FTAPluginException("Semantic type: " + plugin.clazz + " does not appear to be a Semantic Type.");
 
 		registerLogicalType((LogicalType)logical, analysisConfig);
 	}

@@ -218,8 +218,10 @@ public class TestMerge {
 		hydratedOne.setTotalCount(hydratedOneResult.getSampleCount());
 		hydratedOne.setTotalNullCount(hydratedOneResult.getNullCount());
 		hydratedOne.setTotalMinValue(hydratedOneResult.getMinValue());
-		// Add 200 blanks from an external source
+		// Add 200 blanks, 50 invalids, and set match count from an external source
 		hydratedOne.setTotalBlankCount(200);
+		hydratedOne.setTotalInvalidCount(50);
+		hydratedOne.setTotalMatchCount(hydratedOneResult.getMatchCount());
 		assertEquals(hydratedOneResult.getSampleCount(), SAMPLE_COUNT + 2);
 		assertEquals(hydratedOneResult.getTotalCount(), SAMPLE_COUNT + 2);
 
@@ -234,8 +236,10 @@ public class TestMerge {
 		hydratedTwo.setTotalCount(hydratedTwoResult.getSampleCount());
 		hydratedTwo.setTotalNullCount(hydratedTwoResult.getNullCount());
 		hydratedTwo.setTotalMinValue(hydratedTwoResult.getMinValue());
-		// Add 100 blanks from an external source
+		// Add 100 blanks, 25 invalids, and set match count from an external source
 		hydratedTwo.setTotalBlankCount(100);
+		hydratedTwo.setTotalInvalidCount(25);
+		hydratedTwo.setTotalMatchCount(hydratedTwoResult.getMatchCount());
 
 		// Merge the two hydrated TextAnalyzers
 		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
@@ -252,6 +256,13 @@ public class TestMerge {
 		// We did NOT see the blanks in the samples provided and we set totalBlankCount
 		assertEquals(mergedResult.getBlankCount(), 0);
 		assertEquals(mergedResult.getTotalBlankCount(), 300);
+
+		// We did NOT see the invalids in the samples provided and we set totalInvalidCount
+		assertEquals(mergedResult.getInvalidCount(), 0);
+		assertEquals(mergedResult.getTotalInvalidCount(), 75);
+
+		// totalMatchCount sums match counts from both shards
+		assertEquals(mergedResult.getTotalMatchCount(), hydratedOneResult.getMatchCount() + hydratedTwoResult.getMatchCount());
 
 		assertEquals(mergedResult.getMinValue(), String.valueOf(-(2 * SAMPLE_COUNT - 1)));
 		assertEquals(mergedResult.getTotalMinValue(), String.valueOf(-(2 * SAMPLE_COUNT - 1)));
@@ -329,6 +340,50 @@ public class TestMerge {
 		assertEquals(mergedResult.getStandardDeviation(), 23093.577749, 0.000001);
 		assertNull(mergedResult.getTotalStandardDeviation());
 
+	}
+
+	// Issue #147: totalInvalidCount and totalMatchCount should be tracked and summed across merged
+	// shards, allowing callers to know valid/invalid counts for the full stream, not just the sample window.
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void totalInvalidCount() throws IOException, FTAException {
+		final int SAMPLE_COUNT = 20000;
+
+		final TextAnalyzer shardOneAnalyzer = new TextAnalyzer("issue147");
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			shardOneAnalyzer.train(String.valueOf(i));
+		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOneAnalyzer.serialize());
+		final TextAnalysisResult hydratedOneResult = hydratedOne.getResult();
+		hydratedOne.setTotalCount(SAMPLE_COUNT);
+		hydratedOne.setTotalNullCount(0);
+		hydratedOne.setTotalBlankCount(0);
+		// 300 invalids and known match count in the full shard beyond the sample window
+		hydratedOne.setTotalInvalidCount(300);
+		hydratedOne.setTotalMatchCount(hydratedOneResult.getMatchCount());
+
+		final TextAnalyzer shardTwoAnalyzer = new TextAnalyzer("issue147");
+		for (int i = SAMPLE_COUNT; i < SAMPLE_COUNT * 2; i++)
+			shardTwoAnalyzer.train(String.valueOf(i));
+		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(shardTwoAnalyzer.serialize());
+		final TextAnalysisResult hydratedTwoResult = hydratedTwo.getResult();
+		hydratedTwo.setTotalCount(SAMPLE_COUNT);
+		hydratedTwo.setTotalNullCount(0);
+		hydratedTwo.setTotalBlankCount(0);
+		// 200 invalids and known match count in the full shard beyond the sample window
+		hydratedTwo.setTotalInvalidCount(200);
+		hydratedTwo.setTotalMatchCount(hydratedTwoResult.getMatchCount());
+
+		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
+		final TextAnalysisResult mergedResult = merged.getResult();
+
+		assertEquals(mergedResult.getTotalCount(), SAMPLE_COUNT * 2);
+		assertEquals(mergedResult.getTotalNullCount(), 0);
+		assertEquals(mergedResult.getTotalBlankCount(), 0);
+		// totalInvalidCount should sum across shards: 300 + 200 = 500
+		assertEquals(mergedResult.getTotalInvalidCount(), 500);
+		// No invalids were in the sampled data
+		assertEquals(mergedResult.getInvalidCount(), 0);
+		// totalMatchCount should sum across shards
+		assertEquals(mergedResult.getTotalMatchCount(), hydratedOneResult.getMatchCount() + hydratedTwoResult.getMatchCount());
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })

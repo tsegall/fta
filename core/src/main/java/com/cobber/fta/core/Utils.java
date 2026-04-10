@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -310,7 +311,12 @@ public final class Utils {
 			}
 			if (first == '<' && last == '>' && samples - fmtXML < 5) {
 				try {
-					final DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+					final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+					factory.setNamespaceAware(true);
+					factory.setXIncludeAware(false);
+					factory.setExpandEntityReferences(false);
+					final DocumentBuilder db = factory.newDocumentBuilder();
 					db.setErrorHandler(new ErrorHandler()
 					{
 					    @Override

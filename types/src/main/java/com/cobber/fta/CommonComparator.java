@@ -33,6 +33,7 @@ public class CommonComparator<T extends Comparable<? super T>> implements Compar
 		this.stringConverter = stringConverter;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public int compare(final String input1, final String input2) {
 		final T val1 = (T)stringConverter.getValue(input1);

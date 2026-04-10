@@ -34,8 +34,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * This class provides a wrapper for the plugins.json file.
  */
 public class SemanticType {
-	private static List<SemanticType> allSemanticTypes = new ArrayList<>();
-	private static Boolean allSemanticTypesInitialized = false;
+	private static final Object allSemanticTypesLock = new Object();
+	private static volatile List<SemanticType> allSemanticTypes;
+	private static volatile boolean allSemanticTypesInitialized = false;
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	/** ID for the Semantic Type. */
@@ -70,7 +71,7 @@ public class SemanticType {
 		if (allSemanticTypesInitialized)
 			return allSemanticTypes;
 
-		synchronized (allSemanticTypes) {
+		synchronized (allSemanticTypesLock) {
 			if (allSemanticTypesInitialized)
 				return allSemanticTypes;
 

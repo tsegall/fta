@@ -44,7 +44,7 @@ public class PluginDefinition {
 	/** Priority of plugins must be between 0 and PRIORITY_MAX. */
 	public static final int PRIORITY_MAX = 10000;
 
-	private static List<PluginDefinition> builtinPlugins;
+	private static volatile List<PluginDefinition> builtinPlugins;
 
 	/** Semantic Type name of Plugin. */
 	public String semanticType;

@@ -34,7 +34,7 @@ import com.google.common.hash.Funnels;
  */
 public abstract class LogicalTypeBloomFilter extends LogicalTypeInfinite {
 	private BloomFilter<CharSequence> reference;
-	private static List<String> examples;
+	private static volatile List<String> examples;
 
 	/**
 	 * Construct a BloomFilter plugin based on the Plugin Definition.

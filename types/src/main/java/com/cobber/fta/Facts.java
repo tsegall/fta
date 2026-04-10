@@ -190,6 +190,8 @@ public class Facts {
 			this.totalCount = external.totalCount;
 			this.totalNullCount = external.totalNullCount;
 			this.totalBlankCount = external.totalBlankCount;
+			this.totalInvalidCount = external.totalInvalidCount;
+			this.totalMatchCount = external.totalMatchCount;
 			this.totalMean = external.totalMean;
 			this.totalStandardDeviation = external.totalStandardDeviation;
 			this.totalMinValue = external.totalMinValue;
@@ -206,6 +208,10 @@ public class Facts {
 		public long totalNullCount = -1;
 		/** totalBlankCount - The number of blank elements in the entire data stream (-1 unless set explicitly). */
 		public long totalBlankCount = -1;
+		/** totalInvalidCount - The number of invalid elements in the entire data stream (-1 unless set explicitly). */
+		public long totalInvalidCount = -1;
+		/** totalMatchCount - The number of elements that match the detected type in the entire data stream (-1 unless set explicitly). */
+		public long totalMatchCount = -1;
 		/** totalMean - The mean for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
 		public Double totalMean;
 		/** totalStandardDeviation - The standard deviation for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
@@ -233,7 +239,8 @@ public class Facts {
 				return false;
 			final ExternalFacts other = (ExternalFacts) obj;
 			return Objects.equals(keyConfidence, other.keyConfidence) && totalBlankCount == other.totalBlankCount
-					&& totalCount == other.totalCount && totalMaxLength == other.totalMaxLength
+					&& totalCount == other.totalCount && totalInvalidCount == other.totalInvalidCount
+					&& totalMatchCount == other.totalMatchCount && totalMaxLength == other.totalMaxLength
 					&& Objects.equals(totalMaxValue, other.totalMaxValue) && Objects.equals(totalMean, other.totalMean)
 					&& totalMinLength == other.totalMinLength && Objects.equals(totalMinValue, other.totalMinValue)
 					&& totalNullCount == other.totalNullCount
