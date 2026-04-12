@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 18.2.0
+ - INT: Code restructuring
+
 ### 18.1.0
  - INT: Improve security posture
  - INT: Fix synchronization issues

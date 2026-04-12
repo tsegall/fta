@@ -15,7 +15,6 @@
  */
 package com.cobber.fta;
 
-import com.cobber.fta.TextAnalyzer.SignStatus;
 import com.cobber.fta.core.Utils;
 
 public class Numeric {

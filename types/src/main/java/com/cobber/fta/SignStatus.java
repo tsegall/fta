@@ -15,19 +15,14 @@
  */
 package com.cobber.fta;
 
-public class NumericResult {
-	int digitsSeen;
-	int alphasSeen;
-	boolean couldBeNumeric = true;
-	int numericDecimalSeparators;
-	int numericGroupingSeparators;
-	SignStatus numericSigned = SignStatus.NONE;
-	final int[] charCounts = new int[128];
-	final int[] lastIndex = new int[128];
-	int possibleExponentSeen = -1;
-	boolean nonLocalizedDouble = false;
-	StringBuilder l0;
-
-	NumericResult() {
-	}
+/**
+ * Tracks the sign convention observed in a numeric sample during the detect window.
+ * Extracted from {@link TextAnalyzer} to allow sharing with {@link Numeric} and
+ * {@link TypeDeterminer} without a circular class reference.
+ */
+enum SignStatus {
+	NONE,
+	LOCALE_STANDARD,
+	LEADING_SIGN,
+	TRAILING_MINUS
 }
