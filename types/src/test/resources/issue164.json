@@ -1,0 +1,22 @@
+[
+	{
+		"pluginType": "java",
+		"validLocales": [
+			{
+				"localeTag": "*",
+				"headerRegExps": [
+					{ "regExp": "(?i).*birthday.*", "confidence": 99, "mandatory": true }
+				]
+			}
+		],
+		"priority": 2,
+		"semanticType": "BIRTHNEW.BIRTHDATE_TIME",
+		"description": "Birth Date and Time of Person",
+		"threshold": 91,
+		"baseType": "LOCALDATETIME",
+		"pluginOptions": {
+			"regex": "\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01]) (?:[01]\\d|2[0-3]):(?:[0-5]\\d):(?:[0-5]\\d)\\.\\d{3}"
+		},
+		"clazz": "com.cobber.fta.plugins.PluginCustomLocalDateTime"
+	}
+]

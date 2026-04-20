@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 18.3.0
+ - INT: Bump spotbugs plugin to 6.5.0
+ - INT: Bump guava to 33.6.0-jre
+ - BUG: Custom LOCALDATETIME (and other date/time) infinite-type plugins not evaluated during initial type determination (Issue #164)
+
 ### 18.2.0
  - INT: Code restructuring
 
