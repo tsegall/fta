@@ -535,6 +535,10 @@ class TypeDeterminer {
 								count++;
 							break;
 						case LOCALDATE:
+						case LOCALDATETIME:
+						case LOCALTIME:
+						case OFFSETDATETIME:
+						case ZONEDDATETIME:
 							try {
 								if (typeTracker.trackDateTime(sample, candidate, false, 1))
 									count++;

@@ -585,6 +585,50 @@ public class TestIssues {
 		assertEquals(result.getSemanticType(), "PROBLEM");
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void issue164() throws FTAException, IOException {
+		// Custom Java plugin with baseType LOCALDATETIME registered as pre-builtin should
+		// win over the built-in PERSON.DATE_OF_BIRTH plugin when the header matches.
+		// Bug: the built-in gets detected instead of the custom plugin.
+		final String fieldName = "BIRTHDAY";
+		final TextAnalyzer analysis = new TextAnalyzer(fieldName, DateResolutionMode.Auto);
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				TestIssues.class.getResourceAsStream("/issue164.json"), StandardCharsets.UTF_8))) {
+			analysis.getPlugins().registerPlugins(reader, analysis.getConfig(), true);
+		}
+
+		final String[] inputs = {
+			"1990-05-15 08:23:42.123", "1985-11-03 14:07:55.456", "2000-01-30 23:59:00.000",
+			"1972-07-19 06:45:11.789", "1968-03-28 12:30:00.001", "1995-09-01 00:00:00.000",
+			"1980-12-25 18:15:33.321", "2003-06-14 09:08:07.654", "1977-02-09 21:44:59.999",
+			"1993-08-22 16:00:00.500", "1988-04-17 07:30:45.100", "2001-10-31 11:11:11.111",
+			"1965-01-01 03:03:03.003", "1970-07-04 22:22:22.222", "1998-11-11 15:55:55.555",
+			"1983-03-03 04:04:04.444", "1975-09-09 13:13:13.130", "2005-05-05 05:05:05.050",
+			"1992-02-29 10:10:10.010", "1987-06-30 19:59:59.959", "1963-12-12 08:08:08.080",
+			"1978-08-08 17:17:17.170", "2002-04-01 06:06:06.060", "1969-10-10 20:20:20.200",
+			"1994-01-15 23:45:00.000", "1982-07-07 12:00:00.120", "1974-03-21 09:09:09.009",
+			"1999-09-19 18:18:18.018", "1966-11-30 07:07:07.007", "2004-06-06 16:16:16.016",
+			"1991-02-14 14:14:14.140", "1979-08-24 11:11:11.010", "1984-04-04 03:33:33.033",
+			"1973-10-20 22:00:00.002", "2006-12-01 05:55:05.500", "1997-01-09 08:48:48.480",
+			"1986-07-16 17:37:37.370", "1971-05-25 13:53:53.530", "2007-03-13 06:26:26.260",
+			"1996-11-22 20:02:02.020", "1989-09-29 09:39:39.390", "1964-06-18 15:15:15.150",
+			"1976-04-11 21:21:21.210", "2008-02-20 04:44:44.440", "1981-10-03 10:10:00.100",
+			"1967-08-27 19:49:49.490", "2009-05-08 07:27:27.270", "1985-01-23 16:56:56.560",
+			"1990-03-16 23:33:33.330", "1961-07-31 12:42:42.420"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getType(), FTAType.LOCALDATETIME);
+		// With preBuiltIns=true the custom plugin should win over PERSON.DATE_OF_BIRTH
+		assertEquals(result.getSemanticType(), "BIRTHNEW.BIRTHDATE_TIME");
+	}
+
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void issue159() throws IOException, FTAException {
 		RecordAnalyzer analyzer = null;

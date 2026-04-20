@@ -40,7 +40,7 @@ includeBuild 'examples/core/speed'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '18.2.0')
+			version('fta', '18.3.0')
 			version('jacoco', '0.8.14')
 
 // https://mvnrepository.com/artifact/de.siegmar/fastcsv
@@ -68,7 +68,7 @@ dependencyResolutionManagement {
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 			library('slf4jAPI', 'org.slf4j:slf4j-api:2.0.17')
 // https://mvnrepository.com/artifact/com.google.guava/guava
-			library('guava', 'com.google.guava:guava:33.5.0-jre')
+			library('guava', 'com.google.guava:guava:33.6.0-jre')
 // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
 			library('logbackClassic', 'ch.qos.logback:logback-classic:1.5.32')
 // https://mvnrepository.com/artifact/com.datadoghq/sketches-java
