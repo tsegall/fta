@@ -118,7 +118,7 @@ public class TextAnalyzer {
 	// 0: d{4} 1: d{+} 2: [-]d{+}
 	// input "hello world" 0: a{5} a{5} 1: a{+} a{+} 2: a{+}
 
-	private TokenStreams tokenStreams;
+	TokenStreams tokenStreams;
 
 	private final Random random = new Random(271828);
 

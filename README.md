@@ -645,6 +645,13 @@ If the sum of the cardinality is greater than the maximum cardinality but neithe
 
 Note: The input presented to the merged analysis is the union of the data captured by the cardinality detail, outliers detail and the topK and bottomK from each shard, and hence the sampleCount (and matchedCount) on the merged analysis will reflect these numbers.
 
+**Semantic type consistency:** The semantic type detected on a merged analysis is not guaranteed to match the type that would have been detected by sequential (single-pass) analysis of the same data. `merge()` re-runs type detection against the combined cardinality from each shard, which is statistically equivalent but not procedurally identical to streaming analysis. In particular:
+
+- Streaming analysis is order-sensitive: the first values seen shape early type hypotheses. Shards processed independently each observe a different leading distribution, which can cause them to converge on slightly different candidate types before merging.
+- Confidence thresholds for some Semantic Types are marginal by design. With a partial shard, evidence for a specific type may fall just below or just above the required threshold, causing a neighbouring or more generic type to win on the merged result.
+
+For the most consistent Semantic Type detection in a distributed environment, prefer **Bulk mode** (`trainBulk()`) over streaming (`train()`) on each shard. Bulk mode eliminates the order bias within each shard, making per-shard results more stable before merging. Note that this limitation is separate from profiling metrics (cardinality, min/max, shapes, etc.), which merge with full fidelity subject to the cardinality constraints described above.
+
 ## Frequently Asked Questions ##
 
 ### Why is FTA not detecting the Semantic Type XXX? ###

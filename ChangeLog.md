@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 18.4.0
+ - BUG: getShapeDetails() returns empty map after serialize/deserialize round-trip (Issue #166)
+ - INT: Bump spotbugs plugin to 6.5.1, ben-manes versions plugin to 0.54.0, libphonenumber to 9.0.29, jackson to 2.21.3, gradle to 9.5.0
+ - INT: Couple of security hardening fixes
+
 ### 18.3.0
  - INT: Bump spotbugs plugin to 6.5.0
  - INT: Bump guava to 33.6.0-jre

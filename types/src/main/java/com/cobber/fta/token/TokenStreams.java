@@ -265,6 +265,22 @@ public class TokenStreams {
 	}
 
 	/**
+	 * Reconstruct the TokenStreams from a previously serialized shape map (shape key → occurrence count).
+	 * Shape keys are self-stable under TokenStream encoding, so each key produces a TokenStream whose key equals the input key.
+	 * @param shapes The shape map returned by a prior call to {@link #getShapes()}.
+	 */
+	public void reconstruct(final Map<String, Long> shapes) {
+		tokenStreams.clear();
+		anyShape = false;
+		samples = 0;
+		for (final Map.Entry<String, Long> entry : shapes.entrySet()) {
+			final TokenStream ts = new TokenStream(entry.getKey(), entry.getValue());
+			tokenStreams.put(ts.getKey(), ts);
+			samples += entry.getValue();
+		}
+	}
+
+	/**
 	 * Get the size of the Map.
 	 * @return The Map size.
 	 */

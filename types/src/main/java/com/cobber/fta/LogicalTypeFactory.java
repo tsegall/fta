@@ -40,7 +40,7 @@ public abstract class LogicalTypeFactory {
 			Constructor<?> ctor;
 
 			try {
-				newLogicalType = Class.forName(plugin.clazz);
+				newLogicalType = Class.forName(plugin.clazz, false, Thread.currentThread().getContextClassLoader());
 				if (!LogicalType.class.isAssignableFrom(newLogicalType))
 					throw new FTAPluginException("Semantic type: " + plugin.semanticType + " of class " + plugin.clazz + " does not appear to be a Semantic Type.");
 				ctor = newLogicalType.getConstructor(PluginDefinition.class);

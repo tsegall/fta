@@ -28,6 +28,7 @@ import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
 
 /**
@@ -50,6 +51,8 @@ public class PluginCustomLocalDateTime extends LogicalTypeInfinite {
 			throw new FTAPluginException("Misconfigured plugin - pluginOptions must include 'regex'");
 
 		regExp = (String) defn.getOptions().get("regex");
+		if (!Utils.isSafeRegExp(regExp))
+			throw new FTAPluginException("Unsafe regex in pluginOptions.regex (nested open-ended quantifiers): " + regExp);
 		rePattern = Pattern.compile(regExp);
 
 		return true;

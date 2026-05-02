@@ -57,6 +57,7 @@ class AnalyzerSerializer {
 			ta.determineType();
 
 		final TextAnalyzerWrapper wrapper = new TextAnalyzerWrapper(ta.getConfig(), ta.getContext(), ta.getPlugins().getUserDefinedPlugins(), ta.facts.calculateFacts());
+		wrapper.shapes = ta.tokenStreams.getShapes();
 
 		// We are serializing the analyzer (assume it will not be used again - so persist the samples)
 		if (ta.traceConfig != null) {
@@ -89,6 +90,10 @@ class AnalyzerSerializer {
 			ret.initializeTrace();
 			ret.initialize();
 			ret.facts.hydrate();
+
+			// Restore tokenStreams from the serialized shape map so getShapeDetails() returns correct data after deserialization.
+			if (wrapper.shapes != null && !wrapper.shapes.isEmpty())
+				ret.tokenStreams.reconstruct(wrapper.shapes);
 
 			if (ret.traceConfig != null)
 				ret.traceConfig.tag("deserialize", ret.facts.sampleCount);

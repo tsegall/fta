@@ -14,6 +14,7 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.InternalErrorException;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.dates.DateTimeParserConfig;
@@ -50,8 +51,12 @@ public class PluginCustomLocalDate extends LogicalTypeInfinite {
 
 		// Grab the set of invalid regular expressions if they exist
 		final Object invalidRegExp = defn.getOptions().get("invalidRegExp");
-		if (invalidRegExp != null)
-			invalidPattern = Pattern.compile((String) defn.getOptions().get("invalidRegExp"));
+		if (invalidRegExp != null) {
+			final String invalidRegExpStr = (String) invalidRegExp;
+			if (!Utils.isSafeRegExp(invalidRegExpStr))
+				throw new FTAPluginException("Unsafe regex in invalidRegExp (nested open-ended quantifiers): " + invalidRegExpStr);
+			invalidPattern = Pattern.compile(invalidRegExpStr);
+		}
 
 		// Grab the minimum value if it exists
 		final Object minimumObject = defn.getOptions().get("minimum");

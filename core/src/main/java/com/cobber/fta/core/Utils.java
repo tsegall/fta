@@ -454,6 +454,19 @@ public final class Utils {
 		return 1.0 - result;
 	}
 
+	// Detects nested open-ended quantifiers, e.g. (a+)+ or (a*)*, the primary ReDoS trigger.
+	private static final Pattern REDOS_RISK = Pattern.compile(
+		"\\([^()]*(?:[+*]|\\{\\d+,\\})[^()]*\\)(?:[+*]|\\{\\d+,\\})");
+
+	/**
+	 * Check whether a regular expression is free of obvious ReDoS (nested open-ended quantifier) patterns.
+	 * @param regExp The regular expression to check.
+	 * @return True if the pattern appears safe, false if a nested open-ended quantifier was detected.
+	 */
+	public static boolean isSafeRegExp(final String regExp) {
+		return !REDOS_RISK.matcher(regExp).find();
+	}
+
 	public static boolean containsIgnoreCase(final String src, final String hunting) {
 	    final int len = hunting.length();
 	    if (len == 0)

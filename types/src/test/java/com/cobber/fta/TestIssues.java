@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 
 import org.testng.annotations.Test;
@@ -627,6 +628,103 @@ public class TestIssues {
 		assertEquals(result.getType(), FTAType.LOCALDATETIME);
 		// With preBuiltIns=true the custom plugin should win over PERSON.DATE_OF_BIRTH
 		assertEquals(result.getSemanticType(), "BIRTHNEW.BIRTHDATE_TIME");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void issue166_reproduction() throws FTAException {
+		final TextAnalyzer analyzer1 = new TextAnalyzer("test");
+		final TextAnalyzer analyzer2 = new TextAnalyzer("test");
+
+		for (int i = 0; i < 1000; i++) {
+			analyzer1.train("Hello123");
+			analyzer2.train("World456");
+		}
+
+		assertFalse(analyzer1.getResult().getShapeDetails().isEmpty(),
+				"Shapes should be non-empty before merge");
+
+		final TextAnalyzer merged = TextAnalyzer.merge(analyzer1, analyzer2);
+		assertFalse(merged.getResult().getShapeDetails().isEmpty(),
+				"Shapes should be non-empty after merge");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void issue166_shapeDetailsLostAfterSerialize() throws FTAException, IOException {
+		// Bug: tokenStreams is not included in serialize(), so shapeDetails is empty after a
+		// serialize/deserialize round-trip even though the same analyzer had non-empty shapes before.
+		final int NAME_COL = 2;
+
+		final List<String> allValues = new ArrayList<>();
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(
+				TestIssues.class.getResourceAsStream("/testtable2.csv"), StandardCharsets.UTF_8))) {
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); iter.hasNext();)
+				allValues.add(iter.next().getFields().get(NAME_COL));
+		}
+
+		final TextAnalyzer analyzer = new TextAnalyzer("NAME", DateResolutionMode.Auto);
+		analyzer.setLocale(Locale.forLanguageTag("en-US"));
+		for (final String value : allValues)
+			analyzer.train(value);
+
+		final Map<String, Long> shapesBeforeSerialize = analyzer.getResult().getShapeDetails();
+		assertFalse(shapesBeforeSerialize.isEmpty(),
+				"Shapes should be non-empty before serialize");
+
+		// After a serialize/deserialize round-trip, tokenStreams is not restored
+		final TextAnalyzer restored = TextAnalyzer.deserialize(analyzer.serialize());
+		final Map<String, Long> shapesAfterSerialize = restored.getResult().getShapeDetails();
+		// Bug: shapesAfterSerialize is empty because tokenStreams is absent from the serialized form
+		assertEquals(shapesAfterSerialize, shapesBeforeSerialize,
+				"Shapes should survive a serialize/deserialize round-trip");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void issue166_serializeDeserializeMergeShapes() throws FTAException, IOException {
+		// Simulate a distributed workflow: each shard serializes its analyzer, ships it to the
+		// driver, deserializes, and merges. Verify that shape counts survive the serde round-trip
+		// on each shard and that the merged shapes match a direct (no-serde) merge.
+		final String STREAM_NAME = "Confusing";
+
+		final TextAnalyzer direct1 = new TextAnalyzer(STREAM_NAME);
+		final TextAnalyzer direct2 = new TextAnalyzer(STREAM_NAME);
+		final TextAnalyzer serde1  = new TextAnalyzer(STREAM_NAME);
+		final TextAnalyzer serde2  = new TextAnalyzer(STREAM_NAME);
+
+		for (final String resource : new String[] { "/p1.txt", "/p2.txt" }) {
+			final boolean isP1 = resource.equals("/p1.txt");
+			try (BufferedReader in = new BufferedReader(new InputStreamReader(
+					TestIssues.class.getResourceAsStream(resource), StandardCharsets.UTF_8))) {
+				String line;
+				boolean header = true;
+				while ((line = in.readLine()) != null) {
+					if (header) { header = false; continue; }
+					if (isP1) { direct1.train(line); serde1.train(line); }
+					else       { direct2.train(line); serde2.train(line); }
+				}
+			}
+		}
+
+		// Serde each shard and verify per-shard shape counts survive the round-trip
+		final TextAnalyzer restored1 = TextAnalyzer.deserialize(serde1.serialize());
+		final TextAnalyzer restored2 = TextAnalyzer.deserialize(serde2.serialize());
+
+		final Map<String, Long> direct1Shapes  = direct1.getResult().getShapeDetails();
+		final Map<String, Long> restored1Shapes = restored1.getResult().getShapeDetails();
+		final Map<String, Long> direct2Shapes  = direct2.getResult().getShapeDetails();
+		final Map<String, Long> restored2Shapes = restored2.getResult().getShapeDetails();
+
+		assertEquals(restored1Shapes.size(), direct1Shapes.size(),
+				"p1 shape count should survive serialize/deserialize");
+		assertEquals(restored2Shapes.size(), direct2Shapes.size(),
+				"p2 shape count should survive serialize/deserialize");
+
+		// Merge and compare distinct shapes against the direct (no-serde) merge
+		final TextAnalyzer mergedDirect = TextAnalyzer.merge(direct1, direct2);
+		final TextAnalyzer mergedSerde  = TextAnalyzer.merge(restored1, restored2);
+
+		assertEquals(mergedSerde.getResult().getShapeDetails(), mergedDirect.getResult().getShapeDetails(),
+				"Merged shapes after serde should match direct merge");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })

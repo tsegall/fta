@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Simple class used to aid serialization/de-serialization of a TextAnalyzer.
@@ -25,6 +26,7 @@ class TextAnalyzerWrapper {
 	public AnalyzerContext analyzerContext;
 	public Facts facts;
 	public List<PluginDefinition> userDefinedPlugins;
+	public Map<String, Long> shapes;
 
 	TextAnalyzerWrapper() {
 	}
