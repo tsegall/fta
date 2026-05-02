@@ -57,7 +57,8 @@ class AnalyzerSerializer {
 			ta.determineType();
 
 		final TextAnalyzerWrapper wrapper = new TextAnalyzerWrapper(ta.getConfig(), ta.getContext(), ta.getPlugins().getUserDefinedPlugins(), ta.facts.calculateFacts());
-		wrapper.shapes = ta.tokenStreams.getShapes();
+		if (ta.tokenStreams != null)
+			wrapper.shapes = ta.tokenStreams.getShapes();
 
 		// We are serializing the analyzer (assume it will not be used again - so persist the samples)
 		if (ta.traceConfig != null) {
