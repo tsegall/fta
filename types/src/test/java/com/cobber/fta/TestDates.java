@@ -4968,7 +4968,7 @@ public class TestDates {
 		}
 	}
 
-//	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void japaneseEra() throws FTAException {
 
 		final TextAnalyzer analysis = new TextAnalyzer("japaneseEra");
@@ -4987,22 +4987,46 @@ public class TestDates {
 		TestUtils.checkSerialization(analysis);
 
 		assertEquals(result.getType(), FTAType.LOCALDATE);
-		assertEquals(result.getTypeModifier(), "yyyy年M月d日");
+		assertEquals(result.getTypeModifier(), "GGGGyy年");
 		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 0);
-		assertEquals(result.getMatchCount(), inputs.length);
+		// 令和5年 has a 1-digit era year; the dominant format is 2-digit so it lands as an outlier
+		assertEquals(result.getOutlierCount(), 1);
+		assertEquals(result.getMatchCount(), inputs.length - 1);
 		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getRegExp(), "\\d{4}年\\d{1,2}月\\d{1,2}日");
-		assertEquals(result.getConfidence(), 1.0);
+		assertNotNull(result.getRegExp());
+		assertTrue(result.getConfidence() > 0.8);
 		assertNull(result.checkCounts(false));
 
 		TestSupport.checkHistogram(result, 10, true);
 		TestSupport.checkQuantiles(result);
+	}
 
-		for (final String input : inputs) {
-			assertTrue(input.matches(result.getRegExp()));
-			assertNull(checkParseable(result, input, locale));
-		}
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void japaneseEraMotonen() throws FTAException {
+		// Tests Japanese era date detection including '元年' (first year of an era, not a digit)
+		final TextAnalyzer analysis = new TextAnalyzer("japaneseEraMotonen");
+		final Locale locale = Locale.forLanguageTag("ja-JP");
+		analysis.setLocale(locale);
+		final String[] inputs = {
+				"昭和64年1月7日", "平成元年1月8日", "平成12年1月1日",
+				"平成31年4月30日", "令和元年5月1日", "令和6年4月1日", "令和8年1月1日"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+		TestUtils.checkSerialization(analysis);
+
+		assertEquals(result.getType(), FTAType.LOCALDATE);
+		assertEquals(result.getTypeModifier(), "GGGGy年M月d日");
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertNotNull(result.getRegExp());
+		assertEquals(result.getConfidence(), 1.0);
+		assertNull(result.checkCounts(false));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

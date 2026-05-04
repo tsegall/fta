@@ -20,7 +20,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -337,13 +340,16 @@ class TypeTracker {
 		final DateTimeFormatter formatter = ac.dateTimeParser.ofPattern(result.getFormatString());
 
 		final String trimmed = input.trim();
+		// For Japanese era dates, '元' (moto/gen) means year 1 — Java's DateTimeFormatter requires digits,
+		// so normalise '元年' → '1年' before calling the Java formatter.
+		final String normalized = dateFormat.contains("G") ? trimmed.replace("元年", "1年") : trimmed;
 
 		// If we are not collecting statistics we can use the parse on DateTimeParserResult which is
 		// significantly faster than the parse on LocalTime/LocalDate/LocalDateTime/...
 		switch (result.getType()) {
 		case LOCALTIME:
 			if (register && ac.analysisConfig.isEnabled(Feature.COLLECT_STATISTICS)) {
-				final LocalTime localTime = LocalTime.parse(trimmed, formatter);
+				final LocalTime localTime = LocalTime.parse(normalized, formatter);
 				if (ac.facts.minLocalTime == null || localTime.compareTo(ac.facts.minLocalTime) < 0)
 					ac.facts.minLocalTime = localTime;
 				if (ac.facts.maxLocalTime == null || localTime.compareTo(ac.facts.maxLocalTime) > 0)
@@ -356,7 +362,15 @@ class TypeTracker {
 
 		case LOCALDATE:
 			if (register && ac.analysisConfig.isEnabled(Feature.COLLECT_STATISTICS)) {
-				final LocalDate localDate = LocalDate.parse(trimmed, formatter);
+				final LocalDate localDate;
+				if (dateFormat.contains("G")) {
+					// JapaneseChronology formatter: LocalDate.parse() cannot convert JapaneseDate to ISO LocalDate.
+					// Parse as ChronoLocalDate and convert via epoch day.
+					final ChronoLocalDate cld = formatter.parse(normalized, ChronoLocalDate::from);
+					localDate = LocalDate.ofEpochDay(cld.toEpochDay());
+				} else {
+					localDate = LocalDate.parse(normalized, formatter);
+				}
 				if (ac.facts.minLocalDate == null || localDate.compareTo(ac.facts.minLocalDate) < 0)
 					ac.facts.minLocalDate = localDate;
 				if (ac.facts.maxLocalDate == null || localDate.compareTo(ac.facts.maxLocalDate) > 0)
@@ -369,7 +383,15 @@ class TypeTracker {
 
 		case LOCALDATETIME:
 			if (register && ac.analysisConfig.isEnabled(Feature.COLLECT_STATISTICS)) {
-				final LocalDateTime localDateTime = LocalDateTime.parse(trimmed, formatter);
+				final LocalDateTime localDateTime;
+				if (dateFormat.contains("G")) {
+					// JapaneseChronology formatter: LocalDateTime.parse() cannot convert JapaneseDateTime to ISO LocalDateTime.
+					// Parse as ChronoLocalDateTime and convert via epoch second.
+					final ChronoLocalDateTime<?> cldt = formatter.parse(normalized, ChronoLocalDateTime::from);
+					localDateTime = LocalDateTime.ofEpochSecond(cldt.toEpochSecond(ZoneOffset.UTC), 0, ZoneOffset.UTC);
+				} else {
+					localDateTime = LocalDateTime.parse(normalized, formatter);
+				}
 				if (ac.facts.minLocalDateTime == null || localDateTime.compareTo(ac.facts.minLocalDateTime) < 0)
 					ac.facts.minLocalDateTime = localDateTime;
 				if (ac.facts.maxLocalDateTime == null || localDateTime.compareTo(ac.facts.maxLocalDateTime) > 0)

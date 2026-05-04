@@ -21,6 +21,8 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeParseException;
 
 import com.cobber.fta.core.FTAType;
@@ -63,10 +65,20 @@ public class StringConverter {
 				case STRING:
 					return input;
 				case LOCALDATE:
+					if (typeFormatter.format != null && typeFormatter.format.contains("G")) {
+						// JapaneseChronology formatter: LocalDate.parse() cannot convert JapaneseDate to ISO date directly.
+						// Parse via ChronoLocalDate and convert to LocalDate through the universal epoch day.
+						final ChronoLocalDate cld = typeFormatter.getDateFormatter().parse(normalizeForEra(trimmed), ChronoLocalDate::from);
+						return LocalDate.ofEpochDay(cld.toEpochDay());
+					}
 					return LocalDate.parse(trimmed, typeFormatter.getDateFormatter());
 				case LOCALTIME:
 					return LocalTime.parse(trimmed, typeFormatter.getDateFormatter());
 				case LOCALDATETIME:
+					if (typeFormatter.format != null && typeFormatter.format.contains("G")) {
+						final ChronoLocalDateTime<?> cldt = typeFormatter.getDateFormatter().parse(normalizeForEra(trimmed), ChronoLocalDateTime::from);
+						return LocalDateTime.ofEpochSecond(cldt.toEpochSecond(ZoneOffset.UTC), 0, ZoneOffset.UTC);
+					}
 					return LocalDateTime.parse(trimmed, typeFormatter.getDateFormatter());
 				case ZONEDDATETIME:
 					return ZonedDateTime.parse(trimmed, typeFormatter.getDateFormatter());
@@ -79,6 +91,11 @@ public class StringConverter {
 		}
 
 		return null;
+	}
+
+	private String normalizeForEra(final String input) {
+		// '元' (first year of era) cannot be parsed as a digit by Java's DateTimeFormatter
+		return input.replace("元年", "1年");
 	}
 
 	public String formatted(final Object toFix) {

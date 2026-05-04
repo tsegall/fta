@@ -21,6 +21,7 @@ import static com.cobber.fta.dates.DateTimeParserResult.HOUR_INDEX;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.chrono.JapaneseChronology;
 import java.time.chrono.JapaneseEra;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -327,7 +328,9 @@ public class DateTimeParser {
 		else
 			builder.appendPattern(formatString);
 
-		formatter = builder.toFormatter(config.getLocale());
+		formatter = formatString.contains("G")
+				? builder.toFormatter(config.getLocale()).withChronology(JapaneseChronology.INSTANCE)
+				: builder.toFormatter(config.getLocale());
 		formatterCache.put(cacheKey, formatter);
 
 		return formatter;
@@ -941,17 +944,23 @@ public class DateTimeParser {
 				digits++;
 				break;
 			default:
+				// '元' (moto/gen) is the traditional notation for the first year of a Japanese era (元年 = year 1).
+				// Treat it as a single numeric year digit so that e.g. 平成元年 parses like 平成1年.
+				if (ch == '元' && workingOn == 'y' && digits == 0) {
+					digits = 1;
+					break;
+				}
 				boolean foundEra = false;
 				if (digits != 0) {
 					result.append(Utils.repeat(workingOn, digits));
 					// Need to check if this is an Era formatted date
 					if (workingOn == 'y' && i >= 1) {
-						final String maybeEra = String.valueOf(input.charAt(i - 1)) + ch;
 						for (final JapaneseEra c : JapaneseEra.values()) {
 							final String era = c.getDisplayName(TextStyle.FULL, config.getLocale());
-							if (era.equals(maybeEra)) {
+							final int eraLen = era.length();
+							if (i >= eraLen - 1 && era.equals(input.substring(i - eraLen + 1, i + 1))) {
 								result.append("GGGG");
-								i--;
+								i -= eraLen;
 								foundEra = true;
 								break;
 							}
@@ -978,10 +987,15 @@ public class DateTimeParser {
 
 		result = result.reverse();
 
-		// So we think we have nailed it - but it only counts if it happily passes a validity check
-		final DateTimeParserResult dtp = DateTimeParserResult.asResult(result.toString(), resolutionMode, config);
+		// Reject formats that mix an era year with a bracketed Gregorian year (e.g. "平成26（2014）年3月")
+		final String candidate = result.toString();
+		if (candidate.contains("GGGG") && candidate.contains("yyyy"))
+			return null;
 
-		return (dtp != null && dtp.isValid(trimmed)) ? result.toString() : null;
+		// So we think we have nailed it - but it only counts if it happily passes a validity check
+		final DateTimeParserResult dtp = DateTimeParserResult.asResult(candidate, resolutionMode, config);
+
+		return (dtp != null && dtp.isValid(trimmed)) ? candidate : null;
 	}
 
 	/**

@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 18.5.0
+ - ENH: Japanese era date detection (令和, 平成, 昭和, etc.) with support for 元年 (traditional first-year-of-era notation) — including GGGGy*/GGGGyy* formats, JapaneseChronology, getRegExp(), parse(), ofPattern(), and statistics tracking (Issue #165)
+ - INT: Bump spotbugs plugin to 6.5.4
+
 ### 18.4.0
  - BUG: getShapeDetails() returns empty map after serialize/deserialize round-trip (Issue #166)
  - INT: Bump spotbugs plugin to 6.5.1, ben-manes versions plugin to 0.54.0, libphonenumber to 9.0.29, jackson to 2.21.3, gradle to 9.5.0

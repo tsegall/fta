@@ -191,8 +191,20 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.JAPAN);
 
 		assertNull(dtp.determineFormatString("資料：農林水産省「食育推進計画調査報告書」（平成29（2017）年3月公表）"));
-		// No ERA support - so this should fail
+		// Full-width digits (３) and parenthesised Gregorian year are not supported
 		assertNull(dtp.determineFormatString("平成26（2014）年３月"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
+	public void japaneseEraFormats() {
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.JAPAN);
+
+		assertEquals(dtp.determineFormatString("令和6年4月26日"),  "GGGGy年M月dd日");
+		assertEquals(dtp.determineFormatString("令和6年4月1日"),   "GGGGy年M月d日");
+		assertEquals(dtp.determineFormatString("平成31年1月1日"), "GGGGyy年M月d日");
+		assertEquals(dtp.determineFormatString("昭和64年1月7日"), "GGGGyy年M月d日");
+		assertEquals(dtp.determineFormatString("平成元年1月8日"), "GGGGy年M月d日");
+		assertEquals(dtp.determineFormatString("令和元年5月1日"), "GGGGy年M月d日");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })

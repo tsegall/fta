@@ -163,11 +163,22 @@ public class TokenList implements Iterable<FormatterToken> {
 
 			case 'y':
 				i++;
-				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'y') {
-					tokens.add(new FormatterToken(Token.YEARS_4, 4).withOffset(newTokenOffset));
-					i += 2;
-				} else
-					tokens.add(new FormatterToken(Token.YEARS_2, 2).withOffset(newTokenOffset));
+				if (i < formatLength && formatString.charAt(i) == 'y') {
+					// yy or more
+					if (i + 1 < formatLength && formatString.charAt(i + 1) == 'y') {
+						// yyyy
+						tokens.add(new FormatterToken(Token.YEARS_4, 4).withOffset(newTokenOffset));
+						i += 2;
+					} else {
+						// exactly yy — strict 2-digit year
+						tokens.add(new FormatterToken(Token.YEARS_2, 2).withOffset(newTokenOffset));
+					}
+				} else {
+					// single y — flexible 1-2 digit year (used for era-relative years)
+					// undo the look-ahead so the outer loop's i++ visits the following char
+					i--;
+					tokens.add(new FormatterToken(Token.YEARS_2, 1).withOffset(newTokenOffset));
+				}
 				break;
 
 			case 'S':
@@ -288,16 +299,22 @@ public class TokenList implements Iterable<FormatterToken> {
 			case MONTH_ABBR:
 			case SECS:
 			case TIMEZONE_NAME:
-			case YEARS_2:
 			case YEARS_4:
 			case QUOTE:
 				ret.append(nextToken.getRepresentation());
+				break;
+			case YEARS_2:
+				// count=1 means single 'y' (flexible 1-2 digit era year); all other counts (including 0, the no-arg default) mean strict 2-digit 'yy'
+				ret.append(token.getCount() == 1 ? "y" : "yy");
 				break;
 			case FRACTION:
 				if (token.getHigh() != token.getCount())
 					ret.append(nextToken.getRepresentation()).append('{').append(token.getCount()).append(',').append(token.getHigh()).append('}');
 				else
 					ret.append(Utils.repeat(nextToken.getRepresentation().charAt(0), token.getCount()));
+				break;
+			case ERA:
+				ret.append(Utils.repeat(nextToken.getRepresentation().charAt(0), token.getCount()));
 				break;
 			case LOCALIZED_TIMEZONE_OFFSET:
 			case TIMEZONE_OFFSET:

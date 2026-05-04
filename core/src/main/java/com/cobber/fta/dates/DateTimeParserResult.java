@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.time.chrono.JapaneseEra;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
@@ -502,6 +503,11 @@ public class DateTimeParserResult {
 				amPmIndicator = true;
 				break;
 
+			case 'G':
+				while (i + 1 < formatLength && formatString.charAt(i + 1) == 'G')
+					i++;
+				break;
+
 			case 'p':
 				padLength = 1;
 				if (i + 1 < formatLength && formatString.charAt(i + 1) == 'p') {
@@ -716,7 +722,6 @@ public class DateTimeParserResult {
 
 			case MINS:
 			case SECS:
-			case YEARS_2:
 				if (upto == inputLength)
 					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
 				inputChar = input.charAt(upto);
@@ -732,6 +737,38 @@ public class DateTimeParserResult {
 				value = 10 * value + (inputChar - '0');
 				upto++;
 				validateTokenValue(nextToken, value, input, upto - 2);
+				break;
+
+			case YEARS_2:
+				if (upto == inputLength)
+					throw new DateTimeParseException("Expecting digit, end of input", input, upto);
+				inputChar = input.charAt(upto);
+				// '元' (moto/gen) is the traditional notation for year 1 of a Japanese era (元年 = year 1)
+				if (inputChar == '元') {
+					value = 1;
+					upto++;
+				} else {
+					if (!Character.isDigit(inputChar))
+						throw new DateTimeParseException("Expecting digit", input, upto);
+					value = inputChar - '0';
+					upto++;
+					if (token.getCount() > 1) {
+						// Strict 2 digits (yy format)
+						if (upto == inputLength)
+							throw new DateTimeParseException("Expecting digit, end of input", input, upto);
+						inputChar = input.charAt(upto);
+						if (!Character.isDigit(inputChar))
+							throw new DateTimeParseException("Expecting digit", input, upto);
+						value = 10 * value + (inputChar - '0');
+						upto++;
+					} else {
+						// Flexible 1-2 digits (single y, used for era-relative years)
+						if (upto < inputLength && Character.isDigit(input.charAt(upto))) {
+							value = 10 * value + (input.charAt(upto) - '0');
+							upto++;
+						}
+					}
+				}
 				break;
 
 			case YEARS_4:
@@ -761,6 +798,21 @@ public class DateTimeParserResult {
 				if (input.charAt(upto) != token.getValue())
 					throw new DateTimeParseException("Expecting constant char", input, upto);
 				upto++;
+				break;
+
+			case ERA:
+				start = upto;
+				boolean eraFound = false;
+				for (final JapaneseEra era : JapaneseEra.values()) {
+					final String eraName = era.getDisplayName(java.time.format.TextStyle.FULL, config.getLocale());
+					if (input.startsWith(eraName, upto)) {
+						upto += eraName.length();
+						eraFound = true;
+						break;
+					}
+				}
+				if (!eraFound)
+					throw new DateTimeParseException("Expecting Japanese era name", input, start);
 				break;
 
 			case AMPM:
@@ -950,8 +1002,12 @@ public class DateTimeParserResult {
 		if (formatString == null)
 			formatString = getFormatString();
 
+		final boolean hasEra = tokenized.findByType(Token.ERA) != null;
+
 		for (final FormatterToken token : tokenized) {
 			if (token.getType() == Token.CONSTANT_CHAR || token.getType() == Token.QUOTE ||
+					token.getType() == Token.ERA ||
+					(token.getType() == Token.YEARS_2 && hasEra) ||
 					token.getType() == Token.MONTH || token.getType() == Token.MONTH_ABBR ||
 					token.getType() == Token.DAY_OF_WEEK || token.getType() == Token.DAY_OF_WEEK_ABBR ||
 					token.getType() == Token.AMPM ||  token.getType() == Token.AMPM_NL ||
@@ -971,6 +1027,21 @@ public class DateTimeParserResult {
 
 				case CONSTANT_CHAR:
 					ret.append(RegExpGenerator.slosh(token.getValue()));
+					break;
+
+				case ERA:
+					final StringBuilder eraAlt = new StringBuilder();
+					for (final JapaneseEra era : JapaneseEra.values()) {
+						if (eraAlt.length() > 0)
+							eraAlt.append('|');
+						eraAlt.append(RegExpGenerator.slosh(era.getDisplayName(java.time.format.TextStyle.FULL, config.getLocale())));
+					}
+					ret.append('(').append(eraAlt).append(')');
+					break;
+
+				case YEARS_2:
+					// ERA-relative year: 1-2 digits or '元' (traditional notation for year 1)
+					ret.append("(元|\\d{1,2})");
 					break;
 
 				case MONTH:
@@ -1083,6 +1154,10 @@ public class DateTimeParserResult {
 					break;
 
 				case YEARS_2:
+					digitsMin += token.getCount();
+					digitsMax += 2;
+					break;
+
 				case MINS:
 				case SECS:
 					digitsMin += 2;
