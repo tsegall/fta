@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 18.6.0
+ - ENH: Improve detection in Japanese locale: COUNTRY.TEXT_JA, PERSON.DATE_OF_BIRTH, CITY, EMAIL, TELEPHONE, POSTAL_CODE.POSTAL_CODE_JA (Issue #165)
+
 ### 18.5.0
  - ENH: Japanese era date detection (令和, 平成, 昭和, etc.) with support for 元年 (traditional first-year-of-era notation) — including GGGGy*/GGGGyy* formats, JapaneseChronology, getRegExp(), parse(), ofPattern(), and statistics tracking (Issue #165)
  - INT: Bump spotbugs plugin to 6.5.4

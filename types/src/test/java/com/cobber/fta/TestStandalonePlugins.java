@@ -15,6 +15,7 @@
  */
 package com.cobber.fta;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -313,5 +314,27 @@ public class TestStandalonePlugins {
 
 		for (final String sample : invalidSamples)
 			assertFalse(logical.isValid(sample), sample);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaCountryDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("国名");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		// Entries taken directly from the ja_countries.csv reference file
+		final String[] inputs = {
+			"日本", "中華人民共和国", "中華民国", "大韓民国", "朝鮮民主主義人民共和国",
+			"印度", "印度尼西亜", "越南", "泰", "比利賓",
+			"馬来西亜", "緬甸", "蒙古", "星嘉波", "錫蘭",
+			"土耳其", "沙地亜剌比亜", "叙利亜", "伊朗", "伊拉克",
+			"老檛", "香佐富斯坦", "塔吉克斯坦", "孟加拉", "柬埔寨",
+			"尼泊爾", "巴基斯坦", "豪斯多剌里亜", "新西蘭土", "亜米利加"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "COUNTRY.TEXT_JA");
+		assertEquals(result.getConfidence(), 1.0);
 	}
 }
