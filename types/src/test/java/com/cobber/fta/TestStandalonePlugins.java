@@ -317,6 +317,103 @@ public class TestStandalonePlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaFirstNameDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("名前");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		final String[] inputs = {
+			"太郎", "花子", "健一", "裕子", "直樹",
+			"美咲", "拓也", "さくら", "翔", "陽子",
+			"誠", "智子", "浩二", "恵子", "大輔",
+			"由美子", "達也", "香織", "慎一", "友美"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "NAME.FIRST");
+		assertTrue(result.getConfidence() >= 0.85);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaLastNameDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("姓");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		final String[] inputs = {
+			"田中", "佐藤", "鈴木", "高橋", "渡辺",
+			"伊藤", "山本", "中村", "小林", "加藤",
+			"吉田", "山田", "佐々木", "山口", "松本",
+			"井上", "木村", "林", "斎藤", "清水"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "NAME.LAST");
+		assertTrue(result.getConfidence() >= 0.85);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void colombianDepartmentDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("nombredpto");
+		analysis.setLocale(Locale.forLanguageTag("es-CO"));
+
+		// Entries are valid Colombian departments — header "nombredpto" contains "nombre" which is a weak
+		// NAME.LAST header hint, so this test guards against NAME.LAST incorrectly winning.
+		final String[] inputs = {
+			"Antioquia", "Valle", "Santander", "Bogotá", "Huila",
+			"Nariño", "Cundinamarca", "Boyacá", "Tolima", "Caldas",
+			"Risaralda", "Córdoba", "Bolívar", "Atlántico", "Meta",
+			"Cesar", "Cauca", "Chocó", "Magdalena", "Sucre"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "STATE_PROVINCE.DEPARTMENT_CO");
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void colombianDepartmentDetectionTruncatedHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("departame_nombre");
+		analysis.setLocale(Locale.forLanguageTag("es-CO"));
+
+		// Header "departame_nombre" uses a truncated "departamento" — guards against NAME.FIRST winning via the
+		// weak "nombre" hint in the es locale.
+		final String[] inputs = {
+			"ANTIOQUIA", "ARAUCA", "ATLANTICO", "BOGOTA", "BOLIVAR",
+			"BOYACA", "CALDAS", "CAQUETA", "CASANARE", "CAUCA",
+			"CESAR", "CHOCO", "CORDOBA", "CUNDINAMARCA", "GUAVIARE",
+			"HUILA", "MAGDALENA", "META", "PUTUMAYO", "SANTANDER"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "STATE_PROVINCE.DEPARTMENT_CO");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void colombianMunicipalityDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("nombre_centro_poblado");
+		analysis.setLocale(Locale.forLanguageTag("es-CO"));
+
+		final String[] inputs = {
+			"ABRIAQUÍ", "ALEJANDRÍA", "AMAGÁ", "AMALFI", "ANDES",
+			"ANGELÓPOLIS", "ANGOSTURA", "ANORÍ", "ANZA", "APARTADÓ",
+			"ARBOLETES", "ARGELIA", "ARMENIA", "BARBOSA", "BELLO",
+			"BETANIA", "BETULIA", "BRICEÑO", "BURITICÁ", "CÁCERES"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "STATE_PROVINCE.MUNICIPALITY_CO");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void jaCountryDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("国名");
 		analysis.setLocale(Locale.forLanguageTag("ja-JP"));

@@ -36,7 +36,7 @@ import com.google.common.hash.Funnels;
 /**
  * Plugin to detect valid Japanese Postal Codes.
  */
-public class PostalCodeJA extends LogicalTypeInfinite {
+public class PostalCodeJP extends LogicalTypeInfinite {
 	/** The Regular Expression for this Semantic type. */
 	public static final String REGEXP_POSTAL_CODE = "\\d{3}-\\d{4}";
 
@@ -61,7 +61,7 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 	 * Construct a Japanese Postal code plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
 	 */
-	public PostalCodeJA(final PluginDefinition plugin) {
+	public PostalCodeJP(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -74,7 +74,7 @@ public class PostalCodeJA extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		try (InputStream filterStream = PostalCodeJA.class.getResourceAsStream("/reference/ja_postal_code.bf")) {
+		try (InputStream filterStream = PostalCodeJP.class.getResourceAsStream("/reference/ja_postal_code.bf")) {
 			reference = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			throw new FTAPluginException("Failed to load BloomFilter", e);

@@ -271,7 +271,7 @@ In addition to detecting a set of Base types FTA will also, when enabled (defaul
 
 * Semantic Type detection is typically predicated on plausible input data, for example, a field that contains data that looks
 like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
-* The set of Semantic Types detected is dependent on the current locale. By default the locale is set from the environment, if you want to alter this then you should invoke setLocale() on the TextAnalyzer.
+* The set of Semantic Types detected is dependent on the current locale. By default the locale is derived from the environment; to override it, call `setLocale()` on the TextAnalyzer.
 * The data stream name (e.g. the database field name or CSV field name) is commonly used to bias the detection.  For example, if the locale language is English and the data stream matches the regular expression '.\*(?i)(surname|last.?name|lname|maiden.?name|name.?last|last_nm).\*|last' then the detection is more likely to declare this stream a NAME.LAST Semantic Type. The data stream name can also be used to negatively bias the detection.  Consult the plugins.json file for more details.
 * Assuming the entire set of stream names is available, Semantic Type detection of a particular column may be impacted by other stream names, for example the Semantic Type PERSON.AGE is commonly detected if we detect another field of type GENDER or NAME.FIRST.
 * When using Record mode for Semantic Type analysis - the detection of Semantic Types for a stream may be impacted by prior determination of the Semantic Type of another Stream (either via detection or provided with the Context)

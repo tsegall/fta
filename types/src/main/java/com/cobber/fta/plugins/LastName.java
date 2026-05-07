@@ -15,8 +15,15 @@
  */
 package com.cobber.fta.plugins;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
@@ -30,11 +37,19 @@ import com.cobber.fta.SingletonSet;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.token.TokenStreams;
+import com.google.common.hash.BloomFilter;
+import com.google.common.hash.Funnels;
 
 /**
  * Plugin to detect an individuals Last Name.
  */
 public class LastName extends PersonName {
+	/** Regex covering Hiragana, Katakana, and CJK Unified/Extension-A Ideographs (plus repetition mark 々). */
+	private static final String REGEXP_JA = "[぀-ヿ一-鿿㐀-䶿々]+";
+
+	// Japanese support via bloom filter - only populated when locale language is "ja"
+	private BloomFilter<CharSequence> jaFilter;
+	private static volatile List<String> jaExamples;
 	// This set covers the first two letters of ~95% of our last name list - assume this is a reasonable proxy for last names more generally
 	private static final String plausibleStarters[] = {
 		"AB", "AC", "AD", "AG", "AL", "AM", "AN", "AP", "AR", "AS", "AT", "AU", "AV", "AY",
@@ -97,7 +112,21 @@ public class LastName extends PersonName {
 
 		language = locale.getLanguage();
 
+		if ("ja".equals(language)) {
+			try (InputStream filterStream = LastName.class.getResourceAsStream("/reference/ja_lastnames.bf")) {
+				if (filterStream == null)
+					throw new FTAPluginException("Failed to locate Japanese last name bloom filter");
+				jaFilter = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));
+			} catch (IOException e) {
+				throw new FTAPluginException("Failed to load Japanese last name bloom filter", e);
+			}
+		}
+
 		return true;
+	}
+
+	private boolean isJapanese() {
+		return jaFilter != null;
 	}
 
 	@Override
@@ -115,7 +144,39 @@ public class LastName extends PersonName {
 	 * @see com.cobber.fta.LogicalType#isValid(java.lang.String)
 	 */
 	@Override
+	public String getRegExp() {
+		return isJapanese() ? REGEXP_JA : super.getRegExp();
+	}
+
+	@Override
+	public String nextRandom() {
+		if (!isJapanese())
+			return super.nextRandom();
+
+		if (jaExamples == null) {
+			synchronized (LastName.class) {
+				if (jaExamples == null) {
+					final List<String> loaded = new ArrayList<>();
+					try (InputStream stream = LastName.class.getResourceAsStream("/reference/ja_lastnames_s.csv");
+						 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+						String line;
+						while ((line = reader.readLine()) != null)
+							loaded.add(line);
+					} catch (IOException e) {
+						throw new IllegalArgumentException("Failed to load Japanese last name samples", e);
+					}
+					jaExamples = loaded;
+				}
+			}
+		}
+		return jaExamples.get(getRandom().nextInt(jaExamples.size()));
+	}
+
+	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
+		if (isJapanese())
+			return jaFilter.mightContain(input.trim());
+
 		final int ret = isValidCore(input, detectMode, count);
 
 		if (detectMode && count != 0) {
@@ -235,10 +296,28 @@ public class LastName extends PersonName {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
 			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+		if (isJapanese()) {
+			final int headerConfidence = getHeaderConfidence(context);
+			if (headerConfidence <= 0 && cardinality.size() < 5)
+				return new PluginAnalysis(backout);
+			if (getConfidence(matchCount, realSamples, context) >= getThreshold() / 100.0)
+				return PluginAnalysis.OK;
+			return new PluginAnalysis(backout);
+		}
 		if (realSamples > 10 && !averageLengthOK())
 			return PluginAnalysis.SIMPLE_NOT_OK;
 		if (getHeaderConfidence(context) < 90 && realSamples > 10 && (100*bad)/realSamples > 1)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 		return super.analyzeSet(context, matchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig);
+	}
+
+	@Override
+	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
+		if (!isJapanese())
+			return super.getConfidence(matchCount, realSamples, context);
+		double confidence = (double) matchCount / realSamples;
+		if (getHeaderConfidence(context) > 0)
+			confidence = Math.min(confidence * 1.2, 1.0);
+		return confidence;
 	}
 }

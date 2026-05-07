@@ -1605,6 +1605,41 @@ public class TestMerge {
 		assertEquals(mergedResult.getMaxValue(), "149");
 	}
 
+//	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void shapesMerge() throws IOException, FTAException {
+		final int SHARDS = 1000;
+		final int SAMPLES_PER_SHARD = 100;
+
+		final TextAnalyzer[] shards = new TextAnalyzer[SHARDS];
+
+		for (int i = 0; i < shards.length; i++)
+			shards[i] = new TextAnalyzer("Shard_" + i);
+
+		StringBuilder b = new StringBuilder(16);
+		for (int n = 0; n < SHARDS * SAMPLES_PER_SHARD; n++) {
+			for (int i = 16; i >= 0; i--) {
+				int k = n >> i;
+				if ((k & 1) > 0)
+					b.append('A');
+				else
+					b.append('0');
+			}
+			shards[n/SAMPLES_PER_SHARD].train(b.toString());
+			b.setLength(0);
+		}
+
+		TextAnalyzer accumulator = shards[0];
+		for (int i = 1; i < shards.length; i++) {
+			long now = System.currentTimeMillis();
+			accumulator = TextAnalyzer.merge(accumulator, shards[i]);
+			System.err.printf("%d, %d, %d\n",
+				accumulator.getResult().getShapeCount(),
+				accumulator.serialize().length(),
+				System.currentTimeMillis() - now
+				);
+		}
+	}
+
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void nullNullStringTest() throws IOException, FTAException {
 		checkTextAnalyzerMerge(samplesNULL, samplesNULL, "NULL_NULL", null, true);

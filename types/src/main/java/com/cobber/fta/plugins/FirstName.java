@@ -15,7 +15,14 @@
  */
 package com.cobber.fta.plugins;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.cobber.fta.AnalysisConfig;
@@ -24,12 +31,18 @@ import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
 import com.cobber.fta.PluginAnalysis;
 import com.cobber.fta.PluginDefinition;
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.token.TokenStreams;
+import com.google.common.hash.BloomFilter;
+import com.google.common.hash.Funnels;
 
 /**
  * Plugin to detect an individuals First Name.
  */
 public class FirstName extends PersonName {
+	/** Regex covering Hiragana, Katakana, and CJK Unified/Extension-A Ideographs (plus repetition mark 々). */
+	private static final String REGEXP_JA = "[぀-ヿ一-鿿㐀-䶿々]+";
+
 	// This set covers the first two letters of ~92% of our first name list - assume this is a reasonable proxy for first names more generally
 	private final String plausibleStarters[] = {
 			"AB", "AD", "AL", "AM", "AN", "AR", "AS", "AU", "AY",
@@ -61,6 +74,10 @@ public class FirstName extends PersonName {
 	private long bad = 0;
 	private long recognized = 0;
 
+	// Japanese support via bloom filter - only populated when locale language is "ja"
+	private BloomFilter<CharSequence> jaFilter;
+	private static volatile List<String> jaExamples;
+
 	/**
 	 * Construct a First Name plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
@@ -70,6 +87,27 @@ public class FirstName extends PersonName {
 
 		for (final String s: plausibleStarters)
 			plausibleSet.add(s);
+	}
+
+	@Override
+	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
+		super.initialize(analysisConfig);
+
+		if ("ja".equals(locale.getLanguage())) {
+			try (InputStream filterStream = FirstName.class.getResourceAsStream("/reference/ja_firstnames.bf")) {
+				if (filterStream == null)
+					throw new FTAPluginException("Failed to locate Japanese first name bloom filter");
+				jaFilter = BloomFilter.readFrom(filterStream, Funnels.stringFunnel(StandardCharsets.UTF_8));
+			} catch (IOException e) {
+				throw new FTAPluginException("Failed to load Japanese first name bloom filter", e);
+			}
+		}
+
+		return true;
+	}
+
+	private boolean isJapanese() {
+		return jaFilter != null;
 	}
 
 	@Override
@@ -88,6 +126,9 @@ public class FirstName extends PersonName {
 	 */
 	@Override
 	public boolean isValid(final String input, final boolean detectMode, final long count) {
+		if (isJapanese())
+			return jaFilter.mightContain(input.trim());
+
 		final String trimmedUpper = input.trim().toUpperCase(locale);
 
 		if (!Character.isLetter(trimmedUpper.charAt(0))) {
@@ -131,6 +172,35 @@ public class FirstName extends PersonName {
 	}
 
 	@Override
+	public String getRegExp() {
+		return isJapanese() ? REGEXP_JA : super.getRegExp();
+	}
+
+	@Override
+	public String nextRandom() {
+		if (!isJapanese())
+			return super.nextRandom();
+
+		if (jaExamples == null) {
+			synchronized (FirstName.class) {
+				if (jaExamples == null) {
+					final List<String> loaded = new ArrayList<>();
+					try (InputStream stream = FirstName.class.getResourceAsStream("/reference/ja_firstnames_s.csv");
+						 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+						String line;
+						while ((line = reader.readLine()) != null)
+							loaded.add(line);
+					} catch (IOException e) {
+						throw new IllegalArgumentException("Failed to load Japanese first name samples", e);
+					}
+					jaExamples = loaded;
+				}
+			}
+		}
+		return jaExamples.get(getRandom().nextInt(jaExamples.size()));
+	}
+
+	@Override
 	public double getConfidence(final long matchCount, final long realSamples, final AnalyzerContext context) {
 		double confidence = (double)matchCount/realSamples;
 
@@ -144,11 +214,19 @@ public class FirstName extends PersonName {
 	@Override
 	public PluginAnalysis analyzeSet(final AnalyzerContext context, final long matchCount, final long realSamples,
 			final String currentRegExp, final Facts facts, final FiniteMap cardinality, final FiniteMap outliers, final TokenStreams tokenStreams, final AnalysisConfig analysisConfig) {
+		if (isJapanese()) {
+			final int headerConfidence = getHeaderConfidence(context);
+			if (headerConfidence <= 0 && cardinality.size() < 5)
+				return new PluginAnalysis(backout);
+			if (getConfidence(matchCount, realSamples, context) >= getThreshold() / 100.0)
+				return PluginAnalysis.OK;
+			return new PluginAnalysis(backout);
+		}
+
 		// We do not expect to see much true rubbish or less than 20% names that we do not recognize
 		if (getHeaderConfidence(context) < 90 &&
 				(realSamples > 10 && (((100*bad)/realSamples > 1) || ((recognized*100)/realSamples < 2))))
 			return PluginAnalysis.SIMPLE_NOT_OK;
 		return super.analyzeSet(context, matchCount, realSamples, currentRegExp, facts, cardinality, outliers, tokenStreams, analysisConfig);
 	}
-
 }

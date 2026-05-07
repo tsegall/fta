@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 18.7.0
+ - ENH: Japanese locale support for NAME.FIRST and NAME.LAST using JMnedict-sourced bloom filters (Issue #165)
+
 ### 18.6.0
  - ENH: Improve detection in Japanese locale: COUNTRY.TEXT_JA, PERSON.DATE_OF_BIRTH, CITY, EMAIL, TELEPHONE, POSTAL_CODE.POSTAL_CODE_JA (Issue #165)
 
