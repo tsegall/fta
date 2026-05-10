@@ -505,7 +505,7 @@ Flags that are disabled by default must be configured before training begins.
 |---------|---------|-------------|
 | `ALLOW_ENGLISH_AMPM` | on | Recognize "AM"/"PM" in date/time fields regardless of locale-specific AM/PM indicators. |
 | `APPROX_DISTINCT_COUNT` | **off** | Compute an approximate distinct count using HyperLogLog (Apache DataSketches). Exact when cardinality is below the max cardinality limit, ~1% error otherwise. Accessible via `getApproxDistinctCount()`. |
-| `COLLECT_SHAPES` | on | Track shape patterns (e.g. `9999-XX-99`) for each field. Disabling reduces CPU and serialized JSON size — useful in distributed/Spark workloads. When disabled, `getShapeCount()` and `getShapeDetails()` throw `IllegalStateException`. |
+| `COLLECT_SHAPES` | on | Track shape patterns (e.g. `9999-XX-99`) for each field. Disabling reduces CPU and serialized JSON size. When disabled, `getShapeCount()` and `getShapeDetails()` throw `IllegalStateException`. |
 | `COLLECT_STATISTICS` | on | Collect min, max, sum, mean, and standard deviation as the stream is analyzed. |
 | `DEFAULT_SEMANTIC_TYPES` | on | Enable detection of built-in Semantic Types. Disable to restrict analysis to Base Types only. |
 | `DISTRIBUTIONS` | on | Track quantile and histogram distributions. |
