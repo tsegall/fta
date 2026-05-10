@@ -167,6 +167,10 @@ public class TextAnalyzer {
 		DEFAULT_SEMANTIC_TYPES,
 		/** Indicate whether we should track distributions (Quantiles/Histograms). Feature is enabled by default. */
 		DISTRIBUTIONS,
+		/** Indicate whether we should compute approxDistinctCount using HyperLogLog. Feature is disabled by default. */
+		APPROX_DISTINCT_COUNT,
+		/** Indicate whether we should collect shape information. Feature is enabled by default. */
+		COLLECT_SHAPES,
 		/** Feature that indicates whether to attempt to detect the stream format (HTML, XML, JSON, BASE64, OTHER). Feature is disabled by default. */
 		FORMAT_DETECTION,
 		/** Indicate whether we should qualify the size of the RegExp. Feature is enabled by default. */
@@ -1872,6 +1876,13 @@ public class TextAnalyzer {
 				facts.distinctCount = facts.matchCount;
 			else
 				facts.distinctCount = -1L;
+		}
+
+		if (isEnabled(Feature.APPROX_DISTINCT_COUNT) && facts.approxDistinctCount == null) {
+			if (!facts.cardinality.hasOverflowed())
+				facts.approxDistinctCount = (long)facts.cardinality.size();
+			else
+				facts.approxDistinctCount = Math.round(facts.getHllSketch().getEstimate());
 		}
 
 		if (isEnabled(Feature.FORMAT_DETECTION))

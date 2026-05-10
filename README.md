@@ -267,7 +267,7 @@ Associated with each Base Type is a typeModifier. The value of the typeModifier 
 
 ## Semantic Type detection ##
 
-In addition to detecting a set of Base types FTA will also, when enabled (default on - analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false) to disable) infer Semantic type information along with the Base types.
+In addition to detecting a set of Base types FTA will also, when enabled (see `DEFAULT_SEMANTIC_TYPES` in the [Feature Flags](#feature-flags) section), infer Semantic type information along with the Base types.
 
 * Semantic Type detection is typically predicated on plausible input data, for example, a field that contains data that looks
 like phone numbers, but that are in fact invalid, will NOT be detected as the Semantic Type TELEPHONE.
@@ -495,6 +495,33 @@ getConfidence() - Will default to the number of valid samples / size of the samp
 nextRandom() - Will generate a random (secure) valid example of this Semantic Type.
 
 analyzeSet() - Given the data set analyzed determine if this set is likely an instance of this Semantic Type.
+
+## Feature Flags ##
+
+The behavior of a `TextAnalyzer` can be tuned via on/off feature flags using `analysis.configure(TextAnalyzer.Feature.<FLAG>, true/false)`.
+Flags that are disabled by default must be configured before training begins.
+
+| Feature | Default | Description |
+|---------|---------|-------------|
+| `ALLOW_ENGLISH_AMPM` | on | Recognize "AM"/"PM" in date/time fields regardless of locale-specific AM/PM indicators. |
+| `APPROX_DISTINCT_COUNT` | **off** | Compute an approximate distinct count using HyperLogLog (Apache DataSketches). Exact when cardinality is below the max cardinality limit, ~1% error otherwise. Accessible via `getApproxDistinctCount()`. |
+| `COLLECT_SHAPES` | on | Track shape patterns (e.g. `9999-XX-99`) for each field. Disabling reduces CPU and serialized JSON size — useful in distributed/Spark workloads. When disabled, `getShapeCount()` and `getShapeDetails()` throw `IllegalStateException`. |
+| `COLLECT_STATISTICS` | on | Collect min, max, sum, mean, and standard deviation as the stream is analyzed. |
+| `DEFAULT_SEMANTIC_TYPES` | on | Enable detection of built-in Semantic Types. Disable to restrict analysis to Base Types only. |
+| `DISTRIBUTIONS` | on | Track quantile and histogram distributions. |
+| `FORMAT_DETECTION` | **off** | Attempt to detect the stream format (HTML, XML, JSON, BASE64, etc.) and surface it as a Semantic Type. |
+| `LENGTH_QUALIFIER` | on | Qualify the size of returned Regular Expressions, e.g. `\d{5}` instead of `\d+`. |
+| `NO_ABBREVIATION_PUNCTUATION` | on | Treat month/AM-PM abbreviations as having no punctuation (e.g. accept `AUG` even when the locale defines `AUG.`). |
+| `NULL_TEXT_AS_NULL` | on | Treat strings such as `"NULL"`, `"N/A"`, `"NONE"` as null values. |
+| `NUMERIC_WIDENING` | on | Promote an integer field to Double if a run of integers is followed by doubles. |
+
+Example — disable semantic types and enable approximate distinct count:
+
+```java
+TextAnalyzer analysis = new TextAnalyzer("Population");
+analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
+analysis.configure(TextAnalyzer.Feature.APPROX_DISTINCT_COUNT, true);
+```
 
 ## Invalid Set ##
 

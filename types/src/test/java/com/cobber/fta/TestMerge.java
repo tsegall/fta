@@ -2034,6 +2034,56 @@ public class TestMerge {
 		testHistogramMerge(AnalysisConfig.MAX_CARDINALITY_DEFAULT + 1000, AnalysisConfig.MAX_CARDINALITY_DEFAULT + 1000);
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void testApproxDistinctCountMergeLowCardinality() throws FTAException {
+		final int SHARD_SIZE = 500;
+		final TextAnalyzer shardOne = new TextAnalyzer("approxMergeLow");
+		shardOne.configure(TextAnalyzer.Feature.APPROX_DISTINCT_COUNT, true);
+		final TextAnalyzer shardTwo = new TextAnalyzer("approxMergeLow");
+		shardTwo.configure(TextAnalyzer.Feature.APPROX_DISTINCT_COUNT, true);
+
+		// Completely non-overlapping values so the merged distinct count is exactly SHARD_SIZE * 2
+		for (int i = 0; i < SHARD_SIZE; i++)
+			shardOne.train("val_" + i);
+		for (int i = SHARD_SIZE; i < SHARD_SIZE * 2; i++)
+			shardTwo.train("val_" + i);
+
+		final TextAnalyzer merged = TextAnalyzer.merge(
+				TextAnalyzer.deserialize(shardOne.serialize()),
+				TextAnalyzer.deserialize(shardTwo.serialize()));
+		final TextAnalysisResult result = merged.getResult();
+
+		assertEquals(result.getDistinctCount(), SHARD_SIZE * 2);
+		assertEquals(result.getApproxDistinctCount(), SHARD_SIZE * 2);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
+	public void testApproxDistinctCountMergeHighCardinality() throws FTAException {
+		final int SHARD_SIZE = AnalysisConfig.MAX_CARDINALITY_DEFAULT + 3000;
+		final TextAnalyzer shardOne = new TextAnalyzer("approxMergeHigh");
+		shardOne.configure(TextAnalyzer.Feature.APPROX_DISTINCT_COUNT, true);
+		final TextAnalyzer shardTwo = new TextAnalyzer("approxMergeHigh");
+		shardTwo.configure(TextAnalyzer.Feature.APPROX_DISTINCT_COUNT, true);
+
+		// Non-overlapping high-cardinality shards — merged true distinct count is 2 * SHARD_SIZE
+		for (int i = 0; i < SHARD_SIZE; i++)
+			shardOne.train("val_" + i);
+		for (int i = SHARD_SIZE; i < SHARD_SIZE * 2; i++)
+			shardTwo.train("val_" + i);
+
+		final TextAnalyzer merged = TextAnalyzer.merge(
+				TextAnalyzer.deserialize(shardOne.serialize()),
+				TextAnalyzer.deserialize(shardTwo.serialize()));
+		final TextAnalysisResult result = merged.getResult();
+
+		assertEquals(result.getDistinctCount(), -1);
+		final long trueCount = (long) SHARD_SIZE * 2;
+		final long approx = result.getApproxDistinctCount();
+		assertTrue(approx > 0, "approxDistinctCount should be positive");
+		assertTrue(Math.abs(approx - trueCount) < trueCount * 0.02,
+				"HLL merge estimate " + approx + " should be within 2% of " + trueCount);
+	}
+
 	private TextAnalyzer checkTextAnalyzerMerge(final List<String> samplesOne, final List<String> samplesTwo, final String streamName,
 			final Locale locale, final boolean collectStatistics) throws FTAException {
 		final TextAnalyzer shardOne = new TextAnalyzer(streamName);

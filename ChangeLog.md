@@ -1,8 +1,14 @@
 
 ## Changes ##
 
+### 18.8.0
+ - ENH: Add Japanese locale support for NAME.LAST_FIRST — detects full names in Japanese Last-First order (姓名), supporting both space-separated (田中 太郎) and concatenated (田中太郎) forms using bloom filters. Header hints: 氏名, 姓名, 名前 (Issue #165).
+ - ENH: Add approxDistinctCount to TextAnalysisResult using Apache DataSketches HyperLogLog — opt-in via Feature.APPROX_DISTINCT_COUNT, exact for low-cardinality fields, ~1% error estimate for high-cardinality fields. Supports merge. Fixes Issue #92.
+ - ENH: Add Feature.COLLECT_SHAPES flag (enabled by default) to allow disabling shape tracking and serialization — reduces JSON payload size and CPU overhead in distributed/Spark workloads. Fixes Issue #166.
+ - INT: Bump libphonenumber to 9.0.30
+
 ### 18.7.0
- - ENH: Japanese locale support for NAME.FIRST and NAME.LAST using JMnedict-sourced bloom filters (Issue #165)
+ - ENH: Japanese locale support (Kanji) for NAME.FIRST and NAME.LAST using JMnedict-sourced bloom filters (Issue #165)
 
 ### 18.6.0
  - ENH: Improve detection in Japanese locale: COUNTRY.TEXT_JA, PERSON.DATE_OF_BIRTH, CITY, EMAIL, TELEPHONE, POSTAL_CODE.POSTAL_CODE_JA (Issue #165)

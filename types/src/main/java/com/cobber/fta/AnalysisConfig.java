@@ -104,6 +104,12 @@ public class AnalysisConfig {
 	/** Should we track distributions (Quantiles/Histograms). */
 	private boolean distributions = true;
 
+	/** Should we compute approxDistinctCount using HyperLogLog. */
+	private boolean approxDistinctCount = false;
+
+	/** Should we collect shape information. */
+	private boolean collectShapes = true;
+
 	/** Should we enable Default Semantic Type detection. */
 	private boolean enableDefaultLogicalTypes = true;
 
@@ -166,6 +172,8 @@ public class AnalysisConfig {
 		this.noAbbreviationPunctuation = other.noAbbreviationPunctuation;
 		this.nullTextAsNull = other.nullTextAsNull;
 		this.distributions = other.distributions;
+		this.approxDistinctCount = other.approxDistinctCount;
+		this.collectShapes = other.collectShapes;
 	}
 
 	/**
@@ -183,6 +191,12 @@ public class AnalysisConfig {
 			break;
 		case DEFAULT_SEMANTIC_TYPES:
 			enableDefaultLogicalTypes = state;
+			break;
+		case APPROX_DISTINCT_COUNT:
+			approxDistinctCount = state;
+			break;
+		case COLLECT_SHAPES:
+			collectShapes = state;
 			break;
 		case DISTRIBUTIONS:
 			distributions = state;
@@ -218,6 +232,10 @@ public class AnalysisConfig {
 			return collectStatistics;
 		case DEFAULT_SEMANTIC_TYPES:
 			return enableDefaultLogicalTypes;
+		case APPROX_DISTINCT_COUNT:
+			return approxDistinctCount;
+		case COLLECT_SHAPES:
+			return collectShapes;
 		case DISTRIBUTIONS:
 			return distributions;
 		case FORMAT_DETECTION:

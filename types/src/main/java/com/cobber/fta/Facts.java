@@ -28,6 +28,7 @@ import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -39,9 +40,15 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.apache.datasketches.hll.HllSketch;
+import org.apache.datasketches.hll.TgtHllType;
+import org.apache.datasketches.hll.Union;
+
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.Utils;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -49,6 +56,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * A set of facts for the Analysis in question.
  */
 public class Facts {
+	/** lgK parameter for HyperLogLog sketch: 2^12 = 4096 registers, ~1% relative error. */
+	private static final int HLL_LGK = 12;
+
 	/** The minimum length (not trimmed) - Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
 	public int minRawLength = Integer.MAX_VALUE;
 	/** The maximum length (not trimmed) - Only relevant for Numeric, Boolean and String. Note: For String and Boolean types this length includes any whitespace. */
@@ -152,6 +162,8 @@ public class Facts {
 	public long blankCount;
 	/** The number of distinct valid values seen in the sample set. */
 	public Long distinctCount;
+	/** Approximate distinct count of valid values — only set when Feature.APPROX_DISTINCT_COUNT is enabled, exact when cardinality &lt; maxCardinality, HLL estimate (~1% error) otherwise. */
+	public Long approxDistinctCount;
 
 	/** The percentage confidence in the analysis. Typically the matchCount divided by the realSamples (facts.sampleCount - (facts.nullCount + facts.blankCount)). */
 	public double confidence;
@@ -258,6 +270,9 @@ public class Facts {
 	@JsonDeserialize(using = SketchDeserializer.class)
 	private Sketch sketch;
 	public HistogramSPDT cardinalityOverflow;
+	@JsonIgnore
+	private HllSketch hllSketch;
+	private String hllSketchBase64;
 	private StringConverter stringConverter;
 	private TypeFormatter typeFormatter;
 
@@ -276,6 +291,8 @@ public class Facts {
 		this.cardinality.setMaxCapacity(analysisConfig.getMaxCardinality());
 		this.outliers.setMaxCapacity(analysisConfig.getMaxOutliers());
 		this.invalid.setMaxCapacity(analysisConfig.getMaxInvalids());
+		if (this.hllSketch == null && this.hllSketchBase64 == null)
+			this.hllSketch = new HllSketch(HLL_LGK, TgtHllType.HLL_4);
 	}
 
 	public TypeInfo getMatchTypeInfo() {
@@ -443,6 +460,40 @@ public class Facts {
 		if (!cardinality.isSorted())
 			cardinality.sortByKey(CommonComparator.getTypedMap(matchTypeInfo.getBaseType(), getStringConverter()));
 		return (NavigableMap<String, Long>) cardinality.getImpl();
+	}
+
+	@JsonIgnore
+	public HllSketch getHllSketch() {
+		if (hllSketch == null) {
+			if (hllSketchBase64 != null)
+				hllSketch = HllSketch.heapify(Base64.getDecoder().decode(hllSketchBase64));
+			else
+				hllSketch = new HllSketch(HLL_LGK, TgtHllType.HLL_4);
+		}
+		return hllSketch;
+	}
+
+	@JsonGetter("hllSketch")
+	public String getHllSketchBase64() {
+		if (hllSketch != null)
+			hllSketchBase64 = Base64.getEncoder().encodeToString(hllSketch.toCompactByteArray());
+		return hllSketchBase64;
+	}
+
+	@JsonSetter("hllSketch")
+	public void setHllSketchBase64(final String base64) {
+		this.hllSketchBase64 = base64;
+		this.hllSketch = null;
+	}
+
+	/** Merge two HLL sketches into a new one, handling nulls. */
+	public static HllSketch mergeHllSketches(final HllSketch a, final HllSketch b) {
+		if (a == null) return b;
+		if (b == null) return a;
+		final Union union = new Union(HLL_LGK);
+		union.update(a);
+		union.update(b);
+		return union.getResult(TgtHllType.HLL_4);
 	}
 
 	@JsonIgnore

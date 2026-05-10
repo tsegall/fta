@@ -57,7 +57,7 @@ class AnalyzerSerializer {
 			ta.determineType();
 
 		final TextAnalyzerWrapper wrapper = new TextAnalyzerWrapper(ta.getConfig(), ta.getContext(), ta.getPlugins().getUserDefinedPlugins(), ta.facts.calculateFacts());
-		if (ta.tokenStreams != null)
+		if (ta.tokenStreams != null && ta.isEnabled(TextAnalyzer.Feature.COLLECT_SHAPES))
 			wrapper.shapes = ta.tokenStreams.getShapes();
 
 		// We are serializing the analyzer (assume it will not be used again - so persist the samples)
@@ -93,7 +93,7 @@ class AnalyzerSerializer {
 			ret.facts.hydrate();
 
 			// Restore tokenStreams from the serialized shape map so getShapeDetails() returns correct data after deserialization.
-			if (wrapper.shapes != null && !wrapper.shapes.isEmpty())
+			if (wrapper.shapes != null && !wrapper.shapes.isEmpty() && ret.isEnabled(TextAnalyzer.Feature.COLLECT_SHAPES))
 				ret.tokenStreams.reconstruct(wrapper.shapes);
 
 			if (ret.traceConfig != null)
@@ -276,6 +276,14 @@ class AnalyzerSerializer {
 				if (secondFacts.cardinalityOverflow != null)
 					ret.facts.cardinalityOverflow = ret.facts.cardinalityOverflow == null ? secondFacts.cardinalityOverflow : ret.facts.cardinalityOverflow.merge(secondFacts.cardinalityOverflow);
 			}
+
+			if (ret.isEnabled(TextAnalyzer.Feature.APPROX_DISTINCT_COUNT))
+				ret.facts.approxDistinctCount = Math.round(
+					Facts.mergeHllSketches(
+						Facts.mergeHllSketches(firstFacts.getHllSketch(), secondFacts.getHllSketch()),
+						ret.facts.getHllSketch()
+					).getEstimate()
+				);
 
 			// If we are numeric then we need to synthesize the mean and variance
 			if (ret.facts.getMatchTypeInfo() != null && ret.facts.getMatchTypeInfo().isNumeric()) {

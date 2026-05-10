@@ -355,6 +355,46 @@ public class TestStandalonePlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaLastFirstDetectionSpaceSeparated() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("氏名");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		// Common Japanese full names in Last First order, space-separated
+		final String[] inputs = {
+			"田中 太郎", "佐藤 花子", "鈴木 健一", "高橋 裕子", "渡辺 直樹",
+			"伊藤 美咲", "山本 拓也", "中村 さくら", "小林 翔", "加藤 陽子",
+			"吉田 誠", "山田 智子", "佐々木 浩二", "山口 恵子", "松本 大輔",
+			"井上 由美子", "木村 達也", "林 香織", "斎藤 慎一", "清水 友美"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "NAME.LAST_FIRST");
+		assertTrue(result.getConfidence() >= 0.85);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaLastFirstDetectionConcatenated() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("氏名");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		// Common Japanese full names in Last First order, no separator
+		final String[] inputs = {
+			"田中太郎", "佐藤花子", "鈴木健一", "高橋裕子", "渡辺直樹",
+			"伊藤美咲", "山本拓也", "中村翔", "小林陽子", "加藤誠",
+			"吉田智子", "山田浩二", "山口恵子", "松本大輔", "井上由美子",
+			"木村達也", "林香織", "斎藤慎一", "清水友美", "小川一郎"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "NAME.LAST_FIRST");
+		assertTrue(result.getConfidence() >= 0.85);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void colombianDepartmentDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("nombredpto");
 		analysis.setLocale(Locale.forLanguageTag("es-CO"));

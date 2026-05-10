@@ -6463,6 +6463,19 @@
 						"confidence": 60
 					}
 				]
+			},
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?:氏名|姓名).*",
+						"confidence": 90
+					},
+					{
+						"regExp": ".*名前.*",
+						"confidence": 60
+					}
+				]
 			}
 		],
 		"documentation": [

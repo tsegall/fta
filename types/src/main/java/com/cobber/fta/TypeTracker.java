@@ -64,7 +64,8 @@ class TypeTracker {
 			if (length > ac.facts.maxRawNonBlankLength)
 				ac.facts.maxRawNonBlankLength = length;
 
-			ac.tokenStreams.track(trimmed, count);
+			if (ac.analysisConfig.isEnabled(Feature.COLLECT_SHAPES))
+				ac.tokenStreams.track(trimmed, count);
 		}
 	}
 
@@ -443,6 +444,8 @@ class TypeTracker {
 	}
 
 	void addValid(final String input, final long count) {
+		if (ac.analysisConfig.isEnabled(Feature.APPROX_DISTINCT_COUNT))
+			ac.facts.getHllSketch().update(input);
 		final boolean added = ac.facts.cardinality.mergeIfSpace(input, count, Long::sum);
 		// If Cardinality blown track remaining set in a Sketch
 		if (!added && ac.analysisConfig.isEnabled(Feature.DISTRIBUTIONS) && !ac.facts.getMatchTypeInfo().getBaseType().equals(FTAType.STRING)) {

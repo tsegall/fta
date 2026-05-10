@@ -569,12 +569,23 @@ public class TextAnalysisResult {
 	}
 
 	/**
+	 * Determine whether shape collection is enabled for this analysis.
+	 * @return true if Feature.COLLECT_SHAPES is enabled.
+	 */
+	public boolean shapesEnabled() {
+		return analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_SHAPES);
+	}
+
+	/**
 	 * Get the number of distinct shapes for the current data stream.
 	 * Note: This is not a complete shape analysis unless the shape count of the
 	 * data stream is less than the maximum shape count (Default: {@value com.cobber.fta.AnalysisConfig#MAX_SHAPES_DEFAULT}).
 	 * @return Count of the distinct shapes.
+	 * @throws IllegalStateException if Feature.COLLECT_SHAPES is not enabled.
 	 */
 	public int getShapeCount() {
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_SHAPES))
+			throw new IllegalStateException("Shape data is not available - enable TextAnalyzer.Feature.COLLECT_SHAPES before training.");
 		return shape.getShapes().size();
 	}
 
@@ -582,8 +593,11 @@ public class TextAnalysisResult {
 	 * Get the shape details for the current data stream.  This is a Map of Strings and the count
 	 * of occurrences.
 	 * @return A Map of shapes and their occurrence frequency of the data stream to date.
+	 * @throws IllegalStateException if Feature.COLLECT_SHAPES is not enabled.
 	 */
 	public Map<String, Long> getShapeDetails() {
+		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_SHAPES))
+			throw new IllegalStateException("Shape data is not available - enable TextAnalyzer.Feature.COLLECT_SHAPES before training.");
 		return shape.getShapes();
 	}
 
@@ -622,6 +636,28 @@ public class TextAnalysisResult {
 	 */
 	public long getDistinctCount() {
 		return facts.distinctCount;
+	}
+
+	/**
+	 * Return the approximate distinct count of valid values in this stream using HyperLogLog.
+	 * Exact when cardinality is below Max Cardinality; HLL estimate (~1% error) otherwise.
+	 * Requires {@link TextAnalyzer.Feature#APPROX_DISTINCT_COUNT} to be enabled before training.
+	 * Check {@link #approxDistinctCountEnabled()} before calling to avoid an exception.
+	 * @return A long with the approximate number of distinct values in this stream.
+	 * @throws IllegalStateException if the APPROX_DISTINCT_COUNT feature was not enabled.
+	 */
+	public long getApproxDistinctCount() {
+		if (facts.approxDistinctCount == null)
+			throw new IllegalStateException("approxDistinctCount is not available - enable TextAnalyzer.Feature.APPROX_DISTINCT_COUNT before training.");
+		return facts.approxDistinctCount;
+	}
+
+	/**
+	 * Was approxDistinctCount enabled for this analysis.
+	 * @return True if approxDistinctCount was computed.
+	 */
+	public boolean approxDistinctCountEnabled() {
+		return analysisConfig.isEnabled(TextAnalyzer.Feature.APPROX_DISTINCT_COUNT);
 	}
 
 	/**
@@ -873,6 +909,7 @@ public class TextAnalysisResult {
 		analysis.put("blankCount", facts.blankCount);
 		analysis.put("distinctCount", facts.distinctCount);
 		if (target != SignatureTarget.DATA_SIGNATURE) {
+			analysis.put("approxDistinctCount", facts.approxDistinctCount);
 			analysis.put("regExp", getRegExp());
 			/*
 						final ArrayNode regExpStream = analysis.putArray("regExpStream");

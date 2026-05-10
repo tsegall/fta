@@ -21,6 +21,7 @@ dependencies {
 	implementation libs.slf4jAPI
 	implementation libs.guava
 	implementation libs.sketches
+	implementation libs.dataSketchesHll
 
 	testImplementation libs.logbackClassic
 	testImplementation libs.fastcsv

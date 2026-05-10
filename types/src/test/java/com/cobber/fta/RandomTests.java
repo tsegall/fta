@@ -2315,6 +2315,49 @@ public class RandomTests {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void collectShapesDisabled() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("collectShapesDisabled");
+		analysis.configure(TextAnalyzer.Feature.COLLECT_SHAPES, false);
+
+		for (int i = 0; i < 100; i++)
+			analysis.train(Integer.toBinaryString(i).replace('1', 'A'));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertFalse(result.shapesEnabled());
+		assertEquals(result.getType(), FTAType.STRING);
+
+		try {
+			result.getShapeCount();
+			fail("Expected IllegalStateException");
+		} catch (IllegalStateException e) {
+			assertTrue(e.getMessage().contains("COLLECT_SHAPES"));
+		}
+
+		try {
+			result.getShapeDetails();
+			fail("Expected IllegalStateException");
+		} catch (IllegalStateException e) {
+			assertTrue(e.getMessage().contains("COLLECT_SHAPES"));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
+	public void collectShapesEnabled() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("collectShapesEnabled");
+
+		for (int i = 0; i < 100; i++)
+			analysis.train(Integer.toBinaryString(i).replace('1', 'A'));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertTrue(result.shapesEnabled());
+		assertTrue(result.getShapeCount() > 0);
+		assertFalse(result.getShapeDetails().isEmpty());
+		assertEquals(result.getType(), FTAType.STRING);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.RANDOM })
 	public void defaultTopBottomK() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("TopBottomK");
 

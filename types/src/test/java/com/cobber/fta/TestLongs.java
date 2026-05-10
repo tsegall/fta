@@ -507,6 +507,55 @@ public class TestLongs {
 		TestSupport.checkQuantiles(result);
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS }, expectedExceptions = IllegalStateException.class,
+			expectedExceptionsMessageRegExp = ".*APPROX_DISTINCT_COUNT.*")
+	public void testApproxDistinctCountNotEnabled() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testApproxDistinctCountNotEnabled");
+
+		for (int i = 0; i < 10; i++)
+			analysis.train(String.valueOf(i));
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertFalse(result.approxDistinctCountEnabled());
+		result.getApproxDistinctCount();
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void testApproxDistinctCountLowCardinality() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testApproxDistinctCountLowCardinality", null);
+		analysis.configure(TextAnalyzer.Feature.APPROX_DISTINCT_COUNT, true);
+		final int SAMPLE_COUNT = 1000;
+
+		for (int i = 0; i < SAMPLE_COUNT; i++)
+			analysis.train(String.valueOf(i));
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertTrue(result.approxDistinctCountEnabled());
+		assertEquals(result.getDistinctCount(), SAMPLE_COUNT);
+		// Exact when cardinality is under the limit
+		assertEquals(result.getApproxDistinctCount(), SAMPLE_COUNT);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
+	public void testApproxDistinctCountHighCardinality() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("testApproxDistinctCountHighCardinality");
+		analysis.configure(TextAnalyzer.Feature.APPROX_DISTINCT_COUNT, true);
+		final int tooBig = analysis.getMaxCardinality() + 5000;
+
+		// Use non-monotonic string data to ensure distinctCount is -1 (avoids the monotonic-LONG shortcut)
+		for (int i = 0; i < tooBig; i++)
+			analysis.train("val_" + i);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		assertEquals(result.getDistinctCount(), -1);
+		// HLL estimate should be within 2% of the true count
+		final long approx = result.getApproxDistinctCount();
+		assertTrue(approx > 0, "approxDistinctCount should be positive");
+		assertTrue(Math.abs(approx - tooBig) < tooBig * 0.02, "HLL estimate " + approx + " should be within 2% of " + tooBig);
+	}
+
 	@Test(groups = { TestGroups.ALL, TestGroups.LONGS })
 	public void testUniquenessBlown() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("testUniquenessBlown", null);

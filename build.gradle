@@ -10,6 +10,10 @@ wrapper {
 	gradleVersion = '9.5.0'
 }
 
+if (JavaVersion.current() > JavaVersion.VERSION_21) {
+	throw new GradleException("This build requires JDK 21 or lower (DataSketches dependency does not support JDK 22+). Current JDK: ${JavaVersion.current()}")
+}
+
 tasks.register('examples.clean') {
     dependsOn gradle.includedBuilds*.task(':clean')
 }
