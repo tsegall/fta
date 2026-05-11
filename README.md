@@ -16,8 +16,8 @@ Design objectives:
 * Extensive Profiling metrics (e.g. Min, Max, Distinct, signatures, …)
 * Sufficiently fast to be used inline.   See Speed notes below.
 * Minimal false positives for Semantic type detection. See Performance notes below.
-* Usable in either Streaming, Bulk or Record  mode.
-* Broad country/language support - including US, Canada, Mexico, Brazil, UK, Australia, India, much of Europe, Japan and China.
+* Usable in either Streaming, Bulk or Record mode.
+* Broad country/language support - including US, Canada, Mexico, Brazil, UK, Australia, India, much of Europe, Japan, and limited support for Chinese and other Asian locales.
 * Support for sharded analysis (i.e. Analysis results can be merged)
 * Once stream is profiled then subsequent samples can be validated and/or new samples can be generated
 
@@ -31,7 +31,7 @@ FTA is available in Maven Central. Include it in your project with:
 <dependency>
     <groupId>com.cobber.fta</groupId>
     <artifactId>fta</artifactId>
-    <version>18.0.0</version>
+    <version>18.9.0</version>
 </dependency>
 ```
 
@@ -85,7 +85,7 @@ Used when the source offers the ability to group at source, e.g. a Database.  Th
 Result: Semantic Type: **GENDER.TEXT_EN** (String)
 
 ### Record Mode Example
-Used when the primary objective is Semantic Type information and not profiling, or when the focus is on a subset of the data (e.g. fewer than MAX_CARDINALITY records).  The advantage of using Record mode is that the Semantic Type detection is stronger and there is support for cross-stream analysis.
+Used when analyzing multiple related fields together — for example, all columns of a database table or CSV file. The key advantage is cross-stream context: detecting a GENDER or NAME.FIRST column increases confidence in a neighbouring PERSON.AGE column, and field names across the record are available to bias detection. Semantic Type detection is generally stronger in Record mode than in per-column Streaming or Bulk analysis.
 
 
 ```java
@@ -146,7 +146,7 @@ If you are solely interested in determining the format of a date from a **single
 
 	String formatString = dtp.determineFormatString(input);
 
-	// Grab the DateTimeFormatter from fta as this creates a case-insensitive parser and it supports a slightly wider set set of formats
+	// Grab the DateTimeFormatter from fta as this creates a case-insensitive parser and it supports a slightly wider set of formats
 	// For example, "yyyy" does not work out of the box if you use DateTimeFormatter.ofPattern
 	DateTimeFormatter formatter = DateTimeParser.ofPattern(formatString);
 
@@ -358,7 +358,7 @@ Note: The Context (which includes the composite name (Table/File), the current s
 		],
 		"documentation": [
 			{ "source": "wikidata", "reference": "https://www.wikidata.org/wiki/Property:P968" },
-			{ "source": "wikipedia", "reference": "https://https://en.wikipedia.org/wiki/Email_address" },
+			{ "source": "wikipedia", "reference": "https://en.wikipedia.org/wiki/Email_address" },
 			{ "source": "schema", "reference": "https://schema.org/email" }
 		]
 	}
@@ -386,7 +386,7 @@ The baseType is defined by the implementation for all Code Plugins, STRING for a
 
 The 'validLocales' array is used to constrain the plugin to a set of languages or locales.  This is the set of locales where the plugin should be enabled.
 For example, a localeTag of "en-US,en-CA" indicates that the plugin should be enabled in both the US and Canada, a localeTag "en" indicates that the plugin should be enabled in
-any locale that uses the English language. In addition the 'headerRegExps' tag is an ordered list of Regular Expression (and the associated confidence) used to match against the Stream Name (if present)'.  The headerRegExps is optional and is used to bias the detection.  It is possible to insist that a header is always present, this can be useful if misdetection based on the data is likely.  For example, the Semantic Type MONTH.DIGITS requires a header as the probability of an error without insisting on a reasonable header present is high. Note: a confidence of -100 means that the supplied value must NOT be present in the header.
+any locale that uses the English language. In addition the 'headerRegExps' tag is an ordered list of Regular Expression (and the associated confidence) used to match against the Stream Name (if present).  The headerRegExps is optional and is used to bias the detection.  It is possible to insist that a header is always present, this can be useful if misdetection based on the data is likely.  For example, the Semantic Type MONTH.DIGITS requires a header as the probability of an error without insisting on a reasonable header present is high. Note: a confidence of -100 means that the supplied value must NOT be present in the header.
 
 The optional 'isRegExpComplete' tag indicates if the returned Regular Expression is a definitive representation of the Logical Type. For example, \\d{5} is not for US ZIP codes as 00000 is not a valid Zip but does match the Regular Expression.
 
@@ -589,6 +589,7 @@ There are multiple Semantic Types associated with addresses:
  - STREET_ADDRESS2 - Second line of an address
  - STREET_ADDRESS3 - Third line of an address
  - STREET_ADDRESS4 - Fourth line of an address
+ - STREET_ADDRESS_JA - Japanese street address (住所), detected for the `ja` locale. Recognises addresses with or without a 〒XXX-XXXX postal prefix, requiring Japanese characters and a block/lot indicator in abbreviated numeric form (e.g. 1-2-3) or explicit kanji (丁目/番地/条). Header hints: 住所, 所在地.
  - STREET_MARKER - The Street qualifier, e.g. Road, Street, Avenue, Boulevard, etc.
  - STREET_NAME - Street name with no number, e.g. Penaton Avenue
  - STREET_NAME_BARE - Street name with no number and no Marker, e.g. Main, Lakeside
@@ -659,7 +660,7 @@ Within the specification the type is required and can either be a Semantic Type 
 ## Merging Analyses ##
 FTA supports merging of analyses run on distinct data shards.  So for example, if part of the data to be profiled resides on one shard and the balance on a separate shard then FTA can be invoked on each shard separately and then merged.  To accomplish this, individual analyses should be executed (with similar configurations), the resulting serialized forms should then be deserialized on a common node and merged. Refer to the Merge example for further details.
 
-The accuracy of the merge is determined by the cardinality of the two individual shards, and falls into one of the the following three cases:
+The accuracy of the merge is determined by the cardinality of the two individual shards, and falls into one of the following three cases:
 - cardinality(one) + cardinality(two) < max cardinality
 - cardinality(one) or cardinality(two) > max cardinality
 - cardinality(one) + cardinality(two) >= max cardinality
@@ -670,7 +671,7 @@ If either shard has a cardinality greater than the maximum cardinality then cert
 
 If the sum of the cardinality is greater than the maximum cardinality but neither individual shard has a cardinality greater than the maximum cardinality then the only attribute that will be indeterminate is the uniqueness of the merged set and clearly the cardinality of the resulting Analysis will be limited to the maximum cardinality.
 
-Note: The input presented to the merged analysis is the union of the data captured by the cardinality detail, outliers detail and the topK and bottomK from each shard, and hence the sampleCount (and matchedCount) on the merged analysis will reflect these numbers.
+Note: The input presented to the merged analysis is the union of the data captured by the cardinality detail, outliers detail and the topK and bottomK from each shard, and hence the sampleCount (and matchCount) on the merged analysis will reflect these numbers.
 
 **Semantic type consistency:** The semantic type detected on a merged analysis is not guaranteed to match the type that would have been detected by sequential (single-pass) analysis of the same data. `merge()` re-runs type detection against the combined cardinality from each shard, which is statistically equivalent but not procedurally identical to streaming analysis. In particular:
 

@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 18.9.1
+ - BUG: Doubled https:// in plugins.json documentation references for EMAIL and COMPANY_NAME.
+ - BUG: CLI --createSemanticTypesMarkdown wrote to stderr instead of stdout.
+ - DOC: Multiple README fixes — stale Maven version (18.0.0→18.9.0), broken Email Wikipedia URL, matchedCount→matchCount, doubled-word typos, spurious apostrophe, Record mode description rewritten to lead with cross-stream context rationale, STREET_ADDRESS_JA added to Address Detection section.
+ - DOC: CLAUDE.md updated — Java 21 runtime requirement, SemanticTypes.md regeneration command, ChangeLog conventions, plugin signature/priority field guidance, plugin validation CLI pattern.
+
 ### 18.9.0
  - ENH: Add STREET_ADDRESS_JA semantic type for Japanese street addresses (住所) — detects addresses with or without 〒XXX-XXXX postal prefix, requiring Japanese characters and block/lot notation in abbreviated numeric (1-2-3) or explicit kanji (丁目/番地/条) form; city-level markers (市/区/町/村) are recognised as an additional signal but not required (neighborhood+lot form is common in database address fields). Header hints: 住所, 所在地 (Issue #165).
  - BUG: TELEPHONE not detected for Japanese locale ("ja") — locale.getCountry() returns empty for language-only tags; now maps "ja"→"JP", "ko"→"KR", "zh"→"CN", "hi"→"IN", "ar"→"SA" for phone number validation (Issue #165).

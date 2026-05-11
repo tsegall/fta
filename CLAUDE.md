@@ -39,7 +39,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Code quality**: SpotBugs (static analysis) and Checkstyle (config in `config/checkstyle/`) are configured. Test framework is TestNG. Coverage via Jacoco (reports in `build/reports/jacoco/test/`).
 
-**Java target**: Java 17 (`options.release = 17`).
+**Java target**: Java 17 (`options.release = 17`), but the runtime JVM must be Java 21 (DataSketches 6.2.0 requires it). All build and test commands must be prefixed with `JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-21.jdk/Contents/Home`, e.g.:
+
+```bash
+JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-21.jdk/Contents/Home ./gradlew test
+```
 
 **Debugging**: Capture analysis traces with `export FTA_TRACE="enabled=true,directory=/tmp,samples=10000"`, then replay with `cli/build/install/fta/bin/cli --replay <Stream>.fta`.
 
@@ -88,7 +92,27 @@ Two plugin types:
 1. **JSON-defined** — Regex or list-based, defined in `plugins.json` with locale/header biases
 2. **Java-based** — Extend `LogicalType` for complex logic (check digits, address parsing, etc.)
 
-When adding a new semantic type: add plugin definition or class consistent with existing patterns, provide locale/header biases if appropriate, add tests, and update `SemanticTypes.md`.
+When adding a new semantic type: add plugin definition or class consistent with existing patterns, provide locale/header biases if appropriate, add tests, and regenerate `SemanticTypes.md`:
+
+```bash
+JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-21.jdk/Contents/Home cli/build/install/fta/bin/cli --createSemanticTypesMarkdown > SemanticTypes.md
+```
+
+**Plugin `signature` field**: Java plugins require a `signature` in `plugins.json`. Run the full test suite after adding the plugin — the test framework will report the expected signature if it is missing or incorrect.
+
+**Plugin `priority` field**: Lower number = higher priority. Plugins are evaluated in priority order; the first one to exceed its confidence threshold wins. Set priority deliberately when a new type could overlap with an existing one.
+
+**Testing a plugin against sample data**:
+
+```bash
+cli/build/install/fta/bin/cli --locale <locale> --pluginMode true --pluginName <SEMANTIC_TYPE> --col 0 --validatePlugin --verbose <file.csv>
+```
+
+This prints the plugin definition, then `true`/`false` for each input row, then the full analysis result.
+
+## ChangeLog Conventions
+
+Entries go under a `### <version>` section header. When bumping the version, create a new section for the new version containing **only** the current session's changes — never move or redistribute entries from already-published sections. Library version bumps get an `INT: Bump <lib> to <version>` entry.
 
 ## Key Guardrails (from AGENTS.md)
 

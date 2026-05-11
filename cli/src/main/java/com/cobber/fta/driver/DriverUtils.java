@@ -153,23 +153,23 @@ public class DriverUtils {
 	}
 
 	public static void createSemanticTypesMarkdown() throws UnsupportedEncodingException, FileNotFoundException, IOException {
-		System.err.println("|Semantic Type|Description|Documentation|Locale|");
-		System.err.println("|-------------|-----------|-------------|------|");
+		System.out.println("|Semantic Type|Description|Documentation|Locale|");
+		System.out.println("|-------------|-----------|-------------|------|");
 
 		for (final SemanticType semanticType : SemanticType.getAllSemanticTypes()) {
-			System.err.printf("|%s|%s|", StringEscapeUtils.escapeHtml4(semanticType.getId()), StringEscapeUtils.escapeHtml4(semanticType.getDescription()));
+			System.out.printf("|%s|%s|", StringEscapeUtils.escapeHtml4(semanticType.getId()), StringEscapeUtils.escapeHtml4(semanticType.getDescription()));
 			if (semanticType.getDocumentation() != null)
-				System.err.printf("%s", String.join(", ", semanticType.getDocumentation()));
-			System.err.print("|");
+				System.out.printf("%s", String.join(", ", semanticType.getDocumentation()));
+			System.out.print("|");
 			if (semanticType.getLanguages() != null)
-				System.err.printf("%s", String.join(", ", semanticType.getLanguages()));
-			System.err.println("|");
+				System.out.printf("%s", String.join(", ", semanticType.getLanguages()));
+			System.out.println("|");
 		}
 
-		System.err.println("\nNote:\n");
-		System.err.println("Any of the above Semantic Types suffixed with one of the following are locale-sensitive:\n");
-		System.err.println(" * &lt;LOCALE&gt; - replaced by the locale, for example, MONTH.FULL_fr-FR (Month Abbreviation in french)");
-		System.err.println(" * &lt;LANGUAGE&gt; - replaced by the language from the locale, for example, GENDER.TEXT_PT (Gender in Portuguese)");
-		System.err.println(" * &lt;COUNTRY&gt; - replaced by the country from the locale, for example, POSTAL_CODE.POSTAL_CODE_AU (Australian Postal Code)");
+		System.out.println("\nNote:\n");
+		System.out.println("Any of the above Semantic Types suffixed with one of the following are locale-sensitive:\n");
+		System.out.println(" * &lt;LOCALE&gt; - replaced by the locale, for example, MONTH.FULL_fr-FR (Month Abbreviation in french)");
+		System.out.println(" * &lt;LANGUAGE&gt; - replaced by the language from the locale, for example, GENDER.TEXT_PT (Gender in Portuguese)");
+		System.out.println(" * &lt;COUNTRY&gt; - replaced by the country from the locale, for example, POSTAL_CODE.POSTAL_CODE_AU (Australian Postal Code)");
 	}
 }

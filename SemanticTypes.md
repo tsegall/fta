@@ -12,18 +12,18 @@
 |CHECKDIGIT.LUHN|LUHN Checkdigit (Credit Cards, IMEI, etc)|https://en.wikipedia.org/wiki/Luhn_algorithm|*|
 |CHECKDIGIT.SEDOL|SEDOL - UK Security Identifiers|https://en.wikipedia.org/wiki/SEDOL|*|
 |CHECKDIGIT.UPC|UPC - Universal Product Code|https://en.wikipedia.org/wiki/Universal_Product_Code|*|
-|CITY|City/Town|https://en.wikipedia.org/wiki/City, https://schema.org/City|de, en, es, fr, nl|
+|CITY|City/Town|https://en.wikipedia.org/wiki/City, https://schema.org/City|de, en, es, fr, ja, nl|
 |COLOR.HEX|Hex Color code|https://www.wikidata.org/wiki/Property:P465, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|*|
 |COLOR.TEXT_EN|Color name (English)|https://www.wikidata.org/wiki/Property:P462, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|*|
 |COLOR.TEXT_ES|Color name (Spanish)|https://www.wikidata.org/wiki/Property:P462, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|es|
 |COLOR.TEXT_NL|Color name (Dutch)|https://www.wikidata.org/wiki/Property:P462, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|nl|
-|COMPANY_NAME|Organization/Company Name|https://https://en.wikipedia.org/wiki/Company, https://schema.org/Corporation|en, nl|
+|COMPANY_NAME|Organization/Company Name|https://en.wikipedia.org/wiki/Company, https://schema.org/Corporation|en, nl|
 |CONTINENT.CODE_EN|Continent Code||en|
 |CONTINENT.TEXT_EN|Continent|https://www.wikidata.org/wiki/Property:P30|en|
 |COORDINATE.EASTING|Latitude - easting|https://en.wikipedia.org/wiki/Projected_coordinate_system, https://schema.org/latitude|en|
-|COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://www.wikidata.org/wiki/Q34027, https://schema.org/latitude|*, ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh|
+|COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://www.wikidata.org/wiki/Q34027, https://schema.org/latitude|*, es-MX,es-PE, ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh|
 |COORDINATE.LATITUDE_DMS|Latitude (degrees/minutes/seconds)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://schema.org/latitude|*|
-|COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude, https://www.wikidata.org/wiki/Q36477, https://schema.org/longitude|*, ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh|
+|COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude, https://www.wikidata.org/wiki/Q36477, https://schema.org/longitude|*, es-MX,es-PE, ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh|
 |COORDINATE.LONGITUDE_DMS|Longitude (degrees/minutes/seconds)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude, https://schema.org/longitude|*|
 |COORDINATE.NORTHING|Longitude - northing|https://en.wikipedia.org/wiki/Projected_coordinate_system, https://schema.org/longitude|en|
 |COORDINATE_PAIR.DECIMAL|Coordinate Pair Lat,Long - Decimal degrees|https://en.wikipedia.org/wiki/Geographic_coordinate_system|*|
@@ -33,6 +33,7 @@
 |COUNTRY.TEXT_DE|Country as a string (German)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|de|
 |COUNTRY.TEXT_EN|Country as a string (English language)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|*|
 |COUNTRY.TEXT_ES|Country as a string (Spanish)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|es|
+|COUNTRY.TEXT_JA|Country as a string (Japanese)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|ja|
 |COUNTRY.TEXT_NL|Country as a string (Dutch)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|nl|
 |CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|https://en.wikipedia.org/wiki/Credit_card, https://schema.org/CreditCard|*|
 |CRYPTOCURRENCY.TEXT_EN|Cryptocurrency Name|https://en.wikipedia.org/wiki/Cryptocurrency|en|
@@ -42,7 +43,7 @@
 |DAY.DIGITS|Numeric Day of Month||en, es, nl|
 |DAY.FULL_&lt;LOCALE&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)|https://en.wikipedia.org/wiki/Names_of_the_days_of_the_week|*|
 |DIRECTION|Cardinal Direction|https://en.wikipedia.org/wiki/Cardinal_direction|*|
-|EMAIL|Email Address|https://www.wikidata.org/wiki/Property:P968, https://https://en.wikipedia.org/wiki/Email_address, https://schema.org/email|*, es|
+|EMAIL|Email Address|https://www.wikidata.org/wiki/Property:P968, https://en.wikipedia.org/wiki/Email_address, https://schema.org/email|*, es, ja|
 |EPOCH.MILLISECONDS|Unix Epoch (Timestamp) - milliseconds|https://en.wikipedia.org/wiki/Unix_time|*|
 |EPOCH.SECONDS|Unix Epoch (Timestamp) - seconds|https://en.wikipedia.org/wiki/Unix_time|*|
 |FILENAME|Name of file|https://en.wikipedia.org/wiki/Filename|*, nl|
@@ -83,10 +84,10 @@
 |MONTH.ABBR_&lt;LOCALE&gt;|Month Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)||*|
 |MONTH.DIGITS|Numeric Month||en, es, nl|
 |MONTH.FULL_&lt;LOCALE&gt;|Full Month name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)|https://en.wikipedia.org/wiki/Month|*|
-|NAME.FIRST|First Name|https://www.wikidata.org/wiki/Property:P735, https://schema.org/givenName|en, de, es, fr, it, nl, pt|
+|NAME.FIRST|First Name|https://www.wikidata.org/wiki/Property:P735, https://schema.org/givenName|de, en, es, fr, it, ja, nl, pt|
 |NAME.FIRST_LAST|Merged Name (First Last)|https://en.wikipedia.org/wiki/Personal_name|en, de, es, fr, it, nl, pt|
-|NAME.LAST|Last Name|https://www.wikidata.org/wiki/Property:P734, https://en.wikipedia.org/wiki/https://en.wikipedia.org/wiki/Surname, https://schema.org/familyName|en, de, el, es, fr, it, nl, pt|
-|NAME.LAST_FIRST|Merged Name (Last, First)|https://en.wikipedia.org/wiki/Personal_name|en, de, es, fr, it, nl, pt|
+|NAME.LAST|Last Name|https://www.wikidata.org/wiki/Property:P734, https://en.wikipedia.org/wiki/https://en.wikipedia.org/wiki/Surname, https://schema.org/familyName|de, el, en, es, fr, it, ja, nl, pt|
+|NAME.LAST_FIRST|Merged Name (Last, First)|https://en.wikipedia.org/wiki/Personal_name|en, de, es, fr, it, nl, pt, ja|
 |NAME.MIDDLE|Middle Name|https://en.wikipedia.org/wiki/Middle_name, https://schema.org/additionalName|en|
 |NAME.MIDDLE_INITIAL|Middle Initial|https://en.wikipedia.org/wiki/Middle_name|en|
 |NAME.SUFFIX|Name Suffix|https://www.wikidata.org/wiki/Property:P8017, https://en.wikipedia.org/wiki/Suffix_(name)|en|
@@ -97,7 +98,7 @@
 |PERIOD.YEAR_RANGE|Year Range||*|
 |PERSON.AGE|Age (person)||en, es, fr, it, nl, pt|
 |PERSON.AGE_RANGE|Age range (person)||en, es, fr, it, nl, pt|
-|PERSON.DATE_OF_BIRTH|Person - Date of Birth|https://www.wikidata.org/wiki/Property:P569, https://www.wikidata.org/wiki/Q2389905, https://schema.org/birthDate|es, nl, *|
+|PERSON.DATE_OF_BIRTH|Person - Date of Birth|https://www.wikidata.org/wiki/Property:P569, https://www.wikidata.org/wiki/Q2389905, https://schema.org/birthDate|es, nl, ja, *|
 |PERSON.MARITAL_STATUS_EN|Marital Status (person)|https://en.wikipedia.org/wiki/Marital_status|*|
 |PERSON.RACE_ABBR_EN|Race/Ethnicity (person)|https://en.wikipedia.org/wiki/Race_(human_categorization)|*|
 |PERSON.RACE_EN|Race/Ethnicity (person)|https://en.wikipedia.org/wiki/Race_(human_categorization)|*|
@@ -110,7 +111,7 @@
 |POSTAL_CODE.POSTAL_CODE_ES|Postal Code (ES)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Spain, https://schema.org/postalCode|es-ES|
 |POSTAL_CODE.POSTAL_CODE_FR|Postal Code (FR)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_France, https://schema.org/postalCode|fr-FR|
 |POSTAL_CODE.POSTAL_CODE_IN|Postal Code (IN)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_Index_Number, https://schema.org/postalCode|en-IN,hi-IN|
-|POSTAL_CODE.POSTAL_CODE_JA|Postal Code (JA)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Japan, https://schema.org/postalCode|ja|
+|POSTAL_CODE.POSTAL_CODE_JP|Postal Code (JP)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Japan, https://schema.org/postalCode|ja|
 |POSTAL_CODE.POSTAL_CODE_MX|Postal Code (MX)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Mexico, https://schema.org/postalCode|es-MX|
 |POSTAL_CODE.POSTAL_CODE_NL|Postal Code (NL)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_the_Netherlands, https://schema.org/postalCode|en-NL,nl-NL|
 |POSTAL_CODE.POSTAL_CODE_PT|Postal Code (PT)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Portugal, https://schema.org/postalCode|pt-PT|
@@ -177,6 +178,7 @@
 |STREET_ADDRESS4_EN|Street Address - Line 4 (English Language)||en|
 |STREET_ADDRESS_&lt;LANGUAGE&gt;|Street Address||bg, ca, da, de, es, fi, fr, hr, it, lv, nl, pl, pt, ro, ru, sk|
 |STREET_ADDRESS_EN|Street Address (English Language)||en|
+|STREET_ADDRESS_JA|Street Address (Japanese)||ja|
 |STREET_MARKER_EN|Street Marker (English Language)|https://en.wikipedia.org/wiki/Street_suffix|en|
 |STREET_NAME_BARE_&lt;LANGUAGE&gt;|Street Address||nl|
 |STREET_NAME_BARE_EN|Street Name - no Marker (English Language)||en|
