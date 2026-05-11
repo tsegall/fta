@@ -720,7 +720,7 @@ Just one test
 
 Validate a set of samples (against a known plugin)
 
-`$ cli --pluginMode true --pluginName POSTAL_CODE.ZIP5_US --col 0 <file.csv>`
+`$ cli --pluginMode true --pluginName POSTAL_CODE.ZIP5_US --validatePlugin --col 0 <file.csv>`
 
 ### Generate JavaDoc ###
 `$ ./gradlew javadoc`

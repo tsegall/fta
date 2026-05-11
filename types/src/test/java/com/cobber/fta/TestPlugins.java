@@ -732,6 +732,22 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void japanesePhoneNumber() throws IOException, FTAException {
+		final String[] inputs = {
+				"03-1234-5678", "03-2345-6789", "03-3456-7890", "03-4567-8901",
+				"06-1234-5678", "06-2345-6789", "06-4154-6838", "06-5678-9012",
+				"090-1234-5678", "090-2345-6789", "090-3456-7890", "090-4567-8901",
+				"080-1234-5678", "080-2345-6789", "080-3456-7890",
+				"070-1234-5678", "070-2345-6789",
+				"011-234-5678", "022-345-6789", "052-456-7890", "075-567-8901"
+		};
+
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "電話", Locale.forLanguageTag("ja"), "TELEPHONE", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderWithSpaces() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
 		analysis.setLocale(Locale.forLanguageTag("en-US"));

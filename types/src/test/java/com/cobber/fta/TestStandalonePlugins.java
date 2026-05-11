@@ -454,6 +454,58 @@ public class TestStandalonePlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaStreetAddressWithPostalCode() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("住所");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		// Full addresses with 〒 postal-code prefix, from japanese/sa.csv
+		final String[] inputs = {
+			"〒100-0001 東京都千代田区千代田1-1",
+			"〒160-0023 東京都新宿区西新宿2-8-1",
+			"〒530-0001 大阪府大阪市北区梅田1-2-2-100",
+			"〒460-0001 愛知県名古屋市中区三の丸3-1-2",
+			"〒060-0001 北海道札幌市中央区北1条西5-2",
+			"〒220-0012 神奈川県横浜市西区みなとみらい2-3-3",
+			"〒812-0011 福岡県福岡市博多区博多駅前1-1-1",
+			"〒600-8411 京都府京都市下京区烏丸通四条下ル水銀屋町620",
+			"〒980-0021 宮城県仙台市青葉区中央1-1-1",
+			"〒730-0011 広島県広島市中区基町10-52"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "STREET_ADDRESS_JA");
+		assertTrue(result.getConfidence() >= 0.95);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaStreetAddressWithoutPostalCode() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("所在地");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		// Addresses without postal-code prefix
+		final String[] inputs = {
+			"東京都千代田区千代田1-1",
+			"東京都新宿区西新宿2-8-1",
+			"大阪府大阪市北区梅田1-2-2-100",
+			"愛知県名古屋市中区三の丸3-1-2",
+			"北海道札幌市中央区北1条西5-2",
+			"神奈川県横浜市西区みなとみらい2-3-3",
+			"福岡県福岡市博多区博多駅前1-1-1",
+			"京都府京都市下京区烏丸通四条下ル水銀屋町620",
+			"宮城県仙台市青葉区中央1-1-1",
+			"広島県広島市中区基町10-52"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "STREET_ADDRESS_JA");
+		assertTrue(result.getConfidence() >= 0.95);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void jaCountryDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("国名");
 		analysis.setLocale(Locale.forLanguageTag("ja-JP"));

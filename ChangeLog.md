@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 18.9.0
+ - ENH: Add STREET_ADDRESS_JA semantic type for Japanese street addresses (住所) — detects addresses with or without 〒XXX-XXXX postal prefix, requiring Japanese characters and block/lot notation in abbreviated numeric (1-2-3) or explicit kanji (丁目/番地/条) form; city-level markers (市/区/町/村) are recognised as an additional signal but not required (neighborhood+lot form is common in database address fields). Header hints: 住所, 所在地 (Issue #165).
+ - BUG: TELEPHONE not detected for Japanese locale ("ja") — locale.getCountry() returns empty for language-only tags; now maps "ja"→"JP", "ko"→"KR", "zh"→"CN", "hi"→"IN", "ar"→"SA" for phone number validation (Issue #165).
+
 ### 18.8.0
  - ENH: Add Japanese locale support for NAME.LAST_FIRST — detects full names in Japanese Last-First order (姓名), supporting both space-separated (田中 太郎) and concatenated (田中太郎) forms using bloom filters. Header hints: 氏名, 姓名, 名前 (Issue #165).
  - ENH: Add approxDistinctCount to TextAnalysisResult using Apache DataSketches HyperLogLog — opt-in via Feature.APPROX_DISTINCT_COUNT, exact for low-cardinality fields, ~1% error estimate for high-cardinality fields. Supports merge. Fixes Issue #92.

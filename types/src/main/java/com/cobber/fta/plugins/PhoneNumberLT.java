@@ -15,6 +15,8 @@
  */
 package com.cobber.fta.plugins;
 
+import java.util.Map;
+
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
@@ -47,6 +49,15 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 
 	private static final String initialValid = "0123456789(+";
 
+	// Maps language-only locales (no country subtag) to their primary country for phone parsing
+	private static final Map<String, String> LANGUAGE_TO_COUNTRY = Map.of(
+		"ja", "JP",
+		"ko", "KR",
+		"zh", "CN",
+		"hi", "IN",
+		"ar", "SA"
+	);
+
 	/**
 	 * Construct a Phone Number plugin based on the Plugin Definition.
 	 * @param plugin The definition of this plugin.
@@ -57,7 +68,6 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 
 	@Override
 	public String nextRandom() {
-		final String country = locale.getCountry();
 		if (country.isEmpty())
 			return null;
 
@@ -87,6 +97,8 @@ public class PhoneNumberLT extends LogicalTypeInfinite  {
 		super.initialize(analysisConfig);
 
 		country = locale.getCountry();
+		if (country.isEmpty())
+			country = LANGUAGE_TO_COUNTRY.getOrDefault(locale.getLanguage(), "");
 
 		localNumbersValid = "CO".equals(country);
 
