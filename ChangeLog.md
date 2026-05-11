@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 18.9.2
+ - TST: Add tests for POSTAL_CODE_CO, POSTAL_CODE_FR and POSTAL_CODE_UK covering isValid() valid/invalid inputs, end-to-end detection, and low-cardinality backout path.
+ - TST: Add unit tests for CircularBuffer, RandomSet, FloatToken, SimpleToken (all previously at 0% coverage), STREET_NAME_BARE_NL integration test, and LogicalTypeRegExp matchEntry branch coverage.
+
 ### 18.9.1
  - BUG: Doubled https:// in plugins.json documentation references for EMAIL and COMPANY_NAME.
  - BUG: CLI --createSemanticTypesMarkdown wrote to stderr instead of stdout.

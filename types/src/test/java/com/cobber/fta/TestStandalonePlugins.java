@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAPluginException;
+import com.cobber.fta.core.FTAType;
 
 public class TestStandalonePlugins {
 	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
@@ -503,6 +504,187 @@ public class TestStandalonePlugins {
 		final TextAnalysisResult result = analysis.getResult();
 		assertEquals(result.getSemanticType(), "STREET_ADDRESS_JA");
 		assertTrue(result.getConfidence() >= 0.95);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void streetNameBareNL() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("straat");
+		analysis.setLocale(Locale.forLanguageTag("nl"));
+
+		final String[] inputs = {
+			"Kalverstraat", "Damrak", "Leidsestraat", "Herengracht", "Keizersgracht",
+			"Prinsengracht", "Nieuwezijds Voorburgwal", "Rokin", "Spui", "Reguliersbreestraat",
+			"Amstelstraat", "Utrechtsestraat", "Vijzelstraat", "Overtoom", "Jan Luijkenstraat"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "STREET_NAME_BARE_NL");
+		assertTrue(result.getConfidence() >= 0.95);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void streetNameBareNL_numericWordRejected() throws IOException, FTAPluginException {
+		final LogicalType logical = LogicalTypeFactory.newInstance(PluginDefinition.findByName("STREET_NAME_BARE_<LANGUAGE>"), new AnalysisConfig(Locale.forLanguageTag("nl")));
+
+		assertTrue(logical.isValid("Kalverstraat"));
+		// A value that is purely numeric should be rejected
+		assertFalse(logical.isValid("42"));
+		// Empty input should be rejected
+		assertFalse(logical.isValid(""));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void logicalTypeRegExp_matchEntryAlreadySet() throws IOException, FTAPluginException {
+		final PluginDefinition defn = PluginDefinition.findByName("MACADDRESS");
+		final LogicalTypeRegExp logical = (LogicalTypeRegExp) LogicalTypeFactory.newInstance(defn, new AnalysisConfig());
+
+		// Force matchEntry to be set by calling isMatch() first
+		assertTrue(logical.isMatch(logical.getRegExp()));
+
+		// Now matchEntry is set — isRegExpComplete() and getRegExp() take the matchEntry branch
+		assertTrue(logical.isRegExpComplete());
+		assertNotNull(logical.getRegExp());
+
+		// isMatch() with matchEntry already set checks only that entry
+		assertTrue(logical.isMatch(logical.getRegExp()));
+		assertFalse(logical.isMatch("nomatch"));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeFR_validInvalid() throws IOException, FTAPluginException {
+		final LogicalType logical = LogicalTypeFactory.newInstance(PluginDefinition.findByName("POSTAL_CODE.POSTAL_CODE_FR"), new AnalysisConfig(Locale.forLanguageTag("fr-FR")));
+
+		final String[] valid = { "01000", "01001", "01002", "75001", "75008", "13001", "69001", "33000", "06000", "59000" };
+		for (final String v : valid)
+			assertTrue(logical.isValid(v), v);
+
+		final String[] invalid = { "1000", "123456", "ABCDE", "7500A", "" };
+		for (final String iv : invalid)
+			assertFalse(logical.isValid(iv), iv);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeFR_endToEnd() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"75001", "75002", "75003", "75004", "75005",
+			"13001", "13002", "13003", "69001", "69002",
+			"33000", "06000", "59000", "31000", "67000",
+			"76000", "44000", "35000", "57000", "29200"
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "code_postal", Locale.forLanguageTag("fr-FR"), "POSTAL_CODE.POSTAL_CODE_FR", FTAType.LONG, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeFR_lowCardinalityNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("field1");
+		analysis.setLocale(Locale.forLanguageTag("fr-FR"));
+
+		// Only 3 distinct values — below the cardinality threshold — and no postal header, so should back out
+		final String[] inputs = { "75001", "75002", "75003" };
+		for (final String s : inputs)
+			for (int i = 0; i < 5; i++)
+				analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertFalse("POSTAL_CODE.POSTAL_CODE_FR".equals(result.getSemanticType()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeCO_validInvalid() throws IOException, FTAPluginException {
+		final LogicalType logical = LogicalTypeFactory.newInstance(PluginDefinition.findByName("POSTAL_CODE.POSTAL_CODE_CO"), new AnalysisConfig(Locale.forLanguageTag("es-CO")));
+
+		// 6-digit codes stored directly in reference data
+		final String[] valid6 = { "050001", "050002", "050003", "110111", "110121" };
+		for (final String v : valid6)
+			assertTrue(logical.isValid(v), v);
+
+		// 5-digit inputs that resolve via "0" + input lookup
+		final String[] valid5 = { "50001", "50002", "50003" };
+		for (final String v : valid5)
+			assertTrue(logical.isValid(v), v);
+
+		final String[] invalid = { "1234", "1234567", "ABCDEF", "" };
+		for (final String iv : invalid)
+			assertFalse(logical.isValid(iv), iv);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeCO_endToEnd() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"050001", "050002", "050003", "050004", "050005",
+			"050006", "050007", "050010", "050011", "050012",
+			"050013", "050014", "050015", "110111", "110121",
+			"680001", "760001", "760002", "080001", "080002"
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "codigo_postal", Locale.forLanguageTag("es-CO"), "POSTAL_CODE.POSTAL_CODE_CO", FTAType.LONG, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeCO_lowCardinalityNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("field1");
+		analysis.setLocale(Locale.forLanguageTag("es-CO"));
+
+		// Only 3 distinct values and no postal header — should back out
+		final String[] inputs = { "050001", "050002", "050003" };
+		for (final String s : inputs)
+			for (int i = 0; i < 5; i++)
+				analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertFalse("POSTAL_CODE.POSTAL_CODE_CO".equals(result.getSemanticType()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeUK_validInvalid() throws IOException, FTAPluginException {
+		final LogicalType logical = LogicalTypeFactory.newInstance(PluginDefinition.findByName("POSTAL_CODE.POSTAL_CODE_UK"), new AnalysisConfig(Locale.forLanguageTag("en-GB")));
+
+		final String[] valid = { "EC1A 1BB", "W1A 0AX", "M1 1AE", "B1 1BB", "CR2 6XH", "DN55 1PT", "GIR 0AA" };
+		for (final String v : valid)
+			assertTrue(logical.isValid(v), v);
+
+		// Inputs failing isCandidate non-alpha prefix check
+		final String[] invalid = { "123 4AB", "1W1 0AX", "ABCDEF", "" };
+		for (final String iv : invalid)
+			assertFalse(logical.isValid(iv), iv);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeUK_endToEnd() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("PostCode");
+		analysis.setLocale(Locale.forLanguageTag("en-GB"));
+
+		final String[] inputs = {
+			"EC1A 1BB", "W1A 0AX", "M1 1AE", "B1 1BB", "CR2 6XH",
+			"DN55 1PT", "SW1A 2AA", "E1 6AN", "N1 9GU", "WC2N 5DU",
+			"SE1 7PB", "W2 3QL", "NW3 5PR", "E14 5AB", "SW3 4RY",
+			"W8 4PT", "N7 8RP", "SE22 0RZ", "SW6 1JF", "WC1E 7HT"
+		};
+
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "POSTAL_CODE.POSTAL_CODE_UK");
+		assertTrue(result.getConfidence() >= 0.95);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeUK_lowCardinalityNoPostHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("field1");
+		analysis.setLocale(Locale.forLanguageTag("en-GB"));
+
+		// Only 3 distinct values and no postal header — should back out
+		final String[] inputs = { "EC1A 1BB", "W1A 0AX", "M1 1AE" };
+		for (final String s : inputs)
+			for (int i = 0; i < 5; i++)
+				analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertFalse("POSTAL_CODE.POSTAL_CODE_UK".equals(result.getSemanticType()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })

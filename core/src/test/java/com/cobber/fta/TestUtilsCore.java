@@ -37,6 +37,8 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 import com.cobber.fta.core.Utils;
+import com.cobber.fta.core.CircularBuffer;
+import com.cobber.fta.core.RandomSet;
 import com.cobber.fta.core.WordOffset;
 import com.cobber.fta.core.WordProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -746,6 +748,81 @@ public class TestUtilsCore {
 
 		final TypeInfo semantic1000 = new TypeInfo("[0-9][0-9][0-9][0-9]", FTAType.LONG, "PLUS4", knownTypes.getByID(KnownTypes.ID.ID_LONG));
 		assertFalse(semantic1000.equals(knownTypes.getByID(KnownTypes.ID.ID_LONG)));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void circularBufferBasic() {
+		final CircularBuffer buf = new CircularBuffer(3);
+
+		assertFalse(buf.isFull());
+		assertTrue(buf.add(new String[]{"a", "1"}));
+		assertTrue(buf.add(new String[]{"b", "2"}));
+		assertTrue(buf.add(new String[]{"c", "3"}));
+		assertTrue(buf.isFull());
+
+		// Adding to a full buffer returns false
+		assertFalse(buf.add(new String[]{"d", "4"}));
+
+		final String[] first = buf.get();
+		assertEquals(first[0], "a");
+		assertFalse(buf.isFull());
+
+		// Wrap-around: after removing one slot, we can add again
+		assertTrue(buf.add(new String[]{"d", "4"}));
+		assertEquals(buf.get()[0], "b");
+		assertEquals(buf.get()[0], "c");
+		assertEquals(buf.get()[0], "d");
+
+		// Empty buffer returns empty array
+		assertEquals(buf.get().length, 0);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void randomSetBasic() {
+		final RandomSet<String> set = new RandomSet<>();
+
+		assertTrue(set.add("alpha"));
+		assertTrue(set.add("beta"));
+		assertTrue(set.add("gamma"));
+		assertEquals(set.size(), 3);
+
+		// Duplicate rejected
+		assertFalse(set.add("alpha"));
+		assertEquals(set.size(), 3);
+
+		assertTrue(set.contains("beta"));
+		assertFalse(set.contains("delta"));
+
+		// remove existing element
+		assertTrue(set.remove("beta"));
+		assertEquals(set.size(), 2);
+		assertFalse(set.contains("beta"));
+
+		// remove non-existent element
+		assertFalse(set.remove("beta"));
+
+		// removeAt within bounds
+		final String removed = set.removeAt(0);
+		assertNotNull(removed);
+		assertEquals(set.size(), 1);
+
+		// removeAt out of bounds returns null
+		assertNull(set.removeAt(99));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void randomSetFromCollection() {
+		final java.util.List<String> items = java.util.List.of("x", "y", "z");
+		final RandomSet<String> set = new RandomSet<>(items);
+		assertEquals(set.size(), 3);
+		assertTrue(set.contains("x"));
+		assertTrue(set.contains("z"));
+
+		// iterator covers all elements
+		int count = 0;
+		for (final String s : set)
+			count++;
+		assertEquals(count, 3);
 	}
 
 	@Test(groups = { TestGroups.ALL })

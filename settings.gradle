@@ -40,7 +40,7 @@ includeBuild 'examples/core/speed'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '18.9.1')
+			version('fta', '18.9.2')
 			version('jacoco', '0.8.14')
 
 // https://mvnrepository.com/artifact/de.siegmar/fastcsv

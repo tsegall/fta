@@ -16,6 +16,8 @@
 package com.cobber.fta.token;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
@@ -152,6 +154,44 @@ public class TestTokens {
 		assertEquals(a.getRegExp(false), "[\\p{IsAlphabetic}\\d]");
 	}
 
+
+	@Test(groups = { TestGroups.ALL })
+	public void testFloatToken() {
+		final FloatToken unsigned = new FloatToken(false);
+		assertEquals(unsigned.getType(), Token.Type.UNSIGNED_FLOAT);
+		assertEquals(unsigned.charactersUsed(), 1);
+		assertTrue(unsigned.isComplete());
+		final FloatToken unsignedCopy = unsigned.newCopy();
+		assertEquals(unsignedCopy.getType(), Token.Type.UNSIGNED_FLOAT);
+		// merge returns this
+		assertEquals(unsigned.merge(unsignedCopy), unsigned);
+
+		final FloatToken signed = new FloatToken(true);
+		assertEquals(signed.getType(), Token.Type.SIGNED_FLOAT);
+		assertEquals(signed.charactersUsed(), 1);
+		assertTrue(signed.isComplete());
+		final FloatToken signedCopy = signed.newCopy();
+		assertEquals(signedCopy.getType(), Token.Type.SIGNED_FLOAT);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testSimpleToken() {
+		final SimpleToken dash = new SimpleToken('-');
+		assertEquals(dash.getType(), Token.Type.SIMPLE);
+		assertEquals(dash.getCh(), '-');
+		assertEquals(dash.charactersUsed(), 1);
+		assertTrue(dash.isComplete());
+		assertEquals(dash.getRegExp(false), "-");
+		assertEquals(dash.getRegExp(true), "-");
+		final SimpleToken dashCopy = dash.newCopy();
+		assertEquals(dashCopy.getType(), Token.Type.SIMPLE);
+		assertEquals(dashCopy.getCh(), '-');
+		// merge returns this
+		assertEquals(dash.merge(dashCopy), dash);
+
+		final SimpleToken dot = new SimpleToken('.');
+		assertNotNull(dot.getRegExp(false));
+	}
 
 	@Test(groups = { TestGroups.ALL })
 	public void testNonASCII() {
