@@ -3,6 +3,7 @@ package com.cobber.fta;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +18,7 @@ import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import de.siegmar.fastcsv.reader.CloseableIterator;
 import de.siegmar.fastcsv.reader.CsvReader;
 import de.siegmar.fastcsv.reader.NamedCsvRecord;
+import de.siegmar.fastcsv.reader.NamedCsvRecordHandler;
 
 public class Analysis {
 
@@ -85,7 +87,7 @@ public class Analysis {
 	private MultipartFile file;
 	private String locale;
 	private int recordCount = 100;
-	private final List<FTAInfo> analysisResult = new ArrayList<>();
+	private List<FTAInfo> analysisResult = null;
 	private final List<SemanticType> allTypes;
 
 	public String getFile() {
@@ -95,54 +97,56 @@ public class Analysis {
 	}
 
 	public void setFile(final MultipartFile file) {
-		try {
-			if (file == null || file.isEmpty()) {
-				this.file = null;
-				return;
-			}
+		if (file == null || file.isEmpty())
+			this.file = null;
+		else
 			this.file = file;
+	}
 
-			try (BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-				final CsvReader<NamedCsvRecord> csv = CsvReader.builder().ofNamedCsvRecord(in);
-				RecordAnalyzer recordAnalyzer = null;
-				String[] header = null;
-				int thisRecord = 0;
+	private void processFile() {
+		final List<FTAInfo> result = new ArrayList<>();
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+			final NamedCsvRecordHandler handler = NamedCsvRecordHandler.builder().allowDuplicateHeaderFields(true).build();
+			final CsvReader<NamedCsvRecord> csv = CsvReader.builder().build(handler, in);
+			RecordAnalyzer recordAnalyzer = null;
+			String[] header = null;
+			int thisRecord = 0;
 
-				for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); thisRecord < recordCount && iter.hasNext();) {
-					final NamedCsvRecord rowRaw = iter.next();
-					if (thisRecord == 0) {
-						header = rowRaw.getHeader().toArray(new String[0]);
-						final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, file.getOriginalFilename(), header);
-						final TextAnalyzer template = new TextAnalyzer(context);
-						if (locale != null)
-							template.setLocale(Locale.forLanguageTag(locale));
-						recordAnalyzer = new RecordAnalyzer(template);
-					}
-					thisRecord++;
-					if (rowRaw.getFieldCount() != header.length) {
-						System.err.printf("ERROR: Record %d has %d fields, expected %d, skipping%n",
-								thisRecord, rowRaw.getFieldCount(), header.length);
-						continue;
-					}
-					recordAnalyzer.train(rowRaw.getFields().toArray(new String[0]));
+			for (final CloseableIterator<NamedCsvRecord> iter = csv.iterator(); thisRecord < recordCount && iter.hasNext();) {
+				final NamedCsvRecord rowRaw = iter.next();
+				if (thisRecord == 0) {
+					header = rowRaw.getHeader().toArray(new String[0]);
+					final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, file.getOriginalFilename(), header);
+					final TextAnalyzer template = new TextAnalyzer(context);
+					if (locale != null)
+						template.setLocale(Locale.forLanguageTag(locale));
+					recordAnalyzer = new RecordAnalyzer(template);
 				}
+				thisRecord++;
+				if (rowRaw.getFields().size() != header.length) {
+					System.err.printf("ERROR: Record %d has %d fields, expected %d, skipping%n",
+							thisRecord, rowRaw.getFields().size(), header.length);
+					continue;
+				}
+				recordAnalyzer.train(rowRaw.getFields().toArray(new String[0]));
+			}
 
-				if (recordAnalyzer == null)
-					return;
+			if (recordAnalyzer != null) {
 				final TextAnalysisResult[] results = recordAnalyzer.getResult().getStreamResults();
-				for (final TextAnalysisResult result : results)
-					analysisResult.add(new FTAInfo(result));
+				for (final TextAnalysisResult r : results)
+					result.add(new FTAInfo(r));
 			}
-			catch (FTAPluginException e) {
-				System.err.println("ERROR: FTAPluginException - " + e.getMessage());
-			}
-			catch (FTAUnsupportedLocaleException e) {
-				System.err.println("ERROR: FTAUnsupportedLocaleException - " + e.getMessage());
-			}
+		}
+		catch (FTAPluginException e) {
+			System.err.println("ERROR: FTAPluginException - " + e.getMessage());
+		}
+		catch (FTAUnsupportedLocaleException e) {
+			System.err.println("ERROR: FTAUnsupportedLocaleException - " + e.getMessage());
 		}
 		catch (IOException e) {
 			System.err.println("ERROR: IOException - " + e.getMessage());
 		}
+		analysisResult = result;
 	}
 
 	public String getLocale() {
@@ -162,6 +166,12 @@ public class Analysis {
 	}
 
 	public List<FTAInfo> getAnalysisResult() {
+		if (analysisResult == null) {
+			if (file != null)
+				processFile();
+			else
+				analysisResult = new ArrayList<>();
+		}
 		return analysisResult;
 	}
 

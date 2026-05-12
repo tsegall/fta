@@ -3,7 +3,7 @@
 
 `$ ./gradlew bootRun`
 
-Note: Requires Java 17 or better
+Note: Requires Java 21 or better
 
 ## Deploying to fly.io ##
 

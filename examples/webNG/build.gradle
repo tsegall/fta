@@ -1,0 +1,49 @@
+plugins {
+	id 'org.springframework.boot' version '3.5.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.github.node-gradle.node' version '7.1.0'
+	id 'java'
+}
+
+wrapper {
+	gradleVersion = '9.5.0'
+}
+
+group = 'com.cobber.fta'
+version = '1.0.0'
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation "de.siegmar:fastcsv:4.2.0"
+	implementation "com.cobber.fta:fta:18.+"
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+node {
+	download = false
+	nodeProjectDir = file('frontend')
+}
+
+tasks.register('npmBuild', com.github.gradle.node.npm.task.NpmTask) {
+	dependsOn tasks.named('npmInstall')
+	args = ['run', 'build']
+	inputs.dir('frontend/src')
+	inputs.file('frontend/index.html')
+	inputs.file('frontend/package.json')
+	inputs.file('frontend/vite.config.js')
+	outputs.dir('src/main/resources/static')
+}
+
+processResources.dependsOn tasks.named('npmBuild')
+
+test {
+	useJUnitPlatform()
+}

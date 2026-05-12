@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -15,31 +16,35 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
+@SessionAttributes("analysis")
 public class AnalysisController {
-	Analysis analysis = null;
+
+	// Provides the initial "analysis" object when the session doesn't have one yet
+	// (e.g. navigating directly to /types or /about before ever submitting a file).
+	@ModelAttribute("analysis")
+	public Analysis defaultAnalysis() {
+		return new Analysis(LocaleContextHolder.getLocale());
+	}
 
 	@RequestMapping(value = "/analysis", method = RequestMethod.GET)
 	public ModelAndView analysisForm(final Model model) {
-		analysis = new Analysis(LocaleContextHolder.getLocale());
-		model.addAttribute("analysis", analysis);
+		// Always start fresh so re-visiting the form doesn't show stale results.
+		model.addAttribute("analysis", new Analysis(LocaleContextHolder.getLocale()));
 		return new ModelAndView("analysis");
 	}
 
 	@RequestMapping(value = "/analysis", method = RequestMethod.POST)
-	public ModelAndView analysisSubmit(@ModelAttribute Analysis analysis, final Model model) {
-		this.analysis = analysis;
+	public ModelAndView analysisSubmit(@ModelAttribute Analysis analysis) {
 		return new ModelAndView("result");
 	}
 
 	@RequestMapping(value = "/types", method = RequestMethod.GET)
-	public ModelAndView typesForm(final Model model) {
-		model.addAttribute("analysis", analysis);
+	public ModelAndView typesForm() {
 		return new ModelAndView("types");
 	}
 
 	@RequestMapping(value = "/about", method = RequestMethod.GET)
-	public ModelAndView about(final Model model) {
-		model.addAttribute("analysis", analysis);
+	public ModelAndView about() {
 		return new ModelAndView("about");
 	}
 
@@ -51,11 +56,11 @@ public class AnalysisController {
 				MaxUploadSizeExceededException e,
 				HttpServletRequest request,
 				HttpServletResponse response) {
-			return Error("File too large!");
+			return error("File too large!");
 		}
 	}
 
-	private ModelAndView Error(final String message) {
+	private ModelAndView error(final String message) {
 		final ModelAndView modelAndView = new ModelAndView("error");
 		modelAndView.getModel().put("message", message);
 		return modelAndView;
