@@ -7,7 +7,7 @@ import com.github.spotbugs.snom.Confidence
 import com.github.spotbugs.snom.Effort
 
 wrapper {
-	gradleVersion = '9.5.0'
+	gradleVersion = '9.5.1'
 }
 
 if (JavaVersion.current() > JavaVersion.VERSION_21) {

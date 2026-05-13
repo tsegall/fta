@@ -112,7 +112,16 @@ This prints the plugin definition, then `true`/`false` for each input row, then 
 
 ## ChangeLog Conventions
 
-Entries go under a `### <version>` section header. When bumping the version, create a new section for the new version containing **only** the current session's changes — never move or redistribute entries from already-published sections. Library version bumps get an `INT: Bump <lib> to <version>` entry.
+ChangeLog uses [Conventional Commits](https://www.conventionalcommits.org/) format. Entries go under a `### <version>` section header with no leading ` - ` dash. Common types:
+
+- `feat:` — new feature or enhancement
+- `fix:` — bug fix
+- `docs:` — documentation only
+- `test:` — tests only
+- `chore:` — dependency bumps, build system, infrastructure (e.g. `chore: Bump gradle to 9.5.1`)
+- `refactor:` — code restructuring with no behaviour change
+
+When bumping the version, create a new section for the new version containing **only** the current session's changes — never move or redistribute entries from already-published sections.
 
 ## Key Guardrails (from AGENTS.md)
 

@@ -201,6 +201,7 @@ There are a large number of metrics detected, which vary based on the type of th
  * nullCount - Number of null samples
  * blankCount - Number of blank samples
  * distinctCount - Number of distinct (valid) samples, typically -1 if maxCardinality exceeded. See Note 1.
+ * approxDistinctCount - Approximate number of distinct values using HyperLogLog (Apache DataSketches). Exact when cardinality is below the max cardinality limit, ~1% relative error otherwise. Only computed when `Feature.APPROX_DISTINCT_COUNT` is enabled. Check `approxDistinctCountEnabled()` before calling `getApproxDistinctCount()`. See Note 4.
  * regExp - A Regular Expression (Java) that matches the detected Type
  * confidence - The percentage confidence (0-1.0) in the determination of the Type. If no Semantic Type is detected then the confidence reflects the confidence in the Base Type, if a Semantic Type is detected then the confidence reflects the confidence in the Semantic Type.
  * type - The Base Type (one of Boolean, Double, Long, String, LocalDate, LocalTime, LocalDateTime, OffsetDateTime, ZonedDateTime)
@@ -251,6 +252,8 @@ Note 1: This field may be set on the Analyzer - and if so FTA attempts no furthe
 Note 2: quantiles are exact for any set where the cardinality is less than maxCardinality.  No support for quantiles for String types where maxCardinality is exceeded, for other types the quantiles are estimates that are within the relative-error guarantee.
 
 Note 3: Histograms are precise for any set where the cardinality is less than maxCardinality.  No support for histograms for String types where maxCardinality is exceeded, for other types the histograms are estimates - see A Streaming Parallel Decision Tree Algorithm (https://www.jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf) for more details.
+
+Note 4: `approxDistinctCount` is disabled by default. Enable via `analysis.configure(TextAnalyzer.Feature.APPROX_DISTINCT_COUNT, true)` before training. Calling `getApproxDistinctCount()` without enabling the feature throws `IllegalStateException`; use `approxDistinctCountEnabled()` as a guard. The HLL sketch is serialized and survives merge. `approxDistinctCount` is not included in the DataSignature so signatures remain comparable regardless of whether this feature is enabled.
 
 </details>
 
