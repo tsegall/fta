@@ -2,6 +2,7 @@
 ## Changes ##
 
 ### 18.9.3
+ chore: Bump webNG frontend — vite 5→8, @vitejs/plugin-vue 5→6, vue-router 4→5, tailwindcss 3→4 (switched to @tailwindcss/vite plugin, CSS-based theme config, removed postcss/autoprefixer)
  chore: Bump gradle to 9.5.1
  docs: Add documentation to README for approxDistinctCount
  docs: Move to Conventional Commits (https://www.conventionalcommits.org/) for ChangeLog
