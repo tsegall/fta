@@ -34,13 +34,14 @@ includeBuild 'examples/core/dateformat'
 includeBuild 'examples/core/dateformattrained'
 includeBuild 'examples/core/speed'
 
-// Need to use Java 17+ to run the Web
+// Need to use Java 21 to run the Web examples
 // includeBuild 'examples/web'
+// includeBuild 'examples/webNG'
 
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '18.9.3')
+			version('fta', '18.9.4')
 			version('jacoco', '0.8.14')
 
 // https://mvnrepository.com/artifact/de.siegmar/fastcsv

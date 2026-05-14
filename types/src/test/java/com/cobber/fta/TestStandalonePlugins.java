@@ -17,6 +17,7 @@ package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -707,5 +708,82 @@ public class TestStandalonePlugins {
 		final TextAnalysisResult result = analysis.getResult();
 		assertEquals(result.getSemanticType(), "COUNTRY.TEXT_JA");
 		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaCityDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("市区町村");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		final String[] inputs = {
+			"札幌市", "函館市", "小樽市", "旭川市", "釧路市",
+			"帯広市", "北見市", "岩見沢市", "網走市", "留萌市",
+			"苫小牧市", "稚内市", "美唄市", "芦別市", "江別市",
+			"赤平市", "紋別市", "士別市", "名寄市", "三笠市",
+			"根室市", "千歳市", "滝川市", "砂川市", "歌志内市"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "CITY");
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaPrefectureISODetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("都道府県コード");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		final String[] inputs = {
+			"JP-01", "JP-02", "JP-03", "JP-04", "JP-05", "JP-06", "JP-07", "JP-08", "JP-09", "JP-10",
+			"JP-11", "JP-12", "JP-13", "JP-14", "JP-15", "JP-16", "JP-17", "JP-18", "JP-19", "JP-20",
+			"JP-21", "JP-22", "JP-23", "JP-24", "JP-25", "JP-26", "JP-27", "JP-28", "JP-29", "JP-30"
+		};
+		for (final String s : inputs)
+			analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "STATE_PROVINCE.PREFECTURE_ISO_JA");
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaPrefectureISOAllCodes() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("pref_iso_code");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		// All 47 ISO codes
+		for (int i = 1; i <= 47; i++)
+			analysis.train(String.format("JP-%02d", i));
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "STATE_PROVINCE.PREFECTURE_ISO_JA");
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaPrefectureCodeWithHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("都道府県コード");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		for (int i = 1; i <= 47; i++)
+			analysis.train(String.format("%02d", i));
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertEquals(result.getSemanticType(), "STATE_PROVINCE.PREFECTURE_CODE_JA");
+		assertEquals(result.getConfidence(), 1.0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaPrefectureCodeNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("code");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+
+		for (int i = 1; i <= 47; i++)
+			analysis.train(String.format("%02d", i));
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertNotEquals(result.getSemanticType(), "STATE_PROVINCE.PREFECTURE_CODE_JA");
 	}
 }

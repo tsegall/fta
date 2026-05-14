@@ -42,15 +42,12 @@ webNG/
 │       └── static/                       # Vite build output (gitignored, generated at build time)
 └── frontend/
     ├── package.json                      # Vue 3, Vue Router, Tailwind CSS, Vite
-    ├── vite.config.js                    # outDir → ../src/main/resources/static; /api proxy to :8080
-    ├── tailwind.config.js                # Inter font; scans src/**/*.{vue,js,ts}
-    ├── postcss.config.js
+    ├── vite.config.js                    # outDir → ../src/main/resources/static; /api proxy to :8080; @tailwindcss/vite plugin
     ├── index.html                        # Google Fonts (Inter)
     └── src/
-        ├── main.js                       # App bootstrap; hash-history Vue Router
-        ├── style.css                     # Tailwind directives + component classes
+        ├── main.js                       # App bootstrap; hash-history Vue Router (routes defined inline)
+        ├── style.css                     # @import "tailwindcss"; @theme font; @layer component classes
         ├── App.vue                       # Sidebar layout; locale input; fetches /api/version
-        ├── router/index.js               # Routes: / → /analysis, /types, /about
         ├── composables/
         │   └── useLocale.js              # Shared locale ref (module-level, singleton)
         ├── views/
@@ -89,6 +86,8 @@ CORS is allowed from `http://localhost:5173` (Vite dev server).
 
 **Shared locale state**: `composables/useLocale.js` exports a single module-level `ref('')`. Because it is module-level (not created inside `setup()`), all components that import it share the same reactive value. The locale input lives in `App.vue`'s sidebar so it persists across page navigation. `AnalysisView` reads it when submitting; `TypesView` watches it with `watch(locale, fetchTypes, { immediate: true })` and re-fetches from `/api/types?locale=<value>` whenever it changes.
 
+**Tailwind CSS integration**: Uses Tailwind CSS 4 via the `@tailwindcss/vite` Vite plugin — no PostCSS pipeline or `tailwind.config.js` required. `style.css` starts with `@import "tailwindcss"` and uses a `@theme` block for the Inter font override. Content detection is automatic via Vite's import graph.
+
 **JSON syntax highlighting**: Implemented in `JsonPanel.vue` using a single regex replace over `JSON.stringify` output — no external library. Keys are blue, strings green, numbers yellow, booleans purple, nulls red.
 
 ## Dependencies
@@ -101,10 +100,9 @@ CORS is allowed from `http://localhost:5173` (Vite dev server).
 
 ### Frontend
 - Vue 3 (`^3.4.0`)
-- Vue Router (`^4.3.0`)
-- Tailwind CSS (`^3.4.0`)
-- Vite (`^5.4.0`) + `@vitejs/plugin-vue`
-- PostCSS + Autoprefixer
+- Vue Router (`^5.0.0`)
+- Tailwind CSS (`^4.3.0`) + `@tailwindcss/vite`
+- Vite (`^8.0.0`) + `@vitejs/plugin-vue` (`^6.0.0`)
 
 ## FTA API Surface Used
 

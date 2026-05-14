@@ -31,7 +31,7 @@ FTA is available in Maven Central. Include it in your project with:
 <dependency>
     <groupId>com.cobber.fta</groupId>
     <artifactId>fta</artifactId>
-    <version>18.9.0</version>
+    <version>18.9.4</version>
 </dependency>
 ```
 

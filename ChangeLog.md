@@ -1,6 +1,12 @@
 
 ## Changes ##
 
+### 18.10.0
+ feat: Wire Japanese city names into CITY plugin — add ja_cities.csv reference data and load it for nextRandom() under ja locale; fix analyzeSet() to let a 99-confidence header bypass the maxLength guard (previously blocked all-short Japanese city names)
+ feat: Add STATE_PROVINCE.PREFECTURE_ISO_JA — Japanese prefecture ISO 3166-2 codes (JP-01 through JP-47), detected for ja locale
+ feat: Add STATE_PROVINCE.PREFECTURE_CODE_JA — Japanese prefecture JIS X 0401 numeric codes (01–47), header-gated to avoid false positives
+ chore: Cleanup old web example
+
 ### 18.9.3
  chore: Bump webNG frontend — vite 5→8, @vitejs/plugin-vue 5→6, vue-router 4→5, tailwindcss 3→4 (switched to @tailwindcss/vite plugin, CSS-based theme config, removed postcss/autoprefixer)
  chore: Bump gradle to 9.5.1

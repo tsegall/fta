@@ -3270,6 +3270,67 @@
 		"priority": 146
 	},
 	{
+		"semanticType": "STATE_PROVINCE.PREFECTURE_ISO_JA",
+		"description": "Japanese Prefecture ISO 3166-2 Code",
+		"pluginType": "list",
+		"signature": "1snitNh1pA5wm43LQQOuwskfDrU=",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(都道府県.{0,3}コード|prefecture.{0,5}(iso|code)|pref.{0,5}(iso|code)).*",
+						"confidence": 90
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpReturned": "JP-\\d{2}"
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "inline",
+			"members": [
+				"JP-01", "JP-02", "JP-03", "JP-04", "JP-05", "JP-06", "JP-07", "JP-08", "JP-09",
+				"JP-10", "JP-11", "JP-12", "JP-13", "JP-14", "JP-15", "JP-16", "JP-17", "JP-18", "JP-19",
+				"JP-20", "JP-21", "JP-22", "JP-23", "JP-24", "JP-25", "JP-26", "JP-27", "JP-28", "JP-29",
+				"JP-30", "JP-31", "JP-32", "JP-33", "JP-34", "JP-35", "JP-36", "JP-37", "JP-38", "JP-39",
+				"JP-40", "JP-41", "JP-42", "JP-43", "JP-44", "JP-45", "JP-46", "JP-47"
+			]
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/ISO_3166-2:JP"
+			}
+		],
+		"backout": "JP-\\d{2}",
+		"priority": 147
+	},
+	{
+		"semanticType": "STATE_PROVINCE.PREFECTURE_CODE_JA",
+		"description": "Japanese Prefecture JIS X 0401 Code",
+		"pluginType": "java",
+		"signature": "C6/Twf/BaCSYMFbp+j8lIN05LEs=",
+		"clazz": "com.cobber.fta.plugins.address.PrefectureCodeJA",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(都道府県.{0,3}(コード|番号)|pref.{0,5}code|prefecture.{0,5}code|ken.{0,5}code).*",
+						"confidence": 95
+					}
+				]
+			}
+		],
+		"baseType": "STRING",
+		"backout": "\\d{1,2}",
+		"priority": 148
+	},
+	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_ZA",
 		"description": "South African Province Name",
 		"pluginType": "list",

@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import com.cobber.fta.AnalysisConfig;
 import com.cobber.fta.AnalyzerContext;
+import com.cobber.fta.Content;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
 import com.cobber.fta.LogicalTypeInfinite;
@@ -37,6 +38,7 @@ public class City extends LogicalTypeInfinite {
 	private SingletonSet samples;
 	private int maxLength;
 	private boolean isNetherlands;
+	private boolean isJapanese;
 
 	/**
 	 * Construct a plugin based on the Plugin Definition.
@@ -51,6 +53,7 @@ public class City extends LogicalTypeInfinite {
 		super.initialize(analysisConfig);
 
 		isNetherlands = "NL".equals(locale.getCountry().toUpperCase(Locale.ROOT));
+		isJapanese = "ja".equals(locale.getLanguage());
 
 		return true;
 	}
@@ -64,8 +67,9 @@ public class City extends LogicalTypeInfinite {
 	@Override
 	public String nextRandom() {
 		if (!randomInitialized) {
-			// Check to see if we have been provided with a set of samples
-			if (defn.content != null && samples == null)
+			if (isJapanese)
+				samples = new SingletonSet(new Content("resource", "/reference/ja_cities.csv"));
+			else if (defn.content != null)
 				samples = new SingletonSet(defn.content);
 			randomInitialized = true;
 		}
@@ -156,11 +160,14 @@ public class City extends LogicalTypeInfinite {
 
 		final int headerConfidence = getHeaderConfidence(context);
 
-		if (headerConfidence <= 0 || maxLength <= 3)
+		if (headerConfidence <= 0)
 			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		if (headerConfidence >= 99)
 			return PluginAnalysis.OK;
+
+		if (maxLength <= 3)
+			return PluginAnalysis.SIMPLE_NOT_OK;
 
 		double confidence = (double)matchCount/realSamples;
 
