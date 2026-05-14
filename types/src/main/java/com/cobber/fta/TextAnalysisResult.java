@@ -909,7 +909,8 @@ public class TextAnalysisResult {
 		analysis.put("blankCount", facts.blankCount);
 		analysis.put("distinctCount", facts.distinctCount);
 		if (target != SignatureTarget.DATA_SIGNATURE) {
-			analysis.put("approxDistinctCount", facts.approxDistinctCount);
+			if (analysisConfig.isEnabled(TextAnalyzer.Feature.APPROX_DISTINCT_COUNT))
+				analysis.put("approxDistinctCount", facts.approxDistinctCount);
 			analysis.put("regExp", getRegExp());
 			/*
 						final ArrayNode regExpStream = analysis.putArray("regExpStream");

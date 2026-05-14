@@ -142,6 +142,8 @@
 |STATE_PROVINCE.MUNICIPALITY_CODE_NL|Dutch Municipality Code||en-NL,nl-NL|
 |STATE_PROVINCE.MUNICIPALITY_MX|Mexican Municipality|https://en.wikipedia.org/wiki/Municipalities_of_Mexico|es-MX|
 |STATE_PROVINCE.MUNICIPALITY_NL|Dutch Municipality|https://en.wikipedia.org/wiki/Municipalities_of_the_Netherlands|en-NL,nl-NL|
+|STATE_PROVINCE.PREFECTURE_CODE_JA|Japanese Prefecture JIS X 0401 Code||ja|
+|STATE_PROVINCE.PREFECTURE_ISO_JA|Japanese Prefecture ISO 3166-2 Code|https://en.wikipedia.org/wiki/ISO_3166-2:JP|ja|
 |STATE_PROVINCE.PREFECTURE_NAME_JA|Japanese Prefecture Name|https://en.wikipedia.org/wiki/Prefectures_of_Japan|ja|
 |STATE_PROVINCE.PROVINCE_CA|Canadian Province Code|https://en.wikipedia.org/wiki/Provinces_and_territories_of_Canada, https://schema.org/State|en-US,en-CA,fr-CA,en-MX|
 |STATE_PROVINCE.PROVINCE_IT|Italian Province Code|https://en.wikipedia.org/wiki/Provinces_of_Italy, https://schema.org/State|it-IT|

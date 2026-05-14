@@ -93,7 +93,7 @@ CORS is allowed from `http://localhost:5173` (Vite dev server).
 ## Dependencies
 
 ### Backend
-- Spring Boot 3.5.3 (`spring-boot-starter-web`)
+- Spring Boot 4.0.6 (`spring-boot-starter-web`) — Jackson 3.x is bundled; imports use `tools.jackson.databind` not `com.fasterxml.jackson.databind`
 - `com.cobber.fta:fta:18.+`
 - `de.siegmar:fastcsv:4.2.0`
 - `com.github.node-gradle.node:7.1.0` (Gradle plugin)
