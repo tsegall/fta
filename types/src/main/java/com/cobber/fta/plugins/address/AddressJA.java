@@ -18,6 +18,7 @@ package com.cobber.fta.plugins.address;
 import java.util.regex.Pattern;
 
 import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.plugins.Japanese;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.Facts;
 import com.cobber.fta.FiniteMap;
@@ -89,13 +90,9 @@ public class AddressJA extends LogicalTypeInfinite {
 	}
 
 	private static boolean hasJapaneseChar(final String s) {
-		for (int i = 0; i < s.length(); i++) {
-			final char ch = s.charAt(i);
-			if ((ch >= '぀' && ch <= 'ヿ') ||   // Hiragana + Katakana
-				(ch >= '一' && ch <= '鿿') ||   // CJK Unified Ideographs
-				(ch >= '㐀' && ch <= '䶿'))      // CJK Extension A
+		for (int i = 0; i < s.length(); i++)
+			if (Japanese.isJapaneseChar(s.charAt(i)))
 				return true;
-		}
 		return false;
 	}
 
@@ -137,6 +134,12 @@ public class AddressJA extends LogicalTypeInfinite {
 		for (int i = 0; i < BLOCK_MARKERS.length(); i++)
 			if (addr.indexOf(BLOCK_MARKERS.charAt(i)) != -1)
 				return true;
+
+		// Accept city/ward/town marker followed by a trailing number (e.g. 山下町1)
+		if (Character.isDigit(addr.charAt(addr.length() - 1)))
+			for (int i = 0; i < CITY_MARKERS.length(); i++)
+				if (addr.indexOf(CITY_MARKERS.charAt(i)) != -1)
+					return true;
 
 		return false;
 	}

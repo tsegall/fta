@@ -1,6 +1,30 @@
 
 ## Changes ##
 
+### 18.10.1
+ - fix: GENDER.TEXT_ZH had wrong signature (duplicated GENDER.TEXT_JA's); corrected to XYuZCo4RjIIlf+CjvWH7/QGvKsM=
+ - fix: STATE_PROVINCE.STATE_UNION_IN backout pattern double-escaped (\\\\p → \\p), making it an invalid regex at runtime
+ - fix: NAME.LAST had malformed Wikipedia URL with duplicated prefix
+ - fix: Age plugin now falls back to English locale when GENDER.TEXT_<LANGUAGE> does not support the active locale (same pattern already used for NAME.FIRST), enabling PERSON.AGE ja locale support without crashing
+ - feat: Add ja locale header patterns to PERSON.AGE (年齢|年令), PERIOD.QUARTER (四半期), MONTH.DIGITS (月|月号|月数), DAY.DIGITS (日|日数), and FREE_TEXT (説明|備考|コメント|理由|記述|注記)
+ - fix: TestStandalonePlugins used jp-JP (country code) instead of ja-JP (language code), masking all Japanese plugin test coverage; corrected locale tag
+ - fix: PREFECTURE_ISO_JA and PREFECTURE_CODE_JA had wrong signatures (never validated due to jp-JP typo above); corrected
+ - fix: jp_free_text_samples.csv renamed to ja_free_text_samples.csv to match the <LANGUAGE> template resolution used by FREE_TEXT plugin
+ - fix: DISTRICT_NAME_IN locale tag had spurious space ("en-IN, hi-IN" → "en-IN,hi-IN")
+ - fix: FREE_TEXT(ja-JP) validation failed because TextProcessor is space-based and Japanese has no word breaks; added Japanese-aware path in FreeText.isValid() using CJK character detection
+ - fix: COORDINATE.LATITUDE_DECIMAL and COORDINATE.LONGITUDE_DECIMAL incorrectly included ja in the comma-decimal-separator locale group; Japan uses period as decimal separator, causing Xeger-generated values with commas to fail the range check
+ - fix: POSTAL_CODE.POSTAL_CODE_JP had wrong signature (never validated due to jp-JP typo); corrected to QUMMXDoltEC7srC16M5LwjYV3Dc=
+ - fix: AddressJA.isValid() rejected sample address 神奈川県横浜市中区山下町1 (city marker + single trailing number, no dashes); added acceptance path for this valid Japanese address form
+ - fix: EmailLT.nextRandom() infinite loop for ja-JP locale — NAME.FIRST ja returns non-ASCII Japanese names, causing the isAscii retry loop to never terminate; email generation now always uses English locale since email addresses require ASCII
+ - fix: CREDIT_CARD_TYPE had duplicate header regexp at confidence 90 and 70; the 70-confidence entry was unreachable dead code — removed
+ - fix: COORDINATE.LATITUDE_DECIMAL and COORDINATE.LONGITUDE_DECIMAL incorrectly included zh in the comma-decimal-separator locale group; Chinese uses period as decimal separator (same bug as ja, fixed previously)
+ - fix: PERSON.AGE_RANGE missing ja locale entry (年齢|年令 header patterns); added to match the ja locale support already present in PERSON.AGE
+ - fix: STATE_PROVINCE.STATE_UNION_IN and STATE_PROVINCE.PROVINCE_ZA shared priority 128; STATE_UNION_IN bumped to 129
+ - refactor: Extract Japanese.isJapaneseChar() utility; fixes AddressJA missing 々 (U+3005) and adds halfwidth katakana (U+FF65–U+FF9F) coverage; removes duplicate private implementations in FreeText, AddressJA, and NameLastFirst
+ - fix: STATE_PROVINCE.PREFECTURE_CODE_JA header pattern was not mandatory, allowing it to win in TypeDeterminer over MONTH.DIGITS/DAY.DIGITS for numeric data then back out; marked mandatory to match its analyzeSet() behavior which always rejects without a header match
+ - fix: PERSON.AGE ja header confidence bumped from 90 to 100; 年齢/年令 are unambiguous person-age terms enabling standalone detection without requiring composite sibling signals
+
+
 ### 18.10.0
  - chore: Bump Spring Boot 3.5.3 → 4.0.6 in examples/webNG; migrate Jackson imports from com.fasterxml.jackson to tools.jackson (Jackson 3.x package rename)
  - feat: Wire Japanese city names into CITY plugin — add ja_cities.csv reference data and load it for nextRandom() under ja locale; fix analyzeSet() to let a 99-confidence header bypass the maxLength guard (previously blocked all-short Japanese city names)

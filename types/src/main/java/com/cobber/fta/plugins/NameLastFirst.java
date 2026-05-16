@@ -100,18 +100,11 @@ public class NameLastFirst extends LogicalTypeInfinite {
 		return jaLastFilter != null;
 	}
 
-	private static boolean isJapaneseChar(final char ch) {
-		return (ch >= '぀' && ch <= 'ヿ') ||
-			   (ch >= '一' && ch <= '鿿') ||
-			   (ch >= '㐀' && ch <= '䶿') ||
-			   ch == '々';
-	}
-
 	private static boolean isJapaneseChars(final String s) {
 		if (s.isEmpty())
 			return false;
 		for (int i = 0; i < s.length(); i++)
-			if (!isJapaneseChar(s.charAt(i)))
+			if (!Japanese.isJapaneseChar(s.charAt(i)))
 				return false;
 		return true;
 	}
@@ -285,7 +278,7 @@ public class NameLastFirst extends LogicalTypeInfinite {
 	@Override
 	public boolean isCandidate(final String trimmed, final StringBuilder compressed, final int[] charCounts, final int[] lastIndex) {
 		if (isJapanese())
-			return trimmed.length() >= 2 && trimmed.length() <= 8 && isJapaneseChar(trimmed.charAt(0));
+			return trimmed.length() >= 2 && trimmed.length() <= 8 && Japanese.isJapaneseChar(trimmed.charAt(0));
 		return trimmed.length() >= 5 && trimmed.length() <= 30 && charCounts[','] == 1;
 	}
 

@@ -61,7 +61,9 @@ public class Age extends LogicalTypeInfinite {
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
 
-		logicalGender = (LogicalTypeFinite) LogicalTypeFactory.newInstance(PluginDefinition.findByName("GENDER.TEXT_<LANGUAGE>"), analysisConfig);
+		final PluginDefinition genderDefn = PluginDefinition.findByName("GENDER.TEXT_<LANGUAGE>");
+		final AnalysisConfig genderConfig = genderDefn.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);
+		logicalGender = (LogicalTypeFinite) LogicalTypeFactory.newInstance(genderDefn, genderConfig);
 
 		final PluginDefinition pluginFirst = PluginDefinition.findByName("NAME.FIRST");
 		final AnalysisConfig pluginConfig = pluginFirst.isLocaleSupported(locale) ? analysisConfig : new AnalysisConfig(analysisConfig).withLocale(Locale.ENGLISH);

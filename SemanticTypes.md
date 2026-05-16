@@ -21,9 +21,9 @@
 |CONTINENT.CODE_EN|Continent Code||en|
 |CONTINENT.TEXT_EN|Continent|https://www.wikidata.org/wiki/Property:P30|en|
 |COORDINATE.EASTING|Latitude - easting|https://en.wikipedia.org/wiki/Projected_coordinate_system, https://schema.org/latitude|en|
-|COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://www.wikidata.org/wiki/Q34027, https://schema.org/latitude|*, es-MX,es-PE, ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh|
+|COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://www.wikidata.org/wiki/Q34027, https://schema.org/latitude|*, es-MX,es-PE, ca,da,de,es,fi,fr,it,nl,ro,ru|
 |COORDINATE.LATITUDE_DMS|Latitude (degrees/minutes/seconds)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://schema.org/latitude|*|
-|COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude, https://www.wikidata.org/wiki/Q36477, https://schema.org/longitude|*, es-MX,es-PE, ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh|
+|COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude, https://www.wikidata.org/wiki/Q36477, https://schema.org/longitude|*, es-MX,es-PE, ca,da,de,es,fi,fr,it,nl,ro,ru|
 |COORDINATE.LONGITUDE_DMS|Longitude (degrees/minutes/seconds)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude, https://schema.org/longitude|*|
 |COORDINATE.NORTHING|Longitude - northing|https://en.wikipedia.org/wiki/Projected_coordinate_system, https://schema.org/longitude|en|
 |COORDINATE_PAIR.DECIMAL|Coordinate Pair Lat,Long - Decimal degrees|https://en.wikipedia.org/wiki/Geographic_coordinate_system|*|
@@ -40,7 +40,7 @@
 |CURRENCY.TEXT_EN|Currency Name|https://en.wikipedia.org/wiki/Currency|en|
 |CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|https://www.wikidata.org/wiki/Property:P498, https://en.wikipedia.org/wiki/ISO_4217, https://schema.org/priceCurrency|*|
 |DAY.ABBR_&lt;LOCALE&gt;|Day of Week Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)||*|
-|DAY.DIGITS|Numeric Day of Month||en, es, nl|
+|DAY.DIGITS|Numeric Day of Month||en, es, nl, ja|
 |DAY.FULL_&lt;LOCALE&gt;|Full Day of Week name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)|https://en.wikipedia.org/wiki/Names_of_the_days_of_the_week|*|
 |DIRECTION|Cardinal Direction|https://en.wikipedia.org/wiki/Cardinal_direction|*|
 |EMAIL|Email Address|https://www.wikidata.org/wiki/Property:P968, https://en.wikipedia.org/wiki/Email_address, https://schema.org/email|*, es, ja|
@@ -48,7 +48,7 @@
 |EPOCH.SECONDS|Unix Epoch (Timestamp) - seconds|https://en.wikipedia.org/wiki/Unix_time|*|
 |FILENAME|Name of file|https://en.wikipedia.org/wiki/Filename|*, nl|
 |FILENAME_EXT|Filename extension|https://en.wikipedia.org/wiki/Filename_extension|*|
-|FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...||bg, ca, da, de, en, es, fi, fr, ga, hr, hu, it, lv, nl, pt, ro, ru, sk, sv, tr|
+|FREE_TEXT|Free Text field - e.g. Description, Notes, Comments, ...||bg, ca, da, de, en, es, fi, fr, ga, hr, ja, hu, it, lv, nl, pt, ro, ru, sk, sv, tr|
 |FULL_ADDRESS_EN|Full Address (English Language)||en-CA,en-US|
 |GENDER.TEXT_&lt;LANGUAGE&gt;|Gender|https://www.wikidata.org/wiki/Property:P21, https://en.wikipedia.org/wiki/Gender, https://schema.org/gender|bg, ca, en, de, es, fi, fr, hr, is, it, ms, nl, pl, pt, ro, ru, sv, tr|
 |GENDER.TEXT_JA|Gender (Japanese Language)|https://www.wikidata.org/wiki/Property:P21, https://en.wikipedia.org/wiki/Gender, https://schema.org/gender|ja|
@@ -82,11 +82,11 @@
 |LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...||en|
 |MACADDRESS|MAC Address|https://en.wikipedia.org/wiki/MAC_address|*|
 |MONTH.ABBR_&lt;LOCALE&gt;|Month Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)||*|
-|MONTH.DIGITS|Numeric Month||en, es, nl|
+|MONTH.DIGITS|Numeric Month||en, es, nl, ja|
 |MONTH.FULL_&lt;LOCALE&gt;|Full Month name &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)|https://en.wikipedia.org/wiki/Month|*|
 |NAME.FIRST|First Name|https://www.wikidata.org/wiki/Property:P735, https://schema.org/givenName|de, en, es, fr, it, ja, nl, pt|
 |NAME.FIRST_LAST|Merged Name (First Last)|https://en.wikipedia.org/wiki/Personal_name|en, de, es, fr, it, nl, pt|
-|NAME.LAST|Last Name|https://www.wikidata.org/wiki/Property:P734, https://en.wikipedia.org/wiki/https://en.wikipedia.org/wiki/Surname, https://schema.org/familyName|de, el, en, es, fr, it, ja, nl, pt|
+|NAME.LAST|Last Name|https://www.wikidata.org/wiki/Property:P734, https://en.wikipedia.org/wiki/Surname, https://schema.org/familyName|de, el, en, es, fr, it, ja, nl, pt|
 |NAME.LAST_FIRST|Merged Name (Last, First)|https://en.wikipedia.org/wiki/Personal_name|en, de, es, fr, it, nl, pt, ja|
 |NAME.MIDDLE|Middle Name|https://en.wikipedia.org/wiki/Middle_name, https://schema.org/additionalName|en|
 |NAME.MIDDLE_INITIAL|Middle Initial|https://en.wikipedia.org/wiki/Middle_name|en|
@@ -94,10 +94,10 @@
 |NATIONALITY_EN|Nationality (English Language)|https://en.wikipedia.org/wiki/Nationality, https://schema.org/nationality|en|
 |NATIONALITY_NL|Nationality (Dutch Language)|https://en.wikipedia.org/wiki/Nationality, https://schema.org/nationality|nl|
 |PERIOD.HALF|Half (Year)||*|
-|PERIOD.QUARTER|Quarter (Year)||en, nl|
+|PERIOD.QUARTER|Quarter (Year)||en, nl, ja|
 |PERIOD.YEAR_RANGE|Year Range||*|
-|PERSON.AGE|Age (person)||en, es, fr, it, nl, pt|
-|PERSON.AGE_RANGE|Age range (person)||en, es, fr, it, nl, pt|
+|PERSON.AGE|Age (person)||en, es, fr, it, nl, pt, ja|
+|PERSON.AGE_RANGE|Age range (person)||en, es, fr, it, nl, pt, ja|
 |PERSON.DATE_OF_BIRTH|Person - Date of Birth|https://www.wikidata.org/wiki/Property:P569, https://www.wikidata.org/wiki/Q2389905, https://schema.org/birthDate|es, nl, ja, *|
 |PERSON.MARITAL_STATUS_EN|Marital Status (person)|https://en.wikipedia.org/wiki/Marital_status|*|
 |PERSON.RACE_ABBR_EN|Race/Ethnicity (person)|https://en.wikipedia.org/wiki/Race_(human_categorization)|*|
@@ -133,7 +133,7 @@
 |STATE_PROVINCE.COUNTY_US|US County Name|https://en.wikipedia.org/wiki/County_(United_States)|en-US|
 |STATE_PROVINCE.DEPARTMENT_CO|Colombian Department|https://en.wikipedia.org/wiki/Departments_of_Colombia|es-CO|
 |STATE_PROVINCE.DEPARTMENT_NAME_FR|French Department||fr-FR|
-|STATE_PROVINCE.DISTRICT_NAME_IN|Indian District name|https://en.wikipedia.org/wiki/List_of_districts_in_India|en-IN, hi-IN|
+|STATE_PROVINCE.DISTRICT_NAME_IN|Indian District name|https://en.wikipedia.org/wiki/List_of_districts_in_India|en-IN,hi-IN|
 |STATE_PROVINCE.DISTRICT_NAME_PT|Portuguese District Name|https://en.wikipedia.org/wiki/List_of_municipalities_of_Portugal|pt-PT|
 |STATE_PROVINCE.INSEE_CODE_FR|French Insee Code (5 digit)|https://en.wikipedia.org/wiki/INSEE_code|fr-FR|
 |STATE_PROVINCE.MUNICIPALITY_BR|Brazilian Municipality|https://en.wikipedia.org/wiki/Municipalities_of_Brazil|pt-BR|

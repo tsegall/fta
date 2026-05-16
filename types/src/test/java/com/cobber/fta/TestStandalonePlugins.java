@@ -163,6 +163,7 @@ public class TestStandalonePlugins {
 	public void randomSupport() throws IOException, FTAPluginException {
 		final int SAMPLE_SIZE = 100;
 		final Locale[] locales = {
+				Locale.forLanguageTag("ja-JP"),
 				Locale.forLanguageTag("bg-BG"),
 				Locale.forLanguageTag("da-DK"),
 				Locale.forLanguageTag("de-CH"), Locale.forLanguageTag("de-DE"),
@@ -178,7 +179,6 @@ public class TestStandalonePlugins {
 				Locale.forLanguageTag("hu-HU"),
 				Locale.forLanguageTag("is-IS"),
 				Locale.forLanguageTag("it-CH"), Locale.forLanguageTag("it-IT"),
-				Locale.forLanguageTag("jp-JP"),
 				Locale.forLanguageTag("lv-LV"),
 				Locale.forLanguageTag("nl-NL"),
 				Locale.forLanguageTag("pt-BR"), Locale.forLanguageTag("pt-PT"),
@@ -731,6 +731,31 @@ public class TestStandalonePlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaCityDetectionAltHeaders() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[][] cases = {
+			{ "市区町村名", "1.0" },
+			{ "区市町村", "1.0" },
+			{ "都市", "1.0" },
+			{ "居住市区町村", "1.0" }
+		};
+		final String[] inputs = {
+			"札幌市", "函館市", "小樽市", "旭川市", "釧路市",
+			"帯広市", "北見市", "岩見沢市", "網走市", "留萌市",
+			"苫小牧市", "稚内市", "美唄市", "芦別市", "江別市",
+			"赤平市", "紋別市", "士別市", "名寄市", "三笠市",
+			"根室市", "千歳市", "滝川市", "砂川市", "歌志内市"
+		};
+		for (final String[] c : cases) {
+			final TextAnalyzer analysis = new TextAnalyzer(c[0]);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			final TextAnalysisResult result = analysis.getResult();
+			assertEquals(result.getSemanticType(), "CITY", "header: " + c[0]);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void jaPrefectureISODetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("都道府県コード");
 		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
@@ -785,5 +810,174 @@ public class TestStandalonePlugins {
 
 		final TextAnalysisResult result = analysis.getResult();
 		assertNotEquals(result.getSemanticType(), "STATE_PROVINCE.PREFECTURE_CODE_JA");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaAgeDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[][] cases = {
+			{ "年齢" }, { "年令" }
+		};
+		for (final String[] c : cases) {
+			final TextAnalyzer analysis = new TextAnalyzer(c[0]);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (int i = 20; i < 80; i++)
+				analysis.train(String.valueOf(i));
+			assertEquals(analysis.getResult().getSemanticType(), "PERSON.AGE", "header: " + c[0]);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaAgeNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		for (int i = 20; i < 80; i++)
+			analysis.train(String.valueOf(i));
+		assertNotEquals(analysis.getResult().getSemanticType(), "PERSON.AGE");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaAgeRangeDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"0-4", "5-9", "10-14", "15-19", "20-24", "25-29",
+			"30-34", "35-39", "40-44", "45-49", "50-54", "55-59",
+			"60-64", "65-69", "70-74", "75-79", "80-84", "85+"
+		};
+		final String[][] cases = {
+			{ "年齢" }, { "年令" }
+		};
+		for (final String[] c : cases) {
+			final TextAnalyzer analysis = new TextAnalyzer(c[0]);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "PERSON.AGE_RANGE", "header: " + c[0]);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaAgeRangeNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"0-4", "5-9", "10-14", "15-19", "20-24", "25-29",
+			"30-34", "35-39", "40-44", "45-49", "50-54", "55-59",
+			"60-64", "65-69", "70-74", "75-79", "80-84", "85+"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		for (final String s : inputs)
+			analysis.train(s);
+		assertNotEquals(analysis.getResult().getSemanticType(), "PERSON.AGE_RANGE");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaQuarterDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		// .*四半期.* pattern — bare header and compound header both match
+		final String[][] cases = {
+			{ "四半期" }, { "会計四半期" }
+		};
+		final String[] inputs = {
+			"1", "2", "3", "4", "1", "2", "3", "4", "1", "2",
+			"3", "4", "1", "2", "3", "4", "1", "2", "3", "4"
+		};
+		for (final String[] c : cases) {
+			final TextAnalyzer analysis = new TextAnalyzer(c[0]);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "PERIOD.QUARTER", "header: " + c[0]);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaMonthDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[][] cases = {
+			{ "月" }, { "月号" }, { "月数" }
+		};
+		for (final String[] c : cases) {
+			final TextAnalyzer analysis = new TextAnalyzer(c[0]);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (int month = 1; month <= 12; month++)
+				for (int rep = 0; rep < 3; rep++)
+					analysis.train(String.valueOf(month));
+			assertEquals(analysis.getResult().getSemanticType(), "MONTH.DIGITS", "header: " + c[0]);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaMonthNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		for (int month = 1; month <= 12; month++)
+			for (int rep = 0; rep < 3; rep++)
+				analysis.train(String.valueOf(month));
+		assertNotEquals(analysis.getResult().getSemanticType(), "MONTH.DIGITS");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaDayDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[][] cases = {
+			{ "日" }, { "日数" }
+		};
+		for (final String[] c : cases) {
+			final TextAnalyzer analysis = new TextAnalyzer(c[0]);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (int day = 1; day <= 31; day++)
+				analysis.train(String.valueOf(day));
+			assertEquals(analysis.getResult().getSemanticType(), "DAY.DIGITS", "header: " + c[0]);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaDayNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		for (int day = 1; day <= 31; day++)
+			analysis.train(String.valueOf(day));
+		assertNotEquals(analysis.getResult().getSemanticType(), "DAY.DIGITS");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaFreeTextDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"この商品は非常に使いやすく、毎日愛用しています。",
+			"配送が予定より早く届き、梱包も丁寧でした。",
+			"品質は申し分なく、価格以上の価値があると思います。",
+			"カスタマーサポートの対応が迅速で、問題が解決しました。",
+			"デザインがシンプルで機能的、長く使えそうです。",
+			"初めて購入しましたが、期待を上回る出来栄えでした。",
+			"説明書が分かりやすく、設定に時間がかかりませんでした。",
+			"友人にも勧めたいと思える、満足度の高い商品です。",
+			"素材の質感が良く、写真で見るよりも実物の方が魅力的です。",
+			"リピート購入です。前回同様、品質が安定していて安心できます。"
+		};
+		// All six Japanese header keywords must fire
+		final String[] headers = { "説明", "備考", "コメント", "理由", "記述", "注記" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "FREE_TEXT", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaFreeTextNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"この商品は非常に使いやすく、毎日愛用しています。",
+			"配送が予定より早く届き、梱包も丁寧でした。",
+			"品質は申し分なく、価格以上の価値があると思います。",
+			"カスタマーサポートの対応が迅速で、問題が解決しました。",
+			"デザインがシンプルで機能的、長く使えそうです。",
+			"初めて購入しましたが、期待を上回る出来栄えでした。",
+			"説明書が分かりやすく、設定に時間がかかりませんでした。",
+			"友人にも勧めたいと思える、満足度の高い商品です。",
+			"素材の質感が良く、写真で見るよりも実物の方が魅力的です。",
+			"リピート購入です。前回同様、品質が安定していて安心できます。"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		for (final String s : inputs)
+			analysis.train(s);
+		assertNotEquals(analysis.getResult().getSemanticType(), "FREE_TEXT");
 	}
 }

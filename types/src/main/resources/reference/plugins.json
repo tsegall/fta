@@ -496,7 +496,7 @@
 		"semanticType": "POSTAL_CODE.POSTAL_CODE_JP",
 		"description": "Postal Code (JP)",
 		"pluginType": "java",
-		"signature": "90grIf//XH2xAcARIKYJPzmfhJg=",
+		"signature": "QUMMXDoltEC7srC16M5LwjYV3Dc=",
 		"clazz": "com.cobber.fta.plugins.address.PostalCodeJP",
 		"validLocales": [
 			{
@@ -945,7 +945,7 @@
 			}
 		],
 		"threshold": 90,
-		"priority": 81
+		"priority": 82
 	},
 	{
 		"semanticType": "STREET_NAME_EN",
@@ -977,7 +977,7 @@
 			}
 		],
 		"threshold": 90,
-		"priority": 82
+		"priority": 83
 	},
 	{
 		"semanticType": "STREET_NAME_BARE_EN",
@@ -1003,7 +1003,7 @@
 			}
 		],
 		"threshold": 90,
-		"priority": 83
+		"priority": 84
 	},
 	{
 		"semanticType": "STREET_MARKER_EN",
@@ -1032,7 +1032,7 @@
 			}
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 84
+		"priority": 85
 	},
 	{
 		"semanticType": "STREET_ADDRESS2_EN",
@@ -1056,7 +1056,7 @@
 			}
 		],
 		"threshold": 90,
-		"priority": 85
+		"priority": 86
 	},
 	{
 		"semanticType": "STREET_ADDRESS3_EN",
@@ -1080,7 +1080,7 @@
 			}
 		],
 		"threshold": 90,
-		"priority": 86
+		"priority": 87
 	},
 	{
 		"semanticType": "STREET_ADDRESS4_EN",
@@ -1104,7 +1104,7 @@
 			}
 		],
 		"threshold": 90,
-		"priority": 87
+		"priority": 88
 	},
 	{
 		"semanticType": "STREET_NUMBER",
@@ -1146,7 +1146,7 @@
 			}
 		],
 		"threshold": 95,
-		"priority": 88
+		"priority": 89
 	},
 	{
 		"semanticType": "STREET_ADDRESS_<LANGUAGE>",
@@ -1317,7 +1317,7 @@
 			}
 		],
 		"threshold": 90,
-		"priority": 89
+		"priority": 90
 	},
 	{
 		"semanticType": "STREET_NAME_BARE_<LANGUAGE>",
@@ -1338,7 +1338,7 @@
 			}
 		],
 		"threshold": 90,
-		"priority": 90
+		"priority": 91
 	},
 	{
 		"semanticType": "GENDER.TEXT_<LANGUAGE>",
@@ -1603,7 +1603,7 @@
 		"semanticType": "GENDER.TEXT_ZH",
 		"description": "Gender (Chinese Language)",
 		"pluginType": "regex",
-		"signature": "Cw4ieuKHMT4qah2mJ9uWUYg+rNk=",
+		"signature": "XYuZCo4RjIIlf+CjvWH7/QGvKsM=",
 		"validLocales": [
 			{
 				"localeTag": "zh",
@@ -1721,6 +1721,16 @@
 						"mandatory": true
 					}
 				]
+			},
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": "(?U)(年齢|年令)",
+						"confidence": 100,
+						"mandatory": true
+					}
+				]
 			}
 		],
 		"baseType": "LONG",
@@ -1798,6 +1808,16 @@
 				"headerRegExps": [
 					{
 						"regExp": "(?i)idade.*",
+						"confidence": 90,
+						"mandatory": true
+					}
+				]
+			},
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": "(?U)(年齢|年令)",
 						"confidence": 90,
 						"mandatory": true
 					}
@@ -2284,6 +2304,16 @@
 						"mandatory": true
 					}
 				]
+			},
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": "(?U).*四半期.*",
+						"confidence": 99,
+						"mandatory": true
+					}
+				]
 			}
 		],
 		"priority": 115
@@ -2671,8 +2701,8 @@
 				"reference": "https://en.wikipedia.org/wiki/ISO_3166-2:IN"
 			}
 		],
-		"backout": "\\\\p{IsAlphabetic}{2}",
-		"priority": 128
+		"backout": "\\p{IsAlphabetic}{2}",
+		"priority": 129
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_CA",
@@ -3273,7 +3303,7 @@
 		"semanticType": "STATE_PROVINCE.PREFECTURE_ISO_JA",
 		"description": "Japanese Prefecture ISO 3166-2 Code",
 		"pluginType": "list",
-		"signature": "1snitNh1pA5wm43LQQOuwskfDrU=",
+		"signature": "tmKU8QzsLD8Ngx8nqNuZQSokoIY=",
 		"validLocales": [
 			{
 				"localeTag": "ja",
@@ -3313,7 +3343,7 @@
 		"semanticType": "STATE_PROVINCE.PREFECTURE_CODE_JA",
 		"description": "Japanese Prefecture JIS X 0401 Code",
 		"pluginType": "java",
-		"signature": "C6/Twf/BaCSYMFbp+j8lIN05LEs=",
+		"signature": "Mh/4Tu9Qq4MVMpvRI6QngfWmv4E=",
 		"clazz": "com.cobber.fta.plugins.address.PrefectureCodeJA",
 		"validLocales": [
 			{
@@ -3321,7 +3351,8 @@
 				"headerRegExps": [
 					{
 						"regExp": ".*(?i)(都道府県.{0,3}(コード|番号)|pref.{0,5}code|prefecture.{0,5}code|ken.{0,5}code).*",
-						"confidence": 95
+						"confidence": 95,
+						"mandatory": true
 					}
 				]
 			}
@@ -3366,7 +3397,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 147
+		"priority": 149
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_EC",
@@ -3404,7 +3435,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 148
+		"priority": 150
 	},
 	{
 		"semanticType": "STATE_PROVINCE.DISTRICT_NAME_PT",
@@ -3438,7 +3469,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 149
+		"priority": 151
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_BR",
@@ -3467,7 +3498,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 150
+		"priority": 152
 	},
 	{
 		"semanticType": "STATE_PROVINCE.REGION_NAME_IT",
@@ -3496,7 +3527,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 151
+		"priority": 153
 	},
 	{
 		"semanticType": "STATE_PROVINCE.COMMUNE_IT",
@@ -3526,7 +3557,7 @@
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"threshold": 85,
-		"priority": 152
+		"priority": 154
 	},
 	{
 		"semanticType": "STATE_PROVINCE.COUNTY_HU",
@@ -3555,7 +3586,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 153
+		"priority": 155
 	},
 	{
 		"semanticType": "STATE_PROVINCE.COUNTY_IE",
@@ -3584,7 +3615,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 154
+		"priority": 156
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_IE",
@@ -3617,7 +3648,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 155
+		"priority": 157
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_MX",
@@ -3646,7 +3677,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 156
+		"priority": 158
 	},
 	{
 		"semanticType": "STATE_PROVINCE.SUBURB_AU",
@@ -3676,7 +3707,7 @@
 			}
 		],
 		"backout": "[' \\p{IsAlphabetic}]+",
-		"priority": 157
+		"priority": 159
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_CO",
@@ -3705,7 +3736,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 158
+		"priority": 160
 	},
 	{
 		"semanticType": "STATE_PROVINCE.DEPARTMENT_CO",
@@ -3738,7 +3769,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 159
+		"priority": 161
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_NL",
@@ -3767,7 +3798,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 160
+		"priority": 162
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_CODE_NL",
@@ -3788,7 +3819,7 @@
 			}
 		],
 		"threshold": 95,
-		"priority": 161
+		"priority": 163
 	},
 	{
 		"semanticType": "STATE_PROVINCE.REGION_NAME_PE",
@@ -3817,7 +3848,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 162
+		"priority": 164
 	},
 	{
 		"semanticType": "STATE_PROVINCE.PROVINCE_NAME_PE",
@@ -3850,7 +3881,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 163
+		"priority": 165
 	},
 	{
 		"semanticType": "STATE_PROVINCE.REGION_NAME_TZ",
@@ -3879,7 +3910,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 164
+		"priority": 166
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_FIPS_US",
@@ -3910,7 +3941,7 @@
 		],
 		"baseType": "LONG",
 		"backout": "\\d{2}",
-		"priority": 165
+		"priority": 167
 	},
 	{
 		"semanticType": "STATE_PROVINCE.COUNTY_FIPS_US",
@@ -3941,7 +3972,7 @@
 		],
 		"baseType": "LONG",
 		"backout": "\\d{5}",
-		"priority": 166
+		"priority": 168
 	},
 	{
 		"semanticType": "STATE_PROVINCE.MUNICIPALITY_CODE_BR",
@@ -3971,7 +4002,7 @@
 		],
 		"baseType": "LONG",
 		"backout": "\\d{7}",
-		"priority": 167
+		"priority": 169
 	},
 	{
 		"semanticType": "STATE_PROVINCE.STATE_UNION_NAME_IN",
@@ -4004,7 +4035,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 168
+		"priority": 170
 	},
 	{
 		"semanticType": "STATE_PROVINCE.DISTRICT_NAME_IN",
@@ -4013,7 +4044,7 @@
 		"signature": "b8HvLj1VKByItZogeBVG0bF/9Pw=",
 		"validLocales": [
 			{
-				"localeTag": "en-IN, hi-IN",
+				"localeTag": "en-IN,hi-IN",
 				"headerRegExps": [
 					{
 						"regExp": ".*(?i)(district).*",
@@ -4034,7 +4065,7 @@
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"threshold": 92,
-		"priority": 169
+		"priority": 171
 	},
 	{
 		"semanticType": "CURRENCY_CODE.ISO-4217",
@@ -4075,7 +4106,7 @@
 			}
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 170
+		"priority": 172
 	},
 	{
 		"semanticType": "CURRENCY.TEXT_EN",
@@ -4104,7 +4135,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 171
+		"priority": 173
 	},
 	{
 		"semanticType": "CRYPTOCURRENCY.TEXT_EN",
@@ -4133,7 +4164,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 172
+		"priority": 174
 	},
 	{
 		"semanticType": "COUNTRY.ISO-3166-3",
@@ -4170,7 +4201,7 @@
 			}
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
-		"priority": 173
+		"priority": 175
 	},
 	{
 		"semanticType": "COUNTRY.ISO-3166-2",
@@ -4213,7 +4244,7 @@
 			}
 		],
 		"backout": "\\p{IsAlphabetic}{2}",
-		"priority": 174
+		"priority": 176
 	},
 	{
 		"semanticType": "TIMEZONE.IANA",
@@ -4250,7 +4281,7 @@
 			}
 		],
 		"backout": "[-_/A-Za-z]+",
-		"priority": 175
+		"priority": 177
 	},
 	{
 		"semanticType": "CONTINENT.TEXT_EN",
@@ -4279,7 +4310,7 @@
 				"reference": "https://www.wikidata.org/wiki/Property:P30"
 			}
 		],
-		"priority": 176
+		"priority": 178
 	},
 	{
 		"semanticType": "CONTINENT.CODE_EN",
@@ -4302,7 +4333,7 @@
 			"reference": "/reference/en_continent_code.csv"
 		},
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 177
+		"priority": 179
 	},
 	{
 		"semanticType": "AIRPORT_CODE.IATA",
@@ -4337,7 +4368,7 @@
 		],
 		"backout": "\\p{IsAlphabetic}{3}",
 		"threshold": 97,
-		"priority": 178
+		"priority": 180
 	},
 	{
 		"semanticType": "AIRLINE.IATA_CODE",
@@ -4372,7 +4403,7 @@
 		],
 		"backout": "\\p{Alnum}{2}",
 		"threshold": 97,
-		"priority": 179
+		"priority": 181
 	},
 	{
 		"semanticType": "AIRLINE.TEXT_EN",
@@ -4396,7 +4427,7 @@
 		},
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"threshold": 85,
-		"priority": 180
+		"priority": 182
 	},
 	{
 		"semanticType": "FILENAME",
@@ -4430,7 +4461,7 @@
 				"reference": "https://en.wikipedia.org/wiki/Filename"
 			}
 		],
-		"priority": 181
+		"priority": 183
 	},
 	{
 		"semanticType": "FILENAME_EXT",
@@ -4459,7 +4490,7 @@
 			}
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
-		"priority": 182
+		"priority": 184
 	},
 	{
 		"semanticType": "PERSON.YEAR_OF_BIRTH",
@@ -4494,7 +4525,7 @@
 			}
 		],
 		"baseType": "LOCALDATE",
-		"priority": 183
+		"priority": 185
 	},
 	{
 		"semanticType": "PERSON.DATE_OF_BIRTH",
@@ -4558,7 +4589,7 @@
 				"reference": "https://schema.org/birthDate"
 			}
 		],
-		"priority": 184
+		"priority": 186
 	},
 	{
 		"semanticType": "COORDINATE.LATITUDE_DECIMAL",
@@ -4599,7 +4630,7 @@
 				]
 			},
 			{
-				"localeTag": "ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh",
+				"localeTag": "ca,da,de,es,fi,fr,it,nl,ro,ru",
 				"headerRegExps": [
 					{
 						"regExp": ".*(?i)(latitude|lattitude|leveysaste|breddegrad|breedtegraad|breitengrad|latitudine|latitud|Широта|緯度|[^\\p{IsAlphabetic}]lat[^\\p{IsAlphabetic}]).*|.*[^\\p{IsAlphabetic}]lat|^(lat)$|^lat[^\\p{IsAlphabetic}].*",
@@ -4678,10 +4709,10 @@
 				]
 			},
 			{
-				"localeTag": "ca,da,de,es,fi,fr,it,ja,nl,ro,ru,zh",
+				"localeTag": "ca,da,de,es,fi,fr,it,nl,ro,ru",
 				"headerRegExps": [
 					{
-						"regExp": ".*(?i)(?u)(longitude|pituusaste|længde|längengrad|lengtegraad|laengengrad|longitudine|longitud|Долгота|經度|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*",
+						"regExp": ".*(?i)(?u)(longitude|pituusaste|længde|längengrad|lengtegraad|laengengrad|longitudine|longitud|Долгота|経度|[^\\p{IsAlphabetic}]long[^\\p{IsAlphabetic} ]).*|.*[^\\p{IsAlphabetic}](lon|long)$|^(lon|lng|long)$|^(lon|long)[^\\p{IsAlphabetic} ].*",
 						"confidence": 99,
 						"mandatory": true
 					}
@@ -5048,6 +5079,21 @@
 						"regExp": "^(?U)市区町村$",
 						"confidence": 99,
 						"mandatory": true
+					},
+					{
+						"regExp": "^(?U)(市区町村名|区市町村)$",
+						"confidence": 95,
+						"mandatory": true
+					},
+					{
+						"regExp": "^(?U)(都市|都市名|市名)$",
+						"confidence": 90,
+						"mandatory": true
+					},
+					{
+						"regExp": ".*(?U)市区町村.*",
+						"confidence": 75,
+						"mandatory": true
 					}
 				]
 			},
@@ -5091,10 +5137,6 @@
 					{
 						"regExp": ".*(?i)(credit|card).*",
 						"confidence": 90
-					},
-					{
-						"regExp": ".*(?i)(credit|card).*",
-						"confidence": 70
 					}
 				]
 			}
@@ -5759,6 +5801,16 @@
 						"mandatory": true
 					}
 				]
+			},
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": "(?U)(月|月号|月数)",
+						"confidence": 99,
+						"mandatory": true
+					}
+				]
 			}
 		],
 		"threshold": 98,
@@ -5802,6 +5854,16 @@
 				"headerRegExps": [
 					{
 						"regExp": "(?i)dag",
+						"confidence": 99,
+						"mandatory": true
+					}
+				]
+			},
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": "(?U)(日|日数)",
 						"confidence": 99,
 						"mandatory": true
 					}
@@ -6407,7 +6469,7 @@
 			}
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
-		"priority": 306
+		"priority": 307
 	},
 	{
 		"semanticType": "DIRECTION",
@@ -6996,7 +7058,7 @@
 			},
 			{
 				"source": "wikipedia",
-				"reference": "https://en.wikipedia.org/wiki/https://en.wikipedia.org/wiki/Surname"
+				"reference": "https://en.wikipedia.org/wiki/Surname"
 			},
 			{
 				"source": "schema",
@@ -7294,6 +7356,16 @@
 				"headerRegExps": [
 					{
 						"regExp": ".*(?i)(?u)(opis|napomene|komentar|razlog|description).*|.*(?i)(desc)",
+						"confidence": 99,
+						"mandatory": true
+					}
+				]
+			},
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(説明|備考|コメント|理由|記述|注記|description).*",
 						"confidence": 99,
 						"mandatory": true
 					}

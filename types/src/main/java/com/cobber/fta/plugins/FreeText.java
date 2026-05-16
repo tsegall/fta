@@ -46,6 +46,7 @@ public class FreeText extends LogicalTypeInfinite {
 	private boolean randomInitialized;
 	private SingletonSet samples;
 	private TextProcessor processor;
+	private boolean isJapanese;
 
 	/**
 	 * Construct a plugin to detect free-form text based on the Plugin Definition.
@@ -83,6 +84,7 @@ public class FreeText extends LogicalTypeInfinite {
 		super.initialize(analysisConfig);
 
 		processor = new TextProcessor(locale);
+		isJapanese = "ja".equals(locale.getLanguage());
 
 		return true;
 	}
@@ -92,7 +94,18 @@ public class FreeText extends LogicalTypeInfinite {
 		return isText(trimmed);
 	}
 
+	private static boolean isJapaneseText(final String trimmed) {
+		if (trimmed.length() < 4)
+			return false;
+		for (int i = 0; i < trimmed.length(); i++)
+			if (Japanese.isJapaneseChar(trimmed.charAt(i)))
+				return true;
+		return false;
+	}
+
 	private boolean isText(final String trimmed) {
+		if (isJapanese)
+			return isJapaneseText(trimmed);
 		return processor.analyze(trimmed).getDetermination() == TextProcessor.Determination.OK;
 	}
 
