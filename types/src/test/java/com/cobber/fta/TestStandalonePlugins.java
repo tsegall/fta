@@ -980,4 +980,325 @@ public class TestStandalonePlugins {
 			analysis.train(s);
 		assertNotEquals(analysis.getResult().getSemanticType(), "FREE_TEXT");
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void frColorDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"ROUGE", "BLEU", "VERT", "BLANC", "NOIR", "ORANGE", "ROSE", "GRIS",
+			"MARRON", "VIOLET", "JAUNE", "BEIGE", "CRÈME", "BLEU MARINE", "BORDEAUX",
+			"TURQUOISE", "INDIGO", "ARGENT", "OR", "BRONZE", "ROUGE", "BLEU", "VERT"
+		};
+		for (final String header : new String[] { "couleur", "Couleur", "couleur_produit" }) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("fr-FR"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_FR", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void frColorNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"ROUGE", "BLEU", "VERT", "BLANC", "NOIR", "ORANGE", "ROSE", "GRIS",
+			"MARRON", "VIOLET", "JAUNE", "BEIGE", "CRÈME", "BLEU MARINE", "BORDEAUX"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("fr-FR"));
+		for (final String s : inputs)
+			analysis.train(s);
+		assertNotEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_FR");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void deColorDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"ROT", "BLAU", "GRÜN", "WEISS", "SCHWARZ", "ORANGE", "ROSA", "GRAU",
+			"BRAUN", "VIOLETT", "GELB", "BEIGE", "CREME", "MARINEBLAU", "BORDEAUX",
+			"TÜRKIS", "INDIGO", "SILBER", "GOLD", "BRONZE", "ROT", "BLAU", "GRÜN"
+		};
+		for (final String header : new String[] { "farbe", "Farbe", "Haarfarbe" }) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("de-DE"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_DE", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void deColorNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"ROT", "BLAU", "GRÜN", "WEISS", "SCHWARZ", "ORANGE", "ROSA", "GRAU",
+			"BRAUN", "VIOLETT", "GELB", "BEIGE", "CREME", "MARINEBLAU", "BORDEAUX"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("de-DE"));
+		for (final String s : inputs)
+			analysis.train(s);
+		assertNotEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_DE");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaColorDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		// Mix of katakana, kanji+色, and bare kanji forms
+		final String[] inputs = {
+			"レッド", "ブルー", "グリーン", "ホワイト", "ブラック", "オレンジ", "ピンク", "グレー",
+			"ブラウン", "パープル", "イエロー", "ベージュ", "赤色", "青色", "緑色",
+			"茶色", "灰色", "金色", "赤", "青", "黄", "レッド", "ブルー"
+		};
+		for (final String header : new String[] { "色", "カラー", "商品色" }) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_JA", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaColorNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"レッド", "ブルー", "グリーン", "ホワイト", "ブラック", "オレンジ", "ピンク", "グレー",
+			"ブラウン", "パープル", "イエロー", "ベージュ", "赤色", "青色", "緑色"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		for (final String s : inputs)
+			analysis.train(s);
+		assertNotEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_JA");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaLanguageDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"日本語", "英語", "フランス語", "ドイツ語", "スペイン語", "中国語", "ロシア語", "韓国語",
+			"イタリア語", "ポルトガル語", "アラビア語", "ヒンディー語", "タイ語", "ベトナム語",
+			"インドネシア語", "オランダ語", "ポーランド語", "スウェーデン語", "ノルウェー語", "ギリシャ語"
+		};
+		final String[] headers = { "言語", "言語名", "使用言語" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "LANGUAGE.TEXT_JA", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaCompanyDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"トヨタ自動車株式会社", "本田技研工業株式会社", "ソニーグループ株式会社", "パナソニックホールディングス株式会社",
+			"富士通株式会社", "日本電気株式会社", "三菱電機株式会社", "東芝株式会社", "シャープ株式会社",
+			"日立製作所株式会社", "任天堂株式会社", "スズキ株式会社", "マツダ株式会社", "日産自動車株式会社",
+			"ソフトバンクグループ株式会社", "楽天グループ株式会社", "花王株式会社", "武田薬品工業株式会社",
+			"株式会社資生堂", "キリンホールディングス株式会社"
+		};
+		final String[] headers = { "会社名", "企業名", "取引先名" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "COMPANY_NAME", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaCryptoDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"ビットコイン", "イーサリアム", "リップル", "ライトコイン", "カルダノ", "ポルカドット", "ドージコイン",
+			"ソラナ", "アバランチ", "チェーンリンク", "ステラ", "モネロ", "ダッシュ", "ネオ", "コスモス",
+			"アルゴランド", "テゾス", "バイナンスコイン", "ユニスワップ", "ポリゴン"
+		};
+		final String[] headers = { "暗号通貨", "仮想通貨", "暗号資産" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "CRYPTOCURRENCY.TEXT_JA", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaJobTitleDetectionWithHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"部長", "課長", "係長", "主任", "担当", "社長", "取締役", "監査役",
+			"エンジニア", "マネージャー", "ディレクター", "弁護士", "看護師", "薬剤師",
+			"技術者", "研究者", "営業担当者", "人事部長", "総務課長", "開発リーダー"
+		};
+		final String[] headers = { "役職", "職種", "役職名", "職位" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "JOB_TITLE_JA", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaJobTitleDetectionNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		// Without a header, needs 20+ samples and 10+ distinct values
+		final String[] inputs = {
+			"部長", "課長", "係長", "主任", "社長", "取締役", "監査役", "専務", "常務", "副社長",
+			"エンジニア", "マネージャー", "ディレクター", "弁護士", "看護師", "薬剤師",
+			"技術者", "研究者", "営業部長", "人事課長", "総務担当", "開発者", "設計者", "教員"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		for (final String s : inputs)
+			analysis.train(s);
+		assertEquals(analysis.getResult().getSemanticType(), "JOB_TITLE_JA");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaContinentDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"アジア", "ヨーロッパ", "アフリカ", "北アメリカ", "南アメリカ", "オセアニア", "南極",
+			"アジア", "ヨーロッパ", "アフリカ", "北アメリカ", "南アメリカ", "オセアニア", "南極",
+			"アジア", "欧州", "北米", "南米", "アフリカ", "オセアニア"
+		};
+		final String[] headers = { "大陸", "地域", "所在大陸" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "CONTINENT.TEXT_JA", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaCurrencyDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"円", "米ドル", "ユーロ", "イギリスポンド", "スイスフラン", "カナダドル", "オーストラリアドル",
+			"中国人民元", "韓国ウォン", "インドルピー", "ブラジルレアル", "ロシアルーブル", "メキシコペソ",
+			"スウェーデンクローナ", "ノルウェークローネ", "タイバーツ", "シンガポールドル", "香港ドル",
+			"南アフリカランド", "トルコリラ"
+		};
+		final String[] headers = { "通貨", "通貨名", "支払通貨" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "CURRENCY.TEXT_JA", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaNationalityDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"日本人", "アメリカ人", "中国人", "韓国人", "フランス人", "ドイツ人", "イギリス人", "イタリア人",
+			"スペイン人", "ブラジル人", "カナダ人", "オーストラリア人", "インド人", "ロシア人", "メキシコ人",
+			"オランダ人", "ポーランド人", "スウェーデン人", "アルゼンチン人", "ベトナム人"
+		};
+		final String[] headers = { "国籍", "出身国", "お客様国籍" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "NATIONALITY_JA", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaNationalityDoublets() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		// Both 米国人/アメリカ人 and 英国人/イギリス人 doublets should be valid
+		final String[] inputs = {
+			"米国人", "英国人", "日本人", "中国人", "韓国人", "フランス人", "ドイツ語人", "イタリア人",
+			"スペイン人", "ブラジル人", "カナダ人", "オーストラリア人", "インド人", "ロシア人", "台湾人",
+			"香港人", "スコットランド人", "アイルランド人", "スイス人", "アメリカ人"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("国籍");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		for (final String s : inputs)
+			analysis.train(s);
+		// ドイツ語人 is not in the list and will be an outlier — confirm detection still succeeds
+		assertEquals(analysis.getResult().getSemanticType(), "NATIONALITY_JA");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaHonorificDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"様", "さん", "先生", "氏", "様", "さん", "さん", "様", "先生", "殿",
+			"様", "さん", "氏", "君", "様", "さん", "先生", "様", "さん", "氏"
+		};
+		final String[] headers = { "敬称", "称号", "お客様敬称" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "HONORIFIC_JA", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaCompanyNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"トヨタ自動車株式会社", "本田技研工業株式会社", "ソニーグループ株式会社", "富士通株式会社",
+			"日本電気株式会社", "三菱電機株式会社", "東芝株式会社", "任天堂株式会社", "スズキ株式会社",
+			"ソフトバンクグループ株式会社", "楽天グループ株式会社", "花王株式会社"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		for (final String s : inputs)
+			analysis.train(s);
+		assertNotEquals(analysis.getResult().getSemanticType(), "COMPANY_NAME");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaIndustryDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"製造業", "情報通信業", "金融業", "保険業", "建設業", "小売業", "卸売業", "農業",
+			"医療業", "教育業", "運輸業", "不動産業", "宿泊業", "飲食業", "鉄鋼業", "化学工業",
+			"電気業", "通信業", "鉱業", "漁業"
+		};
+		final String[] headers = { "業界", "業種", "産業", "業界名", "業種名" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "INDUSTRY_JA", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaMaritalStatusDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"既婚", "未婚", "独身", "離婚", "死別", "別居", "婚約中", "事実婚", "再婚", "未亡人",
+			"既婚", "未婚", "独身", "離婚", "既婚", "未婚"
+		};
+		final String[] headers = { "婚姻状況", "婚姻", "配偶者状況", "結婚状況" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "PERSON.MARITAL_STATUS_JA", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaPrefectureRegionDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"北海道", "東北", "関東", "中部", "近畿", "関西", "中国", "四国",
+			"九州", "九州・沖縄", "北海道地方", "東北地方", "関東地方", "中部地方",
+			"近畿地方", "関西地方", "中国地方", "四国地方", "九州地方"
+		};
+		final String[] headers = { "地方", "地域区分", "地域", "地区" };
+		for (final String header : headers) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "STATE_PROVINCE.REGION_NAME_JA", "header: " + header);
+		}
+	}
 }

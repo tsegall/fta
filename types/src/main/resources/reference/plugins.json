@@ -1905,6 +1905,32 @@
 		"priority": 102
 	},
 	{
+		"semanticType": "PERSON.MARITAL_STATUS_JA",
+		"description": "Marital Status (Japanese Language)",
+		"pluginType": "java",
+		"signature": "[NONE]",
+		"clazz": "com.cobber.fta.plugins.person.MaritalStatusJA",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(婚姻状況|婚姻|配偶者状況|結婚状況|配偶).*",
+						"confidence": 95,
+						"mandatory": true
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Marital_status"
+			}
+		],
+		"priority": 103
+	},
+	{
 		"semanticType": "NATIONALITY_EN",
 		"description": "Nationality (English Language)",
 		"pluginType": "list",
@@ -1979,6 +2005,49 @@
 		"priority": 104
 	},
 	{
+		"semanticType": "NATIONALITY_JA",
+		"description": "Nationality (Japanese Language)",
+		"pluginType": "list",
+		"signature": "vkm2FHQhEDlaHNRASFCctRRN17Q=",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(国籍|出身国|国民).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"ignoreList": [
+			"N/A",
+			"OTHER",
+			"なし",
+			"不明"
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ja_nationality.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P27"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Nationality"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/nationality"
+			}
+		],
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 107
+	},
+	{
 		"semanticType": "HONORIFIC_EN",
 		"description": "Honorific (English Language)",
 		"pluginType": "list",
@@ -2018,6 +2087,43 @@
 		],
 		"backout": "[\\p{IsAlphabetic}\\.]+",
 		"priority": 105
+	},
+	{
+		"semanticType": "HONORIFIC_JA",
+		"description": "Honorific (Japanese Language)",
+		"pluginType": "list",
+		"signature": "TH7sX6b0v5GTGaJNwt++bGHlM2U=",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(敬称|称号).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ja_honorific.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P511"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Japanese_honorifics"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/honorificPrefix"
+			}
+		],
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 106
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_DE",
@@ -3913,6 +4019,36 @@
 		"priority": 166
 	},
 	{
+		"semanticType": "STATE_PROVINCE.REGION_NAME_JA",
+		"description": "Japanese Prefecture Region",
+		"pluginType": "list",
+		"signature": "ZONRP+bNzKoAVP27nX8OLSWgLwg=",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(地方|地域区分|地域|地区).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ja_prefecture_regions.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/List_of_regions_of_Japan"
+			}
+		],
+		"backout": "[\\p{IsAlphabetic}]+",
+		"threshold": 90,
+		"priority": 167
+	},
+	{
 		"semanticType": "STATE_PROVINCE.STATE_FIPS_US",
 		"description": "US State FIPS code",
 		"pluginType": "list",
@@ -4138,6 +4274,35 @@
 		"priority": 173
 	},
 	{
+		"semanticType": "CURRENCY.TEXT_JA",
+		"description": "Currency Name (Japanese)",
+		"pluginType": "list",
+		"signature": "59RfOEqBtOoez1HYaw/Hl4yWxds=",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(通貨|通貨名|貨幣).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ja_currency.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Currency"
+			}
+		],
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 175
+	},
+	{
 		"semanticType": "CRYPTOCURRENCY.TEXT_EN",
 		"description": "Cryptocurrency Name",
 		"pluginType": "list",
@@ -4165,6 +4330,35 @@
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 174
+	},
+	{
+		"semanticType": "CRYPTOCURRENCY.TEXT_JA",
+		"description": "Cryptocurrency Name (Japanese)",
+		"pluginType": "list",
+		"signature": "o3n3/stkV2R02CLEVBJhaVvvsWw=",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(暗号.{0,2}通貨|仮想.{0,2}通貨|暗号資産|クリプト).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ja_cryptocurrency.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Cryptocurrency"
+			}
+		],
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 176
 	},
 	{
 		"semanticType": "COUNTRY.ISO-3166-3",
@@ -4311,6 +4505,35 @@
 			}
 		],
 		"priority": 178
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_JA",
+		"description": "Continent (Japanese)",
+		"pluginType": "list",
+		"signature": "IeOV/6/rS2Q4N/6LGzwaPk9wJxQ=",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(大陸|地域|地区).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ja_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 179
 	},
 	{
 		"semanticType": "CONTINENT.CODE_EN",
@@ -5724,6 +5947,40 @@
 		"priority": 250
 	},
 	{
+		"semanticType": "LANGUAGE.TEXT_JA",
+		"description": "Language name (Japanese)",
+		"pluginType": "list",
+		"signature": "n7wmfS8X/ddLhvzu4yTas2kyVSI=",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(言語|母国語|母語).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ja_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 251
+	},
+	{
 		"semanticType": "MACADDRESS",
 		"description": "MAC Address",
 		"pluginType": "regex",
@@ -6214,6 +6471,40 @@
 		"priority": 300
 	},
 	{
+		"semanticType": "JOB_TITLE_JA",
+		"description": "Job Title (Japanese Language)",
+		"pluginType": "java",
+		"signature": "[NONE]",
+		"clazz": "com.cobber.fta.plugins.JobTitleJA",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": "^(?U)(役職|職種|職位|肩書|職名|役職名)$",
+						"confidence": 99
+					},
+					{
+						"regExp": ".*(?U)(役職|職種|職位|肩書|職名).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Work_(human_activity)"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/jobTitle"
+			}
+		],
+		"threshold": 60,
+		"priority": 301
+	},
+	{
 		"semanticType": "INDUSTRY_EN",
 		"description": "Industry Name",
 		"pluginType": "java",
@@ -6237,6 +6528,38 @@
 			}
 		],
 		"priority": 301
+	},
+	{
+		"semanticType": "INDUSTRY_JA",
+		"description": "Industry Name (Japanese Language)",
+		"pluginType": "java",
+		"signature": "[NONE]",
+		"clazz": "com.cobber.fta.plugins.IndustryJA",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": "^(?U)(業界|業種|産業|業界名|業種名|産業分類)$",
+						"confidence": 99,
+						"mandatory": true
+					},
+					{
+						"regExp": ".*(?U)(業界|業種|産業|業界名|業種名).*",
+						"confidence": 90,
+						"mandatory": true
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Japan_Standard_Industrial_Classification"
+			}
+		],
+		"threshold": 90,
+		"priority": 302
 	},
 	{
 		"semanticType": "HASH.SHA1_HEX",
@@ -6470,6 +6793,117 @@
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 307
+	},
+	{
+		"semanticType": "COLOR.TEXT_FR",
+		"description": "Color name (French)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "JLU+X0Wb4WFUzczxd+HR0amt/9k=",
+		"validLocales": [
+			{
+				"localeTag": "fr",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(couleur).*",
+						"confidence": 90,
+						"mandatory": true
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/fr_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 308
+	},
+	{
+		"semanticType": "COLOR.TEXT_DE",
+		"description": "Color name (German)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "WpF97TuRBtG0sQFffBOYDvLEr7o=",
+		"validLocales": [
+			{
+				"localeTag": "de",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(farbe).*",
+						"confidence": 90,
+						"mandatory": true
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/de_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 309
+	},
+	{
+		"semanticType": "COLOR.TEXT_JA",
+		"description": "Color name (Japanese)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "4im5ZCST/ao0QDQNNvfS6R8bhG0=",
+		"validLocales": [
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(色|カラー).*",
+						"confidence": 90,
+						"mandatory": true
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ja_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 310
 	},
 	{
 		"semanticType": "DIRECTION",
@@ -7232,6 +7666,30 @@
 							"\\p{IsAlphabetic}+"
 						],
 						"regExpReturned": "[-+|*:;!@\"/()',&# \\.\\p{IsAlphabetic}\\d]*",
+						"isRegExpComplete": false
+					}
+				]
+			},
+			{
+				"localeTag": "ja",
+				"headerRegExps": [
+					{
+						"regExp": "^(?U)(会社名|企業名|組織名|法人名|取引先名|商号)$",
+						"confidence": 99,
+						"mandatory": true
+					},
+					{
+						"regExp": "^.*(?U)(会社名|企業名|組織名|法人名|取引先名).*$",
+						"confidence": 90,
+						"mandatory": true
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpsToMatch": [
+							".+"
+						],
+						"regExpReturned": ".+",
 						"isRegExpComplete": false
 					}
 				]

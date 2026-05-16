@@ -14,12 +14,16 @@
 |CHECKDIGIT.UPC|UPC - Universal Product Code|https://en.wikipedia.org/wiki/Universal_Product_Code|*|
 |CITY|City/Town|https://en.wikipedia.org/wiki/City, https://schema.org/City|de, en, es, fr, ja, nl|
 |COLOR.HEX|Hex Color code|https://www.wikidata.org/wiki/Property:P465, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|*|
+|COLOR.TEXT_DE|Color name (German)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|de|
 |COLOR.TEXT_EN|Color name (English)|https://www.wikidata.org/wiki/Property:P462, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|*|
 |COLOR.TEXT_ES|Color name (Spanish)|https://www.wikidata.org/wiki/Property:P462, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|es|
+|COLOR.TEXT_FR|Color name (French)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|fr|
+|COLOR.TEXT_JA|Color name (Japanese)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|ja|
 |COLOR.TEXT_NL|Color name (Dutch)|https://www.wikidata.org/wiki/Property:P462, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|nl|
-|COMPANY_NAME|Organization/Company Name|https://en.wikipedia.org/wiki/Company, https://schema.org/Corporation|en, nl|
+|COMPANY_NAME|Organization/Company Name|https://en.wikipedia.org/wiki/Company, https://schema.org/Corporation|en, nl, ja|
 |CONTINENT.CODE_EN|Continent Code||en|
 |CONTINENT.TEXT_EN|Continent|https://www.wikidata.org/wiki/Property:P30|en|
+|CONTINENT.TEXT_JA|Continent (Japanese)|https://www.wikidata.org/wiki/Property:P30|ja|
 |COORDINATE.EASTING|Latitude - easting|https://en.wikipedia.org/wiki/Projected_coordinate_system, https://schema.org/latitude|en|
 |COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://www.wikidata.org/wiki/Q34027, https://schema.org/latitude|*, es-MX,es-PE, ca,da,de,es,fi,fr,it,nl,ro,ru|
 |COORDINATE.LATITUDE_DMS|Latitude (degrees/minutes/seconds)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://schema.org/latitude|*|
@@ -37,7 +41,9 @@
 |COUNTRY.TEXT_NL|Country as a string (Dutch)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|nl|
 |CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|https://en.wikipedia.org/wiki/Credit_card, https://schema.org/CreditCard|*|
 |CRYPTOCURRENCY.TEXT_EN|Cryptocurrency Name|https://en.wikipedia.org/wiki/Cryptocurrency|en|
+|CRYPTOCURRENCY.TEXT_JA|Cryptocurrency Name (Japanese)|https://en.wikipedia.org/wiki/Cryptocurrency|ja|
 |CURRENCY.TEXT_EN|Currency Name|https://en.wikipedia.org/wiki/Currency|en|
+|CURRENCY.TEXT_JA|Currency Name (Japanese)|https://en.wikipedia.org/wiki/Currency|ja|
 |CURRENCY_CODE.ISO-4217|Currency as defined by ISO 4217|https://www.wikidata.org/wiki/Property:P498, https://en.wikipedia.org/wiki/ISO_4217, https://schema.org/priceCurrency|*|
 |DAY.ABBR_&lt;LOCALE&gt;|Day of Week Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)||*|
 |DAY.DIGITS|Numeric Day of Month||en, es, nl, ja|
@@ -57,6 +63,7 @@
 |HASH.SHA1_HEX|SHA1 Hash - hexadecimal|https://en.wikipedia.org/wiki/SHA-1|*|
 |HASH.SHA256_HEX|SHA256 Hash - hexadecimal|https://en.wikipedia.org/wiki/SHA-2|*|
 |HONORIFIC_EN|Honorific (English Language)|https://www.wikidata.org/wiki/Property:P511, https://en.wikipedia.org/wiki/English_honorifics, https://schema.org/honorificPrefix|en|
+|HONORIFIC_JA|Honorific (Japanese Language)|https://www.wikidata.org/wiki/Property:P511, https://en.wikipedia.org/wiki/Japanese_honorifics, https://schema.org/honorificPrefix|ja|
 |IDENTIFIER|Unique Identifier|https://en.wikipedia.org/wiki/Identifier, https://schema.org/identifier|*|
 |IDENTITY.AADHAAR_IN|Aadhaar (India)|https://en.wikipedia.org/wiki/Aadhaar|en-IN|
 |IDENTITY.BSN_NL|BSN (Netherlands)|https://en.wikipedia.org/wiki/National_identification_number#Netherlands|en-NL,nl-NL|
@@ -74,12 +81,15 @@
 |IMEI|International Mobile Equipment Identity|https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity|*|
 |INDUSTRY_CODE.NAICS|Industry Code - NAICS|https://www.wikidata.org/wiki/Property:P3224, https://en.wikipedia.org/wiki/North_American_Industry_Classification_System, https://schema.org/naics|en-US,en-CA,en-MX,es-MX,fr-CA|
 |INDUSTRY_EN|Industry Name||*|
+|INDUSTRY_JA|Industry Name (Japanese Language)|https://en.wikipedia.org/wiki/Japan_Standard_Industrial_Classification|ja|
 |IPADDRESS.IPV4|IP V4 Address|https://www.wikidata.org/wiki/Property:P511, https://en.wikipedia.org/wiki/Internet_Protocol_version_4|*|
 |IPADDRESS.IPV6|IP V6 Address|https://www.wikidata.org/wiki/Property:P511, https://en.wikipedia.org/wiki/IPv6|*|
 |JOB_TITLE_EN|Job Title/Occupation (English Language)|https://en.wikipedia.org/wiki/Work_(human_activity), https://schema.org/jobTitle, https://schema.org/title|en|
+|JOB_TITLE_JA|Job Title (Japanese Language)|https://en.wikipedia.org/wiki/Work_(human_activity), https://schema.org/jobTitle|ja|
 |LANGUAGE.ISO-639-1|Language code - ISO 639, two character|https://www.wikidata.org/wiki/Property:P218, https://en.wikipedia.org/wiki/ISO_639-1|*|
 |LANGUAGE.ISO-639-2|Language code - ISO 639, three character|https://www.wikidata.org/wiki/Property:P219, https://en.wikipedia.org/wiki/ISO_639-2|*|
 |LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...||en|
+|LANGUAGE.TEXT_JA|Language name (Japanese)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|ja|
 |MACADDRESS|MAC Address|https://en.wikipedia.org/wiki/MAC_address|*|
 |MONTH.ABBR_&lt;LOCALE&gt;|Month Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)||*|
 |MONTH.DIGITS|Numeric Month||en, es, nl, ja|
@@ -92,6 +102,7 @@
 |NAME.MIDDLE_INITIAL|Middle Initial|https://en.wikipedia.org/wiki/Middle_name|en|
 |NAME.SUFFIX|Name Suffix|https://www.wikidata.org/wiki/Property:P8017, https://en.wikipedia.org/wiki/Suffix_(name)|en|
 |NATIONALITY_EN|Nationality (English Language)|https://en.wikipedia.org/wiki/Nationality, https://schema.org/nationality|en|
+|NATIONALITY_JA|Nationality (Japanese Language)|https://www.wikidata.org/wiki/Property:P27, https://en.wikipedia.org/wiki/Nationality, https://schema.org/nationality|ja|
 |NATIONALITY_NL|Nationality (Dutch Language)|https://en.wikipedia.org/wiki/Nationality, https://schema.org/nationality|nl|
 |PERIOD.HALF|Half (Year)||*|
 |PERIOD.QUARTER|Quarter (Year)||en, nl, ja|
@@ -100,6 +111,7 @@
 |PERSON.AGE_RANGE|Age range (person)||en, es, fr, it, nl, pt, ja|
 |PERSON.DATE_OF_BIRTH|Person - Date of Birth|https://www.wikidata.org/wiki/Property:P569, https://www.wikidata.org/wiki/Q2389905, https://schema.org/birthDate|es, nl, ja, *|
 |PERSON.MARITAL_STATUS_EN|Marital Status (person)|https://en.wikipedia.org/wiki/Marital_status|*|
+|PERSON.MARITAL_STATUS_JA|Marital Status (Japanese Language)|https://en.wikipedia.org/wiki/Marital_status|ja|
 |PERSON.RACE_ABBR_EN|Race/Ethnicity (person)|https://en.wikipedia.org/wiki/Race_(human_categorization)|*|
 |PERSON.RACE_EN|Race/Ethnicity (person)|https://en.wikipedia.org/wiki/Race_(human_categorization)|*|
 |PERSON.YEAR_OF_BIRTH|Person - Year of Birth|https://www.wikidata.org/wiki/Property:P569, https://www.wikidata.org/wiki/Q2389905|*|
@@ -158,6 +170,7 @@
 |STATE_PROVINCE.PROVINCE_ZA|South African Province Code|https://en.wikipedia.org/wiki/Provinces_of_South_Africa, https://schema.org/State|en-ZA|
 |STATE_PROVINCE.REGION_NAME_FR|French Region||fr-FR|
 |STATE_PROVINCE.REGION_NAME_IT|Italian Region|https://en.wikipedia.org/wiki/Regions_of_Italy|it-IT|
+|STATE_PROVINCE.REGION_NAME_JA|Japanese Prefecture Region|https://en.wikipedia.org/wiki/List_of_regions_of_Japan|ja|
 |STATE_PROVINCE.REGION_NAME_PE|Peruvian Region/Department|https://en.wikipedia.org/wiki/Regions_of_Peru|es-PE|
 |STATE_PROVINCE.REGION_NAME_TZ|Tanzanian Region|https://en.wikipedia.org/wiki/Regions_of_Tanzania|en-TZ,sw-TZ|
 |STATE_PROVINCE.STATE_AU|Australian State Code|https://en.wikipedia.org/wiki/States_and_territories_of_Australia, https://schema.org/State|en-AU|
