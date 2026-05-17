@@ -1301,4 +1301,34 @@ public class TestStandalonePlugins {
 			assertEquals(analysis.getResult().getSemanticType(), "STATE_PROVINCE.REGION_NAME_JA", "header: " + header);
 		}
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaLongitudeDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		// Real longitude values from Hokkaido, Japan (~141°E)
+		final String[] inputs = {
+			"141.319722", "141.321733", "141.319617", "141.323040", "141.322217",
+			"141.318922", "141.356364", "141.341914", "141.340360", "141.338831",
+			"141.337283", "141.335727", "141.334155", "141.332590", "141.331028"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("経度");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		for (final String s : inputs)
+			analysis.train(s);
+		assertEquals(analysis.getResult().getSemanticType(), "COORDINATE.LONGITUDE_DECIMAL");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaLatitudeDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		// Real latitude values from Hokkaido, Japan (~43°N)
+		final String[] inputs = {
+			"43.064615", "43.061389", "43.058333", "43.055278", "43.052222",
+			"43.049167", "43.046111", "43.043056", "43.040000", "43.036944",
+			"43.033889", "43.030833", "43.027778", "43.024722", "43.021667"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("緯度");
+		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
+		for (final String s : inputs)
+			analysis.train(s);
+		assertEquals(analysis.getResult().getSemanticType(), "COORDINATE.LATITUDE_DECIMAL");
+	}
 }

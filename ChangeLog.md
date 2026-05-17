@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 18.12.0
+fix: COORDINATE.LONGITUDE_DECIMAL and COORDINATE.LATITUDE_DECIMAL not detected for ja-JP locale — 経度/緯度 appeared in the ca/da/de/... header regexp but ja was absent from that localeTag; added dedicated ja locale entries with period-only decimal separator
+fix: Remove 経度/緯度 dead code from ca,da,de,es,fi,fr,it,nl,ro,ru header regexps in COORDINATE.LATITUDE_DECIMAL and COORDINATE.LONGITUDE_DECIMAL — unreachable after ja locale entries were added
+
 ### 18.11.0
 feat: Add COLOR.TEXT_FR, COLOR.TEXT_DE, and COLOR.TEXT_JA semantic type plugins with French, German, and Japanese color name lists
 feat: Add LANGUAGE.TEXT_JA semantic type plugin with 85 Japanese language names (言語/母国語/母語 header hints)

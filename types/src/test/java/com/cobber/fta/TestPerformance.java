@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.cobber.fta.core.FTAPluginException;
+import com.cobber.fta.core.FTAUnsupportedLocaleException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
@@ -42,6 +45,65 @@ import de.siegmar.fastcsv.reader.NamedCsvRecord;
  */
 public class TestPerformance {
 	private final Logger logger = LoggerFactory.getLogger("com.cobber.fta");
+
+	/**
+	 * Baseline for plugin startup cost: measures the time to initialize 30 TextAnalyzers (one per column)
+	 * across representative locales.  Run twice per locale — the first pass pays JSON parsing, CSV loading,
+	 * and class loading; the second pass shows the steady-state per-instance cost that optimisations will reduce.
+	 *
+	 * Interpretation guide:
+	 *   Pass 1 (cold): dominated by one-time JVM work — not the target for optimization.
+	 *   Pass 2 (warm): dominated by per-instance work (filter scan + reflection + initialize) — this IS the target.
+	 *   Per-col warm: warm total / 30 — the marginal cost of adding one more column to an analysis run.
+	 *   Plugin count: how many semantic-type plugins were registered for that locale — drives both passes.
+	 */
+	@Test(groups = { TestGroups.ALL, TestGroups.PERFORMANCE })
+	public void pluginStartupCost() throws FTAPluginException, FTAUnsupportedLocaleException {
+		// Locales span the range from most plugins (en-US) down to a handful (de-DE), with ja-JP and fr-FR in between.
+		final String[][] locales = {
+			{ "en-US", "English (US)"  },
+			{ "ja-JP", "Japanese"      },
+			{ "fr-FR", "French"        },
+			{ "de-DE", "German"        },
+		};
+		final int COLUMNS = 30;
+		final int PASSES  = 2;
+
+		System.out.printf("%nPlugin startup cost benchmark — %d columns per run, %d passes (cold then warm)%n", COLUMNS, PASSES);
+		System.out.printf("%-22s  %8s  %9s  %9s  %12s%n",
+				"Locale", "Plugins", "Pass 1 (ms)", "Pass 2 (ms)", "Per-col warm");
+		System.out.printf("%-22s  %8s  %9s  %9s  %12s%n",
+				"------", "-------", "-----------", "-----------", "------------");
+
+		for (final String[] localeInfo : locales) {
+			final Locale locale = Locale.forLanguageTag(localeInfo[0]);
+			final long[] passTimes = new long[PASSES];
+			int pluginCount = 0;
+
+			for (int pass = 0; pass < PASSES; pass++) {
+				final long start = System.nanoTime();
+				for (int col = 0; col < COLUMNS; col++) {
+					final TextAnalyzer ta = new TextAnalyzer("col" + col);
+					ta.setLocale(locale);
+					ta.train("sample");
+					ta.getResult();
+					// Capture plugin count once — same every column after warm-up.
+					if (pass == 0 && col == 0)
+						pluginCount = ta.getPlugins().getRegisteredSemanticTypes().size();
+				}
+				passTimes[pass] = System.nanoTime() - start;
+			}
+
+			final long warmMicrosPerCol = passTimes[1] / (COLUMNS * 1_000L);
+			System.out.printf("%-22s  %8d  %9d  %9d  %9d µs%n",
+					localeInfo[1] + " (" + localeInfo[0] + ")",
+					pluginCount,
+					passTimes[0] / 1_000_000,
+					passTimes[1] / 1_000_000,
+					warmMicrosPerCol);
+		}
+		System.out.println();
+	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PERFORMANCE })
 	public void basePerformanceBulkString() throws IOException, FTAException {
