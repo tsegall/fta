@@ -112,7 +112,7 @@ This prints the plugin definition, then `true`/`false` for each input row, then 
 
 ## ChangeLog Conventions
 
-ChangeLog uses [Conventional Commits](https://www.conventionalcommits.org/) format. Entries go under a `### <version>` section header with no leading ` - ` dash. Common types:
+ChangeLog uses [Conventional Commits](https://www.conventionalcommits.org/) format. Entries go under a `### <version>` section header, each prefixed with ` - ` (space-dash-space). Common types:
 
 - `feat:` — new feature or enhancement
 - `fix:` — bug fix

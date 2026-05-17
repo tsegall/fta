@@ -1,23 +1,26 @@
 
 ## Changes ##
 
+### 18.13.0
+- feat: Resequence priorities - so we can support internationization more simply.
+
 ### 18.12.0
-fix: COORDINATE.LONGITUDE_DECIMAL and COORDINATE.LATITUDE_DECIMAL not detected for ja-JP locale — 経度/緯度 appeared in the ca/da/de/... header regexp but ja was absent from that localeTag; added dedicated ja locale entries with period-only decimal separator
-fix: Remove 経度/緯度 dead code from ca,da,de,es,fi,fr,it,nl,ro,ru header regexps in COORDINATE.LATITUDE_DECIMAL and COORDINATE.LONGITUDE_DECIMAL — unreachable after ja locale entries were added
+- fix: COORDINATE.LONGITUDE_DECIMAL and COORDINATE.LATITUDE_DECIMAL not detected for ja-JP locale — 経度/緯度 appeared in the ca/da/de/... header regexp but ja was absent from that localeTag; added dedicated ja locale entries with period-only decimal separator
+- fix: Remove 経度/緯度 dead code from ca,da,de,es,fi,fr,it,nl,ro,ru header regexps in COORDINATE.LATITUDE_DECIMAL and COORDINATE.LONGITUDE_DECIMAL — unreachable after ja locale entries were added
 
 ### 18.11.0
-feat: Add COLOR.TEXT_FR, COLOR.TEXT_DE, and COLOR.TEXT_JA semantic type plugins with French, German, and Japanese color name lists
-feat: Add LANGUAGE.TEXT_JA semantic type plugin with 85 Japanese language names (言語/母国語/母語 header hints)
-feat: Add ja locale support to COMPANY_NAME plugin (会社名/企業名/組織名/法人名/取引先名/商号 headers, mandatory)
-feat: Add HONORIFIC_JA semantic type plugin with 11 Japanese honorifics (様/さん/氏/先生/殿/君/くん/ちゃん/博士; 敬称/称号 header hints)
-feat: Add NATIONALITY_JA semantic type plugin with 107 Japanese demonyms (国籍/出身国 header hints); includes doublets 米国人/アメリカ人 and 英国人/イギリス人
-feat: Add CURRENCY.TEXT_JA semantic type plugin with 113 Japanese currency names (通貨/通貨名 header hints)
-feat: Add CONTINENT.TEXT_JA semantic type plugin with 11 Japanese continent names including alternates 欧州/北米/南米 (大陸/地域 header hints)
-feat: Add CRYPTOCURRENCY.TEXT_JA semantic type plugin with 45 Japanese cryptocurrency names (暗号通貨/仮想通貨/暗号資産 header hints)
-feat: Add JOB_TITLE_JA Java plugin detecting Japanese job titles via productive suffix heuristic (長/員/士/師/者/役/官) plus 37-entry known-titles list covering katakana loan words and irregular forms (役職/職種/職位/肩書 header hints)
-feat: Add PERSON.MARITAL_STATUS_JA Java plugin with 10 Japanese marital status terms (婚姻状況/婚姻/配偶者状況/結婚状況 header hints; mandatory header)
-feat: Add STATE_PROVINCE.REGION_NAME_JA list plugin with 20 entries covering Japan's 8 regional groupings in short/long/alternate forms (地方/地域区分/地域/地区 header hints)
-feat: Add INDUSTRY_JA Java plugin detecting Japanese industry names via 業/産業/業界 suffix heuristic plus 100-entry JSIC-based list; mandatory header (業界/業種/産業)
+- feat: Add COLOR.TEXT_FR, COLOR.TEXT_DE, and COLOR.TEXT_JA semantic type plugins with French, German, and Japanese color name lists
+- feat: Add LANGUAGE.TEXT_JA semantic type plugin with 85 Japanese language names (言語/母国語/母語 header hints)
+- feat: Add ja locale support to COMPANY_NAME plugin (会社名/企業名/組織名/法人名/取引先名/商号 headers, mandatory)
+- feat: Add HONORIFIC_JA semantic type plugin with 11 Japanese honorifics (様/さん/氏/先生/殿/君/くん/ちゃん/博士; 敬称/称号 header hints)
+- feat: Add NATIONALITY_JA semantic type plugin with 107 Japanese demonyms (国籍/出身国 header hints); includes doublets 米国人/アメリカ人 and 英国人/イギリス人
+- feat: Add CURRENCY.TEXT_JA semantic type plugin with 113 Japanese currency names (通貨/通貨名 header hints)
+- feat: Add CONTINENT.TEXT_JA semantic type plugin with 11 Japanese continent names including alternates 欧州/北米/南米 (大陸/地域 header hints)
+- feat: Add CRYPTOCURRENCY.TEXT_JA semantic type plugin with 45 Japanese cryptocurrency names (暗号通貨/仮想通貨/暗号資産 header hints)
+- feat: Add JOB_TITLE_JA Java plugin detecting Japanese job titles via productive suffix heuristic (長/員/士/師/者/役/官) plus 37-entry known-titles list covering katakana loan words and irregular forms (役職/職種/職位/肩書 header hints)
+- feat: Add PERSON.MARITAL_STATUS_JA Java plugin with 10 Japanese marital status terms (婚姻状況/婚姻/配偶者状況/結婚状況 header hints; mandatory header)
+- feat: Add STATE_PROVINCE.REGION_NAME_JA list plugin with 20 entries covering Japan's 8 regional groupings in short/long/alternate forms (地方/地域区分/地域/地区 header hints)
+- feat: Add INDUSTRY_JA Java plugin detecting Japanese industry names via 業/産業/業界 suffix heuristic plus 100-entry JSIC-based list; mandatory header (業界/業種/産業)
 
 ### 18.10.1
  - fix: GENDER.TEXT_ZH had wrong signature (duplicated GENDER.TEXT_JA's); corrected to XYuZCo4RjIIlf+CjvWH7/QGvKsM=
