@@ -31,9 +31,11 @@ FTA is available in Maven Central. Include it in your project with:
 <dependency>
     <groupId>com.cobber.fta</groupId>
     <artifactId>fta</artifactId>
-    <version>18.9.4</version>
+    <version>18.14.0</version>
 </dependency>
 ```
+
+**Java requirements**: FTA targets Java 17 (compile) but requires a Java 21 runtime due to the DataSketches dependency. Set `JAVA_HOME` to a JDK 21 installation when building or running tests.
 
 ### Streaming Mode Example
 Used when the source is inherently continuous, e.g. IOT device, flat file, etc.
@@ -279,7 +281,7 @@ like phone numbers, but that are in fact invalid, will NOT be detected as the Se
 * Assuming the entire set of stream names is available, Semantic Type detection of a particular column may be impacted by other stream names, for example the Semantic Type PERSON.AGE is commonly detected if we detect another field of type GENDER or NAME.FIRST.
 * When using Record mode for Semantic Type analysis - the detection of Semantic Types for a stream may be impacted by prior determination of the Semantic Type of another Stream (either via detection or provided with the Context)
 * By default analysis is performed on the initial 4096 characters of the field (adjustable via setMaxInputLength()).
-* If two Semantic Types have equal confidence then the Semantic Type with the highest priority will be selected.
+* If two Semantic Types have equal confidence then the Semantic Type with the lower priority value will be selected (lower value = higher importance; plugins are evaluated in ascending priority order).
 
 [Details of Semantic Types detected](SemanticTypes.md)
 
@@ -449,7 +451,7 @@ The following example is looking for a Persons age. The plugin uses two possible
 			}
 		],
 		"baseType" : "LONG",
-		"priority": 98
+		"priority": 980
 	}
 ```
 

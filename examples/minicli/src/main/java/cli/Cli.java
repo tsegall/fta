@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Locale;
 
+import com.cobber.fta.AllocationTracker;
 import com.cobber.fta.AnalyzerContext;
 import com.cobber.fta.RecordAnalyzer;
 import com.cobber.fta.TextAnalysisResult;

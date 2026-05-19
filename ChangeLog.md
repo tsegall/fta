@@ -1,6 +1,29 @@
 
 ## Changes ##
 
+### 18.14.0
+ - fix: GENDER.TEXT_HR — GenderPair word and abbreviation order was swapped (MUŠKARCI/ŽENE → ŽENE/MUŠKARCI, M/Z → Z/M); affected nextRandom() labelling and opposites map
+ - fix: GENDER.TEXT_PL — removed mojibake entry "MÊ¿CZYŸNI" (garbled encoding of MĘŻCZYŹNI) from Java plugin; removed garbled "P³eæ" alternate from plugins.json header regexp
+ - fix: GENDER.TEXT_RO — inconsistent noun/adjective pair FEMEIE/MASCULIN replaced with consistent noun pair FEMEIE/BĂRBAT
+ - fix: GENDER.TEXT_SV — single inconsistent pair KVINNA/MANLIG (noun+adjective) replaced with KVINNA/MAN and KVINNLIG/MANLIG
+ - fix: GENDER.TEXT_<LANGUAGE> Finnish header regexp contained French word "Genre"; removed, leaving only "Gender" and "Sukupuoli"
+ - fix: GENDER.TEXT_<LANGUAGE> Croatian header regexp missing native term; added "spol"
+ - fix: GENDER.TEXT_<LANGUAGE> Spanish header regexp — "genero" (ASCII) did not match accented "género"; changed to (?iu)(Gender|gen[eé]ro|Sexo) in both confidence-99 and confidence-90 entries
+ - test: Add TestInternationalization.java covering GENDER.TEXT_<LANGUAGE> for all 13 previously untested locales (bg, ca, es, fi, fr, hr, is, it, ms, pl, ro, ru, sv)
+ - chore: Bump all example build.gradle FTA dependency ranges from 17.+ to 18.+
+ - fix: minicli — missing import for AllocationTracker; bump fastcsv 3.7.0→4.2.0 and logback-classic 1.5.17→1.5.32 to match version catalog
+ - docs: README — update Maven artifact version, add Java 17/21 requirements note, fix priority field description
+ - docs: CLAUDE.md — fix priority field description to reflect ascending evaluation order and current range (100–2500)
+ - fix: GENDER.TEXT_FR — "GARCON" (ASCII) did not match natural French spelling "garçon"; corrected to "GARÇON"
+ - fix: COLOR.TEXT_ES — removed duplicate GRIS entry from es_color.csv
+ - fix: COLOR.TEXT_NL — removed duplicate PAARS entry from nl_color.csv
+ - test: Add COLOR.TEXT_ES and COLOR.TEXT_NL detection and no-header tests to TestStandalonePlugins
+ - fix: COUNTRY.TEXT_DE — missing "threshold": 90 caused stricter default (95) than all peer language plugins; added to match ES/JA/NL
+ - fix: COUNTRY.TEXT_ES — header regexp ".*(?i)(pais).*" did not match accented header "País"; corrected to ".*(?iu)(pa[ií]s).*"
+ - feat: Add COUNTRY.TEXT_FR plugin (193 French country names, header hint "pays", priority 1044 evaluated before COUNTRY.TEXT_EN)
+ - feat: Expand ja_countries.csv from 71 to 332 entries — add all 249 JIS X 0304 modern katakana/kanji names, kanji abbreviations (米国, 英国, 中国, 韓国, 北朝鮮, etc.), short katakana forms (アメリカ, ロシア, イラン, ベネズエラ), and split slash-notation dead entries into individual members
+ - test: Add jaCountryDetectionModern covering modern JIS katakana names, kanji abbreviations, and short forms absent from the original list
+
 ### 18.13.0
 - feat: Resequence priorities - so we can support internationization more simply.
 

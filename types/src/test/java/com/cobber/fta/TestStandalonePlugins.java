@@ -711,6 +711,23 @@ public class TestStandalonePlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void jaCountryDetectionModern() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			// Modern katakana names (JIS X 0304) — not in the original 71-entry CSV
+			"フランス", "ドイツ", "イタリア", "スペイン", "オランダ",
+			"ベルギー", "スウェーデン", "ノルウェー", "デンマーク", "フィンランド",
+			"アルゼンチン", "コロンビア", "チリ", "ペルー", "エクアドル",
+			"ナイジェリア", "エチオピア", "エジプト", "タンザニア", "ケニア",
+			// Kanji abbreviations added in expansion
+			"米国", "英国", "中国", "韓国", "北朝鮮",
+			// Short katakana forms added in expansion
+			"アメリカ", "ロシア", "イラン", "ベネズエラ", "台湾"
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "国名", Locale.forLanguageTag("ja-JP"), "COUNTRY.TEXT_JA", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void jaCityDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("市区町村");
 		analysis.setLocale(Locale.forLanguageTag("ja-JP"));
@@ -1067,6 +1084,64 @@ public class TestStandalonePlugins {
 		for (final String s : inputs)
 			analysis.train(s);
 		assertNotEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_JA");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void esColorDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"ROJO", "AZUL", "VERDE", "BLANCO", "NEGRO", "NARANJA", "ROSA", "GRIS",
+			"MARRÓN", "VIOLETA", "AMARILLO", "BEIGE", "CREMA", "AZUL MARINO", "BORGOÑA",
+			"TURQUESA", "ÍNDIGO", "PLATA", "ORO", "BRONCE", "ROJO", "AZUL", "VERDE"
+		};
+		for (final String header : new String[] { "color", "Color", "color_producto" }) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("es-ES"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_ES", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void esColorNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"ROJO", "AZUL", "VERDE", "BLANCO", "NEGRO", "NARANJA", "ROSA", "GRIS",
+			"MARRÓN", "VIOLETA", "AMARILLO", "BEIGE", "CREMA", "AZUL MARINO", "BORGOÑA"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("es-ES"));
+		for (final String s : inputs)
+			analysis.train(s);
+		assertNotEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_ES");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nlColorDetection() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"ROOD", "BLAUW", "GROEN", "WIT", "ZWART", "ORANJE", "ROZE", "GRIJS",
+			"BRUIN", "PAARS", "GEEL", "BEIGE", "ROOM", "MARINEBLAUW", "BOURGONDIË",
+			"TURKOOIS", "INDIGO", "ZILVER", "GOUD", "BRONZEN", "ROOD", "BLAUW", "GROEN"
+		};
+		for (final String header : new String[] { "kleur", "Kleur", "haarkleur" }) {
+			final TextAnalyzer analysis = new TextAnalyzer(header);
+			analysis.setLocale(Locale.forLanguageTag("nl-NL"));
+			for (final String s : inputs)
+				analysis.train(s);
+			assertEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_NL", "header: " + header);
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void nlColorNoHeader() throws IOException, FTAPluginException, com.cobber.fta.core.FTAException {
+		final String[] inputs = {
+			"ROOD", "BLAUW", "GROEN", "WIT", "ZWART", "ORANJE", "ROZE", "GRIJS",
+			"BRUIN", "PAARS", "GEEL", "BEIGE", "ROOM", "MARINEBLAUW", "BOURGONDIË"
+		};
+		final TextAnalyzer analysis = new TextAnalyzer("col");
+		analysis.setLocale(Locale.forLanguageTag("nl-NL"));
+		for (final String s : inputs)
+			analysis.train(s);
+		assertNotEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_NL");
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })

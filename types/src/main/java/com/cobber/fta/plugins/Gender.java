@@ -144,14 +144,14 @@ public class Gender extends LogicalTypeFinite {
 		case "FR":
 			// French
 			genderData = new GenderData(
-					new String[][] { new String[] { "FEMME", "HOMME" }, new String[] { "FEMMES", "HOMMES" }, new String[] { "FÉMININ", "MASCULIN" }, new String[] { "FILLE", "GARCON" } },
+					new String[][] { new String[] { "FEMME", "HOMME" }, new String[] { "FEMMES", "HOMMES" }, new String[] { "FÉMININ", "MASCULIN" }, new String[] { "FILLE", "GARÇON" } },
 					new String[][] { new String[] { "F", "H" }, new String[] { "F", "M" } } );
 			break;
 		case "HR":
 			// Croatian
 			genderData = new GenderData(
-					new String[][] { new String[] { "MUŠKARCI", "ŽENE" } },
-					new String[][] { new String[] { "M", "Z" } } );
+					new String[][] { new String[] { "ŽENE", "MUŠKARCI" } },
+					new String[][] { new String[] { "Z", "M" } } );
 			break;
 		case "IS":
 			// Icelandic
@@ -180,7 +180,7 @@ public class Gender extends LogicalTypeFinite {
 		case "PL":
 			// Polish
 			genderData = new GenderData(
-					new String[][] { new String[] { "KOBIETY", "MÊ¿CZYŸNI" }, new String[] { "KOBIETY", "MĘŻCZYŹNI" } },
+					new String[][] { new String[] { "KOBIETY", "MĘŻCZYŹNI" } },
 					new String[][] { new String[] { "K", "M" } } );
 			break;
 		case "PT":
@@ -192,7 +192,7 @@ public class Gender extends LogicalTypeFinite {
 		case "RO":
 			// Romanian
 			genderData = new GenderData(
-					new String[][] { new String[] { "FEMEIE", "MASCULIN" } },
+					new String[][] { new String[] { "FEMEIE", "BĂRBAT" } },
 					new String[][] { new String[] { "F", "M" } } );
 			break;
 		case "RU":
@@ -204,7 +204,7 @@ public class Gender extends LogicalTypeFinite {
 		case "SV":
 			// Swedish
 			genderData = new GenderData(
-					new String[][] { new String[] { "KVINNA", "MANLIG" } },
+					new String[][] { new String[] { "KVINNA", "MAN" }, new String[] { "KVINNLIG", "MANLIG" } },
 					new String[][] { new String[] { "K", "M" } } );
 			break;
 		case "TR":

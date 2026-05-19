@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
 	// implementation fileTree(dir: '/Users/tsegall/src/fta/cli/build/install/fta/lib', include: '*.jar')
-	implementation "com.cobber.fta:fta:17.+"
+	implementation "com.cobber.fta:fta:18.+"
 }
 
 application {

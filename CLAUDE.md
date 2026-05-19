@@ -100,7 +100,7 @@ JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-21.jdk/Contents/Home
 
 **Plugin `signature` field**: Java plugins require a `signature` in `plugins.json`. Run the full test suite after adding the plugin — the test framework will report the expected signature if it is missing or incorrect.
 
-**Plugin `priority` field**: Lower number = higher priority. Plugins are evaluated in priority order; the first one to exceed its confidence threshold wins. Set priority deliberately when a new type could overlap with an existing one.
+**Plugin `priority` field**: Lower number = higher importance; plugins are evaluated in ascending priority order and the first to exceed its confidence threshold wins. Built-in plugin priorities currently range from 100 (EMAIL) to 2500 (IDENTIFIER) — choose a value that places the new type correctly relative to existing ones. Set priority deliberately when a new type could overlap with an existing one.
 
 **Testing a plugin against sample data**:
 
