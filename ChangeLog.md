@@ -1,6 +1,9 @@
 
 ## Changes ##
 
+### 18.14.1
+ - chore: Upgrade GitHub Actions release workflow — add staging-to-Central promotion step (eliminating PUBLISH.sh), upgrade actions/checkout@v4→v6, actions/setup-java@v4→v5, gradle/actions/wrapper-validation@v3→v6, bump Java runner from 17 to 21
+
 ### 18.14.0
  - fix: GENDER.TEXT_HR — GenderPair word and abbreviation order was swapped (MUŠKARCI/ŽENE → ŽENE/MUŠKARCI, M/Z → Z/M); affected nextRandom() labelling and opposites map
  - fix: GENDER.TEXT_PL — removed mojibake entry "MÊ¿CZYŸNI" (garbled encoding of MĘŻCZYŹNI) from Java plugin; removed garbled "P³eæ" alternate from plugins.json header regexp
