@@ -12,8 +12,27 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
-          java-version: 17
+          java-version: '21'
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v3
+        uses: gradle/actions/wrapper-validation@v4
       - name: Publish package
         run: ./gradlew -PossrhUsername="${{ secrets.OSSRH_USERNAME }}" -PossrhPassword="${{ secrets.OSSRH_PASSWORD }}" -PsigningKey="${{ secrets.SIGNING_KEY }}" -PsigningPassword="${{ secrets.SIGNING_PASSWORD }}" publish
+      - name: Promote staging repository to Maven Central
+        env:
+          SONATYPE_TOKEN: ${{ secrets.SONATYPE_TOKEN }}
+        run: |
+          RESPONSE=$(curl -s -X GET \
+            'https://ossrh-staging-api.central.sonatype.com/manual/search/repositories?profile_id=com.cobber.fta&state=open&ip=any' \
+            -H 'accept: application/json' \
+            -H "Authorization: Bearer $SONATYPE_TOKEN")
+          KEY=$(echo "$RESPONSE" | jq -r '.repositories[0].key')
+          if [ -z "$KEY" ] || [ "$KEY" = "null" ]; then
+            echo "Failed to retrieve staging key. Response: $RESPONSE" >&2
+            exit 1
+          fi
+          echo "Promoting staging repository: $KEY"
+          curl -f -X POST \
+            "https://ossrh-staging-api.central.sonatype.com/manual/upload/repository/${KEY}" \
+            -H 'accept: */*' \
+            -H "Authorization: Bearer $SONATYPE_TOKEN" \
+            -d ''
