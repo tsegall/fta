@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dto.AnalysisResponse;
+import com.cobber.fta.dto.GenerateRequest;
 import com.cobber.fta.dto.SemanticTypeInfo;
 
 @RestController
@@ -23,9 +26,11 @@ import com.cobber.fta.dto.SemanticTypeInfo;
 public class AnalysisController {
 
 	private final AnalysisService analysisService;
+	private final GenerationService generationService;
 
-	public AnalysisController(final AnalysisService analysisService) {
+	public AnalysisController(final AnalysisService analysisService, final GenerationService generationService) {
 		this.analysisService = analysisService;
+		this.generationService = generationService;
 	}
 
 	@PostMapping("/analyze")
@@ -38,6 +43,18 @@ public class AnalysisController {
 			return ResponseEntity.ok(response);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+		}
+	}
+
+	@PostMapping(value = "/generate", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<?> generate(@RequestBody final GenerateRequest request) {
+		try {
+			final String csv = generationService.generate(request.spec(), request.count(), request.locale());
+			return ResponseEntity.ok(csv);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest()
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(Map.of("error", e.getMessage()));
 		}
 	}
 

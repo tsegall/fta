@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.driver.faker;
+package com.cobber.fta.faker;
 
 import java.security.SecureRandom;
 
@@ -43,8 +43,11 @@ public class FakerStringLT extends FakerLT {
 	@Override
 	public boolean initialize(final AnalysisConfig analysisConfig) throws FTAPluginException {
 		super.initialize(analysisConfig);
-		freeText = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByName("FREE_TEXT"), analysisConfig);
-
+		try {
+			freeText = (LogicalTypeInfinite) LogicalTypeFactory.newInstance(PluginDefinition.findByName("FREE_TEXT"), analysisConfig);
+		} catch (FTAPluginException e) {
+			// FREE_TEXT not supported for this locale; nextRandom() will fall back to the regex generator or a numeric placeholder
+		}
 		return true;
 	}
 
@@ -66,7 +69,7 @@ public class FakerStringLT extends FakerLT {
 		if (values != null)
 			return values[random.nextInt(values.length)];
 
-		if (format.startsWith(".{")) {
+		if (format != null && format.startsWith(".{") && freeText != null) {
 			final StringBuffer buf = new StringBuffer(freeText.nextRandom());
 			while (buf.length() < minLength)
 				buf.append(" ").append(freeText.nextRandom());
@@ -82,6 +85,9 @@ public class FakerStringLT extends FakerLT {
 			return buf.toString();
 		}
 
-		return generator.generate();
+		if (generator != null)
+			return generator.generate();
+
+		return freeText != null ? freeText.nextRandom() : String.valueOf(getRandom().nextInt(100000));
 	}
 }

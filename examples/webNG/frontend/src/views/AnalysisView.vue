@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import FileUploadZone from '../components/FileUploadZone.vue'
 import ResultsTable from '../components/ResultsTable.vue'
 import JsonPanel from '../components/JsonPanel.vue'
+import GenerationPanel from '../components/GenerationPanel.vue'
 import { useLocale } from '../composables/useLocale.js'
 
 const selectedFile = ref(null)
@@ -12,6 +13,24 @@ const loading = ref(false)
 const error = ref('')
 const results = ref(null)
 const selectedField = ref(null)
+const fakerSpecOpen = ref(false)
+
+const DATE_TYPES = new Set(['LOCALDATE', 'LOCALTIME', 'LOCALDATETIME', 'OFFSETDATETIME'])
+
+function fakerType(field) {
+  return field.isSemanticType ? field.semanticTypeName : field.type.toUpperCase()
+}
+
+const fakerSpecField = computed(() => {
+  if (!results.value) return null
+  const spec = results.value.fields.map((field, index) => {
+    const entry = { fieldName: field.fieldName, index, type: fakerType(field) }
+    if (!field.isSemanticType && DATE_TYPES.has(entry.type) && field.details?.typeQualifier)
+      entry.format = field.details.typeQualifier
+    return entry
+  })
+  return { fieldName: 'Faker Specification', details: spec }
+})
 
 async function submit() {
   if (!selectedFile.value) return
@@ -83,9 +102,24 @@ async function submit() {
       v-if="results"
       :fields="results.fields"
       @select="selectedField = $event"
+      @fakerSpec="fakerSpecOpen = true"
     />
 
-    <!-- JSON panel -->
+    <!-- Generate records -->
+    <GenerationPanel
+      v-if="results"
+      :spec="fakerSpecField?.details"
+      :locale="results.locale"
+    />
+
+    <!-- Field JSON panel -->
     <JsonPanel :field="selectedField" @close="selectedField = null" />
+
+    <!-- Faker spec JSON panel -->
+    <JsonPanel
+      :field="fakerSpecOpen ? fakerSpecField : null"
+      label="Faker Specification"
+      @close="fakerSpecOpen = false"
+    />
   </div>
 </template>

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.driver.faker;
+package com.cobber.fta.faker;
 
 import java.util.Locale;
 import java.util.Random;

@@ -33,6 +33,7 @@ includeBuild 'examples/core/datedemo'
 includeBuild 'examples/core/dateformat'
 includeBuild 'examples/core/dateformattrained'
 includeBuild 'examples/core/speed'
+includeBuild 'examples/webNG'
 
 // Need to use Java 21 to run the Web examples
 // includeBuild 'examples/web'
@@ -41,11 +42,11 @@ includeBuild 'examples/core/speed'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '18.14.1')
+			version('fta', '18.14.2')
 			version('jacoco', '0.8.14')
 
 // https://mvnrepository.com/artifact/de.siegmar/fastcsv
-			library('fastcsv', 'de.siegmar:fastcsv:4.2.0')
+			library('fastcsv', 'de.siegmar:fastcsv:4.3.0')
 // https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail
 			library('javaxMailAPI', 'com.sun.mail:jakarta.mail:2.0.2')
 // https://mvnrepository.com/artifact/commons-validator/commons-validator

@@ -29,6 +29,8 @@ import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.driver.DriverOptions;
+import com.cobber.fta.faker.FakerLT;
+import com.cobber.fta.faker.FakerParameters;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -24,7 +24,7 @@ project.tasks.named("installDist") {
 
 dependencies {
 	implementation "com.cobber.fta:fta:18.+"
-	implementation "de.siegmar:fastcsv:4.2.0"
+	implementation "de.siegmar:fastcsv:4.3.0"
 	implementation "ch.qos.logback:logback-classic:1.5.32"
 }
 

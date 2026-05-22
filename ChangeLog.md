@@ -1,7 +1,26 @@
 
 ## Changes ##
 
+### 18.14.2
+ - feat: webNG — Generate Records panel: POST /api/generate accepts Faker spec + record count + locale, returns synthetic CSV; output area is scrollable and copyable
+ - feat: webNG — Faker Specification moved from always-visible panel to a slide-in triggered by a "Faker Spec" button in the Results table header, consistent with the per-field JSON popout
+ - refactor: Faker implementation classes (FakerParameters, FakerLT, FakerBooleanLT, FakerDoubleLT, FakerEnumLT, FakerLocalDate/Time/DateTimeLT, FakerOffsetDateTimeLT, FakerLongLT, FakerStringLT) moved from cli to types (com.cobber.fta.faker), eliminating duplication between cli and webNG
+ - fix: FakerLocalTimeLT — default format was "yyyy-MM-dd HH:mm:ss" (wrong for a time-only type); corrected to "HH:mm:ss"
+ - fix: FakerLongLT — three duplicate assignments to high field removed
+ - fix: webNG — base-type fakers failed for non-English locales (e.g. ja-JP) because PluginDefinition 2-arg constructor hardcodes "en"; validLocales now overridden to wildcard in GenerationService
+ - fix: FakerStringLT — FREE_TEXT plugin lookup wrapped in try-catch; falls back to regex generator or numeric placeholder when locale is unsupported
+ - chore: settings.gradle — add webNG to includeBuild list
+ - chore: webNG build.gradle — add mavenLocal() to repositories to support development builds against locally-published fta
+ - chore: Bump spotbugs plugin 6.5.4→6.5.5
+
 ### 18.14.1
+ - fix: cli --help — correct --faker description (was "header is a comma separated list of Semantic Types"; now documents JSON array of column specs)
+ - fix: cli --noQuantiles incorrectly disabled COLLECT_STATISTICS instead of DISTRIBUTIONS; now correctly disables quantile/histogram tracking
+ - fix: cli --maxCardinality listed in --help but never parsed; added to DriverOptions.addFromStringArray
+ - fix: cli --help — add missing options: --noDistributions, --noNullTextAsNull, --output
+ - chore: Bump fastcsv 4.2.0→4.3.0
+ - feat: webNG — Semantic Types page columns (ID, Description, Languages) are now sortable; uses ↕/↑/↓ indicators consistent with the Analysis page
+ - docs: CLAUDE.md — add Releasing a New Version section (version location, example version-bump rule, publishing workflow); fix stale AGENTS.md reference; document JDK 22+ rejection; add Gradle wrapper version; name ChangeLog.md explicitly; note webNG in module structure
  - chore: Upgrade GitHub Actions release workflow — add staging-to-Central promotion step (eliminating PUBLISH.sh), upgrade actions/checkout@v4→v6, actions/setup-java@v4→v5, gradle/actions/wrapper-validation@v3→v6, bump Java runner from 17 to 21
 
 ### 18.14.0

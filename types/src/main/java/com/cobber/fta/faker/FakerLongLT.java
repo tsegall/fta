@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.driver.faker;
+package com.cobber.fta.faker;
 
 import com.cobber.fta.PluginDefinition;
 
@@ -34,22 +34,15 @@ public class FakerLongLT extends FakerLT {
 	public String nextRandom() {
 		if (!initialized) {
 			if (parameters != null) {
-	            if (parameters.format != null)
-                    format = parameters.format;
-	            if (parameters.low != null)
-                    low = Long.parseLong(parameters.low);
-	            if (parameters.high != null)
-                    high = Long.parseLong(parameters.high);
-	            if (parameters.high != null)
-                    high = Long.parseLong(parameters.high);
-	            if (parameters.high != null)
-                    high = Long.parseLong(parameters.high);
-	            if (parameters.high != null)
-                    high = Long.parseLong(parameters.high);
-	            if (parameters.distribution != null)
-	            	distribution = parameters.distribution;
+				if (parameters.format != null)
+					format = parameters.format;
+				if (parameters.low != null)
+					low = Long.parseLong(parameters.low);
+				if (parameters.high != null)
+					high = Long.parseLong(parameters.high);
+				if (parameters.distribution != null)
+					distribution = parameters.distribution;
 			}
-
 
 			if (high == null)
 				high = Long.MAX_VALUE;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.driver.faker;
+package com.cobber.fta.faker;
 
 public class FakerParameters {
 	public String fieldName;
@@ -33,23 +33,23 @@ public class FakerParameters {
 
 	public void bind() {
 		if ("LOCALDATE".equals(type))
-			clazz = "com.cobber.fta.driver.faker.FakerLocalDateLT";
+			clazz = "com.cobber.fta.faker.FakerLocalDateLT";
 		else if ("LOCALDATETIME".equals(type))
-			clazz = "com.cobber.fta.driver.faker.FakerLocalDateTimeLT";
+			clazz = "com.cobber.fta.faker.FakerLocalDateTimeLT";
 		else if ("OFFSETDATETIME".equals(type))
-			clazz = "com.cobber.fta.driver.faker.FakerOffsetDateTimeLT";
+			clazz = "com.cobber.fta.faker.FakerOffsetDateTimeLT";
 		else if ("LOCALTIME".equals(type))
-			clazz = "com.cobber.fta.driver.faker.FakerLocalTimeLT";
+			clazz = "com.cobber.fta.faker.FakerLocalTimeLT";
 		else if ("DOUBLE".equals(type))
-			clazz = "com.cobber.fta.driver.faker.FakerDoubleLT";
+			clazz = "com.cobber.fta.faker.FakerDoubleLT";
 		else if ("LONG".equals(type))
-			clazz = "com.cobber.fta.driver.faker.FakerLongLT";
+			clazz = "com.cobber.fta.faker.FakerLongLT";
 		else if ("BOOLEAN".equals(type))
-			clazz = "com.cobber.fta.driver.faker.FakerBooleanLT";
+			clazz = "com.cobber.fta.faker.FakerBooleanLT";
 		else if ("ENUM".equals(type))
-			clazz = "com.cobber.fta.driver.faker.FakerEnumLT";
+			clazz = "com.cobber.fta.faker.FakerEnumLT";
 		else if ("STRING".equals(type))
-			clazz = "com.cobber.fta.driver.faker.FakerStringLT";
+			clazz = "com.cobber.fta.faker.FakerStringLT";
 	}
 
 	public String getClazz() {

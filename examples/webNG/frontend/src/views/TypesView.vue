@@ -7,6 +7,22 @@ const allTypes = ref([])
 const search = ref('')
 const loading = ref(false)
 const error = ref('')
+const sortKey = ref('')
+const sortDir = ref('asc')
+
+function toggleSort(key) {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortKey.value = key
+    sortDir.value = 'asc'
+  }
+}
+
+function sortIcon(key) {
+  if (sortKey.value !== key) return '↕'
+  return sortDir.value === 'asc' ? '↑' : '↓'
+}
 
 async function fetchTypes() {
   loading.value = true
@@ -27,12 +43,24 @@ watch(locale, fetchTypes, { immediate: true })
 
 const filtered = computed(() => {
   const q = search.value.toLowerCase()
-  if (!q) return allTypes.value
-  return allTypes.value.filter(t =>
-    t.id.toLowerCase().includes(q) ||
-    t.description.toLowerCase().includes(q) ||
-    (t.languages || []).some(l => l.toLowerCase().includes(q))
-  )
+  const rows = q
+    ? allTypes.value.filter(t =>
+        t.id.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q) ||
+        (t.languages || []).some(l => l.toLowerCase().includes(q))
+      )
+    : [...allTypes.value]
+
+  if (sortKey.value) {
+    const k = sortKey.value
+    rows.sort((a, b) => {
+      const av = k === 'languages' ? (a.languages || []).length : String(a[k] ?? '')
+      const bv = k === 'languages' ? (b.languages || []).length : String(b[k] ?? '')
+      const cmp = typeof av === 'number' ? av - bv : av.localeCompare(bv)
+      return sortDir.value === 'asc' ? cmp : -cmp
+    })
+  }
+  return rows
 })
 </script>
 
@@ -53,9 +81,9 @@ const filtered = computed(() => {
       <table class="w-full text-left">
         <thead class="bg-gray-50 border-b border-gray-200">
           <tr>
-            <th class="th w-64">ID</th>
-            <th class="th">Description</th>
-            <th class="th w-40">Languages</th>
+            <th class="th w-64 cursor-pointer" @click="toggleSort('id')">ID {{ sortIcon('id') }}</th>
+            <th class="th cursor-pointer" @click="toggleSort('description')">Description {{ sortIcon('description') }}</th>
+            <th class="th w-40 cursor-pointer" @click="toggleSort('languages')">Languages {{ sortIcon('languages') }}</th>
             <th class="th w-32">Docs</th>
           </tr>
         </thead>

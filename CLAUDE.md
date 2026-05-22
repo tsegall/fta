@@ -39,22 +39,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Code quality**: SpotBugs (static analysis) and Checkstyle (config in `config/checkstyle/`) are configured. Test framework is TestNG. Coverage via Jacoco (reports in `build/reports/jacoco/test/`).
 
-**Java target**: Java 17 (`options.release = 17`), but the runtime JVM must be Java 21 (DataSketches 6.2.0 requires it). All build and test commands must be prefixed with `JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-21.jdk/Contents/Home`, e.g.:
+**Java target**: Java 17 (`options.release = 17`), but the runtime JVM must be **exactly Java 21** — DataSketches 6.2.0 requires it, and the build explicitly rejects JDK 22+. All build and test commands must be prefixed with `JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-21.jdk/Contents/Home`, e.g.:
 
 ```bash
 JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-21.jdk/Contents/Home ./gradlew test
 ```
+
+**Gradle version**: The wrapper targets Gradle 9.5.1 (set in `build.gradle` → `wrapper { gradleVersion = '9.5.1' }`).
 
 **Debugging**: Capture analysis traces with `export FTA_TRACE="enabled=true,directory=/tmp,samples=10000"`, then replay with `cli/build/install/fta/bin/cli --replay <Stream>.fta`.
 
 ## Module Structure
 
 ```
-core/      - Base type detection + date/time parsing (published as fta-core)
-types/     - Semantic type detection, profiling, plugin system (published as fta)
-cli/       - Command-line interface (Driver.java entry point)
-examples/  - Standalone example projects (included builds)
+core/             - Base type detection + date/time parsing (published as fta-core)
+types/            - Semantic type detection, profiling, plugin system (published as fta)
+cli/              - Command-line interface (Driver.java entry point)
+examples/         - Standalone example projects (included builds)
+examples/webNG/   - Spring Boot + Vue 3 web UI (included in examples.build; see its AGENTS.md)
 ```
+
 
 ### core module (`com.cobber.fta.*`)
 - `dates/DateTimeParser` — Format detection and parsing across ~750 locales
@@ -110,9 +114,17 @@ cli/build/install/fta/bin/cli --locale <locale> --pluginMode true --pluginName <
 
 This prints the plugin definition, then `true`/`false` for each input row, then the full analysis result.
 
+## Releasing a New Version
+
+**Version location**: the canonical version is defined in `settings.gradle` → `libs { version('fta', 'X.Y.Z') }`. That is the only place to change it.
+
+**Example projects**: all 17 example `build.gradle` files reference the library as `fta:X.+` or `fta-core:X.+`. When the **major or minor** version changes, update the `X` in every example file to match. On patch-only bumps this is not required.
+
+**Publishing**: releases reach Maven Central via GitHub Actions. Push a version tag (`git tag vX.Y.Z && git push --tags`) — the workflow stages the artifacts and promotes them to Central automatically. Do not run `PUBLISH.sh` manually; it has been superseded by the workflow.
+
 ## ChangeLog Conventions
 
-ChangeLog uses [Conventional Commits](https://www.conventionalcommits.org/) format. Entries go under a `### <version>` section header, each prefixed with ` - ` (space-dash-space). Common types:
+`ChangeLog.md` (project root) uses [Conventional Commits](https://www.conventionalcommits.org/) format. Entries go under a `### <version>` section header, each prefixed with ` - ` (space-dash-space). Common types:
 
 - `feat:` — new feature or enhancement
 - `fix:` — bug fix
@@ -123,7 +135,7 @@ ChangeLog uses [Conventional Commits](https://www.conventionalcommits.org/) form
 
 When bumping the version, create a new section for the new version containing **only** the current session's changes — never move or redistribute entries from already-published sections.
 
-## Key Guardrails (from AGENTS.md)
+## Key Guardrails
 
 - Do not alter large data catalogs under `types/src/main/resources/reference/` without documented justification and tests
 - Do not relax validation regexes without evidence; prefer tighter validation

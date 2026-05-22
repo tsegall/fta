@@ -90,7 +90,7 @@ public class Driver {
 					error.println(" --debug <n> - Set the debug level to <n>");
 					error.println(" --delimiter <ch> - Set the delimiter to the character <ch>");
 					error.println(" --detectWindow <n> - Set the size of the detect window to <n>");
-					error.println(" --faker <header> - Header is a comma separated list of Semantic Types");
+					error.println(" --faker <json> - JSON array of column specs (inline or file path); each entry: {fieldName, type, index[, nullPercent, blankPercent, low, high, ...]}");
 					error.println(" --format <OutputFormat> - Set the output format, possible values: json, faker");
 					error.println(" --formatDetection - Enable Format Detection");
 					error.println(" --help - Print this help");
@@ -101,10 +101,13 @@ public class Driver {
 					error.println(" --maxOutlierCardinality <n> - Set the size of the Maximum Outlier Cardinality set supported");
 					error.println(" --maxShapes <n> - Set the size of the Maximum number of Shapes tracked");
 					error.println(" --noAnalysis - Do not do analysis");
+					error.println(" --noDistributions - Do not track distributions (quantiles/histograms)");
+					error.println(" --noNullTextAsNull - Do not treat 'NULL' (and similar) as null values");
 					error.println(" --noPretty - Do not pretty print analysis");
-					error.println(" --noQuantiles - Do not track quantiles");
+					error.println(" --noQuantiles - Do not track quantiles/histograms");
 					error.println(" --noSemanticTypes - Do not register any of the built-in Semantic Types");
 					error.println(" --noStatistics - Do not track statistics");
+					error.println(" --output - Write analysis output to <inputfile>.out instead of stdout");
 					error.println(" --pluginDefinition - Output the plugin definitions from the training data set");
 					error.println(" --pluginMode true|false - Set the detect mode when running Plugin validate");
 					error.println(" --pluginName <PluginName> - Use supplied Plugin to generate samples or a signature (record count based on --records)");

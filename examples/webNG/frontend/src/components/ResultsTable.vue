@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 
 const props = defineProps({ fields: { type: Array, required: true } })
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'fakerSpec'])
 
 const search = ref('')
 const sortKey = ref('')
@@ -48,7 +48,10 @@ const rows = computed(() => {
   <div>
     <div class="flex items-center justify-between mb-3">
       <h2 class="text-base font-semibold text-gray-800">Results</h2>
-      <input v-model="search" class="input w-56 text-xs" placeholder="Filter fields…" />
+      <div class="flex items-center gap-2">
+        <button class="btn-ghost text-xs" @click="emit('fakerSpec')">Faker Spec</button>
+        <input v-model="search" class="input w-56 text-xs" placeholder="Filter fields…" />
+      </div>
     </div>
 
     <div class="card overflow-x-auto">

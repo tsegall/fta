@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cobber.fta.driver.faker;
+package com.cobber.fta.faker;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import com.cobber.fta.PluginDefinition;
 
-public class FakerLocalDateTimeLT extends FakerLT {
+public class FakerOffsetDateTimeLT extends FakerLT {
 	private boolean initialized = false;
-	private LocalDateTime low;
-	private LocalDateTime high;
+	private OffsetDateTime low;
+	private OffsetDateTime high;
 	private DateTimeFormatter dtf;
 	private long range;
 
-	public FakerLocalDateTimeLT(final PluginDefinition plugin) {
+	public FakerOffsetDateTimeLT(final PluginDefinition plugin) {
 		super(plugin);
 	}
 
@@ -41,23 +41,23 @@ public class FakerLocalDateTimeLT extends FakerLT {
 					locale = Locale.getDefault();
 				dtf = DateTimeFormatter.ofPattern(parameters.format == null ? "yyyy-MM-dd HH:mm:ss" : parameters.format, locale);
 	            if (parameters.low != null)
-                    low = LocalDateTime.parse(parameters.low, dtf);
+                    low = OffsetDateTime.parse(parameters.low, dtf);
 	            if (parameters.high != null)
-                    high = LocalDateTime.parse(parameters.high, dtf);
+                    high = OffsetDateTime.parse(parameters.high, dtf);
 			}
 
 			if (high == null)
-				high = LocalDateTime.of(2035, 1, 1, 1, 0, 0);
+				high = OffsetDateTime.of(2035, 1, 1, 1, 0, 0, 0, ZoneOffset.UTC);
 			if (low == null)
-				low = LocalDateTime.of(1960, 1, 1, 1, 0, 0);
+				low = OffsetDateTime.of(1960, 1, 1, 1, 0, 0, 0, ZoneOffset.UTC);
 
-			range =  high.toEpochSecond(ZoneOffset.UTC) - low.toEpochSecond(ZoneOffset.UTC);
+			range =  high.toEpochSecond() - low.toEpochSecond();
 
 			initialized = true;
 		}
 
 		final long offset = (long)(Math.abs(getRandom().nextDouble() * range));
-		final LocalDateTime newDateTime = low.plusSeconds(offset);
+		final OffsetDateTime newDateTime = low.plusSeconds(offset);
 
         return dtf.format(newDateTime);
 	}

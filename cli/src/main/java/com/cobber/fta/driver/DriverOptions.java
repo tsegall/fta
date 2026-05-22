@@ -149,7 +149,7 @@ public class DriverOptions {
 		if (this.noDistributions)
 			analyzer.configure(TextAnalyzer.Feature.DISTRIBUTIONS, false);
 		if (this.noQuantiles)
-			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
+			analyzer.configure(TextAnalyzer.Feature.DISTRIBUTIONS, false);
 		if (this.noStatistics)
 			analyzer.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		if (this.noNullTextAsNull)
@@ -262,6 +262,8 @@ public class DriverOptions {
 				outputFormat = args[++idx];
 			else if ("--knownTypes".equals(args[idx]))
 				knownTypes = nextStringArg(args, idx++);
+			else if ("--maxCardinality".equals(args[idx]))
+				maxCardinality = nextIntegerArg(args, idx++);
 			else if ("--maxInputLength".equals(args[idx]))
 				maxInputLength = nextIntegerArg(args, idx++);
 			else if ("--maxOutlierCardinality".equals(args[idx]))

@@ -1,7 +1,10 @@
 <script setup>
 import { computed } from 'vue'
 
-const props = defineProps({ field: { type: Object, default: null } })
+const props = defineProps({
+  field: { type: Object, default: null },
+  label: { type: String, default: 'Field details' }
+})
 const emit = defineEmits(['close'])
 
 const highlighted = computed(() => {
@@ -37,7 +40,7 @@ const highlighted = computed(() => {
       <!-- Header -->
       <div class="flex items-center justify-between px-5 py-4 border-b border-slate-700">
         <div>
-          <p class="text-xs text-slate-400 uppercase tracking-wider">Field details</p>
+          <p class="text-xs text-slate-400 uppercase tracking-wider">{{ label }}</p>
           <h2 class="text-white font-semibold mt-0.5">{{ field.fieldName }}</h2>
         </div>
         <button
@@ -68,7 +71,7 @@ const highlighted = computed(() => {
 
       <!-- JSON body -->
       <div class="flex-1 overflow-auto px-5 py-4">
-        <pre class="text-xs leading-5 font-mono"
+        <pre class="text-xs leading-5 font-mono text-slate-300"
           v-html="highlighted"
         />
       </div>
