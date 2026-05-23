@@ -18,6 +18,7 @@ package com.cobber.fta;
 import java.text.ParsePosition;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,10 +27,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.cobber.fta.TextAnalyzer.Feature;
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
+import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser;
+import com.cobber.fta.token.TokenStream;
 
 /**
  * Handles the finalization phase of type determination: backout helpers,
@@ -38,7 +43,10 @@ import com.cobber.fta.dates.DateTimeParser;
  */
 class ResultFinalizer {
 
+	/** We are prepared to recognize any set of this size as an enum (and give a suitable regular expression). */
 	private static final int MAX_ENUM_SIZE = 40;
+	/** We need to see at least this many samples (all unique) before we will claim this is a possible key. */
+	private static final int MIN_SAMPLES_FOR_KEY = 1000;
 	private static final int EARLY_LONG_YYYYMMDD = 19000101;
 	private static final int LATE_LONG_YYYYMMDD = 20510101;
 
@@ -174,10 +182,10 @@ class ResultFinalizer {
 		ac.facts.matchCount = realSamples;
 
 		// All outliers are now part of the cardinality set and there are now no outliers
-		ac.facts.cardinality.putAll(ac.facts.outliers);
+		ac.facts.getCardinality().putAll(ac.facts.outliers);
 
 		final RegExpGenerator gen = new RegExpGenerator(MAX_ENUM_SIZE, ac.locale);
-		for (final String s : ac.facts.cardinality.keySet())
+		for (final String s : ac.facts.getCardinality().keySet())
 			gen.train(s);
 
 		final String newPattern = gen.getResult();
@@ -189,7 +197,7 @@ class ResultFinalizer {
 
 		ac.facts.setMatchTypeInfo(newTypeInfo);
 
-		for (final Entry<String, Long> entry : ac.facts.cardinality.entrySet())
+		for (final Entry<String, Long> entry : ac.facts.getCardinality().entrySet())
 			typeTracker.trackString(entry.getKey(), entry.getKey().trim(), newTypeInfo, false, entry.getValue());
 
 		ac.facts.outliers.clear();
@@ -203,11 +211,11 @@ class ResultFinalizer {
 
 		// All outliers are now part of the cardinality set and there are now no outliers
 		for (final Map.Entry<String, Long> entry : ac.facts.outliers.entrySet())
-			ac.facts.cardinality.merge(entry.getKey(), entry.getValue(), Long::sum);
+			ac.facts.getCardinality().merge(entry.getKey(), entry.getValue(), Long::sum);
 
 		// Need to update stats to reflect any outliers we previously ignored
 		if (ac.facts.getMatchTypeInfo().getBaseType().equals(FTAType.STRING)) {
-			for (final Map.Entry<String, Long> entry : ac.facts.cardinality.entrySet())
+			for (final Map.Entry<String, Long> entry : ac.facts.getCardinality().entrySet())
 				typeTracker.trackString(entry.getKey(), entry.getKey().trim(), newTypeInfo, false, entry.getValue());
 		}
 		else if (ac.facts.getMatchTypeInfo().getBaseType().equals(FTAType.DOUBLE)) {
@@ -315,7 +323,7 @@ class ResultFinalizer {
 	        ac.facts.variance = 0.0;
 	        ac.facts.currentM2 = 0.0;
 
-	        ac.facts.cardinality.forEach((k, v) -> typeTracker.trackDouble(k, ac.facts.getMatchTypeInfo(), true, v));
+	        ac.facts.getCardinality().forEach((k, v) -> typeTracker.trackDouble(k, ac.facts.getMatchTypeInfo(), true, v));
 		}
 		else
 			backoutToPatternID(realSamples, KnownTypes.ID.ID_ANY_VARIABLE);
@@ -533,7 +541,7 @@ class ResultFinalizer {
 			return null;
 
 		ac.facts.outliers = bestResult.newOutliers;
-		ac.facts.cardinality = bestResult.newCardinality;
+		ac.facts.setCardinality(bestResult.newCardinality);
 		ac.facts.matchCount = bestResult.validCount;
 		ac.facts.setMatchTypeInfo(new TypeInfo(bestResult.logical.getRegExp(), bestResult.logical.getBaseType(), bestResult.logical.getSemanticType(), ac.facts.getMatchTypeInfo()));
 
@@ -568,9 +576,9 @@ class ResultFinalizer {
 					continue;
 
 				long newMatchCount = ac.facts.matchCount;
-				final FiniteMap newCardinality = new FiniteMap(ac.facts.cardinality);
+				final FiniteMap newCardinality = new FiniteMap(ac.facts.getCardinality());
 				final FiniteMap newInvalids = new FiniteMap(ac.facts.outliers);
-				for (final Map.Entry<String, Long> current : ac.facts.cardinality.entrySet()) {
+				for (final Map.Entry<String, Long> current : ac.facts.getCardinality().entrySet()) {
 					if (logical.isValid(current.getKey().trim()))
 						newCardinality.put(current.getKey(), current.getValue());
 					else {
@@ -596,7 +604,7 @@ class ResultFinalizer {
 
 					ac.facts.setMatchTypeInfo(new TypeInfo(null, ac.facts.getMatchTypeInfo().getRegExp(), ac.facts.getMatchTypeInfo().getBaseType(), logical.getSemanticType(), true, ac.facts.getMatchTypeInfo().format));
 					ac.facts.matchCount = newMatchCount;
-					ac.facts.cardinality = newCardinality;
+					ac.facts.setCardinality(newCardinality);
 					ac.facts.invalid = newInvalids;
 					ac.ctxdebug("Type determination", "infinite type, matchTypeInfo - {}", ac.facts.getMatchTypeInfo());
 					ac.facts.confidence = bestScore = newScore;
@@ -635,9 +643,9 @@ class ResultFinalizer {
 				final String re = entry.getRegExpReturned();
 				if (((newMatchCount = ac.tokenStreams.matches(re, logical.getThreshold())) != 0)) {
 					// Build the new Cardinality and Invalid maps - based on the RE
-					final FiniteMap newCardinality = new FiniteMap(ac.facts.cardinality);
+					final FiniteMap newCardinality = new FiniteMap(ac.facts.getCardinality());
 					final FiniteMap newInvalids = new FiniteMap(ac.facts.outliers);
-					for (final Map.Entry<String, Long> current : ac.facts.cardinality.entrySet()) {
+					for (final Map.Entry<String, Long> current : ac.facts.getCardinality().entrySet()) {
 						if (current.getKey().trim().matches(re))
 							newCardinality.put(current.getKey(), current.getValue());
 						else
@@ -674,7 +682,7 @@ class ResultFinalizer {
 						logical.setMatchEntry(entry);
 						ac.facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), ac.facts.getMatchTypeInfo()));
 						ac.facts.matchCount = newMatchCount;
-						ac.facts.cardinality = newCardinality;
+						ac.facts.setCardinality(newCardinality);
 						ac.facts.invalid = newInvalids;
 						ac.facts.outliers.clear();
 						ac.ctxdebug("Type determination", "updated to Regular Expression Semantic type {}", ac.facts.getMatchTypeInfo());
@@ -693,7 +701,7 @@ class ResultFinalizer {
 	 * Synthesize the topK/bottomK by running the cardinality set.
 	 */
 	private void generateTopBottom() {
-		for (final String s : ac.facts.cardinality.keySet())
+		for (final String s : ac.facts.getCardinality().keySet())
 			try {
 				typeTracker.trackDateTime(s, ac.facts.getMatchTypeInfo(), true, 1);
 			}
@@ -704,7 +712,7 @@ class ResultFinalizer {
 
 	private boolean plausibleYear(final long realSamples) {
 		return (ac.facts.getMinLongNonZero() > DateTimeParser.RECENT_EARLY_LONG_YYYY && ac.facts.getMaxLong() <= DateTimeParser.LATE_LONG_YYYY &&
-				realSamples >= ac.reflectionSamples && ac.facts.cardinality.size() > 10) ||
+				realSamples >= ac.reflectionSamples && ac.facts.getCardinality().size() > 10) ||
 				(ac.facts.getMinLongNonZero() >= DateTimeParser.EARLY_LONG_YYYY && ac.facts.getMaxLong() <= DateTimeParser.LATE_LONG_YYYY &&
 				(ac.keywords.match(ac.analyzerContext.getStreamName(), "YEAR") >= 90 ||
 					ac.keywords.match(ac.analyzerContext.getStreamName(), "DATE") >= 90 ||
@@ -729,7 +737,7 @@ class ResultFinalizer {
 
 		if (ac.facts.getMinLongNonZero() > EARLY_LONG_YYYYMMDD && ac.facts.getMaxLong() < LATE_LONG_YYYYMMDD &&
 				DateTimeParser.plausibleDateLong(ac.facts.getMinLongNonZero(), 4) && DateTimeParser.plausibleDateLong(ac.facts.getMaxLong(), 4) &&
-				((realSamples >= ac.reflectionSamples && ac.facts.cardinality.size() > 10) || ac.keywords.match(ac.analyzerContext.getStreamName(), "DATE") >= 90)) {
+				((realSamples >= ac.reflectionSamples && ac.facts.getCardinality().size() > 10) || ac.keywords.match(ac.analyzerContext.getStreamName(), "DATE") >= 90)) {
 			// Sometimes a Long is not a Long but it is really a date (yyyyMMdd)
 			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{8}", FTAType.LOCALDATE, "yyyyMMdd", false, "yyyyMMdd");
 			final java.time.format.DateTimeFormatter dtf = ac.dateTimeParser.ofPattern(newTypeInfo.format);
@@ -739,7 +747,7 @@ class ResultFinalizer {
 
 		if (ac.facts.getMinLongNonZero() > EARLY_LONG_YYYYMMDD/100 && ac.facts.getMaxLong() < LATE_LONG_YYYYMMDD/100 &&
 				DateTimeParser.plausibleDateLong(ac.facts.getMinLongNonZero() * 100 + 1, 4) && DateTimeParser.plausibleDateLong(ac.facts.getMaxLong() * 100 + 1, 4) &&
-				((realSamples >= ac.reflectionSamples && ac.facts.cardinality.size() > 10) || ac.keywords.match(ac.analyzerContext.getStreamName(), "PERIOD") >= 90)) {
+				((realSamples >= ac.reflectionSamples && ac.facts.getCardinality().size() > 10) || ac.keywords.match(ac.analyzerContext.getStreamName(), "PERIOD") >= 90)) {
 			// Sometimes a Long is not a Long but it is really a date (yyyyMM)
 			final TypeInfo newTypeInfo = new TypeInfo(null, "\\d{6}", FTAType.LOCALDATE, "yyyyMM", false, "yyyyMM");
 			final java.time.format.DateTimeFormatter dtf = ac.dateTimeParser.ofPattern(newTypeInfo.format);
@@ -767,7 +775,7 @@ class ResultFinalizer {
 		if (isReallyDate(realSamples))
 			return;
 
-		if (ac.facts.cardinality.size() == 2 && ac.facts.getMinLong() == 0 && ac.facts.getMaxLong() == 1) {
+		if (ac.facts.getCardinality().size() == 2 && ac.facts.getMinLong() == 0 && ac.facts.getMaxLong() == 1) {
 			// boolean by any other name
 			ac.facts.minBoolean = "0";
 			ac.facts.maxBoolean = "1";
@@ -787,7 +795,7 @@ class ResultFinalizer {
 		}
 
 		// We may have a Semantic Type already identified but see if there is a better Finite Semantic type
-		final LogicalTypeFinite logicalFinite = matchFiniteTypes(FTAType.LONG, ac.facts.cardinality);
+		final LogicalTypeFinite logicalFinite = matchFiniteTypes(FTAType.LONG, ac.facts.getCardinality());
 		if (logicalFinite != null)
 			ac.facts.confidence = logicalFinite.getConfidence(ac.facts.matchCount, realSamples, ac.analyzerContext);
 
@@ -795,7 +803,7 @@ class ResultFinalizer {
 			for (final LogicalTypeRegExp logical : ac.regExpTypes) {
 				if (logical.acceptsBaseType(FTAType.LONG) &&
 						logical.isMatch(ac.facts.getMatchTypeInfo().getRegExp()) &&
-						logical.analyzeSet(ac.analyzerContext, ac.facts.matchCount, realSamples, ac.facts.getMatchTypeInfo().getRegExp(), ac.facts.calculateFacts(), ac.facts.cardinality, ac.facts.outliers, ac.tokenStreams, ac.analysisConfig).isValid()) {
+						logical.analyzeSet(ac.analyzerContext, ac.facts.matchCount, realSamples, ac.facts.getMatchTypeInfo().getRegExp(), ac.facts.calculateFacts(), ac.facts.getCardinality(), ac.facts.outliers, ac.tokenStreams, ac.analysisConfig).isValid()) {
 					ac.facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), ac.facts.getMatchTypeInfo()));
 					ac.facts.confidence = logical.getConfidence(ac.facts.matchCount, realSamples, ac.analyzerContext);
 					ac.ctxdebug("Type determination", "was LONG, matchTypeInfo - {}", ac.facts.getMatchTypeInfo());
@@ -822,7 +830,7 @@ class ResultFinalizer {
 	}
 
 	void killInvalidDates() {
-		final Iterator<Entry<String, Long>> it = ac.facts.cardinality.entrySet().iterator();
+		final Iterator<Entry<String, Long>> it = ac.facts.getCardinality().entrySet().iterator();
 
 		while (it.hasNext()) {
 			final Entry<String, Long> entry = it.next();
@@ -843,7 +851,7 @@ class ResultFinalizer {
 	}
 
 	void finalizeBoolean(final long realSamples) {
-		if ((ac.facts.cardinality.size() == 1 && ac.facts.getMatchTypeInfo().id == KnownTypes.ID.ID_BOOLEAN_Y_N)
+		if ((ac.facts.getCardinality().size() == 1 && ac.facts.getMatchTypeInfo().id == KnownTypes.ID.ID_BOOLEAN_Y_N)
 				|| (ac.facts.confidence < .98 && ac.facts.outliers.size() >= 2)) {
 			backoutToString(realSamples);
 			ac.facts.confidence = (double) ac.facts.matchCount / realSamples;
@@ -865,7 +873,7 @@ class ResultFinalizer {
 		for (final LogicalTypeRegExp logical : ac.regExpTypes) {
 			if (logical.acceptsBaseType(FTAType.DOUBLE) &&
 					logical.isMatch(ac.facts.getMatchTypeInfo().getRegExp()) &&
-					logical.analyzeSet(ac.analyzerContext, ac.facts.matchCount, realSamples, ac.facts.getMatchTypeInfo().getRegExp(), ac.facts.calculateFacts(), ac.facts.cardinality, ac.facts.outliers, ac.tokenStreams, ac.analysisConfig).isValid()) {
+					logical.analyzeSet(ac.analyzerContext, ac.facts.matchCount, realSamples, ac.facts.getMatchTypeInfo().getRegExp(), ac.facts.calculateFacts(), ac.facts.getCardinality(), ac.facts.outliers, ac.tokenStreams, ac.analysisConfig).isValid()) {
 				ac.facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), ac.facts.getMatchTypeInfo()));
 				ac.facts.confidence = logical.getConfidence(ac.facts.matchCount, realSamples, ac.analyzerContext);
 				break;
@@ -888,9 +896,451 @@ class ResultFinalizer {
 		}
 	}
 
+	private boolean isInteresting(final String input) {
+		return input != null && !input.isBlank();
+	}
+
+	TextAnalysisResult buildResult() throws FTAPluginException, FTAUnsupportedLocaleException {
+		// Compute our confidence
+		final long realSamples = ac.facts.sampleCount - (ac.facts.nullCount + ac.facts.blankCount);
+
+		// Check to see if we are all blanks or all nulls
+		if (ac.facts.blankCount == ac.facts.sampleCount || ac.facts.nullCount == ac.facts.sampleCount || ac.facts.blankCount + ac.facts.nullCount == ac.facts.sampleCount) {
+			if (ac.facts.nullCount == ac.facts.sampleCount)
+				ac.facts.setMatchTypeInfo(ac.knownTypes.getByID(KnownTypes.ID.ID_NULL));
+			else if (ac.facts.blankCount == ac.facts.sampleCount)
+				ac.facts.setMatchTypeInfo(ac.knownTypes.getByID(KnownTypes.ID.ID_BLANK));
+			else
+				ac.facts.setMatchTypeInfo(ac.knownTypes.getByID(KnownTypes.ID.ID_BLANKORNULL));
+			ac.facts.confidence = ac.facts.sampleCount >= 10 ? 1.0 : 0.0;
+		}
+		else {
+			ac.facts.confidence = (double) ac.facts.matchCount / realSamples;
+		}
+
+		boolean backedOutRegExp = false;
+
+		// Do we need to back out from any of our Semantic type determinations.  Most of the time this backs out of
+		// Infinite type determinations (since we have not yet declared it to be a Finite type).  However it is possible
+		// that this is a subsequent call to getResult()!!
+		final long outlierCount = ac.facts.outliers.values().stream().mapToLong(l -> l).sum();
+		if (ac.facts.getMatchTypeInfo().isSemanticType() && !ac.facts.getMatchTypeInfo().isForce()) {
+			final LogicalType logical = ac.plugins.getRegistered(ac.facts.getMatchTypeInfo().getSemanticType());
+
+			final PluginAnalysis pluginAnalysis = logical.analyzeSet(ac.analyzerContext, ac.facts.matchCount, realSamples, ac.facts.getMatchTypeInfo().getRegExp(), ac.facts.calculateFacts(), ac.facts.getCardinality(), ac.facts.outliers, ac.tokenStreams, ac.analysisConfig);
+			if (!pluginAnalysis.isValid()) {
+				if (logical.acceptsBaseType(FTAType.STRING) || logical.acceptsBaseType(FTAType.LONG) || logical.acceptsBaseType(FTAType.DOUBLE)) {
+					backout(logical, realSamples, pluginAnalysis);
+					if (logical instanceof LogicalTypeRegExp)
+						backedOutRegExp = true;
+				}
+			}
+			else {
+				// Update our Regular Expression - since it may have changed based on all the data observed
+				ac.facts.getMatchTypeInfo().setRegExp(logical.getRegExp());
+				ac.facts.matchCount += outlierCount - ac.facts.outliers.values().stream().mapToLong(l -> l).sum();
+				ac.facts.confidence = logical.getConfidence(ac.facts.matchCount, realSamples, ac.analyzerContext);
+			}
+		}
+
+		final FiniteMap cardinalityUpper = new FiniteMap(ac.facts.getCardinality());
+		final FTAType currentType = ac.facts.getMatchTypeInfo().getBaseType();
+
+		if (FTAType.LONG.equals(currentType))
+			finalizeLong(realSamples);
+		else if (FTAType.BOOLEAN.equals(currentType))
+			finalizeBoolean(realSamples);
+		else if (FTAType.DOUBLE.equals(currentType) && !ac.facts.getMatchTypeInfo().isSemanticType())
+			finalizeDouble(realSamples);
+		else if (FTAType.STRING.equals(currentType))
+			finalizeString(realSamples, cardinalityUpper);
+
+		if (FTAType.STRING.equals(ac.facts.getMatchTypeInfo().getBaseType())) {
+			if (ac.facts.getMatchTypeInfo().isSemanticType()) {
+				final LogicalType logical = ac.plugins.getRegistered(ac.facts.getMatchTypeInfo().getSemanticType());
+				boolean recalcConfidence = false;
+
+				// Sweep the outliers - flipping them to invalid if they do not pass the relaxed isValid definition
+				for (final Map.Entry<String, Long> entry : ac.facts.outliers.entrySet()) {
+					// Split the outliers to either invalid entries or valid entries
+					if (logical.isValid(entry.getKey(), false, entry.getValue())) {
+						typeTracker.addValid(entry.getKey(), entry.getValue());
+						ac.facts.matchCount += entry.getValue();
+						recalcConfidence = true;
+					}
+					else
+						typeTracker.addInvalid(entry);
+				}
+
+				if (recalcConfidence)
+					ac.facts.confidence = logical.getConfidence(ac.facts.matchCount, realSamples, ac.analyzerContext);
+				ac.facts.outliers.clear();
+			}
+			else {
+				// We would really like to say something better than it is a String!
+				boolean updated = false;
+
+				// If we are currently matching everything then flip to a better Regular Expression based on Stream analysis if possible
+				if (ac.facts.matchCount == realSamples && !ac.tokenStreams.isAnyShape()) {
+					final String newRegExp = ac.tokenStreams.getRegExp(false);
+					if (newRegExp != null) {
+						ac.facts.setMatchTypeInfo(new TypeInfo(null, newRegExp, FTAType.STRING, null, false, null));
+						ac.ctxdebug("Type determination", "updated based on Stream analysis {}", ac.facts.getMatchTypeInfo());
+					}
+				}
+
+				if (!backedOutRegExp)
+					updated = checkRegExpTypes(FTAType.STRING);
+
+				final long interestingSamples = ac.facts.sampleCount - (ac.facts.nullCount + ac.facts.blankCount);
+
+				// Try a nice discrete enum
+				if (!updated && cardinalityUpper.size() > 1 && cardinalityUpper.size() <= MAX_ENUM_SIZE && (interestingSamples > ac.reflectionSamples || interestingSamples / cardinalityUpper.size() >= 3)) {
+					// Rip through the enum doing some basic sanity checks
+					RegExpGenerator gen = new RegExpGenerator(MAX_ENUM_SIZE, ac.locale);
+					boolean fail = false;
+					int excessiveDigits = 0;
+
+					for (final String elt : cardinalityUpper.keySet()) {
+						final int length = elt.length();
+						// Give up if any one of the strings is too long
+						if (length > 40) {
+							fail = true;
+							break;
+						}
+						int digits = 0;
+						for (int i = 0; i < length; i++) {
+							final char ch = elt.charAt(i);
+							// Give up if we have some non-expected character
+							if (!Character.isAlphabetic(ch) && !Character.isDigit(ch) &&
+									ch != '-' && ch != '_' && ch != ' ' && ch != ';' && ch != '.' && ch != ',' && ch != '/' && ch != '(' && ch != ')') {
+								fail = true;
+								break;
+							}
+
+							// Record how many of the elements have 3 or more digits
+							if (Character.isDigit(ch)) {
+								digits++;
+								if (digits == 3)
+									excessiveDigits++;
+							}
+						}
+
+						if (fail)
+							break;
+						gen.train(elt);
+					}
+
+					// If we did not find any reason to reject, output it as an enum
+					if (excessiveDigits != cardinalityUpper.size() && !fail) {
+						// If we have a significant # of samples and a small number of non-numerics with distinct values attempt to remove outliers
+						if (interestingSamples > 1000 && cardinalityUpper.size() < 20 && !gen.isDigit()) {
+							final Map<String, Long> sorted = Utils.sortByValue(cardinalityUpper);
+							for (final Map.Entry<String, Long> elt : sorted.entrySet()) {
+								if (elt.getValue() < 3 && elt.getKey().length() > 3 && TextAnalyzer.distanceLevenshtein(elt.getKey(), cardinalityUpper.keySet()) <= 1) {
+									cardinalityUpper.remove(elt.getKey());
+									ac.facts.getCardinality().entrySet()
+									  .removeIf(entry -> entry.getKey().equalsIgnoreCase(elt.getKey()));
+									ac.facts.outliers.put(elt.getKey(), elt.getValue());
+									ac.facts.matchCount -= elt.getValue();
+									ac.facts.confidence = (double) ac.facts.matchCount / realSamples;
+								}
+							}
+
+							// Regenerate the enum without the outliers removed
+							gen = new RegExpGenerator(MAX_ENUM_SIZE, ac.locale);
+							for (final String elt : cardinalityUpper.keySet())
+								gen.train(elt);
+						}
+
+						ac.facts.setMatchTypeInfo(new TypeInfo(null, gen.getResult(), FTAType.STRING, ac.facts.getMatchTypeInfo().typeModifier, false, null));
+						updated = true;
+
+						// Now we have mapped to an enum we need to check again if this should be matched to a Semantic type
+						for (final LogicalTypeRegExp logical : ac.regExpTypes) {
+							if (logical.acceptsBaseType(FTAType.STRING) &&
+									logical.isMatch(ac.facts.getMatchTypeInfo().getRegExp()) &&
+									logical.analyzeSet(ac.analyzerContext, ac.facts.matchCount, realSamples, ac.facts.getMatchTypeInfo().getRegExp(), ac.facts.calculateFacts(), ac.facts.getCardinality(), ac.facts.outliers, ac.tokenStreams, ac.analysisConfig).isValid()) {
+								ac.facts.setMatchTypeInfo(new TypeInfo(logical.getRegExp(), logical.getBaseType(), logical.getSemanticType(), ac.facts.getMatchTypeInfo()));
+								ac.facts.confidence = logical.getConfidence(ac.facts.matchCount, realSamples, ac.analyzerContext);
+								break;
+							}
+						}
+					}
+				}
+
+				// Check to see whether the most common shape matches our regExp and test to see if this valid
+				if (!updated && ac.tokenStreams.size() > 1) {
+					final TokenStream best = ac.tokenStreams.getBest();
+					final String regExp = best.getRegExp(false);
+					for (final LogicalTypeRegExp logical : ac.regExpTypes) {
+						if (logical.acceptsBaseType(FTAType.STRING) &&
+								logical.isMatch(regExp) &&
+								logical.analyzeSet(ac.analyzerContext, best.getOccurrences(), realSamples, ac.facts.getMatchTypeInfo().getRegExp(), ac.facts.calculateFacts(), ac.facts.getCardinality(), ac.facts.outliers, ac.tokenStreams, ac.analysisConfig).isValid()) {
+							ac.facts.setMatchTypeInfo(new TypeInfo(regExp, logical.getBaseType(), logical.getSemanticType(), ac.facts.getMatchTypeInfo()));
+							ac.facts.matchCount = best.getOccurrences();
+							ac.facts.confidence = logical.getConfidence(ac.facts.matchCount, realSamples, ac.analyzerContext);
+							updated = true;
+							break;
+						}
+					}
+				}
+
+				// Qualify Alpha or Alnum with a min and max length
+				if (!updated && (KnownTypes.PATTERN_ALPHA_VARIABLE.equals(ac.facts.getMatchTypeInfo().getRegExp()) || KnownTypes.PATTERN_ALPHANUMERIC_VARIABLE.equals(ac.facts.getMatchTypeInfo().getRegExp()))) {
+					String newPattern = ac.facts.getMatchTypeInfo().getRegExp();
+					newPattern = newPattern.substring(0, newPattern.length() - 1) + lengthQualifier(ac.facts.minTrimmedLength, ac.facts.maxTrimmedLength);
+					ac.facts.setMatchTypeInfo(new TypeInfo(null, newPattern, FTAType.STRING, ac.facts.getMatchTypeInfo().typeModifier, false, null));
+					updated = true;
+				}
+
+				// Qualify random string with a min and max length
+				if (!updated && KnownTypes.PATTERN_ANY_VARIABLE.equals(ac.facts.getMatchTypeInfo().getRegExp())) {
+					final String newPattern = KnownTypes.freezeANY(ac.facts.minTrimmedLength, ac.facts.maxTrimmedLength, ac.facts.minRawNonBlankLength, ac.facts.maxRawNonBlankLength, ac.facts.leadingWhiteSpace, ac.facts.trailingWhiteSpace, ac.facts.multiline);
+					ac.facts.setMatchTypeInfo(new TypeInfo(null, newPattern, FTAType.STRING, ac.facts.getMatchTypeInfo().typeModifier, false, null));
+					updated = true;
+				}
+			}
+		}
+
+		checkDateTimeTypes(ac.facts.getMatchTypeInfo().getBaseType());
+		checkRegExpTypes(ac.facts.getMatchTypeInfo().getBaseType());
+
+		// Only attempt to do key identification if we have not already been told the answer
+		if (ac.facts.keyConfidence == null) {
+			ac.facts.keyConfidence = 0.0;
+			if (ac.facts.sampleCount > MIN_SAMPLES_FOR_KEY && ac.analysisConfig.getMaxCardinality() >= MIN_SAMPLES_FOR_KEY / 2 &&
+					(ac.facts.getCardinality().size() == ac.analysisConfig.getMaxCardinality() || ac.facts.getCardinality().size() == ac.facts.sampleCount) &&
+					ac.facts.blankCount == 0 && ac.facts.nullCount == 0 &&
+					((ac.facts.getMatchTypeInfo().isSemanticType() && "GUID".equals(ac.facts.getMatchTypeInfo().getSemanticType())) ||
+					(ac.facts.getMatchTypeInfo().typeModifier == null &&
+					((FTAType.STRING.equals(ac.facts.getMatchTypeInfo().getBaseType()) && ac.facts.minRawLength == ac.facts.maxRawLength && ac.facts.minRawLength < 32)
+							|| FTAType.LONG.equals(ac.facts.getMatchTypeInfo().getBaseType()))))) {
+				ac.facts.keyConfidence = 0.9;
+
+				if (ac.facts.getCardinality().size() == ac.analysisConfig.getMaxCardinality())
+					for (final Map.Entry<String, Long> entry : ac.facts.getCardinality().entrySet()) {
+						if (entry.getValue() != 1) {
+							ac.facts.keyConfidence = 0.0;
+							break;
+						}
+					}
+			}
+		}
+
+		// Only attempt to set uniqueness if we have not already been told the answer
+		if (ac.facts.uniqueness == null) {
+			if (ac.facts.getCardinality().isEmpty())
+				ac.facts.uniqueness = 0.0;
+			else if (ac.facts.getCardinality().size() < ac.analysisConfig.getMaxCardinality()) {
+				int uniques = 0;
+				for (final Map.Entry<String, Long> entry : ac.facts.getCardinality().entrySet()) {
+					if (entry.getValue() == 1)
+						uniques++;
+				}
+				ac.facts.uniqueness = (double) uniques / ac.facts.getCardinality().size();
+			}
+			else if (FTAType.LONG.equals(ac.facts.getMatchTypeInfo().getBaseType()) && (ac.facts.monotonicIncreasing || ac.facts.monotonicDecreasing)) {
+				ac.facts.uniqueness = 1.0;
+			}
+			else
+				ac.facts.uniqueness = -1.0;
+		}
+
+		// Only attempt to set distinct count if we have not already been told the answer
+		if (ac.facts.distinctCount == null) {
+			if (ac.facts.getCardinality().size() < ac.analysisConfig.getMaxCardinality())
+				ac.facts.distinctCount = (long) ac.facts.getCardinality().size();
+			else if (FTAType.LONG.equals(ac.facts.getMatchTypeInfo().getBaseType()) && (ac.facts.monotonicIncreasing || ac.facts.monotonicDecreasing))
+				ac.facts.distinctCount = ac.facts.matchCount;
+			else
+				ac.facts.distinctCount = -1L;
+		}
+
+		if (ac.analysisConfig.isEnabled(Feature.APPROX_DISTINCT_COUNT) && ac.facts.approxDistinctCount == null) {
+			if (!ac.facts.getCardinality().hasOverflowed())
+				ac.facts.approxDistinctCount = (long) ac.facts.getCardinality().size();
+			else
+				ac.facts.approxDistinctCount = Math.round(ac.facts.getHllSketch().getEstimate());
+		}
+
+		if (ac.analysisConfig.isEnabled(Feature.FORMAT_DETECTION))
+			ac.facts.streamFormat = Utils.determineStreamFormat(ac.mapper, ac.facts.getCardinality());
+
+		TextAnalysisResult result = null;
+		// If we have not detected a Semantic Type but the header looks really good, then try excluding the
+		// most popular non-valid entry in the hope that it is something like 'NA', 'XX', etc.
+		if (FTAType.STRING.equals(ac.facts.getMatchTypeInfo().getBaseType()) && !ac.facts.getMatchTypeInfo().isSemanticType() && !ac.analyzerContext.isNested() && ac.pluginThreshold != 100 && ac.facts.getCardinality().size() >= 4) {
+			for (final LogicalType logical : ac.plugins.getRegisteredSemanticTypes()) {
+				final Map<String, Long> details = ac.facts.synthesizeBulk();
+				long worst = (ac.facts.sampleCount - (ac.facts.nullCount + ac.facts.blankCount)) / 20;
+				Map.Entry<String, Long> worstEntry = null;
+				if (logical.getHeaderConfidence(ac.analyzerContext) >= 90) {
+					for (final Map.Entry<String, Long> entry : details.entrySet()) {
+						if (isInteresting(entry.getKey()) && !logical.isValid(entry.getKey()) && entry.getValue() > worst) {
+							worstEntry = entry;
+							worst = entry.getValue();
+						}
+					}
+					if (worstEntry != null) {
+						details.remove(worstEntry.getKey());
+						final TextAnalysisResult newResult = ac.reAnalyzer.apply(details);
+						if (newResult.isSemanticType() && newResult.getSemanticType().equals(logical.getSemanticType())) {
+							newResult.getFacts().invalid.put(worstEntry.getKey(), worstEntry.getValue());
+							if (!ac.facts.outliers.isEmpty()) {
+								newResult.getFacts().invalid.putAll(ac.facts.outliers);
+								newResult.getFacts().sampleCount += ac.facts.outliers.values().stream().mapToLong(l -> l).sum();
+								for (final Map.Entry<String, Long> entry : ac.facts.outliers.entrySet())
+									newResult.getFacts().lengths[Math.min(entry.getKey().length(), ac.facts.lengths.length - 1)] += entry.getValue();
+							}
+							newResult.getFacts().sampleCount += worstEntry.getValue();
+							newResult.getFacts().confidence -= 0.05;
+							newResult.getFacts().getMatchTypeInfo().setBaseType(FTAType.STRING);
+							newResult.getFacts().lengths[Math.min(worstEntry.getKey().length(), ac.facts.lengths.length - 1)] += worstEntry.getValue();
+							result = newResult;
+							ac.ctxdebug("Type determination", "was STRING, post exclusion analyis ({}, {}), matchTypeInfo {} -> {} ",
+									worstEntry.getKey(), worstEntry.getValue(), ac.facts.matchTypeInfo, newResult.getFacts().getMatchTypeInfo());
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		// If we have not detected a Semantic Type - then attempt to exclude outliers and re-analyze
+		if (ac.analysisConfig.isEnabled(Feature.COLLECT_STATISTICS) &&
+				ac.analysisConfig.isEnabled(Feature.DISTRIBUTIONS) &&
+				FTAType.LONG.equals(ac.facts.getMatchTypeInfo().getBaseType()) &&
+				!ac.facts.getMatchTypeInfo().isSemanticType() &&
+				ac.facts.getCardinality().size() != ac.analysisConfig.getMaxCardinality() &&
+				!ac.analyzerContext.isNested() && ac.pluginThreshold != 100 && ac.facts.matchCount >= 20) {
+			final Map<String, Long> details = ac.facts.synthesizeBulk();
+			final Map<String, Long> outliers = new HashMap<>();
+			final Histogram.Entry[] buckets = ac.facts.calculateFacts().getHistogram().getHistogram(10);
+			final StringConverter stringConverter = ac.facts.getStringConverter();
+
+			// Associate each bucket with a cluster - so that we can do the outlier detection
+			Histogram.tagClusters(buckets);
+
+			// Identify any outliers based on 'density-based clustering' (using the Histograms to generate the clusters)
+			for (final Map.Entry<String, Long> entry : details.entrySet()) {
+				if (Utils.isNumeric(entry.getKey())) {
+					final double value = stringConverter.toDouble(entry.getKey());
+					final Histogram.Entry bucket = Histogram.getBucket(buckets, value);
+					// Scratch any cluster with less than 2% of the samples
+					if (bucket.getClusterPercent() < .02)
+						outliers.put(entry.getKey(), entry.getValue());
+				}
+			}
+
+			// If we identified any outliers then re-analyze using the 'cleaned' set and see if we have success
+			if (!outliers.isEmpty()) {
+				details.keySet().removeAll(outliers.keySet());
+				final TextAnalysisResult newResult = ac.reAnalyzer.apply(details);
+
+				final FTAType newType = newResult.getFacts().getMatchTypeInfo().getBaseType();
+
+				if (newResult.isSemanticType() || newType.isDateOrTimeType()) {
+					// We found a new Semantic Type so add the old invalids & outliers to the current invalids and update the sample count
+					for (final Map.Entry<String, Long> entry : outliers.entrySet()) {
+						newResult.getFacts().outliers.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
+						newResult.getFacts().lengths[Math.min(entry.getKey().length(), ac.facts.lengths.length - 1)] += entry.getValue();
+					}
+					newResult.getFacts().sampleCount += outliers.values().stream().mapToLong(l -> l).sum();
+					for (final Map.Entry<String, Long> entry : ac.facts.invalid.entrySet()) {
+						newResult.getFacts().invalid.mergeIfSpace(entry.getKey(), entry.getValue(), Long::sum);
+						newResult.getFacts().lengths[Math.min(entry.getKey().length(), ac.facts.lengths.length - 1)] += entry.getValue();
+					}
+					newResult.getFacts().sampleCount += ac.facts.invalid.values().stream().mapToLong(l -> l).sum();
+					newResult.getFacts().confidence -= 0.05;
+					result = newResult;
+					ac.ctxdebug("Type determination", "was LONG, post outlier analyis, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
+				}
+			}
+		}
+
+		// If we have not detected a Semantic Type and we have a double masquerading as a Long then re-analyze with a long set
+		if (ac.analysisConfig.isEnabled(Feature.COLLECT_STATISTICS) &&
+				FTAType.DOUBLE.equals(ac.facts.getMatchTypeInfo().getBaseType()) &&
+				!ac.facts.getMatchTypeInfo().isSemanticType() &&
+				ac.facts.allZeroes &&
+				!ac.analyzerContext.isNested() && ac.pluginThreshold != 100 && ac.facts.matchCount >= 20) {
+			final Map<String, Long> doubleDetails = ac.facts.synthesizeBulk();
+			final Map<String, Long> details = new HashMap<>();
+			final StringConverter stringConverter = ac.facts.getStringConverter();
+
+			for (final Map.Entry<String, Long> entry : doubleDetails.entrySet())
+				if (entry.getKey() == null || entry.getKey().isBlank())
+					details.put(entry.getKey(), entry.getValue());
+				else
+					details.put(String.valueOf(((Double) stringConverter.getValue(entry.getKey())).longValue()), entry.getValue());
+
+			final TextAnalysisResult newResult = ac.reAnalyzer.apply(details);
+
+			final FTAType newType = newResult.getFacts().getMatchTypeInfo().getBaseType();
+
+			if (newResult.isSemanticType()) {
+				ac.facts.getMatchTypeInfo().setSemanticType(newResult.getSemanticType());
+				ac.ctxdebug("Type determination", "was DOUBLE, post LONG conversion, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
+			}
+			else if (FTAType.LOCALDATE.equals(newType)) {
+				final TypeInfo interimTypeInfo = newResult.getFacts().getMatchTypeInfo();
+				final String trailingZeroes = "." + Utils.repeat('0', ac.facts.zeroesLength);
+				final String updatedModifier = interimTypeInfo.typeModifier + "'" + trailingZeroes + "'";
+				final TypeInfo newTypeInfo = new TypeInfo(null, newResult.getFacts().getMatchTypeInfo().getRegExp() + "\\Q" + trailingZeroes + "\\E", FTAType.LOCALDATE, updatedModifier, false, updatedModifier);
+				final DateTimeFormatter interimFormatter = ac.dateTimeParser.ofPattern(interimTypeInfo.format);
+				switchToDate(newTypeInfo,
+						LocalDate.parse(String.valueOf(Double.valueOf(ac.facts.minDoubleNonZero).longValue()), interimFormatter),
+						LocalDate.parse(String.valueOf(Double.valueOf(ac.facts.maxDouble).longValue()), interimFormatter));
+				ac.ctxdebug("Type determination", "was DOUBLE, post LONG conversion, matchTypeInfo - {}", newResult.getFacts().getMatchTypeInfo());
+			}
+		}
+
+		if (ac.analysisConfig.isEnabled(Feature.DEFAULT_SEMANTIC_TYPES)) {
+			final PluginDefinition pluginDefinition = PluginDefinition.findByName("IDENTIFIER");
+			final LogicalType identifier = LogicalTypeFactory.newInstance(pluginDefinition, ac.analysisConfig);
+
+			if (!ac.facts.getMatchTypeInfo().isSemanticType() && !ac.analyzerContext.isNested() &&
+					((ac.facts.external.getKeyConfidence() != null && ac.facts.external.getKeyConfidence() == 1.0) ||
+					(ac.facts.uniqueness == 1.0 && ac.facts.matchCount >= 20 &&
+						identifier.analyzeSet(ac.analyzerContext, ac.facts.matchCount, realSamples, ac.facts.getMatchTypeInfo().getRegExp(), ac.facts.calculateFacts(), ac.facts.getCardinality(), ac.facts.outliers, ac.tokenStreams, ac.analysisConfig).isValid()))) {
+				ac.facts.getMatchTypeInfo().setRegExp(ac.facts.getRegExp());
+				ac.facts.getMatchTypeInfo().setSemanticType(identifier.getSemanticType());
+				if (ac.facts.external.getKeyConfidence() == null) {
+					ac.facts.confidence = ac.facts.external.getTotalCount() == ac.facts.sampleCount ? 1.0 : identifier.getConfidence(ac.facts.matchCount, realSamples, ac.analyzerContext);
+					ac.facts.keyConfidence = ac.facts.confidence;
+				}
+				else
+					ac.facts.confidence = 1.0;
+
+				ac.ctxdebug("Type determination", "post Uniqueness analyis, matchTypeInfo - {}", ac.facts.getMatchTypeInfo());
+			}
+		}
+
+		// If we are in SIMPLE mode (i.e. not Bulk) and we have not detected a Semantic Type - try replaying accumulated set in Bulk mode,
+		// this has the potential to pick up entries where the first <n> (by default 20 are misleading).
+		if (FTAType.STRING.equals(ac.facts.getMatchTypeInfo().getBaseType()) && !ac.facts.getMatchTypeInfo().isSemanticType() && ac.analysisConfig.getTrainingMode() == AnalysisConfig.TrainingMode.SIMPLE && ac.pluginThreshold != 100) {
+			final TextAnalysisResult bulkResult = ac.reAnalyzer.apply(ac.facts.synthesizeBulk());
+			if (bulkResult.isSemanticType() || bulkResult.getType() != ac.facts.getMatchTypeInfo().getBaseType()) {
+				if (!ac.facts.outliers.isEmpty()) {
+					bulkResult.getFacts().invalid.putAll(ac.facts.outliers);
+					bulkResult.getFacts().sampleCount += ac.facts.outliers.values().stream().mapToLong(l -> l).sum();
+				}
+				bulkResult.getFacts().confidence -= 0.05;
+				result = bulkResult;
+				ac.ctxdebug("Type determination", "was STRING, post Bulk analyis, matchTypeInfo - {}", bulkResult.getFacts().getMatchTypeInfo());
+			}
+		}
+
+		if (result == null)
+			result = new TextAnalysisResult(ac.analyzerContext.getStreamName(), ac.facts.calculateFacts(), ac.analyzerContext.getDateResolutionMode(), ac.analysisConfig, ac.tokenStreams);
+
+		return result;
+	}
+
 	void finalizeString(final long realSamples, final FiniteMap cardinalityUpper) {
 		// Build Cardinality map ignoring case (and white space)
-		for (final Map.Entry<String, Long> entry : ac.facts.cardinality.entrySet()) {
+		for (final Map.Entry<String, Long> entry : ac.facts.getCardinality().entrySet()) {
 			final String key = entry.getKey().toUpperCase(ac.locale).trim();
 			cardinalityUpper.merge(key, entry.getValue(), Long::sum);
 		}
@@ -969,7 +1419,7 @@ class ResultFinalizer {
 				ac.facts.outliers = remainingOutliers;
 				// Fix the cardinality set
 				for (final String elt : ac.facts.outliers.keySet())
-					ac.facts.cardinality.remove(elt);
+					ac.facts.getCardinality().remove(elt);
 				ac.facts.matchCount -= remainingOutliers.values().stream().mapToLong(l-> l).sum();
 				ac.facts.confidence = (double) ac.facts.matchCount / realSamples;
 			}
@@ -982,7 +1432,7 @@ class ResultFinalizer {
 
 			// Rebuild the cardinalityUpper Map
 			cardinalityUpper.clear();
-			for (final Map.Entry<String, Long> entry : ac.facts.cardinality.entrySet())
+			for (final Map.Entry<String, Long> entry : ac.facts.getCardinality().entrySet())
 				cardinalityUpper.merge(entry.getKey().toUpperCase(ac.locale).trim(), entry.getValue(), Long::sum);
 		}
 	}

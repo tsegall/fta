@@ -19,11 +19,15 @@ import java.text.Collator;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.slf4j.LoggerFactory;
 
+import com.cobber.fta.core.FTAPluginException;
+import com.cobber.fta.core.FTAUnsupportedLocaleException;
 import com.cobber.fta.dates.DateTimeParser;
 import com.cobber.fta.token.TokenStreams;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Shared mutable state for the analysis pipeline. Populated by {@link TextAnalyzer#initialize()}
@@ -108,6 +112,17 @@ class AnalysisContext {
 
 	/** Count of internal errors swallowed during training; surfaced in the result. */
 	int internalErrors;
+
+	/** Jackson ObjectMapper used for JSON processing and stream format detection. */
+	ObjectMapper mapper;
+
+	/** Callback used to re-analyze a synthesized bulk map via a fresh nested analyzer. */
+	ReAnalyzer reAnalyzer;
+
+	@FunctionalInterface
+	interface ReAnalyzer {
+		TextAnalysisResult apply(Map<String, Long> details) throws FTAPluginException, FTAUnsupportedLocaleException;
+	}
 
 	/** Log a contextual debug message if debug level is &gt;= 2. */
 	void ctxdebug(final String area, final String format, final Object... arguments) {

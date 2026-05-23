@@ -1,6 +1,10 @@
 
 ## Changes ##
 
+### 18.14.3
+ - refactor: Move getResult() body into ResultFinalizer.buildResult(); remove nine dead wrapper methods from TextAnalyzer (backout, lengthQualifier, checkDateTimeTypes, switchToDate, finalizeLong, killInvalidDates, finalizeBoolean, finalizeDouble, finalizeString)
+ - refactor: Facts.java — make cardinality private with getCardinality()/setCardinality() (setter preserves maxCapacity); add lifecycle phase documentation (ACCUMULATION/FINALIZATION/RESULT); make ExternalFacts fields private with public getters/setters
+
 ### 18.14.2
  - feat: webNG — Generate Records panel: POST /api/generate accepts Faker spec + record count + locale, returns synthetic CSV; output area is scrollable and copyable
  - feat: webNG — Faker Specification moved from always-visible panel to a slide-in triggered by a "Faker Spec" button in the Results table header, consistent with the per-field JSON popout

@@ -147,18 +147,18 @@ class AnalyzerSerializer {
 
 		// Prime the merged set with the first set (real, outliers, and invalid which are non-overlapping)
 		final Facts firstFacts = first.facts.calculateFacts();
-		merged.putAll(firstFacts.cardinality);
+		merged.putAll(firstFacts.getCardinality());
 		merged.putAll(firstFacts.outliers);
 		merged.putAll(firstFacts.invalid);
 		// Preserve the top and bottom values - even if they were not captured in the cardinality set
-		if (firstFacts.cardinality.size() >= first.getMaxCardinality()) {
+		if (firstFacts.getCardinality().size() >= first.getMaxCardinality()) {
 			addToMap(merged, firstFacts.topK, first);
 			addToMap(merged, firstFacts.bottomK, first);
 		}
 
 		// Merge in the second set
 		final Facts secondFacts = second.facts.calculateFacts();
-		for (final Map.Entry<String, Long> entry : secondFacts.cardinality.entrySet()) {
+		for (final Map.Entry<String, Long> entry : secondFacts.getCardinality().entrySet()) {
 			final Long seen = merged.get(entry.getKey());
 			if (seen == null) {
 				merged.put(entry.getKey(), entry.getValue());
@@ -183,7 +183,7 @@ class AnalyzerSerializer {
 				merged.put(entry.getKey(), seen + entry.getValue());
 		}
 		// Preserve the top and bottom values - even if they were not captured in the cardinality set
-		if (secondFacts.cardinality.size() >= second.getMaxCardinality()) {
+		if (secondFacts.getCardinality().size() >= second.getMaxCardinality()) {
 			addToMap(merged, secondFacts.topK, second);
 			addToMap(merged, secondFacts.bottomK, second);
 		}
@@ -193,33 +193,33 @@ class AnalyzerSerializer {
 		ret.facts.blankCount = firstFacts.blankCount + secondFacts.blankCount;
 		ret.facts.sampleCount += ret.facts.nullCount + ret.facts.blankCount;
 
-		if (firstFacts.external.totalCount != -1 && secondFacts.external.totalCount != -1)
-			ret.facts.external.totalCount = firstFacts.external.totalCount + secondFacts.external.totalCount;
-		if (firstFacts.external.totalNullCount != -1 && secondFacts.external.totalNullCount != -1)
-			ret.facts.external.totalNullCount = firstFacts.external.totalNullCount + secondFacts.external.totalNullCount;
-		if (firstFacts.external.totalBlankCount != -1 && secondFacts.external.totalBlankCount != -1)
-			ret.facts.external.totalBlankCount = firstFacts.external.totalBlankCount + secondFacts.external.totalBlankCount;
-		if (firstFacts.external.totalInvalidCount != -1 && secondFacts.external.totalInvalidCount != -1)
-			ret.facts.external.totalInvalidCount = firstFacts.external.totalInvalidCount + secondFacts.external.totalInvalidCount;
-		if (firstFacts.external.totalMatchCount != -1 && secondFacts.external.totalMatchCount != -1)
-			ret.facts.external.totalMatchCount = firstFacts.external.totalMatchCount + secondFacts.external.totalMatchCount;
-		if (firstFacts.external.totalMinLength != -1 && secondFacts.external.totalMinLength != -1)
-			ret.facts.external.totalMinLength = Math.min(firstFacts.external.totalMinLength, secondFacts.external.totalMinLength);
-		if (firstFacts.external.totalMaxLength != -1 && secondFacts.external.totalMaxLength != -1)
-			ret.facts.external.totalMaxLength = Math.max(firstFacts.external.totalMaxLength, secondFacts.external.totalMaxLength);
-		if (firstFacts.external.totalMinValue != null && secondFacts.external.totalMinValue != null) {
+		if (firstFacts.external.getTotalCount() != -1 && secondFacts.external.getTotalCount() != -1)
+			ret.facts.external.setTotalCount(firstFacts.external.getTotalCount() + secondFacts.external.getTotalCount());
+		if (firstFacts.external.getTotalNullCount() != -1 && secondFacts.external.getTotalNullCount() != -1)
+			ret.facts.external.setTotalNullCount(firstFacts.external.getTotalNullCount() + secondFacts.external.getTotalNullCount());
+		if (firstFacts.external.getTotalBlankCount() != -1 && secondFacts.external.getTotalBlankCount() != -1)
+			ret.facts.external.setTotalBlankCount(firstFacts.external.getTotalBlankCount() + secondFacts.external.getTotalBlankCount());
+		if (firstFacts.external.getTotalInvalidCount() != -1 && secondFacts.external.getTotalInvalidCount() != -1)
+			ret.facts.external.setTotalInvalidCount(firstFacts.external.getTotalInvalidCount() + secondFacts.external.getTotalInvalidCount());
+		if (firstFacts.external.getTotalMatchCount() != -1 && secondFacts.external.getTotalMatchCount() != -1)
+			ret.facts.external.setTotalMatchCount(firstFacts.external.getTotalMatchCount() + secondFacts.external.getTotalMatchCount());
+		if (firstFacts.external.getTotalMinLength() != -1 && secondFacts.external.getTotalMinLength() != -1)
+			ret.facts.external.setTotalMinLength(Math.min(firstFacts.external.getTotalMinLength(), secondFacts.external.getTotalMinLength()));
+		if (firstFacts.external.getTotalMaxLength() != -1 && secondFacts.external.getTotalMaxLength() != -1)
+			ret.facts.external.setTotalMaxLength(Math.max(firstFacts.external.getTotalMaxLength(), secondFacts.external.getTotalMaxLength()));
+		if (firstFacts.external.getTotalMinValue() != null && secondFacts.external.getTotalMinValue() != null) {
 			final CommonComparator<?> comparator = new CommonComparator<>(firstFacts.getStringConverter());
-			if (comparator.compare(firstFacts.external.totalMinValue, secondFacts.external.totalMinValue) < 0)
-				ret.facts.external.totalMinValue = firstFacts.external.totalMinValue;
+			if (comparator.compare(firstFacts.external.getTotalMinValue(), secondFacts.external.getTotalMinValue()) < 0)
+				ret.facts.external.setTotalMinValue(firstFacts.external.getTotalMinValue());
 			else
-				ret.facts.external.totalMinValue = secondFacts.external.totalMinValue;
+				ret.facts.external.setTotalMinValue(secondFacts.external.getTotalMinValue());
 		}
-		if (firstFacts.external.totalMaxValue != null && secondFacts.external.totalMaxValue != null) {
+		if (firstFacts.external.getTotalMaxValue() != null && secondFacts.external.getTotalMaxValue() != null) {
 			final CommonComparator<?> comparator = new CommonComparator<>(firstFacts.getStringConverter());
-			if (comparator.compare(firstFacts.external.totalMaxValue, secondFacts.external.totalMaxValue) > 0)
-				ret.facts.external.totalMaxValue = firstFacts.external.totalMaxValue;
+			if (comparator.compare(firstFacts.external.getTotalMaxValue(), secondFacts.external.getTotalMaxValue()) > 0)
+				ret.facts.external.setTotalMaxValue(firstFacts.external.getTotalMaxValue());
 			else
-				ret.facts.external.totalMaxValue = secondFacts.external.totalMaxValue;
+				ret.facts.external.setTotalMaxValue(secondFacts.external.getTotalMaxValue());
 		}
 		// Unfortunately nothing we can do for totalMean/totalStandardDeviation when we are merging
 		// as we do not have the requisite data.
@@ -247,9 +247,9 @@ class AnalyzerSerializer {
 		// Check to see if we have exceeded the cardinality on the the first, second, or the merge.
 		// If so the samples we have seen do not reflect the entirety of the input so we need to
 		// calculate a set of attributes.
-		if (ret.facts.cardinality.size() == ret.getConfig().getMaxCardinality() ||
-				firstFacts.cardinality.size() == first.getConfig().getMaxCardinality() ||
-				secondFacts.cardinality.size() == second.getConfig().getMaxCardinality()) {
+		if (ret.facts.getCardinality().size() == ret.getConfig().getMaxCardinality() ||
+				firstFacts.getCardinality().size() == first.getConfig().getMaxCardinality() ||
+				secondFacts.getCardinality().size() == second.getConfig().getMaxCardinality()) {
 			cardinalityBlown = true;
 
 			ret.facts.minRawNonBlankLength = Math.min(first.facts.minRawNonBlankLength, second.facts.minRawNonBlankLength);

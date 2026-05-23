@@ -56,6 +56,23 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * A set of facts for the Analysis in question.
  */
 public class Facts {
+	/*
+	 * Facts instances move through three lifecycle phases:
+	 *
+	 * ACCUMULATION — written during train()/trainBulk(). Counters are incremented,
+	 *   min/max values tracked, and cardinality/outliers/invalid maps populated.
+	 *   Fields: sampleCount, matchCount, nullCount, blankCount, minRawLength,
+	 *   maxRawLength, min/max per-type fields, cardinality, outliers, invalid, etc.
+	 *
+	 * FINALIZATION — written by ResultFinalizer.buildResult(). Derived fields are
+	 *   computed and cardinality may be replaced with a filtered/recast version.
+	 *   Fields: confidence, variance, distinctCount, approxDistinctCount, uniqueness,
+	 *   keyConfidence, topK, bottomK, streamFormat.
+	 *
+	 * RESULT — after getResult() returns, Facts is embedded in TextAnalysisResult
+	 *   and should be treated as read-only. No further mutations are expected.
+	 */
+
 	/** lgK parameter for HyperLogLog sketch: 2^12 = 4096 registers, ~1% relative error. */
 	private static final int HLL_LGK = 12;
 
@@ -146,7 +163,7 @@ public class Facts {
 
 	public long groupingSeparators;
 
-	public FiniteMap cardinality = new FiniteMap();
+	private FiniteMap cardinality = new FiniteMap();
 	public FiniteMap outliers = new FiniteMap();
 	public FiniteMap invalid = new FiniteMap();
 
@@ -199,47 +216,86 @@ public class Facts {
 		}
 
 		public ExternalFacts(final ExternalFacts external) {
-			this.totalCount = external.totalCount;
-			this.totalNullCount = external.totalNullCount;
-			this.totalBlankCount = external.totalBlankCount;
-			this.totalInvalidCount = external.totalInvalidCount;
-			this.totalMatchCount = external.totalMatchCount;
-			this.totalMean = external.totalMean;
-			this.totalStandardDeviation = external.totalStandardDeviation;
-			this.totalMinValue = external.totalMinValue;
-			this.totalMaxValue = external.totalMaxValue;
-			this.totalMinLength = external.totalMinLength;
-			this.totalMaxLength = external.totalMaxLength;
-			this.keyConfidence = external.keyConfidence;
-			this.uniqueness = external.uniqueness;
+			this.totalCount = external.getTotalCount();
+			this.totalNullCount = external.getTotalNullCount();
+			this.totalBlankCount = external.getTotalBlankCount();
+			this.totalInvalidCount = external.getTotalInvalidCount();
+			this.totalMatchCount = external.getTotalMatchCount();
+			this.totalMean = external.getTotalMean();
+			this.totalStandardDeviation = external.getTotalStandardDeviation();
+			this.totalMinValue = external.getTotalMinValue();
+			this.totalMaxValue = external.getTotalMaxValue();
+			this.totalMinLength = external.getTotalMinLength();
+			this.totalMaxLength = external.getTotalMaxLength();
+			this.keyConfidence = external.getKeyConfidence();
+			this.uniqueness = external.getUniqueness();
 		}
 
 		/** The total number of samples in the stream (typically -1 to indicate unknown). */
-		public long totalCount = -1;
+		private long totalCount = -1;
 		/** The number of null elements in the entire data stream (-1 unless set explicitly). */
-		public long totalNullCount = -1;
+		private long totalNullCount = -1;
 		/** totalBlankCount - The number of blank elements in the entire data stream (-1 unless set explicitly). */
-		public long totalBlankCount = -1;
+		private long totalBlankCount = -1;
 		/** totalInvalidCount - The number of invalid elements in the entire data stream (-1 unless set explicitly). */
-		public long totalInvalidCount = -1;
+		private long totalInvalidCount = -1;
 		/** totalMatchCount - The number of elements that match the detected type in the entire data stream (-1 unless set explicitly). */
-		public long totalMatchCount = -1;
+		private long totalMatchCount = -1;
 		/** totalMean - The mean for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
-		public Double totalMean;
+		private Double totalMean;
 		/** totalStandardDeviation - The standard deviation for Numeric types (Long, Double) across the entire data stream (null unless set explicitly). */
-		public Double totalStandardDeviation;
+		private Double totalStandardDeviation;
 		/** totalMinValue - The minimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly). */
-		public String totalMinValue;
+		private String totalMinValue;
 		/** totalMaxValue - The manimum value for Numeric, Boolean, and String types across the entire data stream (null unless set explicitly). */
-		public String totalMaxValue;
+		private String totalMaxValue;
 		/** totalMinLength - The minimum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly). */
-		public int totalMinLength = -1;
+		private int totalMinLength = -1;
 		/** totalMaxLength - The maximum length for Numeric, Boolean, and String types across the entire data stream (-1 unless set explicitly). */
-		public int totalMaxLength = -1;
+		private int totalMaxLength = -1;
 		/** The percentage confidence (0-1.0) that the observed stream is a Key field (i.e. unique and non-null/non-blank). */
-		public Double keyConfidence;
+		private Double keyConfidence;
 		/** The percentage (0.0-1.0) of non-null/non-blank elements in the stream with a cardinality of one. */
-		public Double uniqueness;
+		private Double uniqueness;
+
+		public long getTotalCount() { return totalCount; }
+		public void setTotalCount(final long totalCount) { this.totalCount = totalCount; }
+
+		public long getTotalNullCount() { return totalNullCount; }
+		public void setTotalNullCount(final long totalNullCount) { this.totalNullCount = totalNullCount; }
+
+		public long getTotalBlankCount() { return totalBlankCount; }
+		public void setTotalBlankCount(final long totalBlankCount) { this.totalBlankCount = totalBlankCount; }
+
+		public long getTotalInvalidCount() { return totalInvalidCount; }
+		public void setTotalInvalidCount(final long totalInvalidCount) { this.totalInvalidCount = totalInvalidCount; }
+
+		public long getTotalMatchCount() { return totalMatchCount; }
+		public void setTotalMatchCount(final long totalMatchCount) { this.totalMatchCount = totalMatchCount; }
+
+		public Double getTotalMean() { return totalMean; }
+		public void setTotalMean(final Double totalMean) { this.totalMean = totalMean; }
+
+		public Double getTotalStandardDeviation() { return totalStandardDeviation; }
+		public void setTotalStandardDeviation(final Double totalStandardDeviation) { this.totalStandardDeviation = totalStandardDeviation; }
+
+		public String getTotalMinValue() { return totalMinValue; }
+		public void setTotalMinValue(final String totalMinValue) { this.totalMinValue = totalMinValue; }
+
+		public String getTotalMaxValue() { return totalMaxValue; }
+		public void setTotalMaxValue(final String totalMaxValue) { this.totalMaxValue = totalMaxValue; }
+
+		public int getTotalMinLength() { return totalMinLength; }
+		public void setTotalMinLength(final int totalMinLength) { this.totalMinLength = totalMinLength; }
+
+		public int getTotalMaxLength() { return totalMaxLength; }
+		public void setTotalMaxLength(final int totalMaxLength) { this.totalMaxLength = totalMaxLength; }
+
+		public Double getKeyConfidence() { return keyConfidence; }
+		public void setKeyConfidence(final Double keyConfidence) { this.keyConfidence = keyConfidence; }
+
+		public Double getUniqueness() { return uniqueness; }
+		public void setUniqueness(final Double uniqueness) { this.uniqueness = uniqueness; }
 
 		@Override
 		public boolean equals(final Object obj) {
@@ -250,14 +306,14 @@ public class Facts {
 			if (getClass() != obj.getClass())
 				return false;
 			final ExternalFacts other = (ExternalFacts) obj;
-			return Objects.equals(keyConfidence, other.keyConfidence) && totalBlankCount == other.totalBlankCount
-					&& totalCount == other.totalCount && totalInvalidCount == other.totalInvalidCount
-					&& totalMatchCount == other.totalMatchCount && totalMaxLength == other.totalMaxLength
-					&& Objects.equals(totalMaxValue, other.totalMaxValue) && Objects.equals(totalMean, other.totalMean)
-					&& totalMinLength == other.totalMinLength && Objects.equals(totalMinValue, other.totalMinValue)
-					&& totalNullCount == other.totalNullCount
-					&& Objects.equals(totalStandardDeviation, other.totalStandardDeviation)
-					&& Objects.equals(uniqueness, other.uniqueness);
+			return Objects.equals(keyConfidence, other.getKeyConfidence()) && totalBlankCount == other.getTotalBlankCount()
+					&& totalCount == other.getTotalCount() && totalInvalidCount == other.getTotalInvalidCount()
+					&& totalMatchCount == other.getTotalMatchCount() && totalMaxLength == other.getTotalMaxLength()
+					&& Objects.equals(totalMaxValue, other.getTotalMaxValue()) && Objects.equals(totalMean, other.getTotalMean())
+					&& totalMinLength == other.getTotalMinLength() && Objects.equals(totalMinValue, other.getTotalMinValue())
+					&& totalNullCount == other.getTotalNullCount()
+					&& Objects.equals(totalStandardDeviation, other.getTotalStandardDeviation())
+					&& Objects.equals(uniqueness, other.getUniqueness());
 		}
 	}
 	public ExternalFacts external = new ExternalFacts();
@@ -445,6 +501,15 @@ public class Facts {
 
 	public void setMaxValue(final String maxValue) {
 		this.maxValue = maxValue;
+	}
+
+	public FiniteMap getCardinality() {
+		return cardinality;
+	}
+
+	public void setCardinality(final FiniteMap newCardinality) {
+		newCardinality.setMaxCapacity(cardinality.getMaxCapacity());
+		this.cardinality = newCardinality;
 	}
 
 	public boolean sketchExists() {

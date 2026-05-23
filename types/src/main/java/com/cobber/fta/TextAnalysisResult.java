@@ -244,7 +244,7 @@ public class TextAnalysisResult {
 			throw new IllegalArgumentException(DISTRIBUTIONS_NOT_ENABLED);
 
 		if (!facts.getSketch().isComplete())
-			facts.getSketch().complete(facts.cardinality);
+			facts.getSketch().complete(facts.getCardinality());
 
 		return facts.getSketch().getValueAtQuantile(quantile);
 	}
@@ -374,7 +374,7 @@ public class TextAnalysisResult {
 	 * @return total number of elements in the entire data stream (-1 if not known).
 	 */
 	public long getTotalCount() {
-		return facts.external.totalCount;
+		return facts.external.getTotalCount();
 	}
 
 	/**
@@ -383,7 +383,7 @@ public class TextAnalysisResult {
 	 * @return Count of all null elements in the entire data stream (-1 if not known).
 	 */
 	public long getTotalNullCount() {
-		return facts.external.totalNullCount;
+		return facts.external.getTotalNullCount();
 	}
 
 	/**
@@ -393,7 +393,7 @@ public class TextAnalysisResult {
 	 * @return Count of all blank samples in the entire data stream (-1 if not known).
 	 */
 	public long getTotalBlankCount() {
-		return facts.external.totalBlankCount;
+		return facts.external.getTotalBlankCount();
 	}
 
 	/**
@@ -402,7 +402,7 @@ public class TextAnalysisResult {
 	 * @return Count of all invalid elements in the entire data stream (-1 if not known).
 	 */
 	public long getTotalInvalidCount() {
-		return facts.external.totalInvalidCount;
+		return facts.external.getTotalInvalidCount();
 	}
 
 	/**
@@ -411,7 +411,7 @@ public class TextAnalysisResult {
 	 * @return Count of all matching elements in the entire data stream (-1 if not known).
 	 */
 	public long getTotalMatchCount() {
-		return facts.external.totalMatchCount;
+		return facts.external.getTotalMatchCount();
 	}
 
 	/**
@@ -420,7 +420,7 @@ public class TextAnalysisResult {
 	 * @return The mean across the entire data stream (null if not known).
 	 */
 	public Double getTotalMean() {
-		return facts.external.totalMean;
+		return facts.external.getTotalMean();
 	}
 
 	/**
@@ -429,7 +429,7 @@ public class TextAnalysisResult {
 	 * @return The Standard Deviation across the entire data stream (null if not known).
 	 */
 	public Double getTotalStandardDeviation() {
-		return facts.external.totalStandardDeviation;
+		return facts.external.getTotalStandardDeviation();
 	}
 
 	/**
@@ -438,7 +438,7 @@ public class TextAnalysisResult {
 	 * @return The minimum value as a String (null if not known).
 	 */
 	public String getTotalMinValue() {
-		return facts.external.totalMinValue;
+		return facts.external.getTotalMinValue();
 	}
 
 	/**
@@ -447,7 +447,7 @@ public class TextAnalysisResult {
 	 * @return The maximum value as a String (null if not known).
 	 */
 	public String getTotalMaxValue() {
-		return facts.external.totalMaxValue;
+		return facts.external.getTotalMaxValue();
 	}
 
 	/**
@@ -457,7 +457,7 @@ public class TextAnalysisResult {
 	 * @return The minimum length in the entire Data Stream (-1 if not known).
 	 */
 	public int getTotalMinLength() {
-		return facts.external.totalMinLength;
+		return facts.external.getTotalMinLength();
 	}
 
 	/**
@@ -467,7 +467,7 @@ public class TextAnalysisResult {
 	 * @return The maximum length in the entire Data Stream (-1 if not known).
 	 */
 	public int getTotalMaxLength() {
-		return facts.external.totalMaxLength;
+		return facts.external.getTotalMaxLength();
 	}
 
 	/**
@@ -515,7 +515,7 @@ public class TextAnalysisResult {
 	 * @return Count of all blank samples.
 	 */
 	public int getCardinality() {
-		return facts.cardinality.size();
+		return facts.getCardinality().size();
 	}
 
 	/**
@@ -711,7 +711,7 @@ public class TextAnalysisResult {
 		final long invalidCount = getInvalidDetails().values().stream().mapToLong(l-> l).sum();
 
 		// Check that the sum of the Cardinality set is equal to the matchCount
-		if (!getFacts().cardinality.hasOverflowed() && getCardinalityDetails().values().stream().mapToLong(l-> l).sum() != getMatchCount())
+		if (!getFacts().getCardinality().hasOverflowed() && getCardinalityDetails().values().stream().mapToLong(l-> l).sum() != getMatchCount())
 			return "Cardinality sum incorrect";
 
 		if (!merging && (getSampleCount() != getMatchCount() + getBlankCount() + getNullCount() + outlierCount + invalidCount))
@@ -829,7 +829,7 @@ public class TextAnalysisResult {
 		final String regExp = getRegExp();
 		final boolean boringRegExp = regExp.charAt(0) == '.' && (regExp.length() == 2 || (regExp.length() > 1 && regExp.charAt(1) == '{'));
 
-		if (boringRegExp && facts.cardinality.size() > 100)
+		if (boringRegExp && facts.getCardinality().size() > 100)
 			return null;
 
 		plugin.put("semanticType", name);
@@ -863,7 +863,7 @@ public class TextAnalysisResult {
 			plugin.put("pluginType", "list");
 			final ObjectNode content = MAPPER.createObjectNode();
 			final ArrayNode arrayNode = MAPPER.createArrayNode();
-			for (final String element : facts.cardinality.keySet())
+			for (final String element : facts.getCardinality().keySet())
 				arrayNode.add(element.toUpperCase(facts.getLocale()));
 			content.put("type", "inline");
 			content.set("members", arrayNode);
@@ -871,7 +871,7 @@ public class TextAnalysisResult {
 			plugin.put("backout", ".*");
 		}
 		else {
-			if (statisticsEnabled() && facts.matchCount > 100 && (facts.cardinality.size()*100)/facts.matchCount < 20 && !regExp.startsWith("(?i)(")) {
+			if (statisticsEnabled() && facts.matchCount > 100 && (facts.getCardinality().size()*100)/facts.matchCount < 20 && !regExp.startsWith("(?i)(")) {
 				if (facts.getMinValue() != null)
 					plugin.put("minimum", facts.getMinValue());
 				if (facts.getMaxValue() != null)
@@ -902,7 +902,7 @@ public class TextAnalysisResult {
 		final ObjectNode analysis = MAPPER.createObjectNode();
 		if (target != SignatureTarget.STRUCTURE_SIGNATURE && target != SignatureTarget.DATA_SIGNATURE)
 			analysis.put("fieldName", name);
-		analysis.put("totalCount", facts.external.totalCount);
+		analysis.put("totalCount", facts.external.getTotalCount());
 		analysis.put("sampleCount", facts.sampleCount);
 		analysis.put("matchCount", facts.matchCount);
 		analysis.put("nullCount", facts.nullCount);
@@ -967,11 +967,11 @@ public class TextAnalysisResult {
 		if (facts.getMatchTypeInfo().isNumeric())
 			analysis.put("leadingZeroCount", getLeadingZeroCount());
 
-		analysis.put("cardinality", facts.cardinality.hasOverflowed() ? -1 : facts.cardinality.size());
+		analysis.put("cardinality", facts.getCardinality().hasOverflowed() ? -1 : facts.getCardinality().size());
 
-		if (!facts.cardinality.isEmpty() && verbose > 0) {
+		if (!facts.getCardinality().isEmpty() && verbose > 0) {
 			final ArrayNode detail = analysis.putArray("cardinalityDetail");
-			outputDetails(MAPPER, detail, facts.cardinality, verbose);
+			outputDetails(MAPPER, detail, facts.getCardinality(), verbose);
 		}
 
 		analysis.put("outlierCardinality", facts.outliers.hasOverflowed() ? -1 : facts.outliers.size());
@@ -1040,27 +1040,27 @@ public class TextAnalysisResult {
 
 		// If an external source has set totalCount then output all the total* attributes (which
 		// will presumably also have been set by the external source).
-		if (facts.external.totalCount != -1) {
-			if (facts.external.totalNullCount != -1)
-				analysis.put("totalNullCount", facts.external.totalNullCount);
-			if (facts.external.totalBlankCount != -1)
-				analysis.put("totalBlankCount", facts.external.totalBlankCount);
-			if (facts.external.totalInvalidCount != -1)
-				analysis.put("totalInvalidCount", facts.external.totalInvalidCount);
-			if (facts.external.totalMatchCount != -1)
-				analysis.put("totalMatchCount", facts.external.totalMatchCount);
-			if (facts.external.totalMean != null)
-				analysis.put("toalMean", facts.external.totalMean);
-			if (facts.external.totalStandardDeviation != null)
-				analysis.put("totalStandardDeviation", facts.external.totalStandardDeviation);
-			if (facts.external.totalMinValue != null)
-				analysis.put("totalMin", facts.external.totalMinValue);
-			if (facts.external.totalMaxValue != null)
-				analysis.put("totalMax", facts.external.totalMaxValue);
-			if (facts.external.totalMinLength != -1)
-				analysis.put("totalMinLength", facts.external.totalMinLength);
-			if (facts.external.totalMaxLength != -1)
-				analysis.put("totalMaxLength", facts.external.totalMaxLength);
+		if (facts.external.getTotalCount() != -1) {
+			if (facts.external.getTotalNullCount() != -1)
+				analysis.put("totalNullCount", facts.external.getTotalNullCount());
+			if (facts.external.getTotalBlankCount() != -1)
+				analysis.put("totalBlankCount", facts.external.getTotalBlankCount());
+			if (facts.external.getTotalInvalidCount() != -1)
+				analysis.put("totalInvalidCount", facts.external.getTotalInvalidCount());
+			if (facts.external.getTotalMatchCount() != -1)
+				analysis.put("totalMatchCount", facts.external.getTotalMatchCount());
+			if (facts.external.getTotalMean() != null)
+				analysis.put("toalMean", facts.external.getTotalMean());
+			if (facts.external.getTotalStandardDeviation() != null)
+				analysis.put("totalStandardDeviation", facts.external.getTotalStandardDeviation());
+			if (facts.external.getTotalMinValue() != null)
+				analysis.put("totalMin", facts.external.getTotalMinValue());
+			if (facts.external.getTotalMaxValue() != null)
+				analysis.put("totalMax", facts.external.getTotalMaxValue());
+			if (facts.external.getTotalMinLength() != -1)
+				analysis.put("totalMinLength", facts.external.getTotalMinLength());
+			if (facts.external.getTotalMaxLength() != -1)
+				analysis.put("totalMaxLength", facts.external.getTotalMaxLength());
 		}
 
 		if (facts.getMatchTypeInfo().isDateType())
