@@ -25,10 +25,19 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -82,7 +91,7 @@ public class TestUtils {
 			"Dec|Oct|Apr|May|Jun|Jan|Feb|Mar|Oct|Nov|Dec|Jul|Aug|UNK|Sep|Jan|Oct|Oct|Oct|";
 
 	// Set of valid months + 4 x "UNK"
-	protected static final String MONTHS_FRENCH =
+	public static final String MONTHS_FRENCH =
 			"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
 					"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
 					"janv.|févr.|mars|avr.|mai|juin|juil.|août|sept.|oct.|nov.|déc.|" +
@@ -261,7 +270,7 @@ public class TestUtils {
 		return ((DecimalFormat)nf).getGroupingSize();
 	}
 
-	static boolean isValidLocale(final String value) {
+	public static boolean isValidLocale(final String value) {
 		for (final Locale locale : Locale.getAvailableLocales()) {
 			if (value.equals(locale.toString())) {
 				return true;
@@ -270,7 +279,7 @@ public class TestUtils {
 		return false;
 	}
 
-	protected static void checkSerialization(final TextAnalyzer toCheck) throws FTAException {
+	public static void checkSerialization(final TextAnalyzer toCheck) throws FTAException {
 		final String originalSerialized = toCheck.serialize();
 		final TextAnalyzer hydrated = TextAnalyzer.deserialize(originalSerialized);
 
@@ -365,7 +374,7 @@ public class TestUtils {
 		}
 	}
 
-	static int getJavaVersion() {
+	public static int getJavaVersion() {
 		final String javaVersion = System.getProperty("java.specification.version");
 		if ("1.8".equals(javaVersion))
 			return 8;
@@ -386,7 +395,7 @@ public class TestUtils {
 		return logical;
 	}
 
-	protected static TextAnalysisResult simpleCore(final Sample[] samples, final String header, final Locale locale, final String semanticType, final FTAType type, final Double confidence) throws FTAException {
+	public static TextAnalysisResult simpleCore(final Sample[] samples, final String header, final Locale locale, final String semanticType, final FTAType type, final Double confidence) throws FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer(header);
 		analysis.setLocale(locale);
 		analysis.setDebug(2);
@@ -435,5 +444,124 @@ public class TestUtils {
 
 
 		return result;
+	}
+
+	public static TextAnalyzer checkTextAnalyzerMerge(final List<String> samplesOne, final List<String> samplesTwo, final String streamName,
+			final Locale locale, final boolean collectStatistics) throws FTAException {
+		final TextAnalyzer shardOne = new TextAnalyzer(streamName);
+		shardOne.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
+
+		if (locale != null)
+			shardOne.setLocale(locale);
+		final TextAnalyzer reference = new TextAnalyzer(streamName);
+		if (locale != null)
+			reference.setLocale(locale);
+		reference.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
+
+		long countOne = 0;
+		long countTwo = 0;
+		long countReference = 0;
+		for (final String sample : samplesOne) {
+			shardOne.train(sample);
+			countOne++;
+			reference.train(sample);
+			countReference++;
+		}
+		shardOne.setTotalCount(countOne);
+		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOne.serialize());
+
+		final TextAnalyzer shardTwo = new TextAnalyzer(streamName);
+		if (locale != null)
+			shardTwo.setLocale(locale);
+		shardTwo.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
+
+		for (final String sample : samplesTwo) {
+			shardTwo.train(sample);
+			countTwo++;
+			reference.train(sample);
+			countReference++;
+		}
+		shardTwo.setTotalCount(countTwo);
+		reference.setTotalCount(countReference);
+		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(shardTwo.serialize());
+		assertEquals(hydratedTwo.getContext().getStreamName(), streamName);
+
+		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
+
+		final TextAnalysisResult mergedResult = merged.getResult();
+		final String mergedJSON = mergedResult.asJSON(false, 1);
+		final TextAnalysisResult referenceResult = reference.getResult();
+		final String referenceJSON = referenceResult.asJSON(false, 1);
+
+		boolean failed = false;
+		if (referenceResult.getCardinality() < reference.getMaxCardinality()) {
+			if (mergedResult.getType().isNumeric()) {
+				if (!merged.equals(reference, EPSILON))
+					failed = true;
+			}
+			else {
+				if (!merged.equals(reference) || !mergedJSON.equals(referenceJSON))
+					failed = true;
+			}
+		}
+		else {
+			if (
+					!mergedResult.getType().equals(referenceResult.getType()) ||
+					mergedResult.isSemanticType() != referenceResult.isSemanticType() ||
+					(mergedResult.getTypeModifier() != null && !mergedResult.getTypeModifier().equals(referenceResult.getTypeModifier())) ||
+					mergedResult.getLeadingWhiteSpace() != referenceResult.getLeadingWhiteSpace() ||
+					mergedResult.getTrailingWhiteSpace() != referenceResult.getTrailingWhiteSpace() ||
+					mergedResult.getMultiline() != referenceResult.getMultiline() ||
+					mergedResult.getTotalCount() != referenceResult.getTotalCount() ||
+					mergedResult.getNullCount() != referenceResult.getNullCount() ||
+					mergedResult.getBlankCount() != referenceResult.getBlankCount() ||
+					!mergedResult.getStructureSignature().equals(referenceResult.getStructureSignature()) ||
+					!mergedResult.getRegExp().equals(referenceResult.getRegExp())
+			)
+				failed = true;
+			if (merged.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) && (
+					!mergedResult.getMaxValue().equals(referenceResult.getMaxValue()) ||
+					!mergedResult.getMinValue().equals(referenceResult.getMinValue()) ||
+					!Objects.equals(mergedResult.getBottomK(), referenceResult.getBottomK()) ||
+					!Objects.equals(mergedResult.getTopK(), referenceResult.getTopK())
+					))
+				failed = true;
+			if (merged.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) && mergedResult.getType().isNumeric()) {
+				if (Math.abs(mergedResult.getMean() - referenceResult.getMean()) > EPSILON)
+					failed = true;
+			}
+		}
+
+		if (failed) {
+			System.err.println("Merged:\n" + mergedJSON);
+			System.err.println("Reference:\n" + referenceJSON);
+			fail();
+		}
+
+		return merged;
+	}
+
+	public static String checkParseable(final TextAnalysisResult result, final String input, final Locale locale) {
+		final String formatString = result.getTypeModifier();
+		final FTAType type = result.getType();
+		final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatString, locale);
+
+		try {
+			if (FTAType.LOCALTIME.equals(type))
+				LocalTime.parse(input, formatter);
+			else if (FTAType.LOCALDATE.equals(type))
+				LocalDate.parse(input, formatter);
+			else if (FTAType.LOCALDATETIME.equals(type))
+				LocalDateTime.parse(input, formatter);
+			else if (FTAType.ZONEDDATETIME.equals(type))
+				ZonedDateTime.parse(input, formatter);
+			else
+				OffsetDateTime.parse(input, formatter);
+		}
+		catch (DateTimeParseException exc) {
+			return "Java Should have successfully parsed: " + input;
+		}
+
+		return null;
 	}
 }

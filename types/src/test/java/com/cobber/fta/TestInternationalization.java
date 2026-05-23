@@ -28,17 +28,6 @@ import com.cobber.fta.core.FTAType;
 public class TestInternationalization {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void genderBG() throws IOException, FTAException {
-		final String[] inputs = {
-				"ЖЕНСКИ", "МЪЖКИ", "ЖЕНСКИ", "ЖЕНСКИ", "МЪЖКИ", "МЪЖКИ", "ЖЕНСКИ", "МЪЖКИ", "ЖЕНСКИ", "МЪЖКИ",
-				"ЖЕНСКИ", "МЪЖКИ", "ЖЕНСКИ", "МЪЖКИ", "ЖЕНСКИ", "МЪЖКИ", "ЖЕНСКИ", "ЖЕНСКИ", "МЪЖКИ", "МЪЖКИ",
-				"ЖЕНСКИ", "МЪЖКИ", "ЖЕНСКИ", "МЪЖКИ", "ЖЕНСКИ", "МЪЖКИ", "ЖЕНСКИ", "МЪЖКИ", "ЖЕНСКИ", "МЪЖКИ",
-		};
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "пол", Locale.forLanguageTag("bg-BG"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
-		assertEquals(result.getMatchCount(), inputs.length);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void genderCA() throws IOException, FTAException {
 		final String[] inputs = {
 				"DONA", "HOME", "DONA", "HOME", "HOME", "DONA", "HOME", "DONA", "DONA", "HOME",
@@ -72,17 +61,6 @@ public class TestInternationalization {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void genderFR() throws IOException, FTAException {
-		final String[] inputs = {
-				"FEMME", "HOMME", "FEMME", "HOMME", "FEMME", "HOMME", "FEMME", "HOMME", "FEMME", "HOMME",
-				"HOMME", "FEMME", "HOMME", "FEMME", "HOMME", "FEMME", "HOMME", "FEMME", "HOMME", "FEMME",
-				"FEMME", "HOMME", "FEMME", "HOMME", "FEMME", "HOMME", "FEMME", "HOMME", "FEMME", "HOMME",
-		};
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "Genre", Locale.forLanguageTag("fr-FR"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
-		assertEquals(result.getMatchCount(), inputs.length);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void genderHR() throws IOException, FTAException {
 		final String[] inputs = {
 				"ŽENE", "MUŠKARCI", "ŽENE", "MUŠKARCI", "ŽENE", "MUŠKARCI", "ŽENE", "MUŠKARCI", "ŽENE", "MUŠKARCI",
@@ -101,17 +79,6 @@ public class TestInternationalization {
 				"KONA", "KARL", "KONA", "KARL", "KONA", "KARL", "KONA", "KARL", "KONA", "KARL",
 		};
 		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "kyn", Locale.forLanguageTag("is-IS"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
-		assertEquals(result.getMatchCount(), inputs.length);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void genderIT() throws IOException, FTAException {
-		final String[] inputs = {
-				"FEMMINA", "MASCHIO", "FEMMINA", "MASCHIO", "FEMMINA", "MASCHIO", "FEMMINA", "MASCHIO", "FEMMINA", "MASCHIO",
-				"MASCHIO", "FEMMINA", "MASCHIO", "FEMMINA", "MASCHIO", "FEMMINA", "MASCHIO", "FEMMINA", "MASCHIO", "FEMMINA",
-				"FEMMINA", "MASCHIO", "FEMMINA", "MASCHIO", "FEMMINA", "MASCHIO", "FEMMINA", "MASCHIO", "FEMMINA", "MASCHIO",
-		};
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "sesso", Locale.forLanguageTag("it-IT"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
 
@@ -145,17 +112,6 @@ public class TestInternationalization {
 				"FEMEIE", "BĂRBAT", "FEMEIE", "BĂRBAT", "FEMEIE", "BĂRBAT", "FEMEIE", "BĂRBAT", "FEMEIE", "BĂRBAT",
 		};
 		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "sex", Locale.forLanguageTag("ro-RO"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
-		assertEquals(result.getMatchCount(), inputs.length);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void genderRU() throws IOException, FTAException {
-		final String[] inputs = {
-				"ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА",
-				"МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА",
-				"ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА", "ЖЕНЩИНА", "МУЖЧИНА",
-		};
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "Пол", Locale.forLanguageTag("ru-RU"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
 

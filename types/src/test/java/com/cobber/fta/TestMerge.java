@@ -603,36 +603,6 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void issue97_C() throws IOException, FTAException {
-		final String[] s1 = {
-				"1.200,00", "1.900,00", "3.475,00", "14.450,00", "1.300,00",
-				"7.500,00", "21.802,50", "24.373,50", "48.171,00", "88.979,00"
-		};
-
-		final String[] s2 = {
-				"1.500,00", "3.000,00", "13.000,00", "470.000,00", "4.920,00",
-				"14.000,00", "21.920,00", "29.672,33", "53.240,00", "379.295,00"
-		};
-
-		final TextAnalyzer t1 = new TextAnalyzer("Subsidie beschikt");
-		t1.setLocale(Locale.forLanguageTag("nl-NL"));
-		for (final String sample : s1)
-			t1.train(sample);
-
-		final TextAnalyzer t2 = new TextAnalyzer("Subsidie beschikt");
-		t2.setLocale(Locale.forLanguageTag("nl-NL"));
-		for (final String sample : s2)
-			t2.train(sample);
-
-		final TextAnalyzer merged = TextAnalyzer.merge(t2, t1);
-		final TextAnalysisResult mergedResult = merged.getResult();
-
-		assertEquals(mergedResult.getType(), FTAType.DOUBLE);
-		assertEquals(mergedResult.getTypeModifier(), "GROUPING");
-//BUG		assertEquals(mergedResult.getSampleCount(), s1.length + s2.length);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void testMonotonicIncreasing() throws IOException, FTAException {
 		final int SAMPLE_COUNT = 100;
 
@@ -711,31 +681,6 @@ public class TestMerge {
 		shardTwo.train("0100");
 
 		assertNotEquals(shardOne, shardTwo);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void testBulkLongFrench() throws IOException, FTAException {
-		final long SAMPLE_COUNT = 100L;
-
-		final List<String> samplesLong100 = new ArrayList<>();
-		for (int i = 0; i < SAMPLE_COUNT; i++)
-			samplesLong100.add("100");
-		samplesLong100.add(null);
-		samplesLong100.add(" ");
-
-		final List<String> samplesLong200 = new ArrayList<>();
-		for (int i = 0; i < SAMPLE_COUNT; i++)
-			samplesLong200.add("200");
-		samplesLong200.add(null);
-		samplesLong200.add(null);
-		samplesLong200.add("  ");
-		samplesLong200.add("  ");
-		samplesLong200.add("x");
-
-		final TextAnalyzer merged = checkTextAnalyzerMerge(samplesLong100, samplesLong200, "long_long", Locale.FRANCE, true);
-		final TextAnalysisResult mergedResult = merged.getResult();
-
-		assertEquals(mergedResult.getType(), FTAType.LONG);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -857,20 +802,6 @@ public class TestMerge {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void cardinalityExceededLongFrench() throws IOException, FTAException {
-
-		final List<String> shardOne = new ArrayList<>();
-		for (int i = 0; i < 20000; i++)
-			shardOne.add(String.valueOf(i));
-
-		final List<String> shardTwo = new ArrayList<>();
-		for (int i = 0; i < 20000; i++)
-			shardTwo.add(String.valueOf(100000 + i));
-
-		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededLong", Locale.FRANCE, true);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void cardinalityExceededDouble() throws IOException, FTAException {
 
 		final List<String> shardOne = new ArrayList<>();
@@ -896,58 +827,6 @@ public class TestMerge {
 			shardTwo.add(Integer.toString(100000 + i) + ".0");
 
 		checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDouble", null, false);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void cardinalityExceededDoubleFrench0() throws IOException, FTAException {
-
-		final List<String> shardOne = new ArrayList<>();
-		for (int i = 0; i < 20000; i++)
-			shardOne.add(Integer.toString(i) + ",0");
-
-		final List<String> shardTwo = new ArrayList<>();
-		for (int i = 0; i < 20000; i++)
-			shardTwo.add(Integer.toString(100000 + i) + ",0");
-
-		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDoubleFrench", Locale.FRANCE, true);
-		final TextAnalysisResult mergedResult = merged.getResult();
-		assertNull(mergedResult.getTypeModifier());
-	}
-
-	// Test is broken due to the fact that the bottomk/topK values are stored in a reasonable localized format (reasonable means
-	// that it mirrors the format w.r.t. to the presence of the exponent and the presence of the thousands separator) but NOT
-	// the number of decimal places.
-	// The cardinality set is the input as received, hence if you need to add topK/bottomK as the cardinality has been blown
-	// then it has the potential to change the shapes detected.
-	// Solution is probably to keep the input as received for the values associated with the topK/bottomK.
-	// @Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void cardinalityExceededDoubleFrench00() throws IOException, FTAException {
-
-		final List<String> shardOne = new ArrayList<>();
-		for (int i = 0; i < 20000; i++)
-			shardOne.add(Integer.toString(i) + ",00");
-
-		final List<String> shardTwo = new ArrayList<>();
-		for (int i = 0; i < 20000; i++)
-			shardTwo.add(Integer.toString(100000 + i) + ",00");
-
-		final TextAnalyzer merged = checkTextAnalyzerMerge(shardOne, shardTwo, "cardinalityExceededDoubleFrench", Locale.FRANCE, true);
-		final TextAnalysisResult mergedResult = merged.getResult();
-		System.err.println(mergedResult.asJSON(true, 0));
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
-	public void doubleFrench() throws IOException, FTAException {
-
-		final List<String> shardOne = new ArrayList<>();
-		for (int i = 0; i < 20; i++)
-			shardOne.add(Integer.toString(i) + ",0");
-
-		final List<String> shardTwo = new ArrayList<>();
-		for (int i = 0; i < 20; i++)
-			shardTwo.add(Integer.toString(100000 + i) + ",0");
-
-		checkTextAnalyzerMerge(shardOne, shardTwo, "doubleFrench", Locale.FRANCE, true);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
@@ -2086,112 +1965,7 @@ public class TestMerge {
 
 	private TextAnalyzer checkTextAnalyzerMerge(final List<String> samplesOne, final List<String> samplesTwo, final String streamName,
 			final Locale locale, final boolean collectStatistics) throws FTAException {
-		final TextAnalyzer shardOne = new TextAnalyzer(streamName);
-		shardOne.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
-
-		if (locale != null)
-			shardOne.setLocale(locale);
-		final TextAnalyzer reference = new TextAnalyzer(streamName);
-		if (locale != null)
-			reference.setLocale(locale);
-		reference.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
-
-		long countOne = 0;
-		long countTwo = 0;
-		long countReference = 0;
-		// Train the first shard (and the reference set)
-		for (final String sample : samplesOne) {
-			shardOne.train(sample);
-			countOne++;
-			reference.train(sample);
-			countReference++;
-		}
-		shardOne.setTotalCount(countOne);
-		// serialize and de-serialize it to check this process
-		final TextAnalyzer hydratedOne = TextAnalyzer.deserialize(shardOne.serialize());
-
-		// Train the second shard (and the reference set)
-		final TextAnalyzer shardTwo = new TextAnalyzer(streamName);
-		if (locale != null)
-			shardTwo.setLocale(locale);
-		shardTwo.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, collectStatistics);
-
-		for (final String sample : samplesTwo) {
-			shardTwo.train(sample);
-			countTwo++;
-			reference.train(sample);
-			countReference++;
-		}
-		shardTwo.setTotalCount(countTwo);
-		reference.setTotalCount(countReference);
-		final TextAnalyzer hydratedTwo = TextAnalyzer.deserialize(shardTwo.serialize());
-		assertEquals(hydratedTwo.getContext().getStreamName(), streamName);
-
-		// Merge the two hydrated TextAnalyzers
-		final TextAnalyzer merged = TextAnalyzer.merge(hydratedOne, hydratedTwo);
-
-		final TextAnalysisResult mergedResult = merged.getResult();
-		final String mergedJSON = mergedResult.asJSON(false, 1);
-		final TextAnalysisResult referenceResult = reference.getResult();
-		final String referenceJSON = referenceResult.asJSON(false, 1);
-
-		boolean failed = false;
-		// If we captured all the observation then the merge should be roughly perfect :-)
-		if (referenceResult.getCardinality() < reference.getMaxCardinality()) {
-			if (mergedResult.getType().isNumeric()) {
-				if (!merged.equals(reference, TestUtils.EPSILON))
-					failed = true;
-			}
-			else {
-				 if (!merged.equals(reference) || !mergedJSON.equals(referenceJSON))
-					 failed = true;
-			}
-		}
-		else {
-			// We lost some results in the merge so compare what we can
-			if (
-					// Type and TypeQualifier (if it exists)
-					!mergedResult.getType().equals(referenceResult.getType()) ||
-					mergedResult.isSemanticType() != referenceResult.isSemanticType() ||
-					(mergedResult.getTypeModifier() != null && !mergedResult.getTypeModifier().equals(referenceResult.getTypeModifier())) ||
-					// White-space
-					mergedResult.getLeadingWhiteSpace() != referenceResult.getLeadingWhiteSpace() ||
-					mergedResult.getTrailingWhiteSpace() != referenceResult.getTrailingWhiteSpace() ||
-					mergedResult.getMultiline() != referenceResult.getMultiline() ||
-					// Counts - totalCount, nullCount, blankCount
-					mergedResult.getTotalCount() != referenceResult.getTotalCount() ||
-					mergedResult.getNullCount() != referenceResult.getNullCount() ||
-					mergedResult.getBlankCount() != referenceResult.getBlankCount() ||
-					// Structure
-					!mergedResult.getStructureSignature().equals(referenceResult.getStructureSignature()) ||
-					!mergedResult.getRegExp().equals(referenceResult.getRegExp())
-			)
-				failed = true;
-			if (merged.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) && (
-					// Maximum/Minimum
-					!mergedResult.getMaxValue().equals(referenceResult.getMaxValue()) ||
-					!mergedResult.getMinValue().equals(referenceResult.getMinValue()) ||
-					// TopK/BottomK
-					!Objects.equals(mergedResult.getBottomK(), referenceResult.getBottomK()) ||
-					!Objects.equals(mergedResult.getTopK(), referenceResult.getTopK())
-					))
-				failed = true;
-			if (merged.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS) && mergedResult.getType().isNumeric()) {
-				if (
-						Math.abs(mergedResult.getMean() - referenceResult.getMean()) > TestUtils.EPSILON
-//						||
-//						Math.abs(mergedResult.getStandardDeviation() - referenceResult.getStandardDeviation()) > EPSILON
-						)
-					failed = true;
-			}
-		}
-
-		if (failed) {
-			System.err.println("Merged:\n" + mergedJSON);
-			System.err.println("Reference:\n" + referenceJSON);
-			fail();
-		}
-
-		return merged;
+		return TestUtils.checkTextAnalyzerMerge(samplesOne, samplesTwo, streamName, locale, collectStatistics);
 	}
+
 }

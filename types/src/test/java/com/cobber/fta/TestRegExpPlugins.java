@@ -163,20 +163,6 @@ public class TestRegExpPlugins {
 		TestUtils.simpleCore(Sample.allValid(samples), "Latitude", Locale.US, "COORDINATE.LATITUDE_DECIMAL", FTAType.DOUBLE, 1.0);
 	}
 
-	@Test(groups = { TestGroups.ALL })
-	public void testLatitudeUnsigned_deDE() throws IOException, FTAException {
-		final String[] samples = {
-				"51,5", "39,195", "46,18806", "36,1333333", "33,52056", "39,79", "40,69361", "36,34333", "32,0666667", "48,8833333", "40,71417",
-				"51,45", "29,42389", "43,69556", "40,03222", "53,6772222", "45,4166667", "17,3833333", "51,52721", "40,76083", "53,5", "51,8630556",
-				"26,1666667", "32,64", "62,9", "29,61944", "40,71417", "51,52721", "40,61278", "37,22667", "40,71417", "25,77389",
-				"46,2333333", "40,65", "52,3333333", "38,96861", "27,1666667", "33,44833", "29,76306", "43,77222", "43,77222", "34,33806",
-				"56,0333333", "41,54278", "29,76306", "26,46111", "51,4", "55,6666667", "33,92417", "53,4247222", "26,12194", "37,8166667"
-		};
-
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(samples), "Latitude", Locale.GERMAN, "COORDINATE.LATITUDE_DECIMAL", FTAType.DOUBLE, 1.0);
-		assertEquals(result.getMatchCount(), samples.length);
-	}
-
 	@Test(groups = { TestGroups.ALL, TestGroups.ALL })
 	public void shapeCacheOverflow() throws IOException, FTAException {
 		TextAnalyzer[] analysis = null;

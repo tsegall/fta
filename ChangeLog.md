@@ -1,6 +1,11 @@
 
 ## Changes ##
 
+### 18.14.4
+ - chore: Bump libphonenumber to 9.0.31
+ - refactor: Extract locale-specific tests into per-language files under com.cobber.fta.internationalization (French, German, Italian, Portuguese, Bulgarian, Russian, Japanese date tests)
+ - docs: Add Javadoc to TextAnalyzer.getRegExp(KnownTypes.ID)
+
 ### 18.14.3
  - refactor: Move getResult() body into ResultFinalizer.buildResult(); remove nine dead wrapper methods from TextAnalyzer (backout, lengthQualifier, checkDateTimeTypes, switchToDate, finalizeLong, killInvalidDates, finalizeBoolean, finalizeDouble, finalizeString)
  - refactor: Facts.java — make cardinality private with getCardinality()/setCardinality() (setter preserves maxCapacity); add lifecycle phase documentation (ACCUMULATION/FINALIZATION/RESULT); make ExternalFacts fields private with public getters/setters

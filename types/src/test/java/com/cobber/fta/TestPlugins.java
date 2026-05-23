@@ -210,31 +210,6 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void basicGenderNL() throws IOException, FTAException {
-		final String[] inputs = {
-				"M", "V", "M", "M", "O", "V", "M", "O", "M", "M", "M", "V", "M", "V", "V",
-				"M", "M", "V", "M", "V", "M", "M", "M", "M", "O", "M", "V", "M", "V", "M"
-		};
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "GESLACH", Locale.forLanguageTag("nl-NL"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
-
-		assertEquals(result.getRegExp(), "(?i)(M|O|V)");
-		assertEquals(result.getMatchCount(), inputs.length);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void basicGenderDE() throws IOException, FTAException {
-		final String[] inputs = {
-				"Female", "MALE", "Male", "Female", "Female", "MALE", "Female", "Female", "Unknown", "Male",
-				"Male", "Female", "Male", "Male", "Male", "Female", "Female", "Male", "Male", "Male",
-				"Female", "Male", "Female", "FEMALE", "Male", "Female", "male", "Male", "Male", "male",
-		};
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "Gender", Locale.forLanguageTag("de-AT"), null, FTAType.STRING, 1.0);
-		assertEquals(result.getRegExp(), "(?i)(FEMALE|MALE|UNKNOWN)");
-		assertEquals(result.getMatchCount(), inputs.length);
-		assertEquals(result.getConfidence(), 1.0);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicGenderTR() throws IOException, FTAException {
 		final String[] inputs = {
 				"KADIN", "ERKEK", "KADIN", "KADIN", "KADIN", "ERKEK", "ERKEK", "KADIN", "KADIN", "KADIN",
@@ -258,18 +233,6 @@ public class TestPlugins {
 		assertEquals(result.getRegExp(), "(?i)(E|K)");
 		assertEquals(result.getMatchCount(), inputs.length);
 		assertEquals(result.getConfidence(), 1.0);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void trickLatitude() throws IOException, FTAException {
-		final String[] inputs = {
-				"54.176658700787", "54.1523286823181", "54.1507845291159", "54.1444646959388", "54.0948626983874",
-				"54.099612908786", "54.0928342952505", "54.1492128935414", "54.0996275412016", "54.1767338631483",
-		};
-
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "latitude", Locale.forLanguageTag("de-DE"), "COORDINATE.LATITUDE_DECIMAL", FTAType.DOUBLE, 1.0);
-		assertEquals(result.getRegExp(), "-?([0-9]|[0-8][0-9])([,\\.]\\d+)?|-?90[,\\.]0+");
-		assertEquals(result.getMatchCount(), inputs.length);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -307,52 +270,6 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "PRIM_LONG_DMS", Locale.US, "COORDINATE.LONGITUDE_DMS", FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), "(\\d{5,7}|0?\\d{1,2} \\d{1,2} \\d{1,2}) ?[EeWw]");
-		assertEquals(result.getMatchCount(), inputs.length);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void VAT_AT() throws IOException, FTAException {
-		final String[] inputs = {
-				"ATU11111116", "ATU22222226", "ATU33333336", "ATU44444446", "ATU55555553",
-				"ATU66666663", "ATU77777773", "ATU88888883", "ATU99999993", "ATU12345675",
-				"ATU00000024", "ATU00000033", "ATU00000042", "ATU00000060", "ATU00000079",
-				"ATU00000088", "ATU00000104", "ATU00000113", "ATU00000122", "ATU00000140",
-				"ATU00000159", "ATU00000168", "ATU00000186", "ATU00000195", "ATU00000202",
-				"ATU00000202", "ATU10223006", "ATU12011204", "ATU15110001",
-				"ATU15394605", "ATU15416707", "ATU15662209", "ATU16370905", "ATU23224909",
-				"ATU25775505", "ATU28560205", "ATU28609707", "ATU28617100", "ATU29288909",
-				"ATU37675002", "ATU37785508", "ATU37830200", "ATU38420507", "ATU38516405",
-				"ATU39364503", "ATU42527002", "ATU43666001", "ATU43716207", "ATU45766309",
-		};
-
-
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "UID", Locale.forLanguageTag("de-AT"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
-
-		assertEquals(result.getMatchCount(), inputs.length);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void VAT_FR() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("TVA");
-		analysis.setLocale(Locale.forLanguageTag("fr-FR"));
-
-		final String[] inputs = {
-				"FR00000000190", "FR00300076965", "FR00303656847", "FR19000000067", "FR20562016774",
-				"FR01000000158", "FR03512803495", "FR03552081317", "FR03784359069", "FR04494487341",
-				"FR05442977302", "FR13393892815", "FR14722057460", "FR17000000034", "FR22528117732",
-				"FR25000000166", "FR25432701258", "FR27514868827", "FR29312010820", "FR31387589179",
-				"FR38438710865", "FR39412658767", "FR40303265045", "FR40391895109", "FR40402628838",
-				"FR41000000042", "FR41343848552", "FR42403335904", "FR42504207853", "FR90524670213",
-				"FR43000000075", "FR44527865992", "FR45395080138", "FR45542065305", "FR46400477089",
-				"FR47000000141", "FR47323875187", "FR47323875187", "FR48000000109", "FR53418304010",
-				"FR54000000208", "FR55338966385", "FR55440243988", "FR55480081306", "FR56439795816",
-				"FR57609803416", "FR58399360817", "FR58499528255", "FR61300986619", "FR61954506077",
-				"FR64518539093", "FR65489465542", "FR67000000083", "FR71383076817", "FR72000000117",
-				"FR73000000182", "FR74532287844", "FR82494628696", "FR82542065479", "FR83404833048",
-				"FR85418228102", "FR88414997130", "FR89540090917", "FR90000000026", "FR96000000125"
-		};
-
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "TVA", Locale.forLanguageTag("fr-FR"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
 
@@ -404,23 +321,6 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void VAT_NL() throws IOException, FTAException {
-		final String[] inputs = {
-				"NL000000024B01", "NL813195779B01", "NL814170511B01", "NL815216002B01", "NL815498093B01",
-				"NL000000048B01", "NL000000061B01", "NL000000073B01", "NL000000085B01", "NL000000103B01",
-				"NL000000115B01", "NL000000127B01", "NL000000140B01", "NL000000152B01", "NL000000164B01",
-				"NL000000188B01", "NL000000205B01", "NL000000206B01", "NL000000206B01", "NL001079293B01",
-				"NL001368023B01", "NL003156709B01", "NL004909665B07", "NL005033019B01", "NL006292227B01",
-				"NL010000445B01", "NL010000446B01", "NL121745417B01", "NL128297906B01", "NL147804668B01",
-				"NL173389909B01", "NL208560129B01", "NL800272912B01", "NL805332674B01", "NL805969317B01",
-				"NL806825790B01", "NL806925206B01", "NL809442127B01", "NL810195835B01", "NL810876334B01",
-		};
-
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "BTW-nummer", Locale.forLanguageTag("nl-NL"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 0.975);
-		assertEquals(result.getMatchCount(), inputs.length - 2);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void VAT_PL() throws IOException, FTAException {
 		final String[] inputs = {
 				"5250008318", "5260250995", "5861014302", "6430000299", "6310200736",
@@ -437,26 +337,6 @@ public class TestPlugins {
 
 		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "NIP", Locale.forLanguageTag("pl-PL"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
 		assertEquals(result.getRegExp(), "\\d{10}");
-		assertEquals(result.getMatchCount(), inputs.length);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void VAT_IT() throws IOException, FTAException {
-		final String[] inputs = {
-				"00673580221", "02400290223", "02209460225", "02018300224", "00106510225",
-				"02271060226", "02167060223", "00227460227", "01867580225", "01981650227",
-				"02046850224", "02459690224", "02141050225", "00051370229", "00983840224",
-				"01989590227", "00075750224", "00337140222", "01855780225", "02099830222",
-				"00142960228", "01384990220", "02345010223", "01720000221", "01947280226",
-				"00166280222", "01889730220", "02046780223", "00921280244", "01648950226",
-				"01856020225", "00828140228", "02030200220", "00814060224", "00971660220",
-				"00401660220", "02304350222", "02787520168", "01718290222", "01731500227",
-				"02331550224", "01743260224", "01887120226", "01226750220", "01323250223",
-				"01813150222", "01783350224", "01273520229", "01594610220", "01611170224"
-		};
-
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "IVA", Locale.forLanguageTag("it-IT"), "IDENTITY.VAT_<COUNTRY>", FTAType.STRING, 1.0);
-		assertEquals(result.getRegExp(), "\\d{11}");
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
 
@@ -615,19 +495,6 @@ public class TestPlugins {
 		for (final String input : inputs)
 			if (!"Not Stated".equals(input))
 				assertTrue(input.trim().matches(result.getRegExp()), input);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void basicPostalCodeNL() throws IOException, FTAException {
-		final String[] inputs = {
-			"2345AQ", "5993FG", "3898WW", "5543NH", "1992WW", "4002CS", "5982KG", "1090DD", "3030XX", "1088TR",
-			"2547DE", "6587DS", "3215QQ", "7745VD", "4562DD", "4582SS", "2257WE", "3578HT", "4568FB", "1587SW",
-			"4573LF", "3574SS", "8122GK", "4523EW", "7128RT", "2548RF", "6873HH", "4837NR", "2358EE", "3731HY"
-		};
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "P_PCODE", Locale.forLanguageTag("nl-NL"), "POSTAL_CODE.POSTAL_CODE_NL", FTAType.STRING, 1.0);
-
-		assertEquals(result.getRegExp(), "\\d{4} \\p{IsAlphabetic}{2}|\\d{4}\\p{IsAlphabetic}{2}");
-		assertEquals(result.getMatchCount(), inputs.length);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -2246,34 +2113,6 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void basicZipHeaderDE() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("Postleitzahl");
-		analysis.setLocale(Locale.forLanguageTag("de-AT"));
-		final String inputs[] = {
-			"", "", "", "", "", "", "", "", "", "27215", "75251", "66045", "", "",
-			"", "", "", "", "94087", "", "", "", "", "", "", "", "", "", "", ""
-		};
-
-		for (final String input : inputs)
-			analysis.train(input);
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getType(), FTAType.LONG);
-//		assertEquals(result.getTypeQualifier(), "POSTAL_CODE.POSTAL_CODE_DE");
-		assertNull(result.getSemanticType());
-		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 0);
-		assertEquals(result.getMatchCount(), 4);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getLeadingZeroCount(), 0);
-		assertEquals(result.getRegExp(), "\\d{5}");
-		assertEquals(result.getConfidence(), 1.0);
-
-		assertNull(result.checkCounts(false));
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void zipUnwind() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("zipUnwind");
 		final String pipedInput = "02421|02420|02421|02420|02421|02420|02421|02420|02421|02420|" +
@@ -3223,82 +3062,6 @@ public class TestPlugins {
 		assertNull(result.checkCounts(false));
 	}
 
-	// Set of valid months + 4 x "UNK"
-	private static final String MONTH_TEST_GERMAN =
-			"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
-					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
-					"Jan|Feb|Mär|UNK|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
-					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
-					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|UNK|Nov|Dez|" +
-					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
-					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
-					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
-					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|UNK|Sep|Okt|Nov|Dez|" +
-					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez|" +
-					"Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|UNK|Nov|Dez|";
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void basicMonthAbbrGerman() throws IOException, FTAException {
-
-		if (!TestUtils.isValidLocale("de"))
-			return;
-
-		final Locale german = Locale.forLanguageTag("de");
-
-		final DateFormatSymbols dfs = new DateFormatSymbols(german);
-		final String[] m = dfs.getShortMonths();
-		final GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance(german);
-		final long actualMonths = cal.getActualMaximum(Calendar.MONTH);
-
-		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbrGerman");
-		analysis.setLocale(german);
-		analysis.configure(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION, false);
-
-		final int badCount = 4;
-		final int iterations = 10;
-		int bads = 0;
-
-		for (int i = 0; i < iterations; i++) {
-			for (int j = 0; j < actualMonths; j++)
-				analysis.train(m[j]);
-			if (bads < badCount) {
-				analysis.train("UNKN");
-				bads++;
-			}
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		final int javaVersion = TestUtils.getJavaVersion();
-		String expected = "untested";
-		switch (javaVersion) {
-		case 8:
-			expected = "\\p{IsAlphabetic}{3}";
-			break;
-		case 11:
-			expected = "[\\p{IsAlphabetic}\\.]{3,4}";
-			break;
-		default:
-			// This is the correct answer for at least 17, 18, 21, 22
-			expected = "[\\p{IsAlphabetic}\\.]{3,5}";
-			break;
-		}
-		assertEquals(result.getRegExp(), expected);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "MONTH.ABBR_de");
-		assertEquals(result.getSampleCount(), iterations * actualMonths + badCount);
-		assertEquals(result.getOutlierCount(), 0);
-		final Map<String, Long> invalids = result.getInvalidDetails();
-		assertEquals(invalids.size(), 1);
-		assertEquals(invalids.get("UNKN"), 4L);
-		assertEquals(result.getMatchCount(), iterations * actualMonths);
-		assertEquals(result.getNullCount(), 0);
-		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
-		assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
-
-		assertNull(result.checkCounts(false));
-	}
-
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicMonthAbbrBackout() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbrBackout");
@@ -3466,44 +3229,6 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void basicMonthAbbrFrench() throws IOException, FTAException {
-		final TextAnalyzer analysis = new TextAnalyzer("basicMonthAbbrFrench");
-		analysis.setLocale(Locale.FRENCH);
-		analysis.configure(TextAnalyzer.Feature.NO_ABBREVIATION_PUNCTUATION, false);
-		final int badCount = 4;
-		final String inputs[] = TestUtils.MONTHS_FRENCH.split("\\|");
-
-		int locked = -1;
-
-		for (int i = 0; i < inputs.length; i++) {
-			if (analysis.train(inputs[i]) && locked == -1)
-				locked = i;
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getRegExp(), "[\\p{IsAlphabetic}\\.]{3,5}");
-		assertEquals(locked, AnalysisConfig.DETECT_WINDOW_DEFAULT);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getSemanticType(), "MONTH.ABBR_fr");
-		assertEquals(result.getSampleCount(), inputs.length);
-		assertEquals(result.getOutlierCount(), 0);
-		final Map<String, Long> invalids = result.getInvalidDetails();
-		assertEquals(invalids.size(), 1);
-		assertEquals(invalids.get("UNK"), 4L);
-		assertEquals(result.getMatchCount(), inputs.length - badCount);
-		assertEquals(result.getNullCount(), 0);
-		assertTrue((double)analysis.getPluginThreshold()/100 < result.getConfidence());
-		assertEquals(result.getConfidence(), 1 - (double)badCount/result.getSampleCount());
-
-		assertNull(result.checkCounts(false));
-
-		// Even the UNK match the RE
-		for (final String input : inputs)
-			assertTrue(input.matches(result.getRegExp()), input);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicStateLowCard() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("State", DateResolutionMode.DayFirst);
 		analysis.setLocale(Locale.forLanguageTag("en-US"));
@@ -3650,49 +3375,6 @@ public class TestPlugins {
 
 		for (final String input : inputs)
 			assertTrue(input.matches(result.getRegExp()));
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void testGenderPT() throws IOException, FTAException {
-		final String[] samples = new String[1000];
-
-		for (int i = 0; i < samples.length; i++) {
-			samples[i] = RANDOM.nextInt(2) == 1 ? "femenino" : "masculino";
-		}
-
-		final TextAnalyzer analysis = new TextAnalyzer("genero");
-		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
-		final Locale portuguese = Locale.forLanguageTag("pt-BR");
-		analysis.setLocale(portuguese);
-		final List<PluginDefinition> plugins = new ArrayList<>();
-		plugins.add(new PluginDefinition("GENDER_PT", "Gender (Portuguese Language)", null, null, "\\d{3}-\\d{2}-\\d{4}",
-				new PluginLocaleEntry[] { new PluginLocaleEntry("pt", null, 90, "(?i)(FEMENINO|MASCULINO)") },
-				true, 98, FTAType.STRING));
-
-		try {
-			analysis.getPlugins().registerPluginList(plugins, analysis.getConfig(), false);
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-		}
-		for (final String sample : samples) {
-			analysis.train(sample);
-		}
-
-		final TextAnalysisResult result = analysis.getResult();
-
-		assertEquals(result.getBlankCount(), 0);
-		assertEquals(result.getNullCount(), 0);
-		assertEquals(result.getType(), FTAType.STRING);
-		assertEquals(result.getRegExp(), "(?i)(FEMENINO|MASCULINO)");
-		assertEquals(result.getSemanticType(), "GENDER_PT");
-		assertEquals(result.getConfidence(), 1);
-		assertEquals(result.getOutlierCount(), 0);
-		assertEquals(result.getSampleCount(), samples.length);
-
-		assertNull(result.checkCounts(false));
-
-		for (final String sample : samples)
-			assertTrue(sample.matches(result.getRegExp()));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4159,22 +3841,6 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void testMunicipalityCodeNL() throws IOException, FTAException {
-		final String[] samples = {
-				"0014", "0034", "0037", "0047", "0059", "0060", "0074", "0080", "0085", "0086",
-				"0088", "0090", "0106", "0114", "0118", "0193", "0233", "0307", "0363", "0600",
-				"0622", "0623", "0624", "0625", "0626", "0627", "0628", "0629", "0630", "0631",
-				"0632", "0633", "0634", "0635", "0636", "0637", "0638", "0639", "0640", "0641",
-				"0642", "0643", "0644", "0645", "0646", "0647", "0648", "0649", "0650", "0651",
-				"0652", "0653", "0654", "0655", "0656", "0657", "0658", "0659", "0660", "0661",
-				"0662", "0663", "0664", "0665", "0666", "0667", "0668", "0669", "0670", "0671",
-				"0672", "0673", "0674", "0675", "0676", "0677", "0678", "0679", "0680", "0681"
-		};
-
-		TestUtils.simpleCore(Sample.allValid(samples), "GEMEENTE_CODE", Locale.forLanguageTag("nl-NL"), "STATE_PROVINCE.MUNICIPALITY_CODE_NL", FTAType.LONG, 1.0);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testSuburbAU() throws IOException, FTAException {
 		final String[] samples = {
 				"Melbourne", "Docklands", "North Melbourne", "Melbourne", "Carlton", "North Melbourne", "Melbourne",
@@ -4222,18 +3888,6 @@ public class TestPlugins {
 		};
 
 		TestUtils.simpleCore(Sample.allValid(samples), "naics_code", Locale.US, "INDUSTRY_CODE.NAICS", FTAType.LONG, 1.0);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void inseeCode() throws IOException, FTAException {
-		final String[] samples = {
-				"99999", "XXXXX", "01001", "01002", "01004", "01005", "01006", "01007", "01008", "01009",
-				"01010", "01011", "01012", "01013", "01014", "01015", "01016", "01017", "01019", "01021",
-				"01022", "01023", "01024", "01025", "01026", "01027", "01028", "01029", "01030", "01031",
-				"01032", "01033", "01034", "01035", "01036", "01037", "01038", "01039", "01040",
-		};
-
-		TestUtils.simpleCore(Sample.setInvalid(Sample.allValid(samples), 0, 1), "Codes_Insee", Locale.FRANCE, "STATE_PROVINCE.INSEE_CODE_FR", FTAType.LONG, 1.0);
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
@@ -4722,103 +4376,6 @@ public class TestPlugins {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void addressNonEnglish() throws IOException, FTAException {
-		final String[] inputs = {
-				"432071, г.Ульяновск, ул.Гагарина,20",
-				"432063, г.Ульяновск, ул.Гончарова, 15/27,17",
-				"432034, г.Ульяновск, ул.Терешковой, д. 2",
-				"432045, г. Ульяновск, ул. Промышленная, д.34",
-				"432030, г.Ульяновск, пр-т Нариманова, д.99",
-				"432071, г. Ульяновск ул. Белинского. 13/58",
-				"432011, г.Ульяновск, ул.Рылеева, д.30/30",
-				"432071, г.Ульяновск, ул.Рылеева, д.27",
-				"432011, г.Ульяновск, ул.Радищева, д.42",
-				"432011, г.Ульяновск, ул.Радищева, д.97",
-				"432071, г.Ульяновск, ул.Орлова,21",
-				"432002, г.Ульяновск, ул.Орлова д. 17",
-				"432017, г.Ульяновск, ул.Кирова, д.4",
-				"432044, г.Ульяновск, ул.Варейкиса, д.31",
-				"432054, г.Ульяновск, ул.Камышинская,41",
-				"432054, г.Ульяновск, ул.Камышинская,39",
-				"432031, г.Ульяновск, пр-д Заводской, 30а",
-				"432063, г.Ульяновск, ул.Карла Либкнехта,17",
-				"432063, г.Ульяновск, ул.Гончарова, д.8/1",
-				"433300, Ульяновская обл., Ульяновский район, г. Новоульяновск, ул. Ремесленная д.2",
-				"433910, Ульяновская обл., Радищевский район, р.п.Радищево, улица Свердлова, д 24",
-				"433360, Ульяновская обл., Тереньгульский район, р/п Тереньга ул. Степная, д.16",
-				"432059, г. Ульяновск, б-р. Киевский, д.6-а",
-				"432072, г.Ульяновск, пр-т Созидателей,11",
-				"432064, г.Ульяновск, пр-т Врача Сурова,4",
-				"432059, г.Ульяновск, пр-т Генерала Тюленева,6",
-				"432072, г. Ульяновск, ул. Карбышева, д.6",
-				"432067, г.Ульяновск, пр-т Генерала Тюленева,7",
-				"432064, г.Ульяновск, пр-т Авиастроителей,5",
-				"432072, г.Ульяновск, пр-т Авиастроителей, 31",
-				"433321, г. Ульяновск, ул. Центральная д.13",
-				"432010, г. Ульяновск, ул. Оренбургская, д.7А",
-				"432057, г. Ульяновск, ул. Оренбургская, 27",
-				"433795, г. Ульяновск ул. Кузнецова, д.26",
-				"432071, г.Ульяновск, ул. Можайского 8/8",
-				"432017 г. Ульяновск, ул. 3 Интернационала,1",
-				"432063, г.Ульяновск, ул.Льва Толстого,28",
-				"432063, г.Ульяновск,ул.III Интернационала д.7",
-				"432017, г. Ульяновск, ул. 3 Интернационала, д.13",
-				"г.Ульяновск, проспект Нариманова, д. 11",
-				"432068, г.Ульяновск, ул. 12 Сентября, 90",
-				"432017, г.Ульяновск, ул. 12 Сентября, 83",
-				"432025 г.Ульяновск ул.Маяковского д.13",
-				"432030, г Ульяновск, пр-кт Нариманова, 102",
-				"432006, г.Ульяновск, ул.Локомотивная,13",
-				"432049 г. Ульяновск ул. Пушкарева д.52А",
-				"432049 г. Ульяновск, ул. Пушкарева, д. 29",
-				"432005, г.Ульяновск ул.Пушкарева, д.6а",
-				"432032, г. Ульяновск, ул. Полбина, д.34",
-				"432980, г.Ульяновск, ул.Хрустальная 3а",
-				"432012, г. Ульяновск, ул. Хрустальная, д.3",
-				"432044, г.Ульяновск, ул.Хрустальная,3б",
-				"432008, г.Ульяновск, пл.Горького,11а",
-				"432026, г.Ульяновск, ул.Лихачева, д.12",
-				"432042, г. Ульяновск, ул. Б. Хмельницкого, д.30",
-				"432029, г. Ульяновск, ул. Корунковой, д. 21",
-				"432064, г. Ульяновск, пр-т Врача Сурова, д. 4",
-				"433223, Ульяновская область, Карсунский район, с. Сосновка, ул. Кооперативная, д. 38",
-				"433610, Ульяновская обл., Цильнинский р- н, с.Большое Нагаткино, территория больницы, 11",
-				"433700, Ульяновская обл., Базарносызганский район, р.п. Базарный Сызган, ул.Ульяновская, 2",
-				"433752, Ульяновская обл., Барышский район, г. Барыш, ул. Аптечная 7",
-				"433377, Ульяновская обл, Тереньгульский р-н, с.Солдатская Ташла",
-				"433100, Ульяновская обл., Вешкаймский район. р.п.Вешкайма ул Больничная д 1",
-				"432010, г.Ульяновск ул.Врача Михайлова д.35",
-				"433512, Ульяновская обл., г.Димитровград, пр.Ленина, 30Б",
-				"433400, Ульяновская обл., Чердаклинский район, р.п. Чердаклы, ул. Врача Попова, 1",
-				"432071, г.Ульяновск, ул.Маяковского, д.13",
-				"433016, Ульяновская область, Инзенский район, с.Юлово",
-				"433970, Ульяновская обл., Павловский район, р.п. Павловка, ул. Калинина, 144",
-				"433520, Ульяновская обл., Мелекесский район, с. Тиинск, ул. Больничная, д 10",
-				"433720, Ульяновская обл., Барышский р-н, Приозерный пос.",
-				"433310, Ульяновская обл., Ульяновский район, р.п. Ишеевка, ул. Больничная д.24",
-				"433529, Ульяновская обл., Мелекесский район, п. Новоселки, ул. Гагарина, д 24",
-				"433031, Ульяновская обл., г. Инза, ул. Пирогова, д.1",
-				"433210, Ульяновская обл., Карсунский р-он, р.п. Карсун, ул. Саратовская, д 77",
-				"433760, Ульяновская обл., Кузоватовский район, р.п. Кузоватово, ул. Гвардейская, д. 21",
-				"433130, Ульяновская обл., р.п. Майна, ул. Зеленая д.1",
-				"433551, Ульяновская обл., Мелекесский район, р.п. Мулловка, ул. Некрасова, 10",
-				"433810, Ульяновская обл., Николаевский район, р.п. Николаевка, ул. Ульянова, д.21",
-				"433534, Ульяновская обл., Мелекесский район, с. Никольское, ул.Мира, дом 101",
-				"433555, Ульяновская обл., Мелекесский район, р.п. Новая Майна, ул. Комсомольская, 36",
-				"433560, Ульяновская обл., Новомалыклинский район, с.Новая Малыкла, ул Кооперативная, д. 114",
-				"433870, Ульяновская обл., Новоспасский район, пгт Новоспасское-пл.Семашко-10",
-				"433545, Ульяновская обл., Мелекесский район, с. Рязаново, ул. Школьная, д. 15",
-				"433380, Ульяновская обл., Сенгилеевский район г.Сенгилей ул.Нижневыборная 8",
-				"433940, Ульяновская обл., Старокулаткинский район, р.п. Старая Кулатка, ул Больничная 21",
-				"433460, Ульяновская обл., Старомайнский район, р.п. Старая Майна, ул. Сидорова, д 1",
-				"433524, Ульяновская обл., Мелекесский район, с. Старая Сахча, ул. Кооперативная,д.28",
-				"433240, Ульяновская обл., Сурский район, р.п.Сурское, ул. Октябрьская, 82"
-		};
-
-		TestUtils.simpleCore(Sample.allValid(inputs), "адрес", Locale.forLanguageTag("ru-RU"), "STREET_ADDRESS_<LANGUAGE>", FTAType.STRING, 1.0);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void semanticForce() throws IOException, FTAException {
 		final AnalyzerContext context = new AnalyzerContext("SemanticForce", DateResolutionMode.None, null, new String[] { "SemanticForce" });
 		context.withSemanticTypes(new String[] { "NAME.LAST_FIRST" });
@@ -4848,26 +4405,6 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 
 		assertNull(result.checkCounts(false));
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void nameLast() throws IOException, FTAException {
-		final String[] inputs = {
-				"LEE", "WALKER", "SIMS", "SLAUGHTER", "ACHENBACH", "BARNES", "GALIS", "RAMPAGE", "GUINN", "HALLAT",
-				"HEINER", "SMITH", "GOOSE", "MASON", "CANTOR", "SELPH", "SCHERER", "LOWENBRAU", "HAUGEN", "LEONARD",
-				"HANNA", "CUSHMAN", "DENNING", "CLYMER", "CUSICK", "EDER", "EDGAR", "HANNAH", "CUSTER", "COAKLEY",
-				"HANNAN", "CUSTODIO", "DENNIS", "HANNER", "HANNIGAN", "DENNISON", "EDGE", "EDGERTON", "DENNY", "EDINGER",
-				"EDISON", "COATES", "COATS", "HANNINEN", "COBB", "HANNON", "HANNULA", "HANRAHAN", "DENSMORE", "HANS"
-		};
-
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "naam", Locale.forLanguageTag("nl-NL"), "NAME.LAST", FTAType.STRING, 1.0);
-
-		assertEquals(result.getMatchCount(), inputs.length);
-
-		final PluginDefinition pluginDefinition = PluginDefinition.findByName("NAME.LAST");
-		final LogicalType knownSemanticType = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(Locale.forLanguageTag("nl-NL")));
-
-		assertTrue(knownSemanticType.isValid("Segall"));
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })

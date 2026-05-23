@@ -156,23 +156,6 @@ public class TestIdentity {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
-	public void basicSSN_FR() throws IOException, FTAException {
-		final String[] inputs = {
-				"186022A215325 23", "1691099352470 01", "2741147566941 55",
-				"1870364431266 17", "1620750699385 24", "1910926856381 09", "2350193443182 66",
-				"1021130154849 54", "1060633581206 43", "2790148853457 33", "1910585591722 44",
-				"2031245436518 70", "1011076339993 38", "2980845336004 29", "1991181413900 71",
-				"1500645426767 03", "1180926187160 15", "2300747704141 68", "1820485399754 86",
-				"1870963392946 48", "1510366293364 46", "2800291682045 16", "1660882307695 51",
-				"2760672523900 48", "2130327681550 09", "1940965237732 53", "2370790974188 20",
-		};
-
-		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "basicSSN_FR", Locale.forLanguageTag("fr-FR"), "IDENTITY.SSN_FR", FTAType.STRING, 1.0);
-
-		assertEquals(result.getCardinality(), inputs.length);
-	}
-
-	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void basicPersonNummer_yyyy_SE() throws IOException, FTAException {
 		final String[] inputs = {
 				"19781216-2449", "19781211-2444", "19600518-9557", "19570105-5401",

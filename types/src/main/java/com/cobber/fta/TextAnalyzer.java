@@ -835,7 +835,13 @@ public class TextAnalyzer {
 		return  analysis;
 	}
 
-	protected String getRegExp(final KnownTypes.ID id) {
+	/**
+	 * Returns the locale-sensitive regular expression for a known built-in type pattern.
+	 * Useful when the exact pattern depends on the configured locale (e.g., localized boolean variants).
+	 * @param id the identifier of the built-in type pattern
+	 * @return the regular expression string for the given pattern identifier
+	 */
+	public String getRegExp(final KnownTypes.ID id) {
 		return knownTypes.getByID(id).getRegExp();
 	}
 

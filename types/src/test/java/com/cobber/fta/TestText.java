@@ -211,12 +211,4 @@ public class TestText {
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 	}
 
-	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
-	public void german1() throws IOException, FTAException {
-		final TextProcessor processor = new TextProcessor(Locale.GERMAN);
-
-		final TextProcessor.TextResult result = processor.analyze("Adventistische Neue Mittelschule (Grünauerstraße 20)");
-
-		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
-	}
 }
