@@ -31,6 +31,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -38,6 +39,7 @@ import org.apache.commons.text.StringEscapeUtils;
 
 import com.cobber.fta.Content;
 import com.cobber.fta.LogicalType;
+import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.SemanticType;
 import com.cobber.fta.SingletonSet;
 import com.cobber.fta.TextAnalyzer;
@@ -52,6 +54,19 @@ public class DriverUtils {
 		for (final LogicalType logical : registered)
 			if (logical.getSemanticType().equals(pluginName))
 				return logical;
+
+		// Plugin not registered under the current locale — find its locale from the definitions and retry
+		for (final PluginDefinition def : TextAnalyzer.getPluginDefinitions()) {
+			if (pluginName.equals(def.semanticType) && def.validLocales != null && def.validLocales.length > 0) {
+				final String localeTag = def.validLocales[0].localeTag.split(",")[0].trim();
+				if (!"*".equals(localeTag)) {
+					final TextAnalyzer retryAnalyzer = TextAnalyzer.getDefaultAnalysis(Locale.forLanguageTag(localeTag));
+					for (final LogicalType logical : retryAnalyzer.getPlugins().getRegisteredSemanticTypes())
+						if (logical.getSemanticType().equals(pluginName))
+							return logical;
+				}
+			}
+		}
 
 		return null;
 	}
@@ -97,10 +112,14 @@ public class DriverUtils {
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(source), "UTF-8"))) {
 			String input;
+			int lineNumber = 0;
 			while ((input = in.readLine()) != null) {
+				lineNumber++;
 				final String trimmed = input.trim();
 				if (trimmed.length() == 0 || trimmed.charAt(0) == '#')
 					continue;
+				if (Utils.cleanse(trimmed) != trimmed)
+					System.err.printf("ERROR: '%s' line %d contains illegal character(s): %s%n", inputName, lineNumber, trimmed);
 				lineCount++;
 			}
 		}

@@ -212,6 +212,7 @@ public final class Utils {
 	 *  - LEFT and RIGHT SINGLE QUOTATION MARK and backticks - with a standard quote.
 	 *  - LEFT and RIGHT DOUBLE QUOTATION MARK
 	 *  - en-dash and em-dash with a simple hyphen.
+	 *  - NO-BREAK SPACE and NARROW NO-BREAK SPACE with a regular space.
 	 * Note: We delay allocating a StringBuilder until we find out it is required.
 	 * @param input String to cleanse
 	 * @return The original String if no cleansing required - or a cleansed copy if necessary.
@@ -242,6 +243,13 @@ public final class Utils {
 				if (b == null)
 					b = new StringBuilder(len).append(input.substring(0, i));
 				b.append('-');
+			}
+			// (U+00A0) NO-BREAK SPACE
+			// (U+202F) NARROW NO-BREAK SPACE
+			else if (ch == '\u00A0' || ch == '\u202F') {
+				if (b == null)
+					b = new StringBuilder(len).append(input.substring(0, i));
+				b.append(' ');
 			}
 			else if (b != null)
 				b.append(ch);

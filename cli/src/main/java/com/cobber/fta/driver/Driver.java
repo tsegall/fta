@@ -119,7 +119,7 @@ public class Driver {
 					error.println(" --samples - If set then generate samples (see --faker for comprehensive support)");
 					error.println(" --semanticType <JSON representation of Semantic Types> - Can be inline or as a File");
 					error.println(" --semanticTypesPre - If set then user-supplied Semantic Types (--semanticType) are registered ahead of built-ins");
-					error.println(" --signature - Output the Signature for the supplied pluginName");
+					error.println(" --signature - Output the signature for the plugin named by --pluginName (use after adding plugin to plugins.json with '-- not set --')");
 					error.println(" --skip <n> - Skip the initial <n> rows of the input");
 					error.println(" --testMerge <n> - exercise merging of analyses, <n> is the number of samples per merge");
 					error.println(" --threshold <n> - Set the threshold percentage (0-100) for detection");
@@ -159,7 +159,11 @@ public class Driver {
 			final TextAnalyzer analyzer = TextAnalyzer.getDefaultAnalysis(cmdLineOptions.getLocale());
 
 			final LogicalType logical = DriverUtils.getLogicalType(analyzer, cmdLineOptions.pluginName);
-			error.println(logical.getSignature());
+			if (logical == null) {
+				error.printf("ERROR: Unknown plugin '%s'%n", cmdLineOptions.pluginName);
+				System.exit(1);
+			}
+			output.println(logical.getSignature());
 			System.exit(0);
 		}
 

@@ -438,4 +438,24 @@ public class Spanish {
 			analysis.train(s);
 		assertNotEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_ES");
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void continentES() throws IOException, FTAException {
+		final String[] inputs = {
+				"ÁFRICA", "ASIA", "EUROPA", "AMERICA DEL NORTE", "AMERICA DEL SUR", "OCEANÍA", "ANTÁRTIDA",
+				"EUROPA", "ASIA", "ÁFRICA", "AMERICA DEL NORTE", "ASIA", "EUROPA", "ÁFRICA", "OCEANÍA",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "continente", Locale.forLanguageTag("es-ES"), "CONTINENT.TEXT_ES", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void languageES() throws IOException, FTAException {
+		final String[] inputs = {
+				"ESPAÑOL", "INGLÉS", "FRANCÉS", "ALEMÁN", "ITALIANO", "PORTUGUÉS", "RUSO", "CHINO",
+				"JAPONÉS", "ÁRABE", "HINDI", "COREANO", "TURCO", "POLACO", "SUECO",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "idioma", Locale.forLanguageTag("es-ES"), "LANGUAGE.TEXT_ES", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
 }

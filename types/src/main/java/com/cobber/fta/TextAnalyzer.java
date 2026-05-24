@@ -906,6 +906,23 @@ public class TextAnalyzer {
 	}
 
 	/**
+	 * Returns all built-in plugin definitions, loading them from the resource file if not already loaded.
+	 * Useful for tooling that needs to inspect plugin metadata (e.g., locale tags) without registering plugins.
+	 * @return unmodifiable list of all built-in plugin definitions
+	 */
+	public static List<PluginDefinition> getPluginDefinitions() {
+		synchronized (pluginDefinitionsLock) {
+			if (pluginDefinitions == null)
+				try (BufferedReader reader = new BufferedReader(new InputStreamReader(TextAnalyzer.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {
+					pluginDefinitions = new ObjectMapper().readValue(reader, new TypeReference<List<PluginDefinition>>(){});
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Internal error: Issues with plugins file: " + e.getMessage(), e);
+				}
+		}
+		return Collections.unmodifiableList(pluginDefinitions);
+	}
+
+	/**
 	 * Retrieve the Plugin Definition associated with this Semantic Type name.
 	 *
 	 * Note: Unlike the similar function in PluginDefinition this one accesses the current instance and any edits

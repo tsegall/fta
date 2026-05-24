@@ -746,6 +746,16 @@ public class German {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void continentDE() throws IOException, FTAException {
+		final String[] inputs = {
+				"AFRIKA", "ASIEN", "EUROPA", "NORDAMERIKA", "SÜDAMERIKA", "OZEANIEN", "ANTARKTIS",
+				"EUROPA", "ASIEN", "AFRIKA", "NORDAMERIKA", "ASIEN", "EUROPA", "AFRIKA", "OZEANIEN",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "kontinent", Locale.forLanguageTag("de-DE"), "CONTINENT.TEXT_DE", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void trickLatitude() throws IOException, FTAException {
 		final String[] inputs = {
 				"54.176658700787", "54.1523286823181", "54.1507845291159", "54.1444646959388", "54.0948626983874",
@@ -754,6 +764,16 @@ public class German {
 
 		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "latitude", Locale.forLanguageTag("de-DE"), "COORDINATE.LATITUDE_DECIMAL", FTAType.DOUBLE, 1.0);
 		assertEquals(result.getRegExp(), "-?([0-9]|[0-8][0-9])([,\\.]\\d+)?|-?90[,\\.]0+");
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void languageDE() throws IOException, FTAException {
+		final String[] inputs = {
+				"DEUTSCH", "ENGLISCH", "FRANZÖSISCH", "SPANISCH", "ITALIENISCH", "PORTUGIESISCH", "RUSSISCH",
+				"CHINESISCH", "JAPANISCH", "ARABISCH", "HINDI", "KOREANISCH", "TÜRKISCH", "POLNISCH", "SCHWEDISCH",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "sprache", Locale.forLanguageTag("de-DE"), "LANGUAGE.TEXT_DE", FTAType.STRING, 1.0);
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
 }

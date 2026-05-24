@@ -1,6 +1,22 @@
 
 ## Changes ##
 
+### 18.15.0
+ - feat: Add COLOR.TEXT_IT, COLOR.TEXT_PT, COLOR.TEXT_RU semantic types for Italian, Portuguese, and Russian color names
+ - feat: Add POSTAL_CODE.POSTAL_CODE_IT and POSTAL_CODE.POSTAL_CODE_RU semantic types
+ - feat: Add COLOR.TEXT_SV, COLOR.TEXT_FI, COLOR.TEXT_DA, COLOR.TEXT_PL, COLOR.TEXT_RO semantic types
+ - feat: Add CONTINENT.TEXT_FR, CONTINENT.TEXT_DE, CONTINENT.TEXT_ES, CONTINENT.TEXT_IT, CONTINENT.TEXT_NL, CONTINENT.TEXT_PT, and CONTINENT.TEXT_RU semantic types
+ - feat: CLI --signature --pluginName <name> now auto-detects plugin locale (no --locale required) and prints to stdout
+ - feat: Add POSTAL_CODE.POSTAL_CODE_BR semantic type for Brazilian CEP (\\d{5}-\\d{3})
+ - feat: Add COUNTRY.TEXT_IT, COUNTRY.TEXT_PT, COUNTRY.TEXT_RU semantic types for Italian, Portuguese, and Russian country names
+ - feat: Add CONTINENT.TEXT_DA, CONTINENT.TEXT_SV, CONTINENT.TEXT_FI, CONTINENT.TEXT_PL, CONTINENT.TEXT_RO semantic types
+ - feat: Add POSTAL_CODE_DK, POSTAL_CODE_FI, POSTAL_CODE_PL, POSTAL_CODE_RO, POSTAL_CODE_NO, POSTAL_CODE_AT, POSTAL_CODE_CH semantic types
+ - feat: Add COUNTRY.TEXT_DA, COUNTRY.TEXT_SV, COUNTRY.TEXT_FI, COUNTRY.TEXT_PL, COUNTRY.TEXT_RO semantic types
+ - feat: Add LANGUAGE.TEXT_FR, LANGUAGE.TEXT_DE, LANGUAGE.TEXT_ES, LANGUAGE.TEXT_IT, LANGUAGE.TEXT_PT, LANGUAGE.TEXT_RU, LANGUAGE.TEXT_NL semantic types
+ - feat: Add LANGUAGE.TEXT_DA, LANGUAGE.TEXT_SV, LANGUAGE.TEXT_FI, LANGUAGE.TEXT_PL, LANGUAGE.TEXT_RO semantic types
+ - fix: cleanse() now maps NO-BREAK SPACE (U+00A0) and NARROW NO-BREAK SPACE (U+202F) to regular space
+ - feat: Add COLOR.TEXT_CS, CONTINENT.TEXT_CS, COUNTRY.TEXT_CS, LANGUAGE.TEXT_CS semantic types for Czech
+
 ### 18.14.4
  - chore: Bump libphonenumber to 9.0.31
  - refactor: Extract locale-specific tests into per-language files under com.cobber.fta.internationalization (French, German, Italian, Portuguese, Bulgarian, Russian, Japanese date tests)

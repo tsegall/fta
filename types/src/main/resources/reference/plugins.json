@@ -872,6 +872,406 @@
 		"priority": 760
 	},
 	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_IT",
+		"description": "Postal Code (IT)",
+		"pluginType": "regex",
+		"signature": "TTqAnf97URO+YbFHDrL+HkBvLrQ=",
+		"validLocales": [
+			{
+				"localeTag": "it-IT",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(CAP|codice.?postale).*",
+						"confidence": 99,
+						"mandatory": true
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpReturned": "\\d{5}"
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P281"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Italy"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/postalCode"
+			}
+		],
+		"baseType": "LONG",
+		"threshold": 98,
+		"priority": 770
+	},
+	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_RU",
+		"description": "Postal Code (RU)",
+		"pluginType": "regex",
+		"signature": "8Ji5gBopU1nwo5abcCIig5L+EvE=",
+		"validLocales": [
+			{
+				"localeTag": "ru-RU",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(индекс|почтовый).*",
+						"confidence": 99,
+						"mandatory": true
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpReturned": "[1-9]\\d{5}"
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P281"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Russia"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/postalCode"
+			}
+		],
+		"baseType": "LONG",
+		"threshold": 98,
+		"priority": 780
+	},
+	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_BR",
+		"description": "Postal Code (BR)",
+		"pluginType": "regex",
+		"signature": "JXrfbBYG5+QZpjWlwFJYTjVJfuM=",
+		"validLocales": [
+			{
+				"localeTag": "pt-BR",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(CEP|codigo.?postal).*",
+						"confidence": 99,
+						"mandatory": true
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpReturned": "\\d{5}-\\d{3}"
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P281"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Brazil"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/postalCode"
+			}
+		],
+		"baseType": "STRING",
+		"threshold": 98,
+		"priority": 790
+	},
+	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_DK",
+		"description": "Postal Code (DK)",
+		"pluginType": "regex",
+		"signature": "F4fuCyFwdqs5/AN9sKtv+Ji3bhU=",
+		"validLocales": [
+			{
+				"localeTag": "da-DK",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(postnummer).*",
+						"confidence": 99,
+						"mandatory": true
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpReturned": "[1-9]\\d{3}"
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P281"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Denmark"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/postalCode"
+			}
+		],
+		"baseType": "LONG",
+		"threshold": 98,
+		"priority": 800
+	},
+	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_FI",
+		"description": "Postal Code (FI)",
+		"pluginType": "regex",
+		"signature": "Q+mi7bllrb61pRBfagLhivVZn3s=",
+		"validLocales": [
+			{
+				"localeTag": "fi-FI",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(postinumero).*",
+						"confidence": 99,
+						"mandatory": true
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpReturned": "\\d{5}"
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P281"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Finland"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/postalCode"
+			}
+		],
+		"baseType": "LONG",
+		"threshold": 98,
+		"priority": 810
+	},
+	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_PL",
+		"description": "Postal Code (PL)",
+		"pluginType": "regex",
+		"signature": "cpat0wKc4Bh32XXpvD1+NG/cLqo=",
+		"validLocales": [
+			{
+				"localeTag": "pl-PL",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(kod.?pocztowy).*",
+						"confidence": 99,
+						"mandatory": true
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpReturned": "\\d{2}-\\d{3}"
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P281"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Poland"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/postalCode"
+			}
+		],
+		"baseType": "STRING",
+		"threshold": 98,
+		"priority": 820
+	},
+	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_RO",
+		"description": "Postal Code (RO)",
+		"pluginType": "regex",
+		"signature": "UVOPv+6i001wPQ+tXqXaYLVrahM=",
+		"validLocales": [
+			{
+				"localeTag": "ro-RO",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(cod.?postal).*",
+						"confidence": 99,
+						"mandatory": true
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpReturned": "\\d{6}"
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P281"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Romania"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/postalCode"
+			}
+		],
+		"baseType": "LONG",
+		"threshold": 98,
+		"priority": 830
+	},
+	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_NO",
+		"description": "Postal Code (NO)",
+		"pluginType": "regex",
+		"signature": "s6cg8jmrxYu8LiNY9sDJiptVQfE=",
+		"validLocales": [
+			{
+				"localeTag": "no-NO",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(postnummer).*",
+						"confidence": 99,
+						"mandatory": true
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpReturned": "\\d{4}"
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P281"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Norway"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/postalCode"
+			}
+		],
+		"baseType": "LONG",
+		"threshold": 98,
+		"priority": 840
+	},
+	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_AT",
+		"description": "Postal Code (AT)",
+		"pluginType": "regex",
+		"signature": "/nag4sDznaNoX0XavqebHM/RfgI=",
+		"validLocales": [
+			{
+				"localeTag": "de-AT",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(postleitzahl|PLZ).*",
+						"confidence": 99,
+						"mandatory": true
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpReturned": "[1-9]\\d{3}"
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P281"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Austria"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/postalCode"
+			}
+		],
+		"baseType": "LONG",
+		"threshold": 98,
+		"priority": 850
+	},
+	{
+		"semanticType": "POSTAL_CODE.POSTAL_CODE_CH",
+		"description": "Postal Code (CH)",
+		"pluginType": "regex",
+		"signature": "Zar8dUHV0naSpk/idGAiMmWuvkU=",
+		"validLocales": [
+			{
+				"localeTag": "de-CH,fr-CH,it-CH",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(postleitzahl|PLZ|NPA|CAP).*",
+						"confidence": 99,
+						"mandatory": true
+					}
+				],
+				"matchEntries": [
+					{
+						"regExpReturned": "[1-9]\\d{3}"
+					}
+				]
+			}
+		],
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P281"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Postal_codes_in_Switzerland"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/postalCode"
+			}
+		],
+		"baseType": "LONG",
+		"threshold": 98,
+		"priority": 860
+	},
+	{
 		"semanticType": "FULL_ADDRESS_EN",
 		"description": "Full Address (English Language)",
 		"pluginType": "java",
@@ -2314,6 +2714,348 @@
 		"threshold": 90,
 		"backout": "[\\p{IsAlphabetic}\\.]+",
 		"priority": 1044
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_IT",
+		"description": "Country as a string (Italian)",
+		"pluginType": "list",
+		"signature": "cmvBgcRrf3KWZPJq/Oa6Gv4o1fk=",
+		"validLocales": [
+			{
+				"localeTag": "it",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(paese|nazione).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/it_countries.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Choronym"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/Country"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 1046
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_PT",
+		"description": "Country as a string (Portuguese)",
+		"pluginType": "list",
+		"signature": "FG2RpZVvEZyNzexyOSTQ0isg+V4=",
+		"validLocales": [
+			{
+				"localeTag": "pt",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(pa[ií]s).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/pt_countries.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Choronym"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/Country"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 1047
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_RU",
+		"description": "Country as a string (Russian)",
+		"pluginType": "list",
+		"signature": "MJ7zvQpESBkhS4vgPeYg1AN0bmY=",
+		"validLocales": [
+			{
+				"localeTag": "ru",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(страна).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ru_countries.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Choronym"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/Country"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 1048
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_DA",
+		"description": "Country as a string (Danish)",
+		"pluginType": "list",
+		"signature": "Q8WV5CYSf9pEEAkQUmS8Rbv1uac=",
+		"validLocales": [
+			{
+				"localeTag": "da",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(land).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/da_countries.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Choronym"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/Country"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 1049
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_SV",
+		"description": "Country as a string (Swedish)",
+		"pluginType": "list",
+		"signature": "AHqJapZwXrXXAVRrap6koROibpM=",
+		"validLocales": [
+			{
+				"localeTag": "sv",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(land).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/sv_countries.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Choronym"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/Country"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 1050
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_FI",
+		"description": "Country as a string (Finnish)",
+		"pluginType": "list",
+		"signature": "nQWbcYepLqoYO6GGme20p3XeJwE=",
+		"validLocales": [
+			{
+				"localeTag": "fi",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(maa).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/fi_countries.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Choronym"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/Country"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 1051
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_PL",
+		"description": "Country as a string (Polish)",
+		"pluginType": "list",
+		"signature": "hRgp7E51JFuNfGPFl/x4Fc7xlho=",
+		"validLocales": [
+			{
+				"localeTag": "pl",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(kraj).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/pl_countries.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Choronym"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/Country"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 1052
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_RO",
+		"description": "Country as a string (Romanian)",
+		"pluginType": "list",
+		"signature": "l6+qqje7j+cIZH5GQIDEYLMV0U4=",
+		"validLocales": [
+			{
+				"localeTag": "ro",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(țar[aă]|stat).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ro_countries.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Choronym"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/Country"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 1053
+	},
+	{
+		"semanticType": "COUNTRY.TEXT_CS",
+		"description": "Country as a string (Czech)",
+		"pluginType": "list",
+		"signature": "kZDGgFIOjYCWFnfDXG9lXQqzEp8=",
+		"validLocales": [
+			{
+				"localeTag": "cs",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(zem[eě]|st[aá]t|n[aá]rod).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/cs_countries.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Choronym"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/Country"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}\\.]+",
+		"priority": 1054
 	},
 	{
 		"semanticType": "COUNTRY.TEXT_EN",
@@ -4575,6 +5317,383 @@
 		"priority": 1371
 	},
 	{
+		"semanticType": "CONTINENT.TEXT_FR",
+		"description": "Continent (French)",
+		"pluginType": "list",
+		"signature": "dhCO0c4t1xBH0yBChlselTW2mSw=",
+		"validLocales": [
+			{
+				"localeTag": "fr",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(continent|r[eé]gion).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/fr_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1372
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_DE",
+		"description": "Continent (German)",
+		"pluginType": "list",
+		"signature": "zMm8cz8/NmgGaTt9Lq3VJwCC6Jw=",
+		"validLocales": [
+			{
+				"localeTag": "de",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(kontinent).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/de_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1373
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_ES",
+		"description": "Continent (Spanish)",
+		"pluginType": "list",
+		"signature": "TwrwSuCe/FDnLRyenuMc0/GhI3k=",
+		"validLocales": [
+			{
+				"localeTag": "es",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(continente).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/es_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1374
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_IT",
+		"description": "Continent (Italian)",
+		"pluginType": "list",
+		"signature": "G/3WVSlHS8RAOtLdbPKUt8mXONs=",
+		"validLocales": [
+			{
+				"localeTag": "it",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(continente).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/it_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1375
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_NL",
+		"description": "Continent (Dutch)",
+		"pluginType": "list",
+		"signature": "2XNinc5De0qggQojbEH8OOlb0pk=",
+		"validLocales": [
+			{
+				"localeTag": "nl",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(continent).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/nl_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1376
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_PT",
+		"description": "Continent (Portuguese)",
+		"pluginType": "list",
+		"signature": "m5FC45gLajOlpJsvk5HViPXLEhU=",
+		"validLocales": [
+			{
+				"localeTag": "pt",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(continente).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/pt_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1377
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_RU",
+		"description": "Continent (Russian)",
+		"pluginType": "list",
+		"signature": "IJDgmt7r/i3xdcVh+IsJz1ao6sc=",
+		"validLocales": [
+			{
+				"localeTag": "ru",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(континент).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ru_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1378
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_DA",
+		"description": "Continent (Danish)",
+		"pluginType": "list",
+		"signature": "kk4b6W5tgniM1mR28KcZlq0aNkQ=",
+		"validLocales": [
+			{
+				"localeTag": "da",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(kontinent).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/da_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1379
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_SV",
+		"description": "Continent (Swedish)",
+		"pluginType": "list",
+		"signature": "9eRxNnbs6rbK1+kIK7UO2kYR47E=",
+		"validLocales": [
+			{
+				"localeTag": "sv",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(kontinent).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/sv_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1380
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_FI",
+		"description": "Continent (Finnish)",
+		"pluginType": "list",
+		"signature": "XMk78SSfmzm0XsR/OwT6RokVzTs=",
+		"validLocales": [
+			{
+				"localeTag": "fi",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(manner).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/fi_continent.csv"
+		},
+		"backout": "[-\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1381
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_PL",
+		"description": "Continent (Polish)",
+		"pluginType": "list",
+		"signature": "4C5YGj9vP7k0UIy99CbxS7kGJAE=",
+		"validLocales": [
+			{
+				"localeTag": "pl",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(kontynent).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/pl_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1382
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_RO",
+		"description": "Continent (Romanian)",
+		"pluginType": "list",
+		"signature": "HEn8G9Pg2VqAt2MthPfHrrj+w5M=",
+		"validLocales": [
+			{
+				"localeTag": "ro",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(continent).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ro_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1383
+	},
+	{
+		"semanticType": "CONTINENT.TEXT_CS",
+		"description": "Continent (Czech)",
+		"pluginType": "list",
+		"signature": "dU7ozj2VRYhlKNpNgSJBgM6ZRgo=",
+		"validLocales": [
+			{
+				"localeTag": "cs",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(kontinent|sv[eě]ta?d[ií]l).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/cs_continent.csv"
+		},
+		"backout": "[\\p{IsAlphabetic}]+",
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P30"
+			}
+		],
+		"priority": 1384
+	},
+	{
 		"semanticType": "CONTINENT.CODE_EN",
 		"description": "Continent Code",
 		"pluginType": "list",
@@ -6052,6 +7171,487 @@
 		"priority": 1711
 	},
 	{
+		"semanticType": "LANGUAGE.TEXT_FR",
+		"description": "Language name (French)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "ipRxRO4qY0c19EgBmuFWpVO7OJA=",
+		"validLocales": [
+			{
+				"localeTag": "fr",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(langue).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/fr_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1712
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_DE",
+		"description": "Language name (German)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "tROu44C0JBhejDBJp9aezrSyfoE=",
+		"validLocales": [
+			{
+				"localeTag": "de",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(sprache).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/de_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1713
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_ES",
+		"description": "Language name (Spanish)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "TRR4ZXz64J5iAupOFpNV1GVjuRw=",
+		"validLocales": [
+			{
+				"localeTag": "es",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(idioma|lengua).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/es_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1714
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_IT",
+		"description": "Language name (Italian)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "UIrLmsVJp564g0PfXF5NCYIFws4=",
+		"validLocales": [
+			{
+				"localeTag": "it",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(lingua).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/it_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1715
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_PT",
+		"description": "Language name (Portuguese)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "fZmBgNn+IxG7+d2mWPMMv27ylIc=",
+		"validLocales": [
+			{
+				"localeTag": "pt",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(l[ií]ngua|idioma).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/pt_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1716
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_RU",
+		"description": "Language name (Russian)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "YJZkhcQDtwoIeAmbTeb2fAUDRPc=",
+		"validLocales": [
+			{
+				"localeTag": "ru",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(язык).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ru_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1717
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_NL",
+		"description": "Language name (Dutch)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "OmU+9MIZgDIO6aMByV3npUBjHpg=",
+		"validLocales": [
+			{
+				"localeTag": "nl",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(taal).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/nl_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1718
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_DA",
+		"description": "Language name (Danish)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "B9f8P2GMiTr5Xuv26s3yvLIqrSI=",
+		"validLocales": [
+			{
+				"localeTag": "da",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(sprog).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/da_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1719
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_SV",
+		"description": "Language name (Swedish)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "rXkLJGJNEuX0AP2bvI7+spkTDFE=",
+		"validLocales": [
+			{
+				"localeTag": "sv",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(spr[åa]k).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/sv_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1720
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_FI",
+		"description": "Language name (Finnish)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "dCcGDpjS4qStiaeo+uB3PVfDUy8=",
+		"validLocales": [
+			{
+				"localeTag": "fi",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(kieli).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/fi_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1721
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_PL",
+		"description": "Language name (Polish)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "a1v9OJSxL3pxMXdIu61e3KF8Zno=",
+		"validLocales": [
+			{
+				"localeTag": "pl",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(j[ęe]zyk).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/pl_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1722
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_RO",
+		"description": "Language name (Romanian)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "vzlhP+W8c28QkgnRqcb2xp9ASXI=",
+		"validLocales": [
+			{
+				"localeTag": "ro",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(limb[aă]).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ro_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1723
+	},
+	{
+		"semanticType": "LANGUAGE.TEXT_CS",
+		"description": "Language name (Czech)",
+		"pluginType": "list",
+		"pluginOptions": {
+			"words": "all"
+		},
+		"signature": "V8AQIelm9ooF+mJX5T12vmY/+XM=",
+		"validLocales": [
+			{
+				"localeTag": "cs",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(jazyk).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/cs_language.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P37"
+			},
+			{
+				"source": "wikipedia",
+				"reference": "https://en.wikipedia.org/wiki/Language"
+			}
+		],
+		"threshold": 90,
+		"backout": "[\\p{IsAlphabetic}]+",
+		"priority": 1724
+	},
+	{
 		"semanticType": "MACADDRESS",
 		"description": "MAC Address",
 		"pluginType": "regex",
@@ -6975,6 +8575,303 @@
 		],
 		"backout": "[ \\p{IsAlphabetic}]+",
 		"priority": 2125
+	},
+	{
+		"semanticType": "COLOR.TEXT_IT",
+		"description": "Color name (Italian)",
+		"pluginType": "list",
+		"signature": "/Z2L3jxZPm60O0CDYWHX1kpak4U=",
+		"validLocales": [
+			{
+				"localeTag": "it",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(colore).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/it_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 2126
+	},
+	{
+		"semanticType": "COLOR.TEXT_PT",
+		"description": "Color name (Portuguese)",
+		"pluginType": "list",
+		"signature": "HHE3pWbL1C0NekhzS90wqGhTUj8=",
+		"validLocales": [
+			{
+				"localeTag": "pt",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(cor|color).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/pt_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 2127
+	},
+	{
+		"semanticType": "COLOR.TEXT_RU",
+		"description": "Color name (Russian)",
+		"pluginType": "list",
+		"signature": "KcYlVqCC1MET9v/+/lCZ2MDocsQ=",
+		"validLocales": [
+			{
+				"localeTag": "ru",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?U)(цвет).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ru_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 2128
+	},
+	{
+		"semanticType": "COLOR.TEXT_SV",
+		"description": "Color name (Swedish)",
+		"pluginType": "list",
+		"signature": "YjS4a+B21sbdWwo/c1SeUawzNBU=",
+		"validLocales": [
+			{
+				"localeTag": "sv",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(f[aä]rg).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/sv_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 2129
+	},
+	{
+		"semanticType": "COLOR.TEXT_FI",
+		"description": "Color name (Finnish)",
+		"pluginType": "list",
+		"signature": "qVmLMj78jeYI0D2pbVQ4r6CaSLQ=",
+		"validLocales": [
+			{
+				"localeTag": "fi",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(v[aä]ri).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/fi_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 2130
+	},
+	{
+		"semanticType": "COLOR.TEXT_DA",
+		"description": "Color name (Danish)",
+		"pluginType": "list",
+		"signature": "v28P28cAUqP4XV+JniBLBG6HUHI=",
+		"validLocales": [
+			{
+				"localeTag": "da",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(farve).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/da_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 2131
+	},
+	{
+		"semanticType": "COLOR.TEXT_PL",
+		"description": "Color name (Polish)",
+		"pluginType": "list",
+		"signature": "Z/FPYXOXhlPREkpOcOZFwiTNJt8=",
+		"validLocales": [
+			{
+				"localeTag": "pl",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?i)(kolor).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/pl_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 2132
+	},
+	{
+		"semanticType": "COLOR.TEXT_RO",
+		"description": "Color name (Romanian)",
+		"pluginType": "list",
+		"signature": "37j14JhJzIRwCXiaIzO8WQPB9y8=",
+		"validLocales": [
+			{
+				"localeTag": "ro",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(culoare).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/ro_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 2133
+	},
+	{
+		"semanticType": "COLOR.TEXT_CS",
+		"description": "Color name (Czech)",
+		"pluginType": "list",
+		"signature": "sJCq/VOhbSUYNE8iEvjRok/TWlE=",
+		"validLocales": [
+			{
+				"localeTag": "cs",
+				"headerRegExps": [
+					{
+						"regExp": ".*(?iu)(barva|barev).*",
+						"confidence": 90
+					}
+				]
+			}
+		],
+		"content": {
+			"type": "resource",
+			"reference": "/reference/cs_color.csv"
+		},
+		"documentation": [
+			{
+				"source": "wikidata",
+				"reference": "https://www.wikidata.org/wiki/Property:P462"
+			},
+			{
+				"source": "schema",
+				"reference": "https://schema.org/color"
+			}
+		],
+		"backout": "[ \\p{IsAlphabetic}]+",
+		"priority": 2134
 	},
 	{
 		"semanticType": "DIRECTION",

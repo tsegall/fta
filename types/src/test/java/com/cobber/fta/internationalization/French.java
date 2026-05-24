@@ -687,6 +687,26 @@ public class French {
 	}
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void continentFR() throws IOException, FTAException {
+		final String[] inputs = {
+				"AFRIQUE", "ASIE", "EUROPE", "AMÉRIQUE DU NORD", "AMÉRIQUE DU SUD", "OCÉANIE", "ANTARCTIQUE",
+				"EUROPE", "ASIE", "AFRIQUE", "AMÉRIQUE DU NORD", "ASIE", "EUROPE", "AFRIQUE", "OCÉANIE",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "continent", Locale.forLanguageTag("fr-FR"), "CONTINENT.TEXT_FR", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void languageFR() throws IOException, FTAException {
+		final String[] inputs = {
+				"FRANÇAIS", "ANGLAIS", "ALLEMAND", "ESPAGNOL", "ITALIEN", "PORTUGAIS", "RUSSE", "CHINOIS",
+				"JAPONAIS", "ARABE", "HINDI", "CORÉEN", "TURC", "POLONAIS", "SUÉDOIS",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "langue", Locale.forLanguageTag("fr-FR"), "LANGUAGE.TEXT_FR", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void postalCodeFR_lowCardinalityNoHeader() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("field1");
 		analysis.setLocale(Locale.forLanguageTag("fr-FR"));

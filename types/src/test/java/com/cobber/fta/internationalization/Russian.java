@@ -138,4 +138,58 @@ public class Russian {
 
 		TestUtils.simpleCore(Sample.allValid(inputs), "адрес", Locale.forLanguageTag("ru-RU"), "STREET_ADDRESS_<LANGUAGE>", FTAType.STRING, 1.0);
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeRU() throws IOException, FTAException {
+		final String[] inputs = {
+				"101000", "190000", "620000", "630000", "344000", "450000", "600000", "394000", "400000", "650000",
+				"660000", "664000", "410000", "443000", "670000", "680000", "690000", "700000", "720000", "450001",
+				"350000", "360000", "370000", "380000", "390000", "420000", "430000", "440000", "460000", "470000",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "индекс", Locale.forLanguageTag("ru-RU"), "POSTAL_CODE.POSTAL_CODE_RU", FTAType.LONG, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getRegExp(), "[1-9]\\d{5}");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void colorRU() throws IOException, FTAException {
+		final String[] inputs = {
+				"КРАСНЫЙ", "СИНИЙ", "ЗЕЛЁНЫЙ", "ЖЁЛТЫЙ", "ОРАНЖЕВЫЙ", "РОЗОВЫЙ", "ЧЁРНЫЙ", "БЕЛЫЙ", "СЕРЫЙ", "КОРИЧНЕВЫЙ",
+				"ФИОЛЕТОВЫЙ", "БИРЮЗОВЫЙ", "БЕЖЕВЫЙ", "КРЕМОВЫЙ", "ЗОЛОТОЙ", "СЕРЕБРЯНЫЙ", "ЛОСОСЕВЫЙ", "ИНДИГО", "ЛАВАНДОВЫЙ", "ОЛИВКОВЫЙ",
+				"БОРДОВЫЙ", "БРОНЗОВЫЙ", "ГОЛУБОЙ", "КОРАЛЛОВЫЙ", "ЛАЙМОВЫЙ", "МАЛИНОВЫЙ", "ПЕРСИКОВЫЙ", "СИРЕНЕВЫЙ",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "цвет", Locale.forLanguageTag("ru-RU"), "COLOR.TEXT_RU", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void countryRU() throws IOException, FTAException {
+		final String[] inputs = {
+				"РОССИЯ", "ГЕРМАНИЯ", "ФРАНЦИЯ", "ИСПАНИЯ", "ИТАЛИЯ", "ПОЛЬША", "УКРАИНА", "НИДЕРЛАНДЫ", "ШВЕЦИЯ", "НОРВЕГИЯ",
+				"ДАНИЯ", "ФИНЛЯНДИЯ", "ЧЕХИЯ", "АВСТРИЯ", "ШВЕЙЦАРИЯ", "БЕЛЬГИЯ", "ПОРТУГАЛИЯ", "ГРЕЦИЯ", "ВЕНГРИЯ", "РУМЫНИЯ",
+				"США", "КАНАДА", "БРАЗИЛИЯ", "АРГЕНТИНА", "МЕКСИКА", "КИТАЙ", "ЯПОНИЯ", "ИНДИЯ", "АВСТРАЛИЯ", "ЕГИПЕТ",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "страна", Locale.forLanguageTag("ru-RU"), "COUNTRY.TEXT_RU", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void continentRU() throws IOException, FTAException {
+		final String[] inputs = {
+				"АФРИКА", "АЗИЯ", "ЕВРОПА", "СЕВЕРНАЯ АМЕРИКА", "ЮЖНАЯ АМЕРИКА", "ОКЕАНИЯ", "АНТАРКТИДА",
+				"ЕВРОПА", "АЗИЯ", "АФРИКА", "СЕВЕРНАЯ АМЕРИКА", "АЗИЯ", "ЕВРОПА", "АФРИКА", "ОКЕАНИЯ",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "континент", Locale.forLanguageTag("ru-RU"), "CONTINENT.TEXT_RU", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void languageRU() throws IOException, FTAException {
+		final String[] inputs = {
+				"РУССКИЙ", "АНГЛИЙСКИЙ", "ФРАНЦУЗСКИЙ", "НЕМЕЦКИЙ", "ИСПАНСКИЙ", "ИТАЛЬЯНСКИЙ", "ПОРТУГАЛЬСКИЙ",
+				"КИТАЙСКИЙ", "ЯПОНСКИЙ", "АРАБСКИЙ", "ХИНДИ", "КОРЕЙСКИЙ", "ТУРЕЦКИЙ", "ПОЛЬСКИЙ", "ШВЕДСКИЙ",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "язык", Locale.forLanguageTag("ru-RU"), "LANGUAGE.TEXT_RU", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
 }

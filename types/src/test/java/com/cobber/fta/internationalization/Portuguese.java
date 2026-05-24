@@ -16,6 +16,7 @@
 package com.cobber.fta.internationalization;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
@@ -27,14 +28,18 @@ import java.util.Locale;
 
 import org.testng.annotations.Test;
 
+import com.cobber.fta.AnalysisConfig;
+import com.cobber.fta.LogicalTypeFactory;
 import com.cobber.fta.PluginDefinition;
 import com.cobber.fta.PluginLocaleEntry;
+import com.cobber.fta.Sample;
 import com.cobber.fta.TestGroups;
 import com.cobber.fta.TestSupport;
 import com.cobber.fta.TestUtils;
 import com.cobber.fta.TextAnalysisResult;
 import com.cobber.fta.TextAnalyzer;
 import com.cobber.fta.core.FTAException;
+import com.cobber.fta.core.FTAPluginException;
 import com.cobber.fta.core.FTAType;
 
 public class Portuguese {
@@ -312,5 +317,91 @@ public class Portuguese {
 
 		for (final String sample : samples)
 			assertTrue(sample.matches(result.getRegExp()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeBR_validInvalid() throws IOException, FTAPluginException {
+		final com.cobber.fta.LogicalType logical = LogicalTypeFactory.newInstance(PluginDefinition.findByName("POSTAL_CODE.POSTAL_CODE_BR"), new AnalysisConfig(Locale.forLanguageTag("pt-BR")));
+
+		final String[] valid = {
+			"01310-100", "20040-020", "22250-145", "70040-010", "90010-150",
+			"30140-071", "40020-010", "60140-120", "50010-010", "69010-050"
+		};
+		for (final String v : valid)
+			assertTrue(logical.isValid(v), v);
+
+		final String[] invalid = { "1310-100", "013100100", "01310-10", "ABCDE-123", "" };
+		for (final String iv : invalid)
+			assertFalse(logical.isValid(iv), iv);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeBR_endToEnd() throws IOException, FTAException {
+		final String[] inputs = {
+			"01310-100", "20040-020", "22250-145", "70040-010", "90010-150",
+			"30140-071", "40020-010", "60140-120", "50010-010", "69010-050",
+			"04038-001", "80010-010", "74010-010", "66010-090", "58010-000",
+			"49010-100", "64010-010", "65010-000", "77010-010", "79010-010"
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "cep", Locale.forLanguageTag("pt-BR"), "POSTAL_CODE.POSTAL_CODE_BR", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getRegExp(), "\\d{5}-\\d{3}");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void colorPT() throws IOException, FTAException {
+		final String[] inputs = {
+				"VERMELHO", "AZUL", "VERDE", "AMARELO", "LARANJA", "ROSA", "PRETO", "BRANCO", "CINZA", "MARROM",
+				"ROXO", "TURQUESA", "BEGE", "CREME", "OURO", "PRATA", "SALMÃO", "ÍNDIGO", "LAVANDA", "OLIVA",
+				"BORDEAUX", "BRONZE", "MARFIM", "AZUL MARINHO", "CORAL", "CIANO", "MAGENTA", "VIOLETA", "CASTANHO", "LIMÃO",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "cor", Locale.forLanguageTag("pt-BR"), "COLOR.TEXT_PT", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeBR_lowCardinalityNoHeader() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("field1");
+		analysis.setLocale(Locale.forLanguageTag("pt-BR"));
+
+		// Only 3 distinct values — below the cardinality threshold — and no postal header, so should back out
+		final String[] inputs = { "01310-100", "20040-020", "70040-010" };
+		for (final String s : inputs)
+			for (int i = 0; i < 5; i++)
+				analysis.train(s);
+
+		final TextAnalysisResult result = analysis.getResult();
+		assertFalse("POSTAL_CODE.POSTAL_CODE_BR".equals(result.getSemanticType()));
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void countryPT() throws IOException, FTAException {
+		final String[] inputs = {
+				"BRASIL", "PORTUGAL", "ALEMANHA", "FRANÇA", "ESPANHA", "ITÁLIA", "ARGENTINA", "CHILE", "COLÔMBIA", "PERU",
+				"MÉXICO", "CANADÁ", "ESTADOS UNIDOS", "AUSTRÁLIA", "JAPÃO", "CHINA", "ÍNDIA", "RÚSSIA", "ANGOLA", "MOÇAMBIQUE",
+				"CABO VERDE", "GUINÉ-BISSAU", "SÃO TOMÉ E PRÍNCIPE", "TIMOR-LESTE", "POLÔNIA", "HUNGRIA", "ROMÊNIA", "BULGÁRIA", "CROÁCIA", "GRÉCIA",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "país", Locale.forLanguageTag("pt-BR"), "COUNTRY.TEXT_PT", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void continentPT() throws IOException, FTAException {
+		final String[] inputs = {
+				"ÁFRICA", "ÁSIA", "EUROPA", "AMERICA DO NORTE", "AMERICA DO SUL", "OCEANIA", "ANTÁRTICA",
+				"EUROPA", "ÁSIA", "ÁFRICA", "AMERICA DO NORTE", "ÁSIA", "EUROPA", "ÁFRICA", "OCEANIA",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "continente", Locale.forLanguageTag("pt-BR"), "CONTINENT.TEXT_PT", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void languagePT() throws IOException, FTAException {
+		final String[] inputs = {
+				"PORTUGUÊS", "INGLÊS", "FRANCÊS", "ALEMÃO", "ESPANHOL", "ITALIANO", "RUSSO", "CHINÊS",
+				"JAPONÊS", "ÁRABE", "HINDI", "COREANO", "TURCO", "POLONÊS", "SUECO",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "língua", Locale.forLanguageTag("pt-BR"), "LANGUAGE.TEXT_PT", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
 	}
 }

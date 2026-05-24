@@ -42,7 +42,7 @@ includeBuild 'examples/webNG'
 dependencyResolutionManagement {
 	versionCatalogs {
 		libs {
-			version('fta', '18.14.4')
+			version('fta', '18.15.0')
 			version('jacoco', '0.8.14')
 
 // https://mvnrepository.com/artifact/de.siegmar/fastcsv

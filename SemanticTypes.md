@@ -14,31 +14,63 @@
 |CHECKDIGIT.UPC|UPC - Universal Product Code|https://en.wikipedia.org/wiki/Universal_Product_Code|*|
 |CITY|City/Town|https://en.wikipedia.org/wiki/City, https://schema.org/City|de, en, es, fr, ja, nl|
 |COLOR.HEX|Hex Color code|https://www.wikidata.org/wiki/Property:P465, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|*|
+|COLOR.TEXT_CS|Color name (Czech)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|cs|
+|COLOR.TEXT_DA|Color name (Danish)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|da|
 |COLOR.TEXT_DE|Color name (German)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|de|
 |COLOR.TEXT_EN|Color name (English)|https://www.wikidata.org/wiki/Property:P462, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|*|
 |COLOR.TEXT_ES|Color name (Spanish)|https://www.wikidata.org/wiki/Property:P462, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|es|
+|COLOR.TEXT_FI|Color name (Finnish)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|fi|
 |COLOR.TEXT_FR|Color name (French)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|fr|
+|COLOR.TEXT_IT|Color name (Italian)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|it|
 |COLOR.TEXT_JA|Color name (Japanese)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|ja|
 |COLOR.TEXT_NL|Color name (Dutch)|https://www.wikidata.org/wiki/Property:P462, https://en.wikipedia.org/wiki/Web_colors, https://schema.org/color|nl|
+|COLOR.TEXT_PL|Color name (Polish)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|pl|
+|COLOR.TEXT_PT|Color name (Portuguese)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|pt|
+|COLOR.TEXT_RO|Color name (Romanian)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|ro|
+|COLOR.TEXT_RU|Color name (Russian)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|ru|
+|COLOR.TEXT_SV|Color name (Swedish)|https://www.wikidata.org/wiki/Property:P462, https://schema.org/color|sv|
 |COMPANY_NAME|Organization/Company Name|https://en.wikipedia.org/wiki/Company, https://schema.org/Corporation|en, nl, ja|
 |CONTINENT.CODE_EN|Continent Code||en|
+|CONTINENT.TEXT_CS|Continent (Czech)|https://www.wikidata.org/wiki/Property:P30|cs|
+|CONTINENT.TEXT_DA|Continent (Danish)|https://www.wikidata.org/wiki/Property:P30|da|
+|CONTINENT.TEXT_DE|Continent (German)|https://www.wikidata.org/wiki/Property:P30|de|
 |CONTINENT.TEXT_EN|Continent|https://www.wikidata.org/wiki/Property:P30|en|
+|CONTINENT.TEXT_ES|Continent (Spanish)|https://www.wikidata.org/wiki/Property:P30|es|
+|CONTINENT.TEXT_FI|Continent (Finnish)|https://www.wikidata.org/wiki/Property:P30|fi|
+|CONTINENT.TEXT_FR|Continent (French)|https://www.wikidata.org/wiki/Property:P30|fr|
+|CONTINENT.TEXT_IT|Continent (Italian)|https://www.wikidata.org/wiki/Property:P30|it|
 |CONTINENT.TEXT_JA|Continent (Japanese)|https://www.wikidata.org/wiki/Property:P30|ja|
+|CONTINENT.TEXT_NL|Continent (Dutch)|https://www.wikidata.org/wiki/Property:P30|nl|
+|CONTINENT.TEXT_PL|Continent (Polish)|https://www.wikidata.org/wiki/Property:P30|pl|
+|CONTINENT.TEXT_PT|Continent (Portuguese)|https://www.wikidata.org/wiki/Property:P30|pt|
+|CONTINENT.TEXT_RO|Continent (Romanian)|https://www.wikidata.org/wiki/Property:P30|ro|
+|CONTINENT.TEXT_RU|Continent (Russian)|https://www.wikidata.org/wiki/Property:P30|ru|
+|CONTINENT.TEXT_SV|Continent (Swedish)|https://www.wikidata.org/wiki/Property:P30|sv|
 |COORDINATE.EASTING|Latitude - easting|https://en.wikipedia.org/wiki/Projected_coordinate_system, https://schema.org/latitude|en|
-|COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://www.wikidata.org/wiki/Q34027, https://schema.org/latitude|*, es-MX,es-PE, ca,da,de,es,fi,fr,it,nl,ro,ru|
+|COORDINATE.LATITUDE_DECIMAL|Latitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://www.wikidata.org/wiki/Q34027, https://schema.org/latitude|*, es-MX,es-PE, ca,da,de,es,fi,fr,it,nl,ro,ru, ja|
 |COORDINATE.LATITUDE_DMS|Latitude (degrees/minutes/seconds)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Latitude, https://schema.org/latitude|*|
-|COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude, https://www.wikidata.org/wiki/Q36477, https://schema.org/longitude|*, es-MX,es-PE, ca,da,de,es,fi,fr,it,nl,ro,ru|
+|COORDINATE.LONGITUDE_DECIMAL|Longitude (Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude, https://www.wikidata.org/wiki/Q36477, https://schema.org/longitude|*, es-MX,es-PE, ca,da,de,es,fi,fr,it,nl,ro,ru, ja|
 |COORDINATE.LONGITUDE_DMS|Longitude (degrees/minutes/seconds)|https://en.wikipedia.org/wiki/Geographic_coordinate_system, https://en.wikipedia.org/wiki/Longitude, https://schema.org/longitude|*|
 |COORDINATE.NORTHING|Longitude - northing|https://en.wikipedia.org/wiki/Projected_coordinate_system, https://schema.org/longitude|en|
 |COORDINATE_PAIR.DECIMAL|Coordinate Pair Lat,Long - Decimal degrees|https://en.wikipedia.org/wiki/Geographic_coordinate_system|*|
 |COORDINATE_PAIR.DECIMAL_PAREN|Coordinate Pair (Lat,Long) - Decimal degrees)|https://en.wikipedia.org/wiki/Geographic_coordinate_system|*|
 |COUNTRY.ISO-3166-2|Country as defined by ISO 3166 - Alpha 2|https://www.wikidata.org/wiki/Property:P297, https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2, https://schema.org/eligibleRegion|*|
 |COUNTRY.ISO-3166-3|Country as defined by ISO 3166 - Alpha 3|https://www.wikidata.org/wiki/Property:P298, https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3|*|
+|COUNTRY.TEXT_CS|Country as a string (Czech)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|cs|
+|COUNTRY.TEXT_DA|Country as a string (Danish)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|da|
 |COUNTRY.TEXT_DE|Country as a string (German)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|de|
 |COUNTRY.TEXT_EN|Country as a string (English language)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|*|
 |COUNTRY.TEXT_ES|Country as a string (Spanish)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|es|
+|COUNTRY.TEXT_FI|Country as a string (Finnish)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|fi|
+|COUNTRY.TEXT_FR|Country as a string (French)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|fr|
+|COUNTRY.TEXT_IT|Country as a string (Italian)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|it|
 |COUNTRY.TEXT_JA|Country as a string (Japanese)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|ja|
 |COUNTRY.TEXT_NL|Country as a string (Dutch)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|nl|
+|COUNTRY.TEXT_PL|Country as a string (Polish)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|pl|
+|COUNTRY.TEXT_PT|Country as a string (Portuguese)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|pt|
+|COUNTRY.TEXT_RO|Country as a string (Romanian)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|ro|
+|COUNTRY.TEXT_RU|Country as a string (Russian)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|ru|
+|COUNTRY.TEXT_SV|Country as a string (Swedish)|https://en.wikipedia.org/wiki/Choronym, https://en.wikipedia.org/wiki/List_of_country_names_in_various_languages, https://schema.org/Country|sv|
 |CREDIT_CARD_TYPE|Type of Credit CARD - e.g. AMEX, VISA, ...|https://en.wikipedia.org/wiki/Credit_card, https://schema.org/CreditCard|*|
 |CRYPTOCURRENCY.TEXT_EN|Cryptocurrency Name|https://en.wikipedia.org/wiki/Cryptocurrency|en|
 |CRYPTOCURRENCY.TEXT_JA|Cryptocurrency Name (Japanese)|https://en.wikipedia.org/wiki/Cryptocurrency|ja|
@@ -88,8 +120,21 @@
 |JOB_TITLE_JA|Job Title (Japanese Language)|https://en.wikipedia.org/wiki/Work_(human_activity), https://schema.org/jobTitle|ja|
 |LANGUAGE.ISO-639-1|Language code - ISO 639, two character|https://www.wikidata.org/wiki/Property:P218, https://en.wikipedia.org/wiki/ISO_639-1|*|
 |LANGUAGE.ISO-639-2|Language code - ISO 639, three character|https://www.wikidata.org/wiki/Property:P219, https://en.wikipedia.org/wiki/ISO_639-2|*|
+|LANGUAGE.TEXT_CS|Language name (Czech)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|cs|
+|LANGUAGE.TEXT_DA|Language name (Danish)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|da|
+|LANGUAGE.TEXT_DE|Language name (German)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|de|
 |LANGUAGE.TEXT_EN|Language name, e.g. English, French, ...||en|
+|LANGUAGE.TEXT_ES|Language name (Spanish)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|es|
+|LANGUAGE.TEXT_FI|Language name (Finnish)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|fi|
+|LANGUAGE.TEXT_FR|Language name (French)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|fr|
+|LANGUAGE.TEXT_IT|Language name (Italian)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|it|
 |LANGUAGE.TEXT_JA|Language name (Japanese)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|ja|
+|LANGUAGE.TEXT_NL|Language name (Dutch)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|nl|
+|LANGUAGE.TEXT_PL|Language name (Polish)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|pl|
+|LANGUAGE.TEXT_PT|Language name (Portuguese)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|pt|
+|LANGUAGE.TEXT_RO|Language name (Romanian)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|ro|
+|LANGUAGE.TEXT_RU|Language name (Russian)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|ru|
+|LANGUAGE.TEXT_SV|Language name (Swedish)|https://www.wikidata.org/wiki/Property:P37, https://en.wikipedia.org/wiki/Language|sv|
 |MACADDRESS|MAC Address|https://en.wikipedia.org/wiki/MAC_address|*|
 |MONTH.ABBR_&lt;LOCALE&gt;|Month Abbreviation &lt;LOCALE&gt; = Locale, e.g. en-US for English language in US)||*|
 |MONTH.DIGITS|Numeric Month||en, es, nl, ja|
@@ -115,18 +160,28 @@
 |PERSON.RACE_ABBR_EN|Race/Ethnicity (person)|https://en.wikipedia.org/wiki/Race_(human_categorization)|*|
 |PERSON.RACE_EN|Race/Ethnicity (person)|https://en.wikipedia.org/wiki/Race_(human_categorization)|*|
 |PERSON.YEAR_OF_BIRTH|Person - Year of Birth|https://www.wikidata.org/wiki/Property:P569, https://www.wikidata.org/wiki/Q2389905|*|
+|POSTAL_CODE.POSTAL_CODE_AT|Postal Code (AT)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Austria, https://schema.org/postalCode|de-AT|
 |POSTAL_CODE.POSTAL_CODE_AU|Postal Code (AU)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postcodes_in_Australia, https://schema.org/postalCode|en-AU|
 |POSTAL_CODE.POSTAL_CODE_BG|Postal Code (BG)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Bulgaria, https://schema.org/postalCode|bg-BG|
+|POSTAL_CODE.POSTAL_CODE_BR|Postal Code (BR)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Brazil, https://schema.org/postalCode|pt-BR|
 |POSTAL_CODE.POSTAL_CODE_CA|Postal Code (CA)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Canada, https://schema.org/postalCode|en-US,en-CA,fr-CA|
+|POSTAL_CODE.POSTAL_CODE_CH|Postal Code (CH)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Switzerland, https://schema.org/postalCode|de-CH,fr-CH,it-CH|
 |POSTAL_CODE.POSTAL_CODE_CO|Postal Code (CO)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Colombia, https://schema.org/postalCode|es-CO|
 |POSTAL_CODE.POSTAL_CODE_DE|Postal Code (DE)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Germany, https://schema.org/postalCode|de-DE|
+|POSTAL_CODE.POSTAL_CODE_DK|Postal Code (DK)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Denmark, https://schema.org/postalCode|da-DK|
 |POSTAL_CODE.POSTAL_CODE_ES|Postal Code (ES)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Spain, https://schema.org/postalCode|es-ES|
+|POSTAL_CODE.POSTAL_CODE_FI|Postal Code (FI)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Finland, https://schema.org/postalCode|fi-FI|
 |POSTAL_CODE.POSTAL_CODE_FR|Postal Code (FR)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_France, https://schema.org/postalCode|fr-FR|
 |POSTAL_CODE.POSTAL_CODE_IN|Postal Code (IN)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_Index_Number, https://schema.org/postalCode|en-IN,hi-IN|
+|POSTAL_CODE.POSTAL_CODE_IT|Postal Code (IT)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Italy, https://schema.org/postalCode|it-IT|
 |POSTAL_CODE.POSTAL_CODE_JP|Postal Code (JP)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Japan, https://schema.org/postalCode|ja|
 |POSTAL_CODE.POSTAL_CODE_MX|Postal Code (MX)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Mexico, https://schema.org/postalCode|es-MX|
 |POSTAL_CODE.POSTAL_CODE_NL|Postal Code (NL)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_the_Netherlands, https://schema.org/postalCode|en-NL,nl-NL|
+|POSTAL_CODE.POSTAL_CODE_NO|Postal Code (NO)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Norway, https://schema.org/postalCode|no-NO|
+|POSTAL_CODE.POSTAL_CODE_PL|Postal Code (PL)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Poland, https://schema.org/postalCode|pl-PL|
 |POSTAL_CODE.POSTAL_CODE_PT|Postal Code (PT)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Portugal, https://schema.org/postalCode|pt-PT|
+|POSTAL_CODE.POSTAL_CODE_RO|Postal Code (RO)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Romania, https://schema.org/postalCode|ro-RO|
+|POSTAL_CODE.POSTAL_CODE_RU|Postal Code (RU)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Russia, https://schema.org/postalCode|ru-RU|
 |POSTAL_CODE.POSTAL_CODE_SE|Postal Code (SE)|https://www.wikidata.org/wiki/Property:P281, https://en.wikipedia.org/wiki/Postal_codes_in_Sweden, https://schema.org/postalCode|sv-SE|
 |POSTAL_CODE.POSTAL_CODE_UK|Postal Code (UK)|https://en.wikipedia.org/wiki/Postcodes_in_the_United_Kingdom, https://schema.org/postalCode|en-GB,en-UK|
 |POSTAL_CODE.POSTAL_CODE_UY|Postal Code (UY)|https://www.wikidata.org/wiki/Property:P281, https://schema.org/postalCode|es-UY|

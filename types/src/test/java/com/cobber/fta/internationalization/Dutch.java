@@ -601,4 +601,24 @@ public class Dutch {
 			analysis.train(s);
 		assertNotEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_NL");
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void continentNL() throws IOException, FTAException {
+		final String[] inputs = {
+				"AFRIKA", "AZIË", "EUROPA", "NOORD-AMERIKA", "ZUID-AMERIKA", "OCEANIË", "ANTARCTICA",
+				"EUROPA", "AZIË", "AFRIKA", "NOORD-AMERIKA", "AZIË", "EUROPA", "AFRIKA", "OCEANIË",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "continent", Locale.forLanguageTag("nl-NL"), "CONTINENT.TEXT_NL", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void languageNL() throws IOException, FTAException {
+		final String[] inputs = {
+				"NEDERLANDS", "ENGELS", "FRANS", "DUITS", "SPAANS", "ITALIAANS", "PORTUGEES", "RUSSISCH",
+				"CHINEES", "JAPANS", "ARABISCH", "HINDI", "KOREAANS", "TURKS", "POOLS",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "taal", Locale.forLanguageTag("nl-NL"), "LANGUAGE.TEXT_NL", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
 }

@@ -173,4 +173,58 @@ public class Italian {
 		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "sesso", Locale.forLanguageTag("it-IT"), "GENDER.TEXT_<LANGUAGE>", FTAType.STRING, 1.0);
 		assertEquals(result.getMatchCount(), inputs.length);
 	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void postalCodeIT() throws IOException, FTAException {
+		final String[] inputs = {
+				"00100", "20121", "40121", "50123", "80121", "10121", "30121", "70121", "90121", "16121",
+				"37121", "95121", "34121", "06121", "65121", "85100", "88100", "98100", "74121", "89100",
+				"24121", "25121", "13900", "12100", "15100", "14100", "15121", "27100", "26100", "23100",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "CAP", Locale.forLanguageTag("it-IT"), "POSTAL_CODE.POSTAL_CODE_IT", FTAType.LONG, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getRegExp(), "\\d{5}");
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void colorIT() throws IOException, FTAException {
+		final String[] inputs = {
+				"ROSSO", "BLU", "VERDE", "GIALLO", "ARANCIONE", "VIOLA", "ROSA", "NERO", "BIANCO", "GRIGIO",
+				"MARRONE", "AZZURRO", "TURCHESE", "BEIGE", "CREMA", "ORO", "ARGENTO", "SALMONE", "PESCA", "INDACO",
+				"LAVANDA", "OLIVA", "LIME", "CORALLO", "CIANO", "MAGENTA", "BORDEAUX", "BRONZO", "AVORIO", "BLU NAVY",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "colore", Locale.forLanguageTag("it-IT"), "COLOR.TEXT_IT", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void countryIT() throws IOException, FTAException {
+		final String[] inputs = {
+				"ITALIA", "GERMANIA", "FRANCIA", "SPAGNA", "PORTOGALLO", "GRECIA", "BELGIO", "PAESI BASSI", "SVEZIA", "NORVEGIA",
+				"DANIMARCA", "FINLANDIA", "POLONIA", "UNGHERIA", "ROMANIA", "BULGARIA", "CROAZIA", "SLOVACCHIA", "SLOVENIA", "ESTONIA",
+				"LETTONIA", "LITUANIA", "CIPRO", "MALTA", "STATI UNITI", "CANADA", "BRASILE", "ARGENTINA", "MESSICO", "CILE",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "paese", Locale.forLanguageTag("it-IT"), "COUNTRY.TEXT_IT", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void continentIT() throws IOException, FTAException {
+		final String[] inputs = {
+				"AFRICA", "ASIA", "EUROPA", "AMERICA DEL NORD", "AMERICA DEL SUD", "OCEANIA", "ANTARTIDE",
+				"EUROPA", "ASIA", "AFRICA", "AMERICA DEL NORD", "ASIA", "EUROPA", "AFRICA", "OCEANIA",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "continente", Locale.forLanguageTag("it-IT"), "CONTINENT.TEXT_IT", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void languageIT() throws IOException, FTAException {
+		final String[] inputs = {
+				"ITALIANO", "INGLESE", "FRANCESE", "TEDESCO", "SPAGNOLO", "PORTOGHESE", "RUSSO", "CINESE",
+				"GIAPPONESE", "ARABO", "HINDI", "COREANO", "TURCO", "POLACCO", "SVEDESE",
+		};
+		final TextAnalysisResult result = TestUtils.simpleCore(Sample.allValid(inputs), "lingua", Locale.forLanguageTag("it-IT"), "LANGUAGE.TEXT_IT", FTAType.STRING, 1.0);
+		assertEquals(result.getMatchCount(), inputs.length);
+	}
 }
