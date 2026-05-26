@@ -34,7 +34,7 @@ public class TestIdentityValidators {
 
 	private NPI_US buildNPI() throws FTAPluginException {
 		final PluginDefinition defn = PluginDefinition.findByName("IDENTITY.NPI_US");
-		return (NPI_US) LogicalTypeFactory.newInstance(defn, new AnalysisConfig());
+		return (NPI_US) LogicalTypeFactory.newInstance(defn, new AnalysisConfig(Locale.forLanguageTag("en-US")));
 	}
 
 	private BSN_NL buildBSN() throws FTAPluginException {
