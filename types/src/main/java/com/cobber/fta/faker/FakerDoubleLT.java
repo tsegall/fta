@@ -69,7 +69,7 @@ public class FakerDoubleLT extends FakerLT {
 			d = last;
 
 		} else if ("monotonic_decreasing".equals(distribution)) {
-			if (last == Long.MIN_VALUE) {
+			if (last == Double.MIN_VALUE) {
 				last = high;
 			}
 			else {

@@ -47,7 +47,7 @@ public class FakerEnumLT extends FakerLT {
 			if (last == -1)
 				last = 0;
 			else {
-				if (++last > options.length)
+				if (++last >= options.length)
 					last = 0;
 			}
 			ret = options[last];

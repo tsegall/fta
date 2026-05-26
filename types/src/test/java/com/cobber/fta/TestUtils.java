@@ -333,14 +333,34 @@ public class TestUtils {
 	public void testPatternFG() throws IOException {
 		final PatternFG patternFG = PatternFG.compile("|null|no data|sin dato|");
 
-		assertFalse(patternFG.matcher("ß - Eszett as in straße	"));
+		// null and empty inputs
+		assertFalse(patternFG.matcher(null));
+		assertFalse(patternFG.matcher(""));
+
+		// exact matches, including case-insensitive
 		assertTrue(patternFG.matcher("null"));
 		assertTrue(patternFG.matcher("NULL"));
-		assertFalse(patternFG.matcher("zoom"));
-		assertFalse(patternFG.matcher("a"));
+		assertTrue(patternFG.matcher("Null"));
 		assertTrue(patternFG.matcher("no data"));
+		assertTrue(patternFG.matcher("NO DATA"));
 		assertTrue(patternFG.matcher("sin dato"));
+		assertTrue(patternFG.matcher("SIN DATO"));
+
+		// wrong first character
+		assertFalse(patternFG.matcher("zoom"));
 		assertFalse(patternFG.matcher("long string"));
+		assertFalse(patternFG.matcher("ß - Eszett as in straße"));
+
+		// right first character but no word match
+		assertFalse(patternFG.matcher("nope"));
+		assertFalse(patternFG.matcher("something"));
+
+		// length boundary: below minLength (4)
+		assertFalse(patternFG.matcher("a"));
+		assertFalse(patternFG.matcher("no"));
+
+		// length boundary: above maxLength (8 for "sin dato")
+		assertFalse(patternFG.matcher("not available"));
 	}
 
 	@Test(groups = { TestGroups.ALL })

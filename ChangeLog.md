@@ -1,6 +1,30 @@
 
 ## Changes ##
 
+### 18.15.1
+ - fix: FakerDoubleLT monotonic_decreasing used Long.MIN_VALUE sentinel instead of Double.MIN_VALUE, preventing correct reset
+ - fix: FakerEnumLT monotonic_increasing wrapped at options.length+1 causing ArrayIndexOutOfBoundsException on full cycle
+ - test: Add TestFaker covering all faker types (Boolean, Enum, String, Long, Double, LocalDate, LocalDateTime, LocalTime, OffsetDateTime) and all distribution modes
+ - test: Add TestPluginLocaleEntry covering all PluginLocaleEntry methods (header confidence, regExp returned, match entry index, copy constructor, simple factory, toString)
+ - test: Add TestLogicalTypeRegExp covering LONG/DOUBLE/STRING bounds, invalidList, isMatch, and xeger-incompatible nextRandom
+ - test: Add testMinMax and testRange to TestUtilsCore covering MinMax and Range constructors, merge, pattern generation, compareTo, equals, hashCode
+ - test: Add escalationEquals to TestStandalonePlugins covering TypeDeterminer.Escalation equals/hashCode contract
+ - test: Add TestPatternFG covering case-insensitive word-set matching and candidate first-char fast-reject
+ - test: Add TestHeaderEntry covering lazy pattern init, compositeKey path, copy constructor, and toString
+ - test: Add TestSemanticType covering getAllSemanticTypes (cached), getActiveSemanticTypes, all getters, and toJSONString
+ - test: Add TestRecordAnalyzer covering wrong-length train, getAnalyzer, getAnalyzers, merge, and end-to-end
+ - test: Add TestPluginDefinition covering getOrder (all Precedence values), findByName, copy constructor, getLocaleEntry, isMandatoryHeaderUnsatisfied, isLocaleSupported, getLocaleDescription, and getOptions
+ - test: Extend TestLogicalTypeRegExp with getMatchEntries, getMinSamples, isMinMaxPresent, isClosed, getBaseType, setMatchEntry/getMatchEntry, and seed
+ - test: Add TestCacheLRU covering put/get, invalidate, and size
+ - test: Add TestLogicalType covering getPriority, isLocaleSensitive, isRegExpComplete, getHeaderConfidence (both overloads), setThreshold, acceptsBaseType, getPluginDefinition, isValid, compareTo, LogicalTypeFactory exception paths, and LogicalTypeBloomFilter backout
+ - test: Add TestIdentityValidators covering NPI_US analyzeSet (OK and below-threshold), isValid, getRegExp, and BSN_NL analyzeSet backout, acceptsBaseType, isValid
+ - test: Add TestExternalFacts covering copy constructor (all 13 fields), equals contract (identity/null/wrong class/copied/mutated), and default constructor sentinel values
+ - test: Extend TestText with getDigits, getSentenceBreaks, and getWordBreaks
+ - test: Add TestTypeInfo covering all 8 flag getters, setters (regExp/baseType/semanticType/force), toString, and hashCode contract
+ - test: Extend TestUtilsCore with repeat (all 4 count branches), replaceAt, sortByValue, getRandomAlphas, isSimpleAlphas, getValue (all branches), isSafeRegExp, containsIgnoreCase, parseLong (+prefix and trailing-minus), parseDouble (trailing-minus), and determineStreamFormat OTHER path (Utils: 77.6% → 94.4%)
+ - test: Add TestLogicalTypeFiniteSimpleExternal covering lowercase-check-throws for English locale, uppercase-OK, non-English lowercase OK, and empty-members OK (100% coverage)
+ - chore: bump jackson-annotations to 2.21, slf4j-api to 2.0.18
+
 ### 18.15.0
  - feat: Add COLOR.TEXT_IT, COLOR.TEXT_PT, COLOR.TEXT_RU semantic types for Italian, Portuguese, and Russian color names
  - feat: Add POSTAL_CODE.POSTAL_CODE_IT and POSTAL_CODE.POSTAL_CODE_RU semantic types

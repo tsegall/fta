@@ -23,6 +23,7 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
 
@@ -506,6 +507,42 @@ public class TestStandalonePlugins {
 		for (final String s : inputs)
 			analysis.train(s);
 		assertNotEquals(analysis.getResult().getSemanticType(), "COLOR.TEXT_FR");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void escalationEquals() {
+		final TypeDeterminer.Escalation e1 = new TypeDeterminer.Escalation();
+		e1.level[0] = new StringBuilder("d");
+		e1.level[1] = new StringBuilder("\\d+");
+		e1.level[2] = new StringBuilder(".*");
+
+		// identity
+		assertTrue(e1.equals(e1));
+
+		// null
+		assertFalse(e1.equals(null));
+
+		// different class
+		assertFalse(e1.equals("not an Escalation"));
+
+		// equal: share same StringBuilder references so Arrays.equals passes
+		final TypeDeterminer.Escalation e2 = new TypeDeterminer.Escalation();
+		e2.level = e1.level;
+		assertTrue(e1.equals(e2));
+
+		// not equal: different StringBuilder instances (StringBuilder uses reference equality)
+		final TypeDeterminer.Escalation e3 = new TypeDeterminer.Escalation();
+		e3.level[0] = new StringBuilder("x");
+		e3.level[1] = new StringBuilder(".*");
+		e3.level[2] = new StringBuilder(".*");
+		assertFalse(e1.equals(e3));
+
+		// hashCode is content-based (uses toString()) — same content → same hash
+		final TypeDeterminer.Escalation e4 = new TypeDeterminer.Escalation();
+		e4.level[0] = new StringBuilder("d");
+		e4.level[1] = new StringBuilder("\\d+");
+		e4.level[2] = new StringBuilder(".*");
+		assertEquals(e1.hashCode(), e4.hashCode());
 	}
 
 }

@@ -16,6 +16,7 @@
 package com.cobber.fta;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -211,4 +212,27 @@ public class TestText {
 		assertEquals(result.getDetermination(), TextProcessor.Determination.OK);
 	}
 
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void getDigitsShortNumericWord() throws IOException, FTAException {
+		// Short all-digit words (length <= 4) contribute to getDigits()
+		final TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor.TextResult result = processor.analyze("The cost is 5 dollars and 10 cents");
+		assertTrue(result.getDigits() > 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void getSentenceBreaksAlwaysZero() throws IOException, FTAException {
+		// getSentenceBreaks() field is never incremented in the implementation — always 0
+		final TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor.TextResult result = processor.analyze("The quick brown fox jumped over the lazy dog");
+		assertEquals(result.getSentenceBreaks(), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL, TestGroups.TEXT })
+	public void getWordBreaksHyphenated() throws IOException, FTAException {
+		// Hyphens inside words contribute to getWordBreaks()
+		final TextProcessor processor = new TextProcessor(Locale.US);
+		final TextProcessor.TextResult result = processor.analyze("Some well-known and long-standing facts about nature");
+		assertTrue(result.getWordBreaks() > 0);
+	}
 }

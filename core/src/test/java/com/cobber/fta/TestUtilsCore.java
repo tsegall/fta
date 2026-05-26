@@ -34,6 +34,7 @@ import java.util.Map;
 import org.testng.annotations.Test;
 
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.MinMax;
 import com.cobber.fta.core.RegExpGenerator;
 import com.cobber.fta.core.RegExpSplitter;
 import com.cobber.fta.core.Utils;
@@ -41,6 +42,7 @@ import com.cobber.fta.core.CircularBuffer;
 import com.cobber.fta.core.RandomSet;
 import com.cobber.fta.core.WordOffset;
 import com.cobber.fta.core.WordProcessor;
+import com.cobber.fta.token.Range;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestUtilsCore {
@@ -532,7 +534,13 @@ public class TestUtilsCore {
 		assertEquals(Utils.cleanse("Unicode Character “”” (U+201D)"), "Unicode Character \"\"\" (U+201D)");
 		assertEquals(Utils.cleanse("“`” U+0060 Grave Accent Unicode Character"), "\"'\" U+0060 Grave Accent Unicode Character");
 		assertEquals(Utils.cleanse("‘ U+2018 Left Single Quotation Mark Unicode Character"), "' U+2018 Left Single Quotation Mark Unicode Character");
-		assertEquals(Utils.cleanse("nothing to do"), "nothing to do");
+		// U+00A0 NO-BREAK SPACE and U+202F NARROW NO-BREAK SPACE → regular space
+		assertEquals(Utils.cleanse("NO\u00A0BREAK\u00A0SPACE"), "NO BREAK SPACE");
+		assertEquals(Utils.cleanse("NARROW\u202FNO\u202FBREAK"), "NARROW NO BREAK");
+		assertEquals(Utils.cleanse("mixed\u00A0and\u202Fspaces"), "mixed and spaces");
+		// no allocation when input is already clean
+		final String clean = "nothing to do";
+		assertTrue(Utils.cleanse(clean) == clean);
 	}
 
 	@Test(groups = { TestGroups.ALL })
@@ -842,5 +850,237 @@ public class TestUtilsCore {
 		assertEquals(keywordsUS.match("rubbish", "YEAR"), 0);
 		assertEquals(keywordsUS.match("yodel", "YODEL"), 0);
 		assertEquals(keywordsUS.match("yodel", "YES"), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testMinMax() {
+		// Default constructor: unset state
+		final MinMax mm = new MinMax();
+		assertFalse(mm.isSet());
+		assertEquals(mm.getMin(), -1);
+		assertEquals(mm.getMax(), -1);
+
+		// set(both) and isSet
+		mm.set(5);
+		assertTrue(mm.isSet());
+		assertEquals(mm.getMin(), 5);
+		assertEquals(mm.getMax(), 5);
+
+		// set(min, max)
+		mm.set(2, 8);
+		assertEquals(mm.getMin(), 2);
+		assertEquals(mm.getMax(), 8);
+
+		// setMin
+		mm.setMin(3);
+		assertEquals(mm.getMin(), 3);
+
+		// Copy constructor
+		final MinMax copy = new MinMax(mm);
+		assertEquals(copy.getMin(), 3);
+		assertEquals(copy.getMax(), 8);
+
+		// String constructor — no brace: length of text
+		final MinMax fromStr = new MinMax("hello");
+		assertEquals(fromStr.getMin(), 5);
+		assertEquals(fromStr.getMax(), 5);
+
+		// String constructor — with brace: "X{3,7}" → min=3, max=7
+		final MinMax fromBrace = new MinMax("X{3,7}");
+		assertEquals(fromBrace.getMin(), 3);
+		assertEquals(fromBrace.getMax(), 7);
+
+		// merge: updates to wider range
+		final MinMax a = new MinMax();
+		a.set(3, 7);
+		final MinMax b = new MinMax();
+		b.set(1, 10);
+		a.merge(b);
+		assertEquals(a.getMin(), 1);
+		assertEquals(a.getMax(), 10);
+
+		// merge: unset other (min==-1) does not shrink existing min
+		final MinMax c = new MinMax();
+		c.set(2, 5);
+		c.merge(new MinMax());   // other.min==-1 skips the min update; other.max==-1 < 5 skips max
+		assertEquals(c.getMin(), 2);
+		assertEquals(c.getMax(), 5);
+
+		// getPatternLength: equal min/max → min; not equal → 6 (for {m,n} suffix)
+		final MinMax eq = new MinMax();
+		eq.set(4, 4);
+		assertEquals(eq.getPatternLength(), 4);
+		final MinMax neq = new MinMax();
+		neq.set(2, 5);
+		assertEquals(neq.getPatternLength(), 6);
+
+		// getPattern: equal → repeated char; not equal → char + {min,max}
+		assertEquals(eq.getPattern('A'), "AAAA");
+		assertEquals(neq.getPattern('S'), "S{2,5}");
+
+		// compareTo
+		final MinMax x = new MinMax();
+		x.set(2, 3);
+		final MinMax y = new MinMax();
+		y.set(2, 3);
+		final MinMax z = new MinMax();
+		z.set(3, 4);
+		assertEquals(x.compareTo(y), 0);
+		assertTrue(x.compareTo(z) < 0);
+		assertTrue(z.compareTo(x) > 0);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testRange() {
+		// Two-char constructor
+		final Range r = new Range('a', 'z');
+		assertEquals(r.getMin(), 'a');
+		assertEquals(r.getMax(), 'z');
+
+		// toString: min != max → "a-z"
+		assertEquals(r.toString(), "a-z");
+
+		// setMax to equal min → "a" (single char display)
+		final Range rSingle = new Range('a', 'z');
+		rSingle.setMax('a');
+		assertEquals(rSingle.toString(), "a");
+
+		// equals: identical content
+		final Range r2 = new Range('a', 'z');
+		assertEquals(r, r2);
+		assertEquals(r2, r);
+
+		// equals: identity
+		assertEquals(r, r);
+
+		// equals: different content
+		assertNotEquals(r, new Range('b', 'z'));
+		assertNotEquals(r, new Range('a', 'y'));
+
+		// equals: null and different type
+		assertFalse(r.equals(null));
+		assertFalse(r.equals("not a Range"));
+
+		// hashCode: equal objects same hash
+		assertEquals(r.hashCode(), r2.hashCode());
+
+		// compareTo: ordered by min
+		final Range lo = new Range('a', 'z');
+		final Range hi = new Range('m', 'z');
+		assertTrue(lo.compareTo(hi) < 0);
+		assertTrue(hi.compareTo(lo) > 0);
+		assertEquals(lo.compareTo(r2), 0);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testRepeat() {
+		assertEquals(Utils.repeat('x', 0), "");
+		assertEquals(Utils.repeat('x', 1), "x");
+		assertEquals(Utils.repeat('x', 2), "xx");
+		assertEquals(Utils.repeat('x', 5), "xxxxx");
+		assertEquals(Utils.repeat('-', 3), "---");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testReplaceAt() {
+		assertEquals(Utils.replaceAt("abcdef", 2, 2, "XX"), "abXXef");
+		assertEquals(Utils.replaceAt("abcdef", 0, 3, "ZZZ"), "ZZZdef");
+		assertEquals(Utils.replaceAt("abcdef", 3, 3, ""), "abc");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testSortByValue() {
+		final Map<String, Integer> map = new java.util.LinkedHashMap<>();
+		map.put("b", 1);
+		map.put("c", 3);
+		map.put("a", 2);
+		final Map<String, Integer> sorted = Utils.sortByValue(map);
+		final java.util.Iterator<String> it = sorted.keySet().iterator();
+		assertEquals(it.next(), "c");
+		assertEquals(it.next(), "a");
+		assertEquals(it.next(), "b");
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testGetRandomAlphas() {
+		final byte[] seed = { 2, 7, 1, 8, 2, 8 };
+		final java.security.SecureRandom random = new java.security.SecureRandom(seed);
+		for (int len = 1; len <= 10; len++) {
+			final String result = Utils.getRandomAlphas(random, len);
+			assertEquals(result.length(), len);
+			assertTrue(Utils.isSimpleAlphas(result));
+		}
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testIsSimpleAlphas() {
+		assertTrue(Utils.isSimpleAlphas("Hello"));
+		assertTrue(Utils.isSimpleAlphas("ABC"));
+		assertFalse(Utils.isSimpleAlphas("Hello1"));
+		assertFalse(Utils.isSimpleAlphas("café"));
+		assertFalse(Utils.isSimpleAlphas(""));
+		assertFalse(Utils.isSimpleAlphas(null));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testGetValue() {
+		// minLength == maxLength: uses minLength chars
+		assertEquals(Utils.getValue("20240115", 0, 4, 4), 2024);
+		// last char of maxLength window is a digit: uses maxLength
+		assertEquals(Utils.getValue("12345", 0, 2, 4), 1234);
+		// last char of maxLength window is NOT a digit: uses minLength
+		assertEquals(Utils.getValue("12ab", 0, 2, 4), 12);
+		// offset + maxLength exceeds string length: uses minLength
+		assertEquals(Utils.getValue("12", 0, 2, 4), 12);
+		// non-numeric: returns -1
+		assertEquals(Utils.getValue("ab", 0, 2, 2), -1);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testIsSafeRegExp() {
+		assertTrue(Utils.isSafeRegExp("\\d+"));
+		assertTrue(Utils.isSafeRegExp("[A-Z]{3}"));
+		assertTrue(Utils.isSafeRegExp("a+b*"));
+		assertFalse(Utils.isSafeRegExp("(a+)+"));
+		assertFalse(Utils.isSafeRegExp("(a*)+"));
+		assertFalse(Utils.isSafeRegExp("(a+)*"));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testContainsIgnoreCase() {
+		assertTrue(Utils.containsIgnoreCase("Hello World", "world"));
+		assertTrue(Utils.containsIgnoreCase("Hello World", "WORLD"));
+		assertTrue(Utils.containsIgnoreCase("Hello World", "Hello"));
+		assertTrue(Utils.containsIgnoreCase("Hello World", ""));
+		assertFalse(Utils.containsIgnoreCase("Hello World", "xyz"));
+		assertFalse(Utils.containsIgnoreCase("Hi", "Hello"));
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testParseLongPlusPrefix() {
+		final NumberFormat nf = NumberFormat.getIntegerInstance(Locale.US);
+		assertEquals(Utils.parseLong("+123", nf), 123L);
+		assertEquals(Utils.parseLong("456", nf), 456L);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testParseLongTrailingMinus() {
+		final NumberFormat nf = NumberFormat.getIntegerInstance(Locale.US);
+		assertEquals(Utils.parseLong("123-", nf), -123L);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testParseDoubleTrailingMinus() {
+		final NumberFormat nf = NumberFormat.getInstance(Locale.forLanguageTag("en-US"));
+		nf.setParseIntegerOnly(false);
+		assertEquals(Utils.parseDouble("3.14-", nf), -3.14);
+	}
+
+	@Test(groups = { TestGroups.ALL })
+	public void testDetermineStreamFormatOther() {
+		final Map<String, Long> cardinality = new HashMap<>();
+		cardinality.put("hello world", 1L);
+		cardinality.put("just text", 1L);
+		assertEquals(Utils.determineStreamFormat(mapper, cardinality), "OTHER");
 	}
 }
