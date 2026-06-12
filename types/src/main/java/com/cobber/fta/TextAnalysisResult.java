@@ -30,6 +30,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.cobber.fta.core.FTAType;
+import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.token.TokenStreams;
@@ -41,6 +42,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * TextAnalysisResult is the result of a {@link TextAnalyzer} analysis of a data stream.
+ * <p>
+ * Instances are obtained via {@link TextAnalyzer#getResult()}; all getters are valid once a result has been
+ * returned - including for degenerate streams (e.g. zero samples yield type NULL). Getters that may return
+ * null document this on their @return.
  */
 public class TextAnalysisResult {
 	private enum SignatureTarget {
@@ -130,7 +135,7 @@ public class TextAnalysisResult {
 	 * </ul>
 	 *
 	 * Note: Boolean TRUE_FALSE is not localized, i.e. it will only be detected if the field contains true/false respectively.
-	 * @return The Type Modifier for the Type.
+	 * @return The Type Modifier for the Type, or null if there is none.
 	 */
 	public String getTypeModifier() {
 		return facts.getMatchTypeInfo().typeModifier;
@@ -151,7 +156,8 @@ public class TextAnalysisResult {
 	 * Note: The Semantic Types detected are based on the set of plugins are installed.
 	 * For example: If the Month Abbreviation plugin installed, the Base Type will be STRING, and the Semantic Type will be "MONTHABBR".
 	 *
-	 * @return The Semantic Type detected - only valid if isSemanticType() is true.
+	 * @return The Semantic Type detected, or null if this is not a Semantic Type
+	 * (i.e. {@link #isSemanticType()} returns false).
 	 */
 	public String getSemanticType() {
 		return facts.getMatchTypeInfo().getSemanticType();
@@ -739,10 +745,10 @@ public class TextAnalysisResult {
 
 		final MessageDigest md;
 		try {
-
 			md = MessageDigest.getInstance("SHA-1");
 		} catch (NoSuchAlgorithmException e) {
-			return null;
+			// Cannot happen - SHA-1 support is required of every conformant JVM
+			throw new InternalErrorException("SHA-1 not available", e);
 		}
 
 		final byte[] signature = structureSignature.getBytes(StandardCharsets.UTF_8);
@@ -770,7 +776,8 @@ public class TextAnalysisResult {
 		try {
 			md = MessageDigest.getInstance("SHA-1");
 		} catch (NoSuchAlgorithmException e) {
-			return null;
+			// Cannot happen - SHA-1 support is required of every conformant JVM
+			throw new InternalErrorException("SHA-1 not available", e);
 		}
 
 		// Grab a JSON representation of the information required for the Data Signature
@@ -810,7 +817,8 @@ public class TextAnalysisResult {
 	/**
 	 * A plugin definition to use to match this type.
 	 * @param analyzer The TextAnalyzer used to produce this result
-	 * @return A JSON representation of the analysis.
+	 * @return A JSON representation of the analysis, or null for date types
+	 * (which have nothing useful to report as a plugin).
 	 */
 	public ObjectNode asPlugin(final TextAnalyzer analyzer) {
 		// A date type - so nothing interesting to report as a Plugin

@@ -54,6 +54,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * A set of facts for the Analysis in question.
+ * <p>
+ * <b>Note:</b> Although this class is public, it is internal to the analysis engine and is not part of the
+ * supported API. Instances passed to plugins (e.g. via
+ * {@link LogicalType#analyzeSet(AnalyzerContext, long, long, String, Facts, FiniteMap, FiniteMap, com.cobber.fta.token.TokenStreams, AnalysisConfig)})
+ * must be treated as read-only — mutating any field may corrupt the analysis.
  */
 public class Facts {
 	/*

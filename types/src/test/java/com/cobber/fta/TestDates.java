@@ -1214,6 +1214,7 @@ public class TestDates {
 		assertEquals(dtp.determineFormatString("16 Feb' 21"), "dd MMM'' yy");
 
 		final TextAnalyzer analysis = new TextAnalyzer("yyyyddMM", DateResolutionMode.DayFirst);
+		analysis.setLocale(Locale.ENGLISH);
 		final String inputs[] = {
 				"16 Feb' 21", "14 Feb' 11", "14 Jun' 23", "14 Jul' 15", "14 Feb' 13",
 				"24 Apr' 21", "14 Jun' 22", "14 Feb' 21", "14 Feb' 14", "14 Sep' 22",
@@ -2572,6 +2573,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void datesMonthAbbr_enUS() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Date");
+		analysis.setLocale(Locale.ENGLISH);
 		final String[] inputs = {
 				"1999-Aug-11", "1999-Aug-11", "1999-Aug-17", "1999-Aug-17", "1999-Aug-26",
 				"1999-Aug-11", "1999-Aug-25", "1999-Aug-23", "1999-Aug-16", "1999-Aug-17",
@@ -3968,6 +3970,7 @@ public class TestDates {
 	@Test(groups = { TestGroups.ALL, TestGroups.DATES })
 	public void testMMM_ppd_yyyy_pph_mma() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("issdttm");
+		analysis.setLocale(Locale.ENGLISH);
 		analysis.setDebug(2);
 
 		final String inputs[] = {

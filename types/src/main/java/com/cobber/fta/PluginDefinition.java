@@ -198,7 +198,7 @@ public class PluginDefinition {
 	 * will not impact the current Analyzer.
 	 *
 	 * @param semanticTypeName The name for this Semantic Type
-	 * @return The Plugin Definition associated with the supplied name.
+	 * @return The Plugin Definition associated with the supplied name, or null if no plugin exists with this name.
 	 */
 	public static PluginDefinition findByName(final String semanticTypeName) {
 		synchronized (PluginDefinition.class) {

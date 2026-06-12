@@ -412,6 +412,7 @@ public class TestPlugins {
 		final String dataStreamName = "Age";
 		final AnalyzerContext contextWithComposite = new AnalyzerContext(dataStreamName, DateResolutionMode.Auto, "Person", new String[] { dataStreamName } );
 		final TextAnalyzer analysis = new TextAnalyzer(contextWithComposite);
+		analysis.setLocale(Locale.ENGLISH);
 
 		for (int i = 0; i < 10; i++)
 			for (final String input : inputs)
@@ -424,6 +425,7 @@ public class TestPlugins {
 
 		final AnalyzerContext contextNoComposite = new AnalyzerContext(dataStreamName, DateResolutionMode.Auto, null, new String[] { dataStreamName } );
 		final TextAnalyzer analysisNC = new TextAnalyzer(contextNoComposite);
+		analysisNC.setLocale(Locale.ENGLISH);
 
 		for (int i = 0; i < 10; i++)
 			for (final String input : inputs)
@@ -806,6 +808,7 @@ public class TestPlugins {
 
 		final AnalyzerContext context = new AnalyzerContext(null, DateResolutionMode.Auto, "customer", headers);
 		final TextAnalyzer template = new TextAnalyzer(context);
+		template.setLocale(Locale.ENGLISH);
 		template.setMaxCardinality(20000);
 
 		final List<PluginDefinition> plugins = new ArrayList<>();
@@ -3462,6 +3465,7 @@ public class TestPlugins {
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void testBadPlugin() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("CC");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.DEFAULT_SEMANTIC_TYPES, false);
 		final List<PluginDefinition> plugins = new ArrayList<>();
 		final PluginDefinition pluginDefinition = new PluginDefinition("CC", "com.cobber.fta.PluginBad");
@@ -4381,6 +4385,7 @@ public class TestPlugins {
 		context.withSemanticTypes(new String[] { "NAME.LAST_FIRST" });
 
 		final TextAnalyzer analysis = new TextAnalyzer(context);
+		analysis.setLocale(Locale.ENGLISH);
 		analysis.setDebug(2);
 
 		final String[] inputs = {
@@ -4412,6 +4417,7 @@ public class TestPlugins {
 		final AnalyzerContext context = new AnalyzerContext("SemanticForce", DateResolutionMode.None, null, new String[] { "SemanticForceOverflow" });
 		context.withSemanticTypes(new String[] { "NAME.LAST_FIRST" });
 		final TextAnalyzer analysis = new TextAnalyzer(context);
+		analysis.setLocale(Locale.ENGLISH);
 		final LogicalType logicalFirst = LogicalTypeFactory.newInstance(PluginDefinition.findByName("NAME.FIRST"), analysis.getConfig());
 		final LogicalType logicalLast = LogicalTypeFactory.newInstance(PluginDefinition.findByName("NAME.LAST"), analysis.getConfig());
 		final int ITERS = 1000;

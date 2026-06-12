@@ -1265,10 +1265,13 @@ public class TestDoubles {
 		final TextAnalyzer analysis1 = new TextAnalyzer("LATITUDE");
 		final TextAnalyzer analysis2 = new TextAnalyzer("LATITUDE");
 		final TextAnalyzer analysis3 = new TextAnalyzer("LATITUDE");
+		analysis1.setLocale(Locale.ENGLISH);
 		analysis1.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		analysis1.setDebug(2);
+		analysis2.setLocale(Locale.ENGLISH);
 		analysis2.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		analysis2.setDebug(2);
+		analysis3.setLocale(Locale.ENGLISH);
 		analysis3.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		analysis3.setDebug(2);
 		final String inputs1[] = {

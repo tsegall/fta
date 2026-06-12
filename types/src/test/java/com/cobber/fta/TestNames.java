@@ -32,7 +32,7 @@ public class TestNames {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void nameLast() throws IOException, FTAException {
-		final LogicalType validator = LogicalTypeFactory.newInstance(pluginLastName, new AnalysisConfig());
+		final LogicalType validator = LogicalTypeFactory.newInstance(pluginLastName, new AnalysisConfig(Locale.US));
 
 		assertTrue(validator.isValid("TATE Jr."));
 		assertTrue(validator.isValid("TATE, Jr"));
@@ -63,7 +63,7 @@ public class TestNames {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
 	public void nameLastFirst() throws IOException, FTAException {
-		final LogicalType validator = LogicalTypeFactory.newInstance(pluginLastFirstName, new AnalysisConfig());
+		final LogicalType validator = LogicalTypeFactory.newInstance(pluginLastFirstName, new AnalysisConfig(Locale.US));
 
 		assertTrue(validator.isValid("KING, LINDA        "));
 		assertTrue(validator.isValid("DAY-LEWIS, DANIEL"));

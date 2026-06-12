@@ -1097,7 +1097,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void unqualifiedPM() {
-		final DateTimeParser det = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		final DateTimeParser det = new DateTimeParser().withLocale(Locale.ENGLISH).withDateResolutionMode(DateResolutionMode.DayFirst);
 		final String AMBIGUOUS = "08/01/2017 10:35:00.1234 AM +0000";
 
 		for (int i = 0; i < 25; i++)
@@ -1372,7 +1372,7 @@ public class DetermineDateTimeFormatTests {
 				"09:23:13pm|11:40:44pm|01:01:02am|04:24:19am|08:51:48am|02:29:26am|08:48:32am|11:03:13pm|" +
 				"07:52:27pm|04:51:40pm|08:31:11am|07:53:57am|07:04:03pm|12:05:00am|01:50:13am|";
 		final String inputs[] = pipedInput.split("\\|");
-		final DateTimeParser dtp = new DateTimeParser();
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.ENGLISH);
 
 		dtp.train("");
 		for (final String input : inputs)
@@ -1406,7 +1406,7 @@ public class DetermineDateTimeFormatTests {
 				"09:23:13pm|11:40:44pm|01:01:02am|04:24:19am|08:51:48am|02:29:26am|08:48:32am|11:03:13pm|" +
 				"07:52:27pm|04:51:40pm|08:31:11am|07:53:57am|07:04:03pm|12:05:00am|01:50:13am|";
 		final String inputs[] = pipedInput.split("\\|");
-		final DateTimeParser dtp = new DateTimeParser();
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.ENGLISH);
 		final int ITERATIONS = 10000;
 
 		dtp.train("");
@@ -2247,7 +2247,7 @@ public class DetermineDateTimeFormatTests {
 		assertEquals(dtp.determineFormatString("25-Dec-2017"), "dd-MMM-yyyy");
 		assertNull(dtp.determineFormatString("21-Jam-2017"));
 
-		final DateTimeParser det = new DateTimeParser();
+		final DateTimeParser det = new DateTimeParser().withLocale(Locale.ENGLISH);
 		final String sample = "2 Jan 2017";
 		det.train(sample);
 
@@ -2384,7 +2384,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void dd_to_ppD() {
-		final DateTimeParser det = new DateTimeParser();
+		final DateTimeParser det = new DateTimeParser().withLocale(Locale.ENGLISH);
 		det.train("Oct 21 2002");
 		det.train("Dec 22 2003");
 		det.train("Jan  1 2024");
@@ -2392,7 +2392,7 @@ public class DetermineDateTimeFormatTests {
 		final DateTimeParserResult result = checkSerialization(det).getResult();
 		assertEquals(result.getFormatString(), "MMM ppd yyyy");
 
-		final DateTimeParser det2 = new DateTimeParser();
+		final DateTimeParser det2 = new DateTimeParser().withLocale(Locale.ENGLISH);
 		det2.train("May 21 2002");
 		det2.train("May 22 2003");
 		det2.train("June 1 2024");
@@ -2403,7 +2403,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void switch_MMM_to_MMMM() {
-		final DateTimeParser det = new DateTimeParser();
+		final DateTimeParser det = new DateTimeParser().withLocale(Locale.ENGLISH);
 		det.train("May 21 2002");
 		det.train("May 22 2003");
 		det.train("June 1 2024");
@@ -2951,7 +2951,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitDatedMMMyy() {
-		final DateTimeParser det = new DateTimeParser();
+		final DateTimeParser det = new DateTimeParser().withLocale(Locale.ENGLISH);
 		final String sample = "1-Jan-14";
 		det.train(sample);
 		det.train("10-Jan-14");
@@ -3189,7 +3189,7 @@ public class DetermineDateTimeFormatTests {
 
 	@Test(groups = { TestGroups.ALL, TestGroups.DATETIME })
 	public void intuitZZ() {
-		final DateTimeParser dtp = new DateTimeParser().withDateResolutionMode(DateResolutionMode.DayFirst);
+		final DateTimeParser dtp = new DateTimeParser().withLocale(Locale.ENGLISH).withDateResolutionMode(DateResolutionMode.DayFirst);
 
 		assertEquals(dtp.determineFormatString("06/Jan/2008 15:04:05"), "dd/MMM/yyyy HH:mm:ss");
 	}

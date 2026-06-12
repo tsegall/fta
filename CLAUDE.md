@@ -49,6 +49,18 @@ JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-21.jdk/Contents/Home
 
 **Debugging**: Capture analysis traces with `export FTA_TRACE="enabled=true,directory=/tmp,samples=10000"`, then replay with `cli/build/install/fta/bin/cli --replay <Stream>.fta`.
 
+## Regression Suite (semantic-types)
+
+A golden-file regression suite lives in `../Semantic-types` (separate repo: https://github.com/tsegall/semantic-types). It runs the installed CLI over ~14K real-world CSV files and compares the detected Base Type, Type Modifier, and Semantic Type for every field against a curated baseline (`reference.csv`).
+
+**Before committing any detection-affecting change** — plugins (Java or `plugins.json`), priorities/thresholds, `TypeDeterminer`/`TextAnalyzer` detection logic, date parsing, or reference data — suggest running the suite. Unit tests passing is necessary but not sufficient for these changes. The suite takes several minutes and requires a current `./gradlew installDist`:
+
+```bash
+cd ../Semantic-types && bin/runSuiteM.sh   # results land in ncurrent.csv; diff against reference.csv
+```
+
+Doc-only, test-only, or serialization-format-neutral changes do not need a suite run.
+
 ## Module Structure
 
 ```
@@ -141,3 +153,4 @@ When bumping the version, create a new section for the new version containing **
 - Do not relax validation regexes without evidence; prefer tighter validation
 - Do not change public method signatures without a deprecation strategy
 - Performance matters on hot paths (analyzers, validation); consider complexity for changes to `TextAnalyzer`, `Facts`, `LogicalType` subclasses
+- Detection-affecting changes warrant a semantic-types regression suite run before commit (see "Regression Suite" above)

@@ -1,6 +1,22 @@
 
 ## Changes ##
 
+### 18.15.2
+ - fix: getStructureSignature()/getDataSignature() now throw InternalErrorException rather than silently returning null if SHA-1 is unavailable
+ - docs: Document null contracts on TextAnalysisResult (class-level validity note; getTypeModifier, getSemanticType, asPlugin may return null) and PluginDefinition.findByName
+ - docs: Note on Facts that it is internal to the analysis engine and instances passed to plugins must be treated as read-only
+ - docs: README - reference the semantic-types repository under Running Tests and References
+ - docs: CLAUDE.md - document the semantic-types regression suite and when a run is required
+ - test: Fix 11 tests across DetermineDateTimeFormatTests, TestMerge, RandomTests, TestDates, TestDoubles, TestIssues, TestNames, TestPlugins, and TestTopBottomK that assumed JVM default locale is en-US; all now specify an explicit locale
+ - chore: Bump jackson-core to 2.22.0
+ - chore: Bump jackson-databind to 2.22.0
+ - chore: Bump jackson-annotations to 2.22
+ - chore: Bump jackson-datatype-jsr310 to 2.22.0
+ - chore: Bump logback-classic to 1.5.33
+ - chore: Bump logback-classic to 1.5.34
+ - chore: Bump libphonenumber to 9.0.32
+ - chore: Bump spotbugs plugin to 6.5.6
+
 ### 18.15.1
  - fix: FakerDoubleLT monotonic_decreasing used Long.MIN_VALUE sentinel instead of Double.MIN_VALUE, preventing correct reset
  - fix: FakerEnumLT monotonic_increasing wrapped at options.length+1 causing ArrayIndexOutOfBoundsException on full cycle

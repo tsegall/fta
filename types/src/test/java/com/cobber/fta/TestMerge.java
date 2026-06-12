@@ -449,6 +449,7 @@ public class TestMerge {
 	@Test(groups = { TestGroups.ALL, TestGroups.MERGE })
 	public void exerciseSerialization() throws IOException, FTAException {
 		final TextAnalyzer analysis = new TextAnalyzer("Gender");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
 		analysis.configure(TextAnalyzer.Feature.COLLECT_STATISTICS, false);
 		final String[] options = { "Male", "Female", "Unknown" };
 		final int ITERATIONS = 10000;
@@ -563,10 +564,12 @@ public class TestMerge {
 		};
 
 		final TextAnalyzer t1 = new TextAnalyzer("updated");
+		t1.setLocale(Locale.ENGLISH);
 		for (final String sample : fmtYYYY_MM_DD)
 			t1.train(sample);
 
 		final TextAnalyzer t2 = new TextAnalyzer("updated");
+		t2.setLocale(Locale.ENGLISH);
 		for (final String sample : fmtMMM_D_YYYY)
 			t2.train(sample);
 
@@ -588,10 +591,12 @@ public class TestMerge {
 		};
 
 		final TextAnalyzer t1 = new TextAnalyzer("updated");
+		t1.setLocale(Locale.ENGLISH);
 		for (final String sample : fmtYYYY_d_MMM)
 			t1.train(sample);
 
 		final TextAnalyzer t2 = new TextAnalyzer("updated");
+		t2.setLocale(Locale.ENGLISH);
 		for (final String sample : fmtYYYY_d_SPACE_MMM)
 			t2.train(sample);
 

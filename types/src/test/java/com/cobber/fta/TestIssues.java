@@ -70,7 +70,7 @@ public class TestIssues {
 		final AnalyzerContext context = new AnalyzerContext(null, DateTimeParser.DateResolutionMode.Auto, "issue48",
 				fieldnames);
 		final TextAnalyzer textAnalyzer = new TextAnalyzer(context);
-		textAnalyzer.setLocale(Locale.getDefault());
+		textAnalyzer.setLocale(Locale.US);
 		final RecordAnalyzer analyzer = new RecordAnalyzer(textAnalyzer);
 
 		for (final String[] value : values)

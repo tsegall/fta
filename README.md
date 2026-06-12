@@ -31,7 +31,7 @@ FTA is available in Maven Central. Include it in your project with:
 <dependency>
     <groupId>com.cobber.fta</groupId>
     <artifactId>fta</artifactId>
-    <version>18.14.0</version>
+    <version>18.15.2</version>
 </dependency>
 ```
 
@@ -722,11 +722,13 @@ Just the dates tests
 
 Just one test
 
-`$ ./gradlew types:test --tests TestDates.localeDateTest`
+`$ ./gradlew :types:test --tests "com.cobber.fta.TestDates.localeDateTest"`
 
 Validate a set of samples (against a known plugin)
 
-`$ cli --pluginMode true --pluginName POSTAL_CODE.ZIP5_US --validatePlugin --col 0 <file.csv>`
+`$ cli/build/install/fta/bin/cli --pluginMode true --pluginName POSTAL_CODE.ZIP5_US --validatePlugin --col 0 <file.csv>`
+
+In addition to the unit tests, detection quality is regression-tested against a large corpus of real-world CSV files via the [semantic-types](https://github.com/tsegall/semantic-types) project — the detected Base Type, Type Modifier, and Semantic Type for every field are compared against a curated reference baseline.
 
 ### Generate JavaDoc ###
 `$ ./gradlew javadoc`
@@ -737,25 +739,12 @@ Validate a set of samples (against a known plugin)
 ### Everything ... ###
 `$ ./gradlew clean installDist test jacocoTestReport javadoc`
 
-### Setup eclipse project ###
-`$ ./gradlew eclipse`
-
 ### Releasing a new version ###
-`$ ./gradlew publishMavenJavaPublicationToOssrhRepository`
-
-Then go to http://central.sonatype.org/pages/releasing-the-deployment.html and follow the instructions!!
-1. login to OSSRH available at https://s01.oss.sonatype.org/
-2. Find and select the latest version in the Staging Repository
-3. Close the staging repository (wait until complete)
-4. Release the staging repository
-
-Then add Tag and Release.
+Push a version tag — GitHub Actions stages and promotes the artifacts to Maven Central automatically:
 
 `$ git tag v<VERSION> <COMMIT_ID>`
 
 `$ git push origin v<VERSION>`
-
-`$ gh release create v<VERSION> --notes "Description ..."`
 
 ### Executing ###
 Using FTA from the command line, list options:
@@ -805,7 +794,7 @@ You can replay the trace file (assuming a local build) using:
 
 `$ cli/build/install/fta/bin/cli --replay <Stream>.fta`
 
-## Background Reading ##
+## References ##
 
 * GitTables: A Large-Scale Corpus of Relational Tables (https://arxiv.org/pdf/2106.07258.pdf)
 * Extracting Syntactic Patterns from Databases (https://arxiv.org/abs/1710.11528v2)
@@ -813,6 +802,7 @@ You can replay the trace file (assuming a local build) using:
 * Synthesizing Type-Detection Logic for Rich Semantic Data Types using Open-source Code (https://congyan.org/autotype.pdf)
 * T2Dv2 Gold Standard for Matching Web Tables to DBpedia (http://webdatacommons.org/webtables/goldstandardV2.html)
 * VizNet Towards a Visualization Learning and Benchmarking Repository (https://viznet.media.mit.edu/)
+* Semantic Type Reference Set: a corpus of labeled real-world CSV files (https://github.com/tsegall/semantic-types)
 * Semantic Type Detection: Why It Matters, Current Approaches, and How to Improve It (https://megagon.ai/blog/semantic-type-detection-why-it-matters-current-approaches-and-how-to-improve-it)
 * Auto-Type: Synthesizing Type-Detection Logic for Rich Semantic Data Types using Open-source Code (https://www.microsoft.com/en-us/research/publication/synthesizing-type-detection-logic-rich-semantic-data-types-using-open-source-code/)
 * DDSketch: A Fast and Fully-Mergeable Quantile Sketch with Relative-Error Guarantees (https://arxiv.org/pdf/1908.10693.pdf)

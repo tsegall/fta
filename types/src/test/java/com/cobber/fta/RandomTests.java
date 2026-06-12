@@ -478,7 +478,7 @@ public class RandomTests {
 			for (int i = 0; i < demos.length; i++) {
 				final PluginDefinition pluginDefinition = PluginDefinition.findByName(demos[i]);
 				final int index = copy * demos.length + i;
-				logicals[index] = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig());
+				logicals[index] = LogicalTypeFactory.newInstance(pluginDefinition, new AnalysisConfig(Locale.forLanguageTag("en-US")));
 				analyzers[index] = new TextAnalyzer(demos[i]);
 				analyzers[index].setLocale(Locale.forLanguageTag("en-US"));
 			}
@@ -2695,6 +2695,7 @@ public class RandomTests {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("Description");
+		analysis.setLocale(Locale.ENGLISH);
 		for (final String sample : samples) {
 			analysis.train(sample);
 		}
@@ -2728,6 +2729,7 @@ public class RandomTests {
 		};
 
 		final TextAnalyzer analysis = new TextAnalyzer("Marital Description");
+		analysis.setLocale(Locale.ENGLISH);
 		for (final String sample : samples) {
 			analysis.train(sample);
 		}

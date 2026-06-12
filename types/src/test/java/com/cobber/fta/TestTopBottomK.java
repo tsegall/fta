@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -346,7 +347,7 @@ public class TestTopBottomK {
 		final Set<String> topK = new HashSet<>(Arrays.asList(
 				"ÉLIA", "ÉLINA", "ÉLYAS", "ÉLÉA", "ÉLÉNA", "ÉMILIA", "ÉRICA", "ÍRIS", "ÍSIS", "ÖMER" ));
 
-		final LogicalTypeCode logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("NAME.FIRST"), new AnalysisConfig());
+		final LogicalTypeCode logicalFirst = (LogicalTypeFiniteSimple) LogicalTypeFactory.newInstance(PluginDefinition.findByName("NAME.FIRST"), new AnalysisConfig(Locale.US));
 
 		for (int i = 0; i < 100000; i++)
 			t.observe(logicalFirst.nextRandom());
