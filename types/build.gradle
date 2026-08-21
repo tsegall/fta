@@ -8,6 +8,8 @@ tasks.distTar.enabled = false
 dependencies {
 	api project(':core')
 
+	compileOnly 'com.github.spotbugs:spotbugs-annotations:4.10.4'
+
 	implementation libs.javaxMailAPI
 	implementation libs.commonsValidator
 	implementation libs.jacksonDataCore

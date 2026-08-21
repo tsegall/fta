@@ -45,7 +45,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-21.jdk/Contents/Home ./gradlew test
 ```
 
-**Gradle version**: The wrapper targets Gradle 9.5.1 (set in `build.gradle` → `wrapper { gradleVersion = '9.5.1' }`).
+**Gradle version**: The wrapper targets Gradle 9.7.1 (set in `build.gradle` → `wrapper { gradleVersion = '9.7.1' }`).
 
 **Debugging**: Capture analysis traces with `export FTA_TRACE="enabled=true,directory=/tmp,samples=10000"`, then replay with `cli/build/install/fta/bin/cli --replay <Stream>.fta`.
 

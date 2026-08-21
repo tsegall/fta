@@ -1,6 +1,37 @@
 
 ## Changes ##
 
+### 18.16.0
+ - chore: Bump gradle to 9.6.1
+ - chore: Bump fastcsv to 4.3.1
+ - chore: Bump libphonenumber to 9.0.34
+ - chore: Bump logback-classic to 1.5.37
+ - chore: Bump spotbugs plugin to 6.5.8
+ - chore: Bump libphonenumber to 9.0.33
+ - fix: TypeDeterminer - plugin exception in isCandidate()/isValid() now logs the exception class and stack trace, and disables that plugin for the stream (previously only logged e.getMessage(), silently allowing the plugin to continue skewing results)
+ - fix: FileProcessor - close output PrintStream on success path when --output is used (was only closed on exception)
+ - test: Add TestCLI — 21 end-to-end subprocess tests covering basic analysis, locale, plugin validation, signature, merge, replay, --output flag, --noStatistics, --noSemanticTypes, --createSemanticTypesMarkdown, version, help, and error cases
+ - feat: Add semanticTypesTest Gradle task — runs ../Semantic-types regression suite after installDist, diffs ncurrent.csv against reference.csv and fails the build on any difference; skipped gracefully when ../Semantic-types is not present
+ - chore: Bump spotbugs to 4.10.2
+ - refactor: Seal LogicalType (permits LogicalTypeCode, LogicalTypeRegExp); mark LogicalTypeCode and LogicalTypeRegExp non-sealed; convert ResultFinalizer.FiniteMatchResult inner class to a record; apply instanceof pattern matching at two call sites in TextAnalyzer
+ - feat: Add @Nullable annotations (SpotBugs) to TextAnalysisResult (getTypeModifier, getSemanticType, getMean, getStandardDeviation, getTotalMean, getTotalStandardDeviation, getTotalMinValue, getTotalMaxValue, asPlugin) and PluginDefinition.findByName; add spotbugs-annotations compileOnly dependency to types module
+ - test: Add TestBadPlugins — 5 tests for TypeDeterminer plugin exception handling: throwing Infinite/RegExp plugins alongside EMAIL (EMAIL still wins), throwing Infinite-only (analysis completes, null semantic type), throwing RegExp-only (analysis completes), both bad plugins together (EMAIL still wins)
+ - docs: README - split References into Datasets and References; merge duplicate Auto-Type entries
+ - fix: CheckDigitUPC - pad UPC-A to 13 digits before EAN13CheckDigit validation; commons-validator 1.11.0 requires exactly 13 characters and would otherwise reject every 12-digit UPC (the implicit leading zero does not change the checksum)
+ - test: Add TestPlugins.basicUPCA - covers genuine 12-digit UPC-A detection (the existing basicUPC test supplies 13-digit EAN-13 values, so UPC-A was only exercised indirectly by randomSupport)
+ - chore: Bump gradle to 9.7.1
+ - chore: Bump versions plugin to 0.61.0
+ - chore: Bump spotbugs plugin to 6.5.11
+ - chore: Bump spotbugs to 4.10.4
+ - chore: Bump fastcsv to 4.4.0
+ - chore: Bump commons-validator to 1.11.0
+ - chore: Bump jackson-core to 2.22.2
+ - chore: Bump jackson-databind to 2.22.2
+ - chore: Bump jackson-datatype-jsr310 to 2.22.2
+ - chore: Bump libphonenumber to 9.0.37
+ - chore: Bump guava to 33.7.1-jre
+ - chore: Bump logback-classic to 1.6.3
+
 ### 18.15.2
  - fix: getStructureSignature()/getDataSignature() now throw InternalErrorException rather than silently returning null if SHA-1 is unavailable
  - docs: Document null contracts on TextAnalysisResult (class-level validity note; getTypeModifier, getSemanticType, asPlugin may return null) and PluginDefinition.findByName

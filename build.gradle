@@ -1,17 +1,66 @@
 plugins {
 	id "com.github.ben-manes.versions"
-	id "com.github.spotbugs" version "6.5.6" apply false
+	id "com.github.spotbugs" version "6.5.11" apply false
 }
 
 import com.github.spotbugs.snom.Confidence
 import com.github.spotbugs.snom.Effort
 
 wrapper {
-	gradleVersion = '9.5.1'
+	gradleVersion = '9.7.1'
 }
 
 if (JavaVersion.current() > JavaVersion.VERSION_21) {
 	throw new GradleException("This build requires JDK 21 or lower (DataSketches dependency does not support JDK 22+). Current JDK: ${JavaVersion.current()}")
+}
+
+tasks.register('semanticTypesTest') {
+	group       = 'verification'
+	description = 'Run the semantic-types regression suite (requires ../Semantic-types checkout)'
+
+	dependsOn ':cli:installDist'
+
+	def suiteDir = file('../Semantic-types')
+	onlyIf {
+		if (!suiteDir.exists()) {
+			logger.warn('semanticTypesTest skipped: ../Semantic-types not found')
+			return false
+		}
+		return true
+	}
+
+	doLast {
+		def proc = new ProcessBuilder('bin/runSuiteM.sh')
+			.directory(suiteDir)
+			.start()
+
+		// Drain stdout and stderr on separate threads. Without active draining the
+		// Gradle-daemon pipe buffers fill when makedb/CLI produce heavy output, causing
+		// proc.waitFor() to block indefinitely.
+		def outThread = Thread.start { proc.inputStream.eachLine { line -> println line } }
+		def errThread = Thread.start { proc.errorStream.eachLine { line -> System.err.println line } }
+
+		def exitCode = proc.waitFor()
+		outThread.join()
+		errThread.join()
+
+		if (exitCode != 0)
+			throw new GradleException("runSuiteM.sh failed with exit code $exitCode")
+
+		def reference = new File(suiteDir, 'reference.csv')
+		def current   = new File(suiteDir, 'ncurrent.csv')
+
+		def diffProc = new ProcessBuilder('diff', '-q', reference.absolutePath, current.absolutePath)
+			.directory(suiteDir)
+			.start()
+		def diffExit = diffProc.waitFor()
+		if (diffExit != 0)
+			throw new GradleException(
+				"Semantic-types regression suite: ncurrent.csv differs from reference.csv. " +
+				"Run: diff ../Semantic-types/reference.csv ../Semantic-types/ncurrent.csv"
+			)
+		logger.lifecycle('Semantic-types suite passed: ncurrent.csv matches reference.csv')
+	}
 }
 
 tasks.register('examples.clean') {
@@ -164,7 +213,7 @@ subprojects {
 	apply plugin: "com.github.spotbugs"
 
 	spotbugs {
-		toolVersion = "4.9.8"
+		toolVersion = "4.10.4"
 		effort = Effort.MAX
 		reportLevel = com.github.spotbugs.snom.Confidence.valueOf('LOW')
 		ignoreFailures = true

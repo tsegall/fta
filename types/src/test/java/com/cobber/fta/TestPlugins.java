@@ -54,6 +54,7 @@ import com.cobber.fta.plugins.CheckDigitEAN13;
 import com.cobber.fta.plugins.CheckDigitISBN;
 import com.cobber.fta.plugins.CheckDigitISIN;
 import com.cobber.fta.plugins.CheckDigitSEDOL;
+import com.cobber.fta.plugins.CheckDigitUPC;
 import com.cobber.fta.plugins.EmailLT;
 import com.cobber.fta.plugins.Gender;
 import com.cobber.fta.plugins.IPV4Address;
@@ -1611,6 +1612,41 @@ public class TestPlugins {
 		assertEquals(result.getNullCount(), 0);
 		assertEquals(result.getLeadingZeroCount(), 1);
 		assertEquals(result.getRegExp(), CheckDigitEAN13.REGEXP);
+		assertEquals(result.getConfidence(), 1.0);
+
+		assertNull(result.checkCounts(false));
+	}
+
+	// Note: basicUPC above supplies 13-digit (EAN-13) values.  This covers genuine 12-digit UPC-A,
+	// which is validated by padding to 13 digits - see CheckDigitUPC.isValid().
+	@Test(groups = { TestGroups.ALL, TestGroups.PLUGINS })
+	public void basicUPCA() throws IOException, FTAException {
+		final TextAnalyzer analysis = new TextAnalyzer("UPC");
+		analysis.setLocale(Locale.forLanguageTag("en-US"));
+		final String inputs[] = {
+				"689228994560", "723660982409", "796941331913", "072774354948", "888571055670", "400310025319",
+				"840226095042", "796941332781", "796941332767", "796941332743", "796941332873", "796941332835",
+				"796941332828", "796941333108", "796941333115", "796941331678", "796941331654", "796941331456",
+				"760343490448", "760343490097", "844802112772", "844802212625", "844802212649", "844802193801",
+				"844802029629", "844802037815", "844802059671", "844802059824", "844802037884", "844802037891",
+				"844802029681", "844802037822", "751906002314", "751906002321", "029757360076", "029757360052",
+				"855468003052"
+		};
+
+		for (final String input : inputs)
+			analysis.train(input);
+
+		final TextAnalysisResult result = analysis.getResult();
+
+		final PluginDefinition defn = PluginDefinition.findByName("CHECKDIGIT.UPC");
+		assertEquals(result.getType(), FTAType.LONG);
+		assertEquals(result.getSemanticType(), defn.semanticType);
+		assertEquals(result.getStructureSignature(), defn.signature);
+		assertEquals(result.getSampleCount(), inputs.length);
+		assertEquals(result.getOutlierCount(), 0);
+		assertEquals(result.getMatchCount(), inputs.length);
+		assertEquals(result.getNullCount(), 0);
+		assertEquals(result.getRegExp(), CheckDigitUPC.REGEXP);
 		assertEquals(result.getConfidence(), 1.0);
 
 		assertNull(result.checkCounts(false));

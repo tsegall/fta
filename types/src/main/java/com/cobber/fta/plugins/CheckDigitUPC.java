@@ -46,6 +46,15 @@ public class CheckDigitUPC extends CheckDigitLT {
 	}
 
 	@Override
+	public boolean isValid(final String input, final boolean detectMode, final long count) {
+		// UPC-A is EAN-13 with an implicit leading zero.  As of commons-validator 1.11.0
+		// EAN13CheckDigit requires input to be exactly 13 characters, so pad before delegating.
+		// The leading zero does not shift the weights (they are assigned right-to-left) so the
+		// checksum is unchanged.
+		return input.length() == length && validator.isValid("0" + input);
+	}
+
+	@Override
 	public String getRegExp() {
 		return REGEXP;
 	}
