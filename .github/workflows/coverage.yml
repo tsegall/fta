@@ -12,7 +12,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'corretto'
-          java-version: 17
+          java-version: 21
       - name: Install dependencies, run tests, and collect coverage
         run: gradle build jacocoTestReport
       - name: Upload coverage to Codecov

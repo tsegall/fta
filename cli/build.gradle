@@ -11,6 +11,11 @@ project.tasks.named("installDist") {
 	duplicatesStrategy = 'exclude'
 }
 
+// TestCLI runs the installed CLI binary as a subprocess, so it must exist before the tests run
+tasks.named('test') {
+	dependsOn 'installDist'
+}
+
 application {
     mainClass = "com.cobber.fta.driver.Driver"
 }
