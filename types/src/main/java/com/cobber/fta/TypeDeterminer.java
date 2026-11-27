@@ -187,7 +187,9 @@ class TypeDeterminer {
 					ac.candidateCounts[c]++;
 			}
 			catch (Exception e) {
-				LoggerFactory.getLogger("com.cobber.fta").error("Plugin: {}, issue: {}.", logical.getSemanticType(), e.getMessage());
+				LoggerFactory.getLogger("com.cobber.fta").error("Plugin '{}' threw {} during isCandidate() — disabling for this stream: {}",
+						logical.getSemanticType(), e.getClass().getSimpleName(), e.getMessage(), e);
+				ac.candidateCounts[c] = Integer.MIN_VALUE;
 			}
 			c++;
 		}
@@ -200,7 +202,9 @@ class TypeDeterminer {
 					ac.candidateCountsRE[c]++;
 			}
 			catch (Exception e) {
-				LoggerFactory.getLogger("com.cobber.fta").error("Plugin: {}, issue: {}.", logical.getSemanticType(), e.getMessage());
+				LoggerFactory.getLogger("com.cobber.fta").error("Plugin '{}' threw {} during isValid() — disabling for this stream: {}",
+						logical.getSemanticType(), e.getClass().getSimpleName(), e.getMessage(), e);
+				ac.candidateCountsRE[c] = Integer.MIN_VALUE;
 			}
 			c++;
 		}

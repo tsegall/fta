@@ -794,17 +794,19 @@ You can replay the trace file (assuming a local build) using:
 
 `$ cli/build/install/fta/bin/cli --replay <Stream>.fta`
 
-## References ##
+## Datasets ##
 
 * GitTables: A Large-Scale Corpus of Relational Tables (https://arxiv.org/pdf/2106.07258.pdf)
-* Extracting Syntactic Patterns from Databases (https://arxiv.org/abs/1710.11528v2)
-* Sherlock: A Deep Learning Approach to Semantic Data Type Detection (https://arxiv.org/pdf/1905.10688.pdf)
-* Synthesizing Type-Detection Logic for Rich Semantic Data Types using Open-source Code (https://congyan.org/autotype.pdf)
 * T2Dv2 Gold Standard for Matching Web Tables to DBpedia (http://webdatacommons.org/webtables/goldstandardV2.html)
 * VizNet Towards a Visualization Learning and Benchmarking Repository (https://viznet.media.mit.edu/)
 * Semantic Type Reference Set: a corpus of labeled real-world CSV files (https://github.com/tsegall/semantic-types)
+
+## References ##
+
+* Extracting Syntactic Patterns from Databases (https://arxiv.org/abs/1710.11528v2)
+* Sherlock: A Deep Learning Approach to Semantic Data Type Detection (https://arxiv.org/pdf/1905.10688.pdf)
+* Auto-Type: Synthesizing Type-Detection Logic for Rich Semantic Data Types using Open-source Code (https://congyan.org/autotype.pdf, https://www.microsoft.com/en-us/research/publication/synthesizing-type-detection-logic-rich-semantic-data-types-using-open-source-code/)
 * Semantic Type Detection: Why It Matters, Current Approaches, and How to Improve It (https://megagon.ai/blog/semantic-type-detection-why-it-matters-current-approaches-and-how-to-improve-it)
-* Auto-Type: Synthesizing Type-Detection Logic for Rich Semantic Data Types using Open-source Code (https://www.microsoft.com/en-us/research/publication/synthesizing-type-detection-logic-rich-semantic-data-types-using-open-source-code/)
 * DDSketch: A Fast and Fully-Mergeable Quantile Sketch with Relative-Error Guarantees (https://arxiv.org/pdf/1908.10693.pdf)
 * A Streaming Parallel Decision Tree Algorithm (https://www.jmlr.org/papers/volume11/ben-haim10a/ben-haim10a.pdf)
 

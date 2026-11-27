@@ -1,0 +1,143 @@
+{"analysisConfig":{"maxCardinality":12000,"quantileRelativeAccuracy":0.01,"histogramBins":200,"maxOutliers":300,"maxInvalids":200,"maxShapes":400,"topBottomK":10,"threshold":95,"detectWindow":20,"maxInputLength":4096,"localeTag":"en-US","cachedLocale":null,"traceOptions":"enabled=true,directory=/Users/tsegall/src/fta/cli/src/test/resources,samples=10000","collectStatistics":true,"debug":0,"distributions":true,"approxDistinctCount":false,"collectShapes":true,"enableDefaultLogicalTypes":true,"numericWidening":true,"formatDetection":false,"lengthQualifier":true,"noAbbreviationPunctuation":true,"allowEnglishAMPM":true,"nullTextAsNull":true,"trainingMode":"SIMPLE","locale":"en_US"}}{"analyzerContext":{"streamName":"email","dateResolutionMode":"Auto","compositeName":"emails","compositeStreamNames":["email"],"streamIndex":0,"semanticTypes":null,"nested":false}}
+{
+"samples": [
+"alice@example.com",
+"bob@example.org",
+"carol@example.net",
+"dave@example.com",
+"eve@example.org",
+"frank@example.net",
+"grace@example.com",
+"heidi@example.org",
+"ivan@example.net",
+"judy@example.com" ]
+}
+{
+  "fieldName" : "email",
+  "totalCount" : -1,
+  "sampleCount" : 10,
+  "matchCount" : 10,
+  "nullCount" : 0,
+  "blankCount" : 0,
+  "distinctCount" : 10,
+  "regExp" : "[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}",
+  "confidence" : 1.0,
+  "type" : "String",
+  "isSemanticType" : true,
+  "semanticType" : "EMAIL",
+  "min" : "alice@example.com",
+  "max" : "judy@example.com",
+  "minLength" : 15,
+  "maxLength" : 17,
+  "topK" : [ "judy@example.com", "ivan@example.net", "heidi@example.org", "grace@example.com", "frank@example.net", "eve@example.org", "dave@example.com", "carol@example.net", "bob@example.org", "alice@example.com" ],
+  "bottomK" : [ "alice@example.com", "bob@example.org", "carol@example.net", "dave@example.com", "eve@example.org", "frank@example.net", "grace@example.com", "heidi@example.org", "ivan@example.net", "judy@example.com" ],
+  "cardinality" : 10,
+  "cardinalityDetail" : [ {
+    "key" : "alice@example.com",
+    "count" : 1
+  }, {
+    "key" : "bob@example.org",
+    "count" : 1
+  }, {
+    "key" : "carol@example.net",
+    "count" : 1
+  }, {
+    "key" : "dave@example.com",
+    "count" : 1
+  }, {
+    "key" : "eve@example.org",
+    "count" : 1
+  }, {
+    "key" : "frank@example.net",
+    "count" : 1
+  }, {
+    "key" : "grace@example.com",
+    "count" : 1
+  }, {
+    "key" : "heidi@example.org",
+    "count" : 1
+  }, {
+    "key" : "ivan@example.net",
+    "count" : 1
+  }, {
+    "key" : "judy@example.com",
+    "count" : 1
+  } ],
+  "outlierCardinality" : 0,
+  "invalidCardinality" : 0,
+  "shapesCardinality" : 3,
+  "shapesDetail" : [ {
+    "key" : "XXXXX@XXXXXXX.XXX",
+    "count" : 5
+  }, {
+    "key" : "XXXX@XXXXXXX.XXX",
+    "count" : 3
+  }, {
+    "key" : "XXX@XXXXXXX.XXX",
+    "count" : 2
+  } ],
+  "lengthFrequency" : [ {
+    "key" : 0,
+    "count" : 0
+  }, {
+    "key" : 1,
+    "count" : 0
+  }, {
+    "key" : 2,
+    "count" : 0
+  }, {
+    "key" : 3,
+    "count" : 0
+  }, {
+    "key" : 4,
+    "count" : 0
+  }, {
+    "key" : 5,
+    "count" : 0
+  }, {
+    "key" : 6,
+    "count" : 0
+  }, {
+    "key" : 7,
+    "count" : 0
+  }, {
+    "key" : 8,
+    "count" : 0
+  }, {
+    "key" : 9,
+    "count" : 0
+  }, {
+    "key" : 10,
+    "count" : 0
+  }, {
+    "key" : 11,
+    "count" : 0
+  }, {
+    "key" : 12,
+    "count" : 0
+  }, {
+    "key" : 13,
+    "count" : 0
+  }, {
+    "key" : 14,
+    "count" : 0
+  }, {
+    "key" : 15,
+    "count" : 2
+  }, {
+    "key" : 16,
+    "count" : 3
+  }, {
+    "key" : 17,
+    "count" : 5
+  } ],
+  "leadingWhiteSpace" : false,
+  "trailingWhiteSpace" : false,
+  "multiline" : false,
+  "keyConfidence" : 0.0,
+  "uniqueness" : 1.0,
+  "detectionLocale" : "en-US",
+  "ftaVersion" : "18.16.0",
+  "structureSignature" : "+A0AMjgeFlGRlPKsX/iXYmoWpfY=",
+  "dataSignature" : "c84drWoA3esuwO8x1EsCqBr3pvY="
+}{"tag": { "name": "getResult", "sampleCount": 10, "time": 1781357395108 } }

@@ -10,7 +10,7 @@ webNG is a Spring Boot + Vue 3 web application that exposes the FTA (Fast Text A
 
 ```bash
 # First time only — generate the Gradle wrapper
-gradle wrapper --gradle-version 9.7.1
+gradle wrapper --gradle-version 9.9.2
 
 # Build frontend and start the server (production mode)
 ./gradlew bootRun

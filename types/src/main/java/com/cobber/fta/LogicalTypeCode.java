@@ -22,7 +22,7 @@ import com.cobber.fta.core.FTAPluginException;
 /**
  * All Semantic Types implemented via Java code typically extend this class.
  */
-public abstract class LogicalTypeCode extends LogicalType {
+public abstract non-sealed class LogicalTypeCode extends LogicalType {
 	private SecureRandom random;
 	private byte[] seed = { 3, 1, 4, 1, 5, 9, 2 };
 

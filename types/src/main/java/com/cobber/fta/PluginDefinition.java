@@ -30,6 +30,8 @@ import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.HeaderEntry;
 import com.cobber.fta.core.InternalErrorException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import edu.umd.cs.findbugs.annotations.Nullable;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -200,7 +202,7 @@ public class PluginDefinition {
 	 * @param semanticTypeName The name for this Semantic Type
 	 * @return The Plugin Definition associated with the supplied name, or null if no plugin exists with this name.
 	 */
-	public static PluginDefinition findByName(final String semanticTypeName) {
+	public static @Nullable PluginDefinition findByName(final String semanticTypeName) {
 		synchronized (PluginDefinition.class) {
 			if (builtinPlugins == null)
 				try (BufferedReader JSON = new BufferedReader(new InputStreamReader(PluginDefinition.class.getResourceAsStream("/reference/plugins.json"), StandardCharsets.UTF_8))) {

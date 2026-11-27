@@ -76,8 +76,6 @@ class FileProcessor {
 		if (Files.exists(Paths.get(filename + ".options")))
 			options.addFromFile(filename + ".options");
 
-		output = options.output ? new PrintStream(filename + ".out", StandardCharsets.UTF_8) : System.out;
-
 		final ParserSettings settings = new ParserSettings();
 		if (options.delimiter != null) {
 			settings.delimiter = "\\t".equals(options.delimiter) ? '\t' : options.delimiter.charAt(0);
@@ -90,16 +88,12 @@ class FileProcessor {
 			settings.quoteCharacter = '"';
 		settings.withBOM = options.withBOM;
 
-		try {
+		try (PrintStream fileOutput = options.output ? new PrintStream(filename + ".out", StandardCharsets.UTF_8) : null) {
+			output = fileOutput != null ? fileOutput : System.out;
 			if (options.bulk)
 				processBulk(settings);
 			else
 				processAllFields(settings);
-		}
-		catch (Exception e) {
-			if (options.output)
-				output.close();
-			throw e;
 		}
 	}
 

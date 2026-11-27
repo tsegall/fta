@@ -11,7 +11,7 @@
  - fix: TypeDeterminer - plugin exception in isCandidate()/isValid() now logs the exception class and stack trace, and disables that plugin for the stream (previously only logged e.getMessage(), silently allowing the plugin to continue skewing results)
  - fix: FileProcessor - close output PrintStream on success path when --output is used (was only closed on exception)
  - test: Add TestCLI — 21 end-to-end subprocess tests covering basic analysis, locale, plugin validation, signature, merge, replay, --output flag, --noStatistics, --noSemanticTypes, --createSemanticTypesMarkdown, version, help, and error cases
- - feat: Add semanticTypesTest Gradle task — runs ../Semantic-types regression suite after installDist, diffs ncurrent.csv against reference.csv and fails the build on any difference; skipped gracefully when ../Semantic-types is not present
+ - feat: Add semanticTypesTest Gradle task — runs ../Semantic-types regression suite after installDist, diffs ncurrent.csv against current.csv and fails the build on any difference; skipped gracefully when ../Semantic-types is not present
  - chore: Bump spotbugs to 4.10.2
  - refactor: Seal LogicalType (permits LogicalTypeCode, LogicalTypeRegExp); mark LogicalTypeCode and LogicalTypeRegExp non-sealed; convert ResultFinalizer.FiniteMatchResult inner class to a record; apply instanceof pattern matching at two call sites in TextAnalyzer
  - feat: Add @Nullable annotations (SpotBugs) to TextAnalysisResult (getTypeModifier, getSemanticType, getMean, getStandardDeviation, getTotalMean, getTotalStandardDeviation, getTotalMinValue, getTotalMaxValue, asPlugin) and PluginDefinition.findByName; add spotbugs-annotations compileOnly dependency to types module
@@ -28,6 +28,19 @@
  - chore: Bump jackson-core to 2.22.2
  - chore: Bump jackson-databind to 2.22.2
  - chore: Bump jackson-datatype-jsr310 to 2.22.2
+ - chore: Bump gradle to 9.9.2
+ - chore: Bump versions plugin to 0.67.0
+ - chore: Bump spotbugs plugin to 6.5.13
+ - chore: Bump spotbugs to 4.10.5
+ - chore: Bump jacoco to 0.8.16
+ - chore: Bump fastcsv to 4.4.1
+ - chore: Bump jackson-core to 2.23.0
+ - chore: Bump jackson-databind to 2.23.0
+ - chore: Bump jackson-datatype-jsr310 to 2.23.0
+ - chore: Bump libphonenumber to 9.0.44
+ - chore: Bump automaton to 1.13-1
+ - chore: Bump guava to 33.8.0-jre
+ - chore: Bump logback-classic to 1.6.8
  - chore: Bump libphonenumber to 9.0.37
  - chore: Bump guava to 33.7.1-jre
  - chore: Bump logback-classic to 1.6.3

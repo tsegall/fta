@@ -34,7 +34,7 @@ import nl.flotsam.xeger.Xeger;
 /**
  * This class supports all plugins that are based on a RegExp.
  */
-public class LogicalTypeRegExp extends LogicalType {
+public non-sealed class LogicalTypeRegExp extends LogicalType {
 	private static final String WRONG_TYPE = "LogicalTypeRegExp baseType must be LONG, DOUBLE or STRING, not ";
 	private Pattern pattern;
 	private Long minLong;

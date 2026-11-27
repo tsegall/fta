@@ -32,6 +32,8 @@ import java.util.TreeSet;
 import com.cobber.fta.core.FTAType;
 import com.cobber.fta.core.InternalErrorException;
 import com.cobber.fta.core.Utils;
+
+import edu.umd.cs.findbugs.annotations.Nullable;
 import com.cobber.fta.dates.DateTimeParser.DateResolutionMode;
 import com.cobber.fta.token.TokenStreams;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -137,7 +139,7 @@ public class TextAnalysisResult {
 	 * Note: Boolean TRUE_FALSE is not localized, i.e. it will only be detected if the field contains true/false respectively.
 	 * @return The Type Modifier for the Type, or null if there is none.
 	 */
-	public String getTypeModifier() {
+	public @Nullable String getTypeModifier() {
 		return facts.getMatchTypeInfo().typeModifier;
 	}
 
@@ -159,7 +161,7 @@ public class TextAnalysisResult {
 	 * @return The Semantic Type detected, or null if this is not a Semantic Type
 	 * (i.e. {@link #isSemanticType()} returns false).
 	 */
-	public String getSemanticType() {
+	public @Nullable String getSemanticType() {
 		return facts.getMatchTypeInfo().getSemanticType();
 	}
 
@@ -220,9 +222,9 @@ public class TextAnalysisResult {
 
 	/**
 	 * Get the mean for Numeric types (Long, Double).
-	 * @return The mean.
+	 * @return The mean across the sample set, or null if the type is not numeric.
 	 */
-	public Double getMean() {
+	public @Nullable Double getMean() {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(STATISTICS_NOT_ENABLED);
 
@@ -231,9 +233,9 @@ public class TextAnalysisResult {
 
 	/**
 	 * Get the Standard Deviation for Numeric types (Long, Double).
-	 * @return The Standard Deviation.
+	 * @return The Standard Deviation across the sample set, or null if the type is not numeric.
 	 */
-	public Double getStandardDeviation() {
+	public @Nullable Double getStandardDeviation() {
 		if (!analysisConfig.isEnabled(TextAnalyzer.Feature.COLLECT_STATISTICS))
 			throw new IllegalArgumentException(STATISTICS_NOT_ENABLED);
 
@@ -425,7 +427,7 @@ public class TextAnalysisResult {
 	 * Use {@link #getMean() getMean()} for the equivalent on the sample set.
 	 * @return The mean across the entire data stream (null if not known).
 	 */
-	public Double getTotalMean() {
+	public @Nullable Double getTotalMean() {
 		return facts.external.getTotalMean();
 	}
 
@@ -434,7 +436,7 @@ public class TextAnalysisResult {
 	 * Use {@link #getStandardDeviation() getStandardDeviation()} for the equivalent on the sample set.
 	 * @return The Standard Deviation across the entire data stream (null if not known).
 	 */
-	public Double getTotalStandardDeviation() {
+	public @Nullable Double getTotalStandardDeviation() {
 		return facts.external.getTotalStandardDeviation();
 	}
 
@@ -443,7 +445,7 @@ public class TextAnalysisResult {
 	 * Use {@link #getMinValue() getMinValue()} for the equivalent on the sample set.
 	 * @return The minimum value as a String (null if not known).
 	 */
-	public String getTotalMinValue() {
+	public @Nullable String getTotalMinValue() {
 		return facts.external.getTotalMinValue();
 	}
 
@@ -452,7 +454,7 @@ public class TextAnalysisResult {
 	 * Use {@link #getMaxValue() getMaxValue()} for the equivalent on the sample set.
 	 * @return The maximum value as a String (null if not known).
 	 */
-	public String getTotalMaxValue() {
+	public @Nullable String getTotalMaxValue() {
 		return facts.external.getTotalMaxValue();
 	}
 
@@ -820,7 +822,7 @@ public class TextAnalysisResult {
 	 * @return A JSON representation of the analysis, or null for date types
 	 * (which have nothing useful to report as a plugin).
 	 */
-	public ObjectNode asPlugin(final TextAnalyzer analyzer) {
+	public @Nullable ObjectNode asPlugin(final TextAnalyzer analyzer) {
 		// A date type - so nothing interesting to report as a Plugin
 		if (facts.getMatchTypeInfo().isDateType())
 			return null;

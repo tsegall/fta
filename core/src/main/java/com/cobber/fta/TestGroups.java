@@ -32,4 +32,5 @@ public class TestGroups {
 	public static final String STRINGS = "strings";
 	public static final String TEXT = "text";
 	public static final String TOKENS = "tokens";
+	public static final String CLI = "cli";
 }

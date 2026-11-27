@@ -45,18 +45,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-21.jdk/Contents/Home ./gradlew test
 ```
 
-**Gradle version**: The wrapper targets Gradle 9.7.1 (set in `build.gradle` → `wrapper { gradleVersion = '9.7.1' }`).
+**Gradle version**: The wrapper targets Gradle 9.9.2 (set in `build.gradle` → `wrapper { gradleVersion = '9.9.2' }`).
 
 **Debugging**: Capture analysis traces with `export FTA_TRACE="enabled=true,directory=/tmp,samples=10000"`, then replay with `cli/build/install/fta/bin/cli --replay <Stream>.fta`.
 
 ## Regression Suite (semantic-types)
 
-A golden-file regression suite lives in `../Semantic-types` (separate repo: https://github.com/tsegall/semantic-types). It runs the installed CLI over ~14K real-world CSV files and compares the detected Base Type, Type Modifier, and Semantic Type for every field against a curated baseline (`reference.csv`).
+A golden-file regression suite lives in `../Semantic-types` (separate repo: https://github.com/tsegall/semantic-types). It runs the installed CLI over ~14K real-world CSV files and compares the detected Base Type, Type Modifier, and Semantic Type for every field against the baseline `current.csv` (the source of truth; `reference.csv` is stale and must not be used for comparison).
 
 **Before committing any detection-affecting change** — plugins (Java or `plugins.json`), priorities/thresholds, `TypeDeterminer`/`TextAnalyzer` detection logic, date parsing, or reference data — suggest running the suite. Unit tests passing is necessary but not sufficient for these changes. The suite takes several minutes and requires a current `./gradlew installDist`:
 
 ```bash
-cd ../Semantic-types && bin/runSuiteM.sh   # results land in ncurrent.csv; diff against reference.csv
+cd ../Semantic-types && bin/runSuiteM.sh   # results land in ncurrent.csv; diff against current.csv (not reference.csv)
 ```
 
 Doc-only, test-only, or serialization-format-neutral changes do not need a suite run.

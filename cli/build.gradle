@@ -38,4 +38,5 @@ dependencies {
 	implementation libs.logbackClassic
 
 	testImplementation testLibs.testng
+	testImplementation project(':core')
 }

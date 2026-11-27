@@ -968,17 +968,17 @@ public class TextAnalyzer {
 
 		for (final LogicalType logical : plugins.getRegisteredSemanticTypes()) {
 
-			if ((logical instanceof LogicalTypeFinite) && ((LogicalTypeFinite)logical).getSize() + 10 > getMaxCardinality())
+			if (logical instanceof LogicalTypeFinite ft && ft.getSize() + 10 > getMaxCardinality())
 				throw new FTAPluginException("Internal error: Max Cardinality: " + getMaxCardinality() + " is insufficient to support plugin: " + logical.getSemanticType());
 
 			// Check to see if this plugin requires a mandatory hotword (and it is present)
 			if (logical.getPluginDefinition().isMandatoryHeaderUnsatisfied(analysisConfig.getLocale(), context))
 				continue;
 
-			if (logical instanceof LogicalTypeInfinite)
-				infiniteTypes.add((LogicalTypeInfinite)logical);
-			else if (logical instanceof LogicalTypeFinite)
-				finiteTypes.add((LogicalTypeFinite)logical);
+			if (logical instanceof LogicalTypeInfinite lt)
+				infiniteTypes.add(lt);
+			else if (logical instanceof LogicalTypeFinite lt)
+				finiteTypes.add(lt);
 			else
 				regExpTypes.add((LogicalTypeRegExp)logical);
 

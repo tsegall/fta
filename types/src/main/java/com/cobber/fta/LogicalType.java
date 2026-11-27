@@ -32,7 +32,8 @@ import com.cobber.fta.token.TokenStreams;
  * This LTRandom interface provides a {@link LTRandom#nextRandom} which will create a new valid example of the
  *  Semantic Type.
  */
-public abstract class LogicalType implements Comparable<LogicalType>, LTRandom {
+public abstract sealed class LogicalType implements Comparable<LogicalType>, LTRandom
+		permits LogicalTypeCode, LogicalTypeRegExp {
 	protected PluginDefinition defn;
 	protected AnalysisConfig analysisConfig;
 	protected Locale locale;

@@ -1,13 +1,13 @@
 plugins {
 	id "com.github.ben-manes.versions"
-	id "com.github.spotbugs" version "6.5.11" apply false
+	id "com.github.spotbugs" version "6.5.13" apply false
 }
 
 import com.github.spotbugs.snom.Confidence
 import com.github.spotbugs.snom.Effort
 
 wrapper {
-	gradleVersion = '9.7.1'
+	gradleVersion = '9.9.2'
 }
 
 if (JavaVersion.current() > JavaVersion.VERSION_21) {
@@ -47,19 +47,19 @@ tasks.register('semanticTypesTest') {
 		if (exitCode != 0)
 			throw new GradleException("runSuiteM.sh failed with exit code $exitCode")
 
-		def reference = new File(suiteDir, 'reference.csv')
+		def baseline  = new File(suiteDir, 'current.csv')
 		def current   = new File(suiteDir, 'ncurrent.csv')
 
-		def diffProc = new ProcessBuilder('diff', '-q', reference.absolutePath, current.absolutePath)
+		def diffProc = new ProcessBuilder('diff', '-q', baseline.absolutePath, current.absolutePath)
 			.directory(suiteDir)
 			.start()
 		def diffExit = diffProc.waitFor()
 		if (diffExit != 0)
 			throw new GradleException(
-				"Semantic-types regression suite: ncurrent.csv differs from reference.csv. " +
-				"Run: diff ../Semantic-types/reference.csv ../Semantic-types/ncurrent.csv"
+				"Semantic-types regression suite: ncurrent.csv differs from current.csv. " +
+				"Run: diff ../Semantic-types/current.csv ../Semantic-types/ncurrent.csv"
 			)
-		logger.lifecycle('Semantic-types suite passed: ncurrent.csv matches reference.csv')
+		logger.lifecycle('Semantic-types suite passed: ncurrent.csv matches current.csv')
 	}
 }
 
@@ -213,7 +213,7 @@ subprojects {
 	apply plugin: "com.github.spotbugs"
 
 	spotbugs {
-		toolVersion = "4.10.4"
+		toolVersion = "4.10.5"
 		effort = Effort.MAX
 		reportLevel = com.github.spotbugs.snom.Confidence.valueOf('LOW')
 		ignoreFailures = true

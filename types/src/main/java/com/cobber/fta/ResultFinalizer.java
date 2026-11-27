@@ -368,7 +368,7 @@ class ResultFinalizer {
 
 		// Sweep the balance and check they are part of the set
 		if ((double) missCount / realSamples > missThreshold)
-			return new FiniteMatchResult();
+			return FiniteMatchResult.noMatch();
 
 		final Map<String, Long> minusMatches = new HashMap<>();
 
@@ -403,7 +403,7 @@ class ResultFinalizer {
 		final long outlierCount = newOutliers.values().stream().mapToLong(l-> l).sum();
 		if (logical.analyzeSet(ac.analyzerContext, validCount, realSamples, ac.facts.getMatchTypeInfo().getRegExp(), ac.facts.calculateFacts(), newCardinality, newOutliers, ac.tokenStreams, ac.analysisConfig).isValid()) {
 			validCount += outlierCount - newOutliers.values().stream().mapToLong(l-> l).sum();
-			return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, ac.analyzerContext), validCount, newOutliers, newCardinality);
+			return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, ac.analyzerContext), validCount, newOutliers, newCardinality, true);
 		}
 
 		// If the number of misses is less than 10% then remove the worst offender since it will often be something
@@ -411,10 +411,10 @@ class ResultFinalizer {
 		if (missEntries != 0 && (double)missEntries/cardinalityUpper.size() < .1 && logical.getHeaderConfidence(ac.analyzerContext) >= 90) {
 			realSamples -= missEntry.getValue();
 			if (logical.analyzeSet(ac.analyzerContext, validCount, realSamples, ac.facts.getMatchTypeInfo().getRegExp(), ac.facts.calculateFacts(), newCardinality, newOutliers, ac.tokenStreams, ac.analysisConfig).isValid())
-				return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, ac.analyzerContext), validCount, newOutliers, newCardinality);
+				return new FiniteMatchResult(logical, logical.getConfidence(validCount, realSamples, ac.analyzerContext), validCount, newOutliers, newCardinality, true);
 		}
 
-		return new FiniteMatchResult();
+		return FiniteMatchResult.noMatch();
 	}
 
 	String lengthQualifier(final int min, final int max) {
@@ -458,30 +458,18 @@ class ResultFinalizer {
 			result.replace(idx, idx + 1, lengthQualifier(ac.facts.minTrimmedLengthNumeric, ac.facts.maxTrimmedLengthNumeric)).toString();
 	}
 
-	private class FiniteMatchResult {
-		LogicalTypeFinite logical;
-		final double score;
-		FiniteMap newOutliers;
-		FiniteMap newCardinality;
-		long validCount;
-		final boolean isMatch;
+	private record FiniteMatchResult(
+			LogicalTypeFinite logical,
+			double score,
+			long validCount,
+			FiniteMap newOutliers,
+			FiniteMap newCardinality,
+			boolean isMatch) {
 
-		boolean matched() {
-			return isMatch;
-		}
+		boolean matched() { return isMatch; }
 
-		FiniteMatchResult(final LogicalTypeFinite logical, final double score, final long validCount, final FiniteMap newOutliers, final FiniteMap newCardinality) {
-			this.logical = logical;
-			this.score = score;
-			this.validCount = validCount;
-			this.newOutliers = newOutliers;
-			this.newCardinality = newCardinality;
-			this.isMatch = true;
-		}
-
-		FiniteMatchResult() {
-			score = Double.MIN_VALUE;
-			this.isMatch = false;
+		static FiniteMatchResult noMatch() {
+			return new FiniteMatchResult(null, Double.MIN_VALUE, 0, null, null, false);
 		}
 	}
 
@@ -508,13 +496,13 @@ class ResultFinalizer {
 			if ((!logical.isClosed() || cardinalityUpper.size() <= logical.getSize() + 2 + logical.getSize()/20)) {
 				final FiniteMatchResult result = checkFiniteSet(cardinalityUpper, ac.facts.outliers, logical);
 
-				if (!result.matched() || result.score < bestScore)
+				if (!result.matched() || result.score() < bestScore)
 					continue;
 
 				// We prefer finite matches to infinite matches only if the score is equal
 				// - header is better or
 				// - header is equal and priority is better
-				if (bestResult == null && priorLogical != null && result.score == bestScore) {
+				if (bestResult == null && priorLogical != null && result.score() == bestScore) {
 					if (logical.getHeaderConfidence(ac.analyzerContext) < priorLogical.getHeaderConfidence(ac.analyzerContext))
 						continue;
 					if (logical.getHeaderConfidence(ac.analyzerContext) == priorLogical.getHeaderConfidence(ac.analyzerContext) &&
@@ -523,16 +511,16 @@ class ResultFinalizer {
 				}
 
 				// Choose the best score
-				if (result.score > bestScore ||
+				if (result.score() > bestScore ||
 						// If bestResult is null then this finite match has matched an incoming score to beat
 						bestResult == null ||
 						// If two scores the same then prefer the one with the higher header confidence
-						logical.getHeaderConfidence(ac.analyzerContext) > bestResult.logical.getHeaderConfidence(ac.analyzerContext) ||
+						logical.getHeaderConfidence(ac.analyzerContext) > bestResult.logical().getHeaderConfidence(ac.analyzerContext) ||
 						// If two scores the same then prefer the logical with the highest priority
-						(logical.getHeaderConfidence(ac.analyzerContext) == bestResult.logical.getHeaderConfidence(ac.analyzerContext) &&
-						logical.getPluginDefinition().getOrder() < bestResult.logical.getPluginDefinition().getOrder())) {
+						(logical.getHeaderConfidence(ac.analyzerContext) == bestResult.logical().getHeaderConfidence(ac.analyzerContext) &&
+						logical.getPluginDefinition().getOrder() < bestResult.logical().getPluginDefinition().getOrder())) {
 					bestResult = result;
-					bestScore = result.score;
+					bestScore = result.score();
 				}
 			}
 		}
@@ -540,20 +528,20 @@ class ResultFinalizer {
 		if (bestResult == null)
 			return null;
 
-		ac.facts.outliers = bestResult.newOutliers;
-		ac.facts.setCardinality(bestResult.newCardinality);
-		ac.facts.matchCount = bestResult.validCount;
-		ac.facts.setMatchTypeInfo(new TypeInfo(bestResult.logical.getRegExp(), bestResult.logical.getBaseType(), bestResult.logical.getSemanticType(), ac.facts.getMatchTypeInfo()));
+		ac.facts.outliers = bestResult.newOutliers();
+		ac.facts.setCardinality(bestResult.newCardinality());
+		ac.facts.matchCount = bestResult.validCount();
+		ac.facts.setMatchTypeInfo(new TypeInfo(bestResult.logical().getRegExp(), bestResult.logical().getBaseType(), bestResult.logical().getSemanticType(), ac.facts.getMatchTypeInfo()));
 
 		ac.ctxdebug("Type determination", "new matchTypeInfo - {}, original score: {}, new score: {}",
 				ac.facts.getMatchTypeInfo(), originalScore, bestScore);
 		if (priorLogical != null) {
 			ac.ctxdebug("Type determination", "header confidence (current, prior): {},{}, priority (current, prior): {}, {}",
-					bestResult.logical.getHeaderConfidence(ac.analyzerContext), priorLogical.getHeaderConfidence(ac.analyzerContext),
-					bestResult.logical.getPluginDefinition().getOrder(), priorLogical.getPluginDefinition().getOrder());
+					bestResult.logical().getHeaderConfidence(ac.analyzerContext), priorLogical.getHeaderConfidence(ac.analyzerContext),
+					bestResult.logical().getPluginDefinition().getOrder(), priorLogical.getPluginDefinition().getOrder());
 		}
 
-		return bestResult.logical;
+		return bestResult.logical();
 	}
 
 	boolean checkDateTimeTypes(final FTAType type) {
